@@ -1,0 +1,4 @@
+repository "wwww/wwww@33263160512076@cloud"
+  path "/"
+    br "/main"
+    co "/main"
