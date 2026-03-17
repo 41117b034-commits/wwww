@@ -7,4 +7,9 @@ public class SceneChange : MonoBehaviour
     {
         SceneManager.LoadScene("設定內容");
     }
+
+    public void GoToMenuScene()
+    {
+        SceneManager.LoadScene("點選介面");
+    }
 }
