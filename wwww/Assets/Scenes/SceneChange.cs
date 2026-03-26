@@ -12,4 +12,9 @@ public class SceneChange : MonoBehaviour
     {
         SceneManager.LoadScene("點選介面");
     }
+
+    public void GoToSubtitleScene()
+    {
+        SceneManager.LoadScene("字幕選單");
+    }
 }
