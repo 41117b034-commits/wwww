@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: b5aae4c45eef46440ae2300e2ca129b9, type: 2}
+  m_LightingDataAsset: {fileID: 112000004, guid: 37e979b22aa24ad4fa8ebc355977357f, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 1bc6935f79575fa4c86415547ce66edd, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -2450,33 +2450,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab68ce6587aab0146b8dabefbd806791, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_ClickSpeed: 0.3
-  m_MoveDeadzone: 0.6
-  m_RepeatDelay: 0.5
-  m_RepeatRate: 0.1
-  m_TrackedDeviceDragThresholdMultiplier: 2
-  m_TrackedScrollDeltaMultiplier: 5
-  m_BypassUIToolkitEvents: 0
-  m_ActiveInputMode: 0
-  m_EnableXRInput: 1
-  m_EnableMouseInput: 1
-  m_EnableTouchInput: 1
-  m_PointAction: {fileID: 0}
-  m_LeftClickAction: {fileID: 0}
-  m_MiddleClickAction: {fileID: 0}
-  m_RightClickAction: {fileID: 0}
-  m_ScrollWheelAction: {fileID: 0}
-  m_NavigateAction: {fileID: 0}
-  m_SubmitAction: {fileID: 0}
-  m_CancelAction: {fileID: 0}
-  m_EnableBuiltinActionsAsFallback: 1
-  m_EnableGamepadInput: 1
-  m_EnableJoystickInput: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
 --- !u!114 &458957434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4692,7 +4665,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 017c5e3933235514c9520e1dace2a4b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ActionAssets: []
 --- !u!114 &1110202975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4705,11 +4677,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0cb9aa70a22847b5925ee5f067c10a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Camera: {fileID: 1847561937}
-  m_OriginBaseGameObject: {fileID: 1110202972}
-  m_CameraFloorOffsetObject: {fileID: 490118890}
-  m_RequestedTrackingOriginMode: 0
-  m_CameraYOffset: 1.1176
 --- !u!4 &1131301510 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1766490383188478063, guid: a93f80d252523a14d9206681c7713ce8, type: 3}
