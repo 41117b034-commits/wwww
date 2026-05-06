@@ -577,63 +577,6 @@ MonoBehaviour:
   colorCorrectionCurvesShader: {fileID: 4800000, guid: 62bcade1028c24ca1a39760ed84b9487, type: 3}
   simpleColorCorrectionCurvesShader: {fileID: 4800000, guid: 438ddd58d82c84d9eb1fdc56111702e1, type: 3}
   colorCorrectionSelectiveShader: {fileID: 4800000, guid: e515e0f94cefc4c0db54b45cba621544, type: 3}
---- !u!1001 &283741633
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 165230, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_Name
-      value: HQBigRock
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 9689.795
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -5758.3354
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 34.265873
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 490504, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 751682349ef7b8546aff2c104411f6b3, type: 3}
 --- !u!1 &318967914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,4 +1377,3 @@ SceneRoots:
   m_Roots:
   - {fileID: 1958912796}
   - {fileID: 780412190}
-  - {fileID: 283741633}
