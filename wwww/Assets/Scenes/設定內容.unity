@@ -2007,7 +2007,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5B57\u5E55"
+  m_text: "\u8A9E\u8A00"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4e7308b1a0cd80f46b6782ef5b4f026e, type: 2}
   m_sharedMaterial: {fileID: 2471057874731837211, guid: 4e7308b1a0cd80f46b6782ef5b4f026e, type: 2}
