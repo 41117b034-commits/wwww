@@ -2,15 +2,87 @@ using UnityEngine;
 
 public class PickupItem : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Header("拿取設定")]
+    public Transform holdPoint;
+    public float pickupRange = 3f;
+    public KeyCode pickupKey = KeyCode.E;
 
-    // Update is called once per frame
+    private GameObject heldObject;
+    private Rigidbody heldRb;
+
     void Update()
     {
-        
+        if (Input.GetKeyDown(pickupKey))
+        {
+            if (heldObject == null)
+            {
+                TryPickup();
+            }
+            else
+            {
+                DropObject();
+            }
+        }
+
+        if (heldObject != null && holdPoint != null)
+        {
+            heldObject.transform.position = holdPoint.position;
+            heldObject.transform.rotation = holdPoint.rotation;
+        }
+    }
+
+    void TryPickup()
+    {
+        if (holdPoint == null)
+        {
+            Debug.LogWarning("尚未指定 HoldPoint！");
+            return;
+        }
+
+        if (Camera.main == null)
+        {
+            Debug.LogWarning("找不到 Main Camera！");
+            return;
+        }
+
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, pickupRange))
+        {
+            if (hit.collider.CompareTag("Pickup"))
+            {
+                heldObject = hit.collider.gameObject;
+                heldRb = heldObject.GetComponent<Rigidbody>();
+
+                if (heldRb != null)
+                {
+                    heldRb.useGravity = false;
+                    heldRb.isKinematic = true;
+                }
+
+                heldObject.transform.SetParent(holdPoint);
+                heldObject.transform.localPosition = Vector3.zero;
+                heldObject.transform.localRotation = Quaternion.identity;
+
+                Debug.Log("拿起物品：" + heldObject.name);
+            }
+        }
+    }
+
+    void DropObject()
+    {
+        heldObject.transform.SetParent(null);
+
+        if (heldRb != null)
+        {
+            heldRb.isKinematic = false;
+            heldRb.useGravity = true;
+        }
+
+        Debug.Log("放下物品：" + heldObject.name);
+
+        heldObject = null;
+        heldRb = null;
     }
 }
