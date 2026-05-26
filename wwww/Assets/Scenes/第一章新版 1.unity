@@ -3779,6 +3779,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6598815579406187026, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187027, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4666,9 +4670,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cab037581ec139a4a8117bfad9a3bb5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdPoint: {fileID: 0}
-  pickupRange: 3
-  pickupKey: 101
 --- !u!1001 &1000763170
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5566,9 +5567,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1160666535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e0da1ae550cae14cb7b12843e529290, type: 3}
+  m_Script: {fileID: 11500000, guid: be146de056644ba4e8be15ad398c15f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  holdPoint: {fileID: 1205443031}
+  cameraTransform: {fileID: 24367169}
+  pickupRange: 15
+  pickupKey: 102
 --- !u!1001 &1163690313
 PrefabInstance:
   m_ObjectHideFlags: 0

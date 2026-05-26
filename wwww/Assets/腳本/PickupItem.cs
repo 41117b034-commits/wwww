@@ -4,8 +4,9 @@ public class PickupItem : MonoBehaviour
 {
     [Header("拿取設定")]
     public Transform holdPoint;
+    public Transform cameraTransform;
     public float pickupRange = 10f;
-    public KeyCode pickupKey = KeyCode.E;
+    public KeyCode pickupKey = KeyCode.F;
 
     private GameObject heldObject;
     private Rigidbody heldRb;
@@ -14,11 +15,11 @@ public class PickupItem : MonoBehaviour
     {
         if (Input.GetKeyDown(pickupKey))
         {
-            Debug.Log("按下 E");
+            Debug.Log("按下 F");
 
             if (heldObject == null)
             {
-                TryPickup();
+                TryPickupNearby();
             }
             else
             {
@@ -33,7 +34,7 @@ public class PickupItem : MonoBehaviour
         }
     }
 
-    void TryPickup()
+    void TryPickupNearby()
     {
         if (holdPoint == null)
         {
@@ -41,47 +42,53 @@ public class PickupItem : MonoBehaviour
             return;
         }
 
-        if (Camera.main == null)
+        if (cameraTransform == null)
         {
-            Debug.LogWarning("找不到 Main Camera，請確認攝影機 Tag 是 MainCamera！");
+            Debug.LogWarning("Camera Transform 尚未指定！");
             return;
         }
 
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        RaycastHit hit;
+        Collider[] hits = Physics.OverlapSphere(cameraTransform.position, pickupRange);
 
-        Debug.DrawRay(ray.origin, ray.direction * pickupRange, Color.red, 2f);
+        GameObject nearestObject = null;
+        float nearestDistance = Mathf.Infinity;
 
-        if (Physics.Raycast(ray, out hit, pickupRange))
+        foreach (Collider hit in hits)
         {
-            Debug.Log("射線打到：" + hit.collider.name + "，Tag：" + hit.collider.tag);
+            Debug.Log("附近偵測到：" + hit.name + "，Tag：" + hit.tag);
 
-            if (hit.collider.CompareTag("Pickup"))
+            if (hit.CompareTag("Pickup"))
             {
-                heldObject = hit.collider.gameObject;
-                heldRb = heldObject.GetComponent<Rigidbody>();
+                float distance = Vector3.Distance(cameraTransform.position, hit.transform.position);
 
-                if (heldRb != null)
+                if (distance < nearestDistance)
                 {
-                    heldRb.useGravity = false;
-                    heldRb.isKinematic = true;
+                    nearestDistance = distance;
+                    nearestObject = hit.gameObject;
                 }
-
-                heldObject.transform.SetParent(holdPoint);
-                heldObject.transform.localPosition = Vector3.zero;
-                heldObject.transform.localRotation = Quaternion.identity;
-
-                Debug.Log("拿起物品：" + heldObject.name);
-            }
-            else
-            {
-                Debug.LogWarning("打到的物件不是 Pickup 標籤！");
             }
         }
-        else
+
+        if (nearestObject == null)
         {
-            Debug.LogWarning("射線沒有打到任何物件，請把畫面中心對準物品！");
+            Debug.LogWarning("附近沒有 Pickup 物品！");
+            return;
         }
+
+        heldObject = nearestObject;
+        heldRb = heldObject.GetComponent<Rigidbody>();
+
+        if (heldRb != null)
+        {
+            heldRb.useGravity = false;
+            heldRb.isKinematic = true;
+        }
+
+        heldObject.transform.SetParent(holdPoint);
+        heldObject.transform.localPosition = Vector3.zero;
+        heldObject.transform.localRotation = Quaternion.identity;
+
+        Debug.Log("拿起物品：" + heldObject.name);
     }
 
     void DropObject()
