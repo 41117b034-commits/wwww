@@ -44,8 +44,6 @@ public class NPCIdleLookAt : MonoBehaviour
             if (direction.sqrMagnitude > 0.001f)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-                // 修正模型側面看人的問題
                 targetRotation *= Quaternion.Euler(0f, yRotationOffset, 0f);
 
                 transform.rotation = Quaternion.Slerp(

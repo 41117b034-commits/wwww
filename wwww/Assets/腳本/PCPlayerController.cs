@@ -52,6 +52,8 @@ public class PCPlayerController : MonoBehaviour
 
     void Move()
     {
+        if (controller == null) return;
+
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 

@@ -4666,6 +4666,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cab037581ec139a4a8117bfad9a3bb5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  holdPoint: {fileID: 0}
+  pickupRange: 3
+  pickupKey: 101
 --- !u!1001 &1000763170
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5172,7 +5175,7 @@ GameObject:
   - component: {fileID: 1158745511}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
