@@ -3771,6 +3771,32 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38d70db323e2427499998419c88020ae, type: 3}
+--- !u!1 &839985971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 38d70db323e2427499998419c88020ae, type: 3}
+  m_PrefabInstance: {fileID: 883882530}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &839985975
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839985971}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9180603, y: 0.97769195, z: 0.76745623}
+  m_Center: {x: 0.000007629402, y: -0.00022935873, z: 0.00003051758}
 --- !u!1001 &870199141
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3781,7 +3807,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6598815579406187026, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187026, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_KeyboardXTranslateSpeed
@@ -3915,7 +3941,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 38d70db323e2427499998419c88020ae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 839985975}
   m_SourcePrefab: {fileID: 100100000, guid: 38d70db323e2427499998419c88020ae, type: 3}
 --- !u!1001 &909616990
 PrefabInstance:
@@ -5516,6 +5545,8 @@ GameObject:
   - component: {fileID: 1160666537}
   - component: {fileID: 1160666536}
   - component: {fileID: 1160666539}
+  - component: {fileID: 1160666541}
+  - component: {fileID: 1160666540}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -5586,6 +5617,48 @@ MonoBehaviour:
   cameraTransform: {fileID: 24367169}
   pickupRange: 15
   pickupKey: 102
+--- !u!114 &1160666540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160666535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cda8100b8eee4eb46b8add7ce59104aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 8
+  runSpeed: 14
+  gravity: -9.81
+  cameraTransform: {fileID: 24367169}
+  mouseSensitivity: 2
+--- !u!143 &1160666541
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160666535}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &1163690313
 PrefabInstance:
   m_ObjectHideFlags: 0
