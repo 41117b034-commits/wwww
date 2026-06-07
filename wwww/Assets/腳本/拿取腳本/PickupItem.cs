@@ -5,8 +5,15 @@ public class PickupItem : MonoBehaviour
     [Header("拿取設定")]
     public Transform holdPoint;
     public Transform cameraTransform;
-    public float pickupRange = 10f;
+    public float pickupRange = 15f;
     public KeyCode pickupKey = KeyCode.F;
+
+    [Header("旋轉設定")]
+    public float rotateSpeed = 90f;
+    public KeyCode rotateLeftKey = KeyCode.R;
+    public KeyCode rotateRightKey = KeyCode.T;
+    public KeyCode rotateUpKey = KeyCode.Y;
+    public KeyCode rotateDownKey = KeyCode.U;
 
     private GameObject heldObject;
     private Rigidbody heldRb;
@@ -29,8 +36,8 @@ public class PickupItem : MonoBehaviour
 
         if (heldObject != null && holdPoint != null)
         {
-            heldObject.transform.position = holdPoint.position;
-            heldObject.transform.rotation = holdPoint.rotation;
+            HoldObject();
+            RotateHeldObject();
         }
     }
 
@@ -89,6 +96,34 @@ public class PickupItem : MonoBehaviour
         heldObject.transform.localRotation = Quaternion.identity;
 
         Debug.Log("拿起物品：" + heldObject.name);
+    }
+
+    void HoldObject()
+    {
+        heldObject.transform.position = holdPoint.position;
+    }
+
+    void RotateHeldObject()
+    {
+        if (Input.GetKey(rotateLeftKey))
+        {
+            heldObject.transform.Rotate(Vector3.up, -rotateSpeed * Time.deltaTime, Space.World);
+        }
+
+        if (Input.GetKey(rotateRightKey))
+        {
+            heldObject.transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime, Space.World);
+        }
+
+        if (Input.GetKey(rotateUpKey))
+        {
+            heldObject.transform.Rotate(Vector3.right, rotateSpeed * Time.deltaTime, Space.World);
+        }
+
+        if (Input.GetKey(rotateDownKey))
+        {
+            heldObject.transform.Rotate(Vector3.right, -rotateSpeed * Time.deltaTime, Space.World);
+        }
     }
 
     void DropObject()
