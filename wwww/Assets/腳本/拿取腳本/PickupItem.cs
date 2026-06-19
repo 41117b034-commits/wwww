@@ -1,7 +1,11 @@
+using System;
 using UnityEngine;
 
 public class PickupItem : MonoBehaviour
 {
+    // 拿起物品時，通知其他腳本
+    public static event Action<GameObject> OnItemPickedUp;
+
     [Header("拿取設定")]
     public Transform holdPoint;
     public Transform cameraTransform;
@@ -22,8 +26,6 @@ public class PickupItem : MonoBehaviour
     {
         if (Input.GetKeyDown(pickupKey))
         {
-            Debug.Log("按下 F");
-
             if (heldObject == null)
             {
                 TryPickupNearby();
@@ -55,24 +57,30 @@ public class PickupItem : MonoBehaviour
             return;
         }
 
-        Collider[] hits = Physics.OverlapSphere(cameraTransform.position, pickupRange);
+        Collider[] hits = Physics.OverlapSphere(
+            cameraTransform.position,
+            pickupRange
+        );
 
         GameObject nearestObject = null;
         float nearestDistance = Mathf.Infinity;
 
         foreach (Collider hit in hits)
         {
-            Debug.Log("附近偵測到：" + hit.name + "，Tag：" + hit.tag);
-
-            if (hit.CompareTag("Pickup"))
+            if (!hit.CompareTag("Pickup"))
             {
-                float distance = Vector3.Distance(cameraTransform.position, hit.transform.position);
+                continue;
+            }
 
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestObject = hit.gameObject;
-                }
+            float distance = Vector3.Distance(
+                cameraTransform.position,
+                hit.transform.position
+            );
+
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestObject = hit.gameObject;
             }
         }
 
@@ -87,6 +95,8 @@ public class PickupItem : MonoBehaviour
 
         if (heldRb != null)
         {
+            heldRb.linearVelocity = Vector3.zero;
+            heldRb.angularVelocity = Vector3.zero;
             heldRb.useGravity = false;
             heldRb.isKinematic = true;
         }
@@ -96,6 +106,9 @@ public class PickupItem : MonoBehaviour
         heldObject.transform.localRotation = Quaternion.identity;
 
         Debug.Log("拿起物品：" + heldObject.name);
+
+        // 通知 TaskTrigger：玩家已經拿起這個物品
+        OnItemPickedUp?.Invoke(heldObject);
     }
 
     void HoldObject()
@@ -107,30 +120,51 @@ public class PickupItem : MonoBehaviour
     {
         if (Input.GetKey(rotateLeftKey))
         {
-            heldObject.transform.Rotate(Vector3.up, -rotateSpeed * Time.deltaTime, Space.World);
+            heldObject.transform.Rotate(
+                Vector3.up,
+                -rotateSpeed * Time.deltaTime,
+                Space.World
+            );
         }
 
         if (Input.GetKey(rotateRightKey))
         {
-            heldObject.transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime, Space.World);
+            heldObject.transform.Rotate(
+                Vector3.up,
+                rotateSpeed * Time.deltaTime,
+                Space.World
+            );
         }
 
         if (Input.GetKey(rotateUpKey))
         {
-            heldObject.transform.Rotate(Vector3.right, rotateSpeed * Time.deltaTime, Space.World);
+            heldObject.transform.Rotate(
+                Vector3.right,
+                rotateSpeed * Time.deltaTime,
+                Space.World
+            );
         }
 
         if (Input.GetKey(rotateDownKey))
         {
-            heldObject.transform.Rotate(Vector3.right, -rotateSpeed * Time.deltaTime, Space.World);
+            heldObject.transform.Rotate(
+                Vector3.right,
+                -rotateSpeed * Time.deltaTime,
+                Space.World
+            );
         }
     }
 
     void DropObject()
     {
-        if (heldObject == null) return;
+        if (heldObject == null)
+        {
+            return;
+        }
 
-        heldObject.transform.SetParent(null);
+        GameObject droppedObject = heldObject;
+
+        droppedObject.transform.SetParent(null);
 
         if (heldRb != null)
         {
@@ -138,9 +172,20 @@ public class PickupItem : MonoBehaviour
             heldRb.useGravity = true;
         }
 
-        Debug.Log("放下物品：" + heldObject.name);
+        Debug.Log("放下物品：" + droppedObject.name);
 
         heldObject = null;
         heldRb = null;
+    }
+
+    // 在 Scene 視窗顯示拿取範圍
+    void OnDrawGizmosSelected()
+    {
+        if (cameraTransform == null)
+        {
+            return;
+        }
+
+        Gizmos.DrawWireSphere(cameraTransform.position, pickupRange);
     }
 }
