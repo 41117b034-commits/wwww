@@ -3467,7 +3467,7 @@ MonoBehaviour:
   showPrompt: 1
   promptText: "\u6309 E / \u624B\u628A\u89F8\u767C \u52A0\u5165\u821E\u8E48"
   useDistanceCheck: 1
-  interactRange: 10
+  interactRange: 80
   playerTag: Player
   speakerName: "\u65CF\u4EBA"
   line: "\u9858\u7956\u9748\u5E87\u4F51\u65B0\u4EBA\u3002"
@@ -6261,6 +6261,7 @@ MonoBehaviour:
   wineTargetCount: 3
   autoStartOnAwake: 0
   debugStartPoliceWithP: 1
+  debugStartDanceWithJ: 1
 --- !u!4 &995566607
 Transform:
   m_ObjectHideFlags: 0

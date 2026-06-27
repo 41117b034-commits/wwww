@@ -54,6 +54,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Header("Debug")]
     public bool debugStartPoliceWithP = true;
+    public bool debugStartDanceWithJ = true;
 
     private int deliveredWineCount;
     private bool danceFinished;
@@ -94,6 +95,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             Debug.Log("[Chapter1] Debug P key pressed.");
             StartPoliceSequence();
+        }
+
+        if (debugStartDanceWithJ && Input.GetKeyDown(KeyCode.J))
+        {
+            Debug.Log("[Chapter1] Debug J key pressed.");
+            JoinDance(danceCenter, playerRoot);
         }
     }
 
