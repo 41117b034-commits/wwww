@@ -1,0 +1,9 @@
+﻿事件ID,觸發條件,演出內容,完成條件,下一步,備註
+INT_TalkVillager,玩家靠近族人按互動,顯示一句生活對話,無,維持自由探索,UI 顯示說話字幕 3 秒
+INT_DeliverWine,玩家拿到酒後靠近賓客,播放遞酒動作、任務進度 +1,完成 3 位賓客,解鎖舞蹈互動,道具可用簡化版杯子
+INT_ShareFood,玩家拿食物給族人,族人道謝，增加生活感,可選,無主線影響,可當加分互動
+INT_JoinDance,玩家靠近舞圈按互動,鎖玩家控制，播放舞蹈 Timeline,舞蹈完成,觸發日警進場前奏,演出組重點
+TRG_PoliceEnter,舞蹈完成或時間到,停止音樂，日警從山路進場,無,進入劇情演出,DisablePlayerControl
+CHO_ConflictChoice,日警壓迫段結束,顯示選項 UI,玩家選擇,分支 A/B,兩分支最後合流
+BR_Intervene,選擇上前阻止,播放阻止分支 Timeline,結束,合流到日警離開,可黑幕處理槍聲
+BR_Watch,選擇沉默觀望,播放沉默分支 Timeline,結束,合流到日警離開,避免露骨畫面

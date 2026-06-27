@@ -1,0 +1,60 @@
+{
+  "chapter": "Chapter1_WeddingAndFuse",
+  "unity_events": [
+    {
+      "event": "FadeIn",
+      "owner": "演出",
+      "description": "黑幕淡入並限制玩家只可看視角"
+    },
+    {
+      "event": "EnablePlayerControl",
+      "owner": "程式",
+      "description": "開放玩家在婚禮場景自由探索"
+    },
+    {
+      "event": "StartQuest_DeliverWine",
+      "owner": "程式",
+      "description": "開始送酒互動任務"
+    },
+    {
+      "event": "PlayTimeline_Dance",
+      "owner": "演出",
+      "description": "播放加入舞蹈 Timeline"
+    },
+    {
+      "event": "SpawnPolice",
+      "owner": "程式",
+      "description": "生成或啟用兩名日本警察 NPC"
+    },
+    {
+      "event": "PlayTimeline_PoliceEnter",
+      "owner": "演出",
+      "description": "播放日警進場與婚禮停止演出"
+    },
+    {
+      "event": "ShowChoiceUI",
+      "owner": "UI/程式",
+      "description": "顯示上前阻止/沉默觀望選項"
+    },
+    {
+      "event": "Branch_Intervene",
+      "owner": "演出",
+      "description": "播放上前阻止分支"
+    },
+    {
+      "event": "Branch_Watch",
+      "owner": "演出",
+      "description": "播放沉默觀望分支"
+    },
+    {
+      "event": "MergeBranches",
+      "owner": "程式",
+      "description": "兩分支合流到共同結尾"
+    },
+    {
+      "event": "FadeOut",
+      "owner": "演出",
+      "description": "章節結尾淡出"
+    }
+  ]
+}
