@@ -6246,7 +6246,7 @@ MonoBehaviour:
   danceCenter: {fileID: 466568416}
   danceDuration: 9
   danceRadius: 3.2
-  danceOrbitDegrees: 330
+  danceOrbitDegrees: -330
   danceStepHeight: 0.1
   danceStepFrequency: 2.4
   danceLookAtHeight: 1.25
