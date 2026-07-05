@@ -77,6 +77,33 @@ public class Chapter1PerformanceController : MonoBehaviour
     public bool autoCreateMissingExplorationInteractions = true;
     public float autoInteractionDistance = 4.5f;
     public float autoInteractionMarkerSize = 0.7f;
+    public bool showCenterInteractionMenu = true;
+    public float centerInteractionRange = 5f;
+    public KeyCode centerDanceKey = KeyCode.E;
+    public KeyCode centerWineKey = KeyCode.R;
+    public KeyCode centerFoodKey = KeyCode.T;
+    public KeyCode centerDanceAltKey = KeyCode.Alpha1;
+    public KeyCode centerWineAltKey = KeyCode.Alpha2;
+    public KeyCode centerFoodAltKey = KeyCode.Alpha3;
+    public KeyCode centerDanceGamepadKey = KeyCode.JoystickButton0;
+    public KeyCode centerWineGamepadKey = KeyCode.JoystickButton1;
+    public KeyCode centerFoodGamepadKey = KeyCode.JoystickButton2;
+    public bool reserveEForDanceAtFireCenter = true;
+
+    [Header("Interaction Animation")]
+    public bool playInteractionAnimations = true;
+    public float interactionAnimationSeconds = 2.4f;
+    public float interactionArcHeight = 1.15f;
+    public float heldPropScale = 0.28f;
+    public bool lockPlayerDuringInteractionAnimation = false;
+    public bool guidePlayerDuringItemInteractions = true;
+    public float guidedWalkToPickupSeconds = 1.15f;
+    public float guidedWalkToReceiverSeconds = 1.65f;
+    public float guidedGiveSeconds = 0.55f;
+    public float guidedPickupDistance = 1.15f;
+    public float guidedReceiverDistance = 1.35f;
+    public Color winePropColor = new Color(0.45f, 0.12f, 0.08f, 1f);
+    public Color foodPropColor = new Color(0.95f, 0.58f, 0.18f, 1f);
 
     [Header("Police Entrance Fallback")]
     public bool animatePoliceEntranceWithoutTimeline = true;
@@ -120,6 +147,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     private string choiceQuestion = "";
     private string optionALabel = "";
     private string optionBLabel = "";
+    private Coroutine clearMissionRoutine;
+    private bool clearMissionWhenPlayerMoves;
+    private string movementSensitiveMissionText = "";
+    private Vector3 temporaryMissionStartPlayerPosition;
+    private bool interactionAnimationRunning;
 
     private GUIStyle hudBoxStyle;
     private GUIStyle hudTitleStyle;
@@ -128,6 +160,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GUIStyle timerBoxStyle;
     private GUIStyle timerTitleStyle;
     private GUIStyle timerNumberStyle;
+    private GUIStyle centerMenuStyle;
 
     private readonly string[] villagerTalkLines =
     {
@@ -206,7 +239,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
+        UpdateCenterInteractionInput();
         UpdateExplorationTimer();
+        UpdateTemporaryMissionMovementClear();
     }
 
     private void OnGUI()
@@ -221,6 +256,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (showExplorationTimer && explorationTimerRunning)
         {
             DrawExplorationTimer();
+        }
+
+        if (ShouldShowCenterInteractionMenu())
+        {
+            DrawCenterInteractionMenu();
         }
 
         if (!string.IsNullOrEmpty(missionText))
@@ -410,6 +450,92 @@ public class Chapter1PerformanceController : MonoBehaviour
         return minutes.ToString("00") + ":" + remainingSeconds.ToString("00");
     }
 
+    private void UpdateCenterInteractionInput()
+    {
+        if (!ShouldShowCenterInteractionMenu())
+        {
+            return;
+        }
+
+        if (IsCenterActionPressed(centerDanceKey, centerDanceAltKey, centerDanceGamepadKey) && CanUseDanceInteraction())
+        {
+            JoinDance(danceCenter, playerRoot);
+        }
+        else if (IsCenterActionPressed(centerWineKey, centerWineAltKey, centerWineGamepadKey))
+        {
+            DeliverWine("賓客", FindNextInteractionTarget(true));
+        }
+        else if (IsCenterActionPressed(centerFoodKey, centerFoodAltKey, centerFoodGamepadKey))
+        {
+            ShareFood("族人", FindNextInteractionTarget(false));
+        }
+    }
+
+    private bool IsCenterActionPressed(KeyCode primaryKey, KeyCode altKey, KeyCode gamepadKey)
+    {
+        return IsKeyPressed(primaryKey) || IsKeyPressed(altKey) || IsKeyPressed(gamepadKey);
+    }
+
+    private bool IsKeyPressed(KeyCode key)
+    {
+        return key != KeyCode.None && Input.GetKeyDown(key);
+    }
+
+    private bool ShouldShowCenterInteractionMenu()
+    {
+        return showCenterInteractionMenu
+            && IsFreeExplorationActive()
+            && IsPlayerNearFireCenter();
+    }
+
+    private bool IsPlayerNearFireCenter()
+    {
+        Vector3 center = GetFireCenterPosition();
+        Vector3 player = GetCurrentPlayerPosition();
+        return Vector3.Distance(center, player) <= Mathf.Max(1f, centerInteractionRange);
+    }
+
+    private Vector3 GetFireCenterPosition()
+    {
+        if (danceCenter != null)
+        {
+            return danceCenter.position;
+        }
+
+        if (choiceFocusPoint != null)
+        {
+            return choiceFocusPoint.transform.position;
+        }
+
+        return transform.position;
+    }
+
+    private Vector3 GetCurrentPlayerPosition()
+    {
+        if (Camera.main != null)
+        {
+            return Camera.main.transform.position;
+        }
+
+        if (playerRoot != null)
+        {
+            return playerRoot.position;
+        }
+
+        Transform player = GetDancePlayerRoot();
+        return player != null ? player.position : transform.position;
+    }
+
+    private void DrawCenterInteractionMenu()
+    {
+        string danceText = CanUseDanceInteraction() ? "E / 1 / 手把A  加入舞蹈" : "E / 1 / 手把A  舞蹈已完成";
+        string text = danceText + "\nR / 2 / 手把B  送酒\nT / 3 / 手把X  分享食物";
+        float width = Mathf.Min(Screen.width - 40f, 380f);
+        float height = 104f;
+        Rect rect = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 28f, width, height);
+        GUI.Box(rect, text, centerMenuStyle);
+    }
+
     public void Talk(string speaker, string line, float seconds = -1f)
     {
         if (string.IsNullOrWhiteSpace(line))
@@ -425,33 +551,54 @@ public class Chapter1PerformanceController : MonoBehaviour
         ShowLine(speaker, line, seconds > 0f ? seconds : defaultDialogueSeconds);
     }
 
-    public void DeliverWine(string npcName)
+    public void DeliverWine(string npcName, Transform receiverTarget = null)
     {
+        if (interactionAnimationRunning)
+        {
+            ShowLine("系統", "先等目前的互動動作結束。", 1.5f);
+            return;
+        }
+
         deliveredWineCount++;
         morale++;
 
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "賓客" : npcName;
-        ShowLine(speaker, "哈哈，這杯我收下了。願祖靈庇佑新人。", 3f);
+        PlayGiveItemAnimation(
+            true,
+            "你拿起酒杯，走向賓客。",
+            speaker,
+            "哈哈，這杯我收下了。願祖靈庇佑新人。",
+            receiverTarget);
 
         int target = Mathf.Max(1, wineTargetCount);
         int shownCount = Mathf.Min(deliveredWineCount, target);
-        SetMission("送酒任務：" + shownCount + " / " + target + " 位賓客已收到酒。");
+        SetTemporaryMission("送酒任務：" + shownCount + " / " + target + " 位賓客已收到酒。", 3.5f);
 
         if (deliveredWineCount >= target)
         {
-            ShowLine("新郎", "謝謝你，朋友。鼓聲越來越熱，去舞圈那邊吧。", 3.5f);
-            SetMission("舞圈的鼓聲越來越響。靠近 DanceTrigger 或舞圈，按 E 加入舞蹈。");
+            StartCoroutine(ShowLineAfterDelay("新郎", "謝謝你，朋友。鼓聲越來越熱，去舞圈那邊吧。", 2.6f, 3.5f));
         }
     }
 
-    public void ShareFood(string npcName)
+    public void ShareFood(string npcName, Transform receiverTarget = null)
     {
+        if (interactionAnimationRunning)
+        {
+            ShowLine("系統", "先等目前的互動動作結束。", 1.5f);
+            return;
+        }
+
         sharedFoodCount++;
         morale++;
 
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "族人" : npcName;
-        ShowLine(speaker, "謝謝你。今晚能這樣相聚，已經很難得。", 3f);
-        SetMission("你把食物分享給族人，婚禮的生活感更完整了。也可以繼續送酒或加入舞蹈。");
+        PlayGiveItemAnimation(
+            false,
+            "你從火堆旁拿起食物，走向族人。",
+            speaker,
+            "謝謝你。今晚能這樣相聚，已經很難得。",
+            receiverTarget);
+        SetTemporaryMission("你把食物分享給族人。", 3.5f);
     }
 
     private void CreateMissingExplorationInteractions()
@@ -563,6 +710,142 @@ public class Chapter1PerformanceController : MonoBehaviour
         interactable.rotateDialogueLines = false;
     }
 
+    private void PlayGiveItemAnimation(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget = null)
+    {
+        if (!playInteractionAnimations)
+        {
+            ShowLine(receiverName, receiverLine, 3f);
+            return;
+        }
+
+        StartCoroutine(GiveItemAnimationRoutine(isWine, actionLine, receiverName, receiverLine, receiverTarget));
+    }
+
+    private IEnumerator GiveItemAnimationRoutine(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget)
+    {
+        interactionAnimationRunning = true;
+
+        if (lockPlayerDuringInteractionAnimation)
+        {
+            SetPlayerControl(false);
+        }
+
+        GameObject prop = CreateHeldProp(isWine);
+        Vector3 startPosition = GetItemPickupPosition(isWine);
+        Vector3 endPosition = GetItemReceiverPosition(isWine, receiverTarget);
+        prop.transform.position = startPosition;
+
+        ShowLine("動作", actionLine, interactionAnimationSeconds);
+
+        float duration = Mathf.Max(0.4f, interactionAnimationSeconds);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            float eased = Mathf.SmoothStep(0f, 1f, progress);
+            Vector3 position = Vector3.Lerp(startPosition, endPosition, eased);
+            position.y += Mathf.Sin(eased * Mathf.PI) * interactionArcHeight;
+            prop.transform.position = position;
+            prop.transform.Rotate(Vector3.up, 140f * Time.deltaTime, Space.World);
+            yield return null;
+        }
+
+        prop.transform.position = endPosition;
+        Destroy(prop, 0.15f);
+
+        ShowLine(receiverName, receiverLine, 3f);
+
+        if (lockPlayerDuringInteractionAnimation)
+        {
+            SetPlayerControl(true);
+        }
+
+        interactionAnimationRunning = false;
+    }
+
+    private GameObject CreateHeldProp(bool isWine)
+    {
+        PrimitiveType primitive = isWine ? PrimitiveType.Cylinder : PrimitiveType.Sphere;
+        GameObject prop = GameObject.CreatePrimitive(primitive);
+        prop.name = isWine ? "Chapter1_WineCup_Animation" : "Chapter1_Food_Animation";
+
+        Collider propCollider = prop.GetComponent<Collider>();
+        if (propCollider != null)
+        {
+            propCollider.enabled = false;
+        }
+
+        float scale = Mathf.Max(0.08f, heldPropScale);
+        prop.transform.localScale = isWine
+            ? new Vector3(scale * 0.55f, scale * 0.75f, scale * 0.55f)
+            : Vector3.one * scale;
+
+        Renderer propRenderer = prop.GetComponent<Renderer>();
+        if (propRenderer != null)
+        {
+            propRenderer.material.color = isWine ? winePropColor : foodPropColor;
+        }
+
+        return prop;
+    }
+
+    private Vector3 GetItemPickupPosition(bool isWine)
+    {
+        Vector3 center = GetFireCenterPosition();
+        Vector3 player = GetCurrentPlayerPosition();
+        Vector3 toPlayer = player - center;
+        toPlayer.y = 0f;
+
+        if (toPlayer.sqrMagnitude < 0.01f)
+        {
+            toPlayer = Vector3.forward;
+        }
+
+        Vector3 side = Vector3.Cross(Vector3.up, toPlayer.normalized);
+        float sideOffset = isWine ? -0.7f : 0.7f;
+        return center + toPlayer.normalized * 0.8f + side * sideOffset + Vector3.up * 0.85f;
+    }
+
+    private Vector3 GetItemReceiverPosition(bool isWine, Transform receiverTarget)
+    {
+        if (receiverTarget != null)
+        {
+            return receiverTarget.position + Vector3.up * 1.05f;
+        }
+
+        Transform target = FindNextInteractionTarget(isWine);
+        if (target != null)
+        {
+            return target.position + Vector3.up * 1.05f;
+        }
+
+        if (Camera.main != null)
+        {
+            return Camera.main.transform.position + Camera.main.transform.forward * 1.2f + Vector3.down * 0.25f;
+        }
+
+        return GetCurrentPlayerPosition() + Vector3.up * 1f;
+    }
+
+    private Transform FindNextInteractionTarget(bool isWine)
+    {
+        string prefix = isWine ? "Auto_WineGuest_" : "Auto_FoodShare_";
+        int count = isWine ? Mathf.Max(1, wineTargetCount) : 2;
+        int progress = isWine ? deliveredWineCount : sharedFoodCount;
+        int index = ((Mathf.Max(1, progress) - 1) % count) + 1;
+
+        GameObject target = GameObject.Find(prefix + index);
+        if (target != null)
+        {
+            return target.transform;
+        }
+
+        target = GameObject.Find(prefix + "1");
+        return target != null ? target.transform : null;
+    }
+
     private Vector3 GetAutoInteractionAnchor()
     {
         if (danceCenter != null)
@@ -668,7 +951,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         else
         {
-            SetMission("舞蹈結束。你可以繼續自由探索、送酒或分享食物，倒數結束後才會發生導火線事件。");
+            SetTemporaryMission("舞蹈結束。你可以繼續自由探索。", 4f, true);
         }
     }
 
@@ -1020,6 +1303,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         return IsFreeExplorationActive() && !danceFinished && !danceRoutineRunning;
     }
 
+    public bool ShouldReserveEForDanceAtFireCenter()
+    {
+        return reserveEForDanceAtFireCenter && ShouldShowCenterInteractionMenu() && CanUseDanceInteraction();
+    }
+
     private void ShowLine(string speaker, string line, float seconds)
     {
         if (dialogueUI != null)
@@ -1038,6 +1326,79 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         missionText = text;
         Debug.Log("[Chapter1 Mission] " + text);
+    }
+
+    private void SetTemporaryMission(string text, float seconds, bool clearWhenPlayerMoves = false)
+    {
+        SetMission(text);
+
+        if (clearMissionRoutine != null)
+        {
+            StopCoroutine(clearMissionRoutine);
+        }
+
+        clearMissionWhenPlayerMoves = clearWhenPlayerMoves;
+        movementSensitiveMissionText = clearWhenPlayerMoves ? text : "";
+        temporaryMissionStartPlayerPosition = GetCurrentPlayerPosition();
+        clearMissionRoutine = StartCoroutine(ClearMissionAfterSeconds(text, seconds));
+    }
+
+    private IEnumerator ClearMissionAfterSeconds(string expectedText, float seconds)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0.1f, seconds));
+
+        if (missionText == expectedText)
+        {
+            missionText = "";
+        }
+
+        if (movementSensitiveMissionText == expectedText)
+        {
+            clearMissionWhenPlayerMoves = false;
+            movementSensitiveMissionText = "";
+        }
+
+        clearMissionRoutine = null;
+    }
+
+    private void UpdateTemporaryMissionMovementClear()
+    {
+        if (!clearMissionWhenPlayerMoves)
+        {
+            return;
+        }
+
+        if (missionText != movementSensitiveMissionText)
+        {
+            clearMissionWhenPlayerMoves = false;
+            movementSensitiveMissionText = "";
+            return;
+        }
+
+        Vector3 currentPlayerPosition = GetCurrentPlayerPosition();
+        Vector3 movement = currentPlayerPosition - temporaryMissionStartPlayerPosition;
+        movement.y = 0f;
+
+        if (movement.sqrMagnitude < 0.09f)
+        {
+            return;
+        }
+
+        missionText = "";
+        clearMissionWhenPlayerMoves = false;
+        movementSensitiveMissionText = "";
+
+        if (clearMissionRoutine != null)
+        {
+            StopCoroutine(clearMissionRoutine);
+            clearMissionRoutine = null;
+        }
+    }
+
+    private IEnumerator ShowLineAfterDelay(string speaker, string line, float delay, float seconds)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0f, delay));
+        ShowLine(speaker, line, seconds);
     }
 
     private string GetNextVillagerTalkLine()
@@ -1270,6 +1631,14 @@ public class Chapter1PerformanceController : MonoBehaviour
         timerNumberStyle.fontSize = Mathf.Clamp(Screen.height / 30, 24, 38);
         timerNumberStyle.fontStyle = FontStyle.Bold;
         timerNumberStyle.alignment = TextAnchor.MiddleRight;
+
+        centerMenuStyle = new GUIStyle(GUI.skin.box);
+        centerMenuStyle.normal.background = background;
+        centerMenuStyle.normal.textColor = Color.white;
+        centerMenuStyle.fontSize = Mathf.Clamp(Screen.height / 52, 14, 20);
+        centerMenuStyle.alignment = TextAnchor.MiddleLeft;
+        centerMenuStyle.padding = new RectOffset(18, 18, 10, 10);
+        centerMenuStyle.wordWrap = true;
     }
 
     private Texture2D MakeTexture(Color color)

@@ -93,6 +93,15 @@ public class Chapter1Interactable : MonoBehaviour
 
         bool pressedInspectorKey = Input.GetKeyDown(interactKey);
         bool pressedEKey = alsoUseEKey && Input.GetKeyDown(KeyCode.E);
+        if (ShouldLetCenterMenuUseE())
+        {
+            pressedEKey = false;
+            if (interactKey == KeyCode.E)
+            {
+                pressedInspectorKey = false;
+            }
+        }
+
         bool canInteract = CanInteractNow();
         promptVisible = showPrompt && canInteract;
 
@@ -121,14 +130,32 @@ public class Chapter1Interactable : MonoBehaviour
             return false;
         }
 
-        Transform player = GetPlayerTransform();
-        if (player == null)
+        if (!TryGetPlayerPosition(out Vector3 playerPosition))
         {
             return false;
         }
 
-        float distance = Vector3.Distance(transform.position, player.position);
+        float distance = Vector3.Distance(transform.position, playerPosition);
         return distance <= GetEffectiveInteractRange();
+    }
+
+    private bool TryGetPlayerPosition(out Vector3 position)
+    {
+        if (Camera.main != null)
+        {
+            position = Camera.main.transform.position;
+            return true;
+        }
+
+        Transform player = GetPlayerTransform();
+        if (player != null)
+        {
+            position = player.position;
+            return true;
+        }
+
+        position = Vector3.zero;
+        return false;
     }
 
     private Transform GetPlayerTransform()
@@ -175,10 +202,10 @@ public class Chapter1Interactable : MonoBehaviour
                 controller.Talk(speakerName, GetDialogueLine());
                 break;
             case InteractionType.DeliverWine:
-                controller.DeliverWine(speakerName);
+                controller.DeliverWine(speakerName, transform);
                 break;
             case InteractionType.ShareFood:
-                controller.ShareFood(speakerName);
+                controller.ShareFood(speakerName, transform);
                 break;
             case InteractionType.JoinDance:
                 controller.JoinDance(transform, playerRoot);
@@ -349,6 +376,21 @@ public class Chapter1Interactable : MonoBehaviour
         }
 
         return interactionType == InteractionType.StartPoliceSequence && gameObject.name.Contains("DanceTrigger");
+    }
+
+    private bool ShouldLetCenterMenuUseE()
+    {
+        if (controller == null)
+        {
+            return false;
+        }
+
+        if (interactionType != InteractionType.DeliverWine && interactionType != InteractionType.ShareFood)
+        {
+            return false;
+        }
+
+        return controller.ShouldReserveEForDanceAtFireCenter();
     }
 
     private float GetEffectiveInteractRange()
