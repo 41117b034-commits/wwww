@@ -316,6 +316,19 @@ public class Chapter1Interactable : MonoBehaviour
 
     private string GetPromptText()
     {
+        if (ShouldLetCenterMenuUseE())
+        {
+            if (interactionType == InteractionType.DeliverWine)
+            {
+                return "按 R / 2 送酒";
+            }
+
+            if (interactionType == InteractionType.ShareFood)
+            {
+                return "按 T / 3 分享食物";
+            }
+        }
+
         bool hasCustomPrompt = !string.IsNullOrWhiteSpace(promptText);
         bool defaultDancePromptOnNonDance = hasCustomPrompt
             && promptText.Contains("加入舞蹈")

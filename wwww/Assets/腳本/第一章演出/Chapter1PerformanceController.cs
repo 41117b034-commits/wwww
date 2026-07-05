@@ -63,7 +63,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     public bool allowChoiceHotkeys = true;
     public bool showFallbackHud = true;
     public bool lockPlayerDuringPoliceEntrance = false;
-    public float fallbackUnlockFreeExplorationAfterSeconds = 10f;
+    public float fallbackUnlockFreeExplorationAfterSeconds = 3f;
     public float defaultDialogueSeconds = 3f;
 
     [Header("Free Exploration Timer")]
@@ -78,7 +78,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float autoInteractionDistance = 4.5f;
     public float autoInteractionMarkerSize = 0.7f;
     public bool showCenterInteractionMenu = true;
-    public float centerInteractionRange = 5f;
+    public bool showWorldInteractionPrompt = true;
+    public float centerInteractionRange = 18f;
+    public bool requireFireDistanceForCenterMenu = true;
+    public bool preferControllerPositionForFireCenter = true;
+    public float maxDanceCenterOffsetForFireCenter = 18f;
     public KeyCode centerDanceKey = KeyCode.E;
     public KeyCode centerWineKey = KeyCode.R;
     public KeyCode centerFoodKey = KeyCode.T;
@@ -102,6 +106,10 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float guidedGiveSeconds = 0.55f;
     public float guidedPickupDistance = 1.15f;
     public float guidedReceiverDistance = 1.35f;
+    public float firstPersonHoldSeconds = 0.85f;
+    public float carriedPropViewDistance = 0.95f;
+    public float carriedPropViewRightOffset = 0.22f;
+    public float carriedPropViewDownOffset = 0.05f;
     public Color winePropColor = new Color(0.45f, 0.12f, 0.08f, 1f);
     public Color foodPropColor = new Color(0.95f, 0.58f, 0.18f, 1f);
 
@@ -161,6 +169,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GUIStyle timerTitleStyle;
     private GUIStyle timerNumberStyle;
     private GUIStyle centerMenuStyle;
+    private GameObject worldPromptObject;
+    private TextMesh worldPromptText;
 
     private readonly string[] villagerTalkLines =
     {
@@ -178,6 +188,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             AutoFindReferences();
         }
+
+        RepairInteractionHudRuntimeDefaults();
 
         if (choiceUI != null)
         {
@@ -242,6 +254,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         UpdateCenterInteractionInput();
         UpdateExplorationTimer();
         UpdateTemporaryMissionMovementClear();
+        UpdateWorldInteractionPrompt();
     }
 
     private void OnGUI()
@@ -452,7 +465,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void UpdateCenterInteractionInput()
     {
-        if (!ShouldShowCenterInteractionMenu())
+        if (!ShouldAllowCenterInteractionInput())
         {
             return;
         }
@@ -483,20 +496,42 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private bool ShouldShowCenterInteractionMenu()
     {
-        return showCenterInteractionMenu
-            && IsFreeExplorationActive()
-            && IsPlayerNearFireCenter();
+        if (!showCenterInteractionMenu || !IsFreeExplorationActive())
+        {
+            return false;
+        }
+
+        return !requireFireDistanceForCenterMenu || IsPlayerNearFireCenter();
+    }
+
+    private bool ShouldAllowCenterInteractionInput()
+    {
+        if (!IsFreeExplorationActive())
+        {
+            return false;
+        }
+
+        return !requireFireDistanceForCenterMenu || IsPlayerNearFireCenter();
     }
 
     private bool IsPlayerNearFireCenter()
     {
         Vector3 center = GetFireCenterPosition();
         Vector3 player = GetCurrentPlayerPosition();
-        return Vector3.Distance(center, player) <= Mathf.Max(1f, centerInteractionRange);
+        center.y = player.y;
+        return Vector3.Distance(center, player) <= Mathf.Max(12f, centerInteractionRange);
     }
 
     private Vector3 GetFireCenterPosition()
     {
+        if (preferControllerPositionForFireCenter && transform != null)
+        {
+            if (danceCenter == null || GetFlatDistance(transform.position, danceCenter.position) > Mathf.Max(1f, maxDanceCenterOffsetForFireCenter))
+            {
+                return transform.position;
+            }
+        }
+
         if (danceCenter != null)
         {
             return danceCenter.position;
@@ -510,16 +545,34 @@ public class Chapter1PerformanceController : MonoBehaviour
         return transform.position;
     }
 
+    private float GetFlatDistance(Vector3 a, Vector3 b)
+    {
+        a.y = 0f;
+        b.y = 0f;
+        return Vector3.Distance(a, b);
+    }
+
     private Vector3 GetCurrentPlayerPosition()
     {
-        if (Camera.main != null)
-        {
-            return Camera.main.transform.position;
-        }
-
         if (playerRoot != null)
         {
             return playerRoot.position;
+        }
+
+        if (characterController != null)
+        {
+            return characterController.transform.position;
+        }
+
+        if (playerController != null)
+        {
+            return playerController.transform.position;
+        }
+
+        Transform viewTransform = GetPlayerViewTransform();
+        if (viewTransform != null)
+        {
+            return viewTransform.position;
         }
 
         Transform player = GetDancePlayerRoot();
@@ -528,12 +581,82 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void DrawCenterInteractionMenu()
     {
-        string danceText = CanUseDanceInteraction() ? "E / 1 / 手把A  加入舞蹈" : "E / 1 / 手把A  舞蹈已完成";
-        string text = danceText + "\nR / 2 / 手把B  送酒\nT / 3 / 手把X  分享食物";
+        string text = GetCenterInteractionPromptText();
         float width = Mathf.Min(Screen.width - 40f, 380f);
         float height = 104f;
         Rect rect = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 28f, width, height);
         GUI.Box(rect, text, centerMenuStyle);
+    }
+
+    private void UpdateWorldInteractionPrompt()
+    {
+        if (!showWorldInteractionPrompt || !ShouldShowCenterInteractionMenu())
+        {
+            SetWorldInteractionPromptVisible(false);
+            return;
+        }
+
+        EnsureWorldInteractionPrompt();
+        if (worldPromptObject == null || worldPromptText == null)
+        {
+            return;
+        }
+
+        Transform cameraTransform = GetPlayerViewTransform();
+        if (cameraTransform != null && worldPromptObject.transform.parent != cameraTransform)
+        {
+            worldPromptObject.transform.SetParent(cameraTransform, false);
+        }
+
+        if (worldPromptObject.transform.parent != null)
+        {
+            worldPromptObject.transform.localPosition = new Vector3(0f, -0.42f, 1.75f);
+            worldPromptObject.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            worldPromptObject.transform.position = GetCurrentPlayerPosition() + Vector3.up * 1.45f + Vector3.forward * 1.2f;
+        }
+
+        worldPromptText.text = GetCenterInteractionPromptText();
+        SetWorldInteractionPromptVisible(true);
+    }
+
+    private void EnsureWorldInteractionPrompt()
+    {
+        if (worldPromptObject != null && worldPromptText != null)
+        {
+            return;
+        }
+
+        worldPromptObject = new GameObject("Chapter1_WorldInteractionPrompt");
+        worldPromptText = worldPromptObject.AddComponent<TextMesh>();
+        worldPromptText.anchor = TextAnchor.MiddleCenter;
+        worldPromptText.alignment = TextAlignment.Center;
+        worldPromptText.fontSize = 52;
+        worldPromptText.characterSize = 0.035f;
+        worldPromptText.color = Color.white;
+        worldPromptText.text = GetCenterInteractionPromptText();
+
+        Renderer promptRenderer = worldPromptObject.GetComponent<Renderer>();
+        if (promptRenderer != null)
+        {
+            promptRenderer.sortingOrder = 1000;
+        }
+    }
+
+    private void SetWorldInteractionPromptVisible(bool visible)
+    {
+        if (worldPromptObject != null && worldPromptObject.activeSelf != visible)
+        {
+            worldPromptObject.SetActive(visible);
+        }
+    }
+
+    private string GetCenterInteractionPromptText()
+    {
+        string danceText = CanUseDanceInteraction() ? "E / 1 / 手把A  加入舞蹈" : "E / 1 / 手把A  舞蹈已完成";
+        return danceText + "\nR / 2 / 手把B  送酒\nT / 3 / 手把X  分享食物";
     }
 
     public void Talk(string speaker, string line, float seconds = -1f)
@@ -699,15 +822,47 @@ public class Chapter1PerformanceController : MonoBehaviour
         interactable.controller = this;
         interactable.playerRoot = playerRoot;
         interactable.interactionType = interactionType;
-        interactable.alsoUseEKey = true;
+        interactable.interactKey = GetAutoInteractionKey(interactionType);
+        interactable.alsoUseEKey = interactionType != Chapter1Interactable.InteractionType.DeliverWine
+            && interactionType != Chapter1Interactable.InteractionType.ShareFood;
         interactable.disableAfterUse = true;
         interactable.hidePromptAfterUse = true;
         interactable.showPrompt = true;
-        interactable.promptText = prompt;
+        interactable.promptText = GetAutoInteractionPrompt(interactionType, prompt);
         interactable.useDistanceCheck = true;
         interactable.interactRange = Mathf.Max(1.5f, autoInteractionDistance);
         interactable.speakerName = speaker;
         interactable.rotateDialogueLines = false;
+    }
+
+    private KeyCode GetAutoInteractionKey(Chapter1Interactable.InteractionType interactionType)
+    {
+        if (interactionType == Chapter1Interactable.InteractionType.DeliverWine)
+        {
+            return centerWineKey == KeyCode.None || centerWineKey == KeyCode.E ? KeyCode.R : centerWineKey;
+        }
+
+        if (interactionType == Chapter1Interactable.InteractionType.ShareFood)
+        {
+            return centerFoodKey == KeyCode.None || centerFoodKey == KeyCode.E ? KeyCode.T : centerFoodKey;
+        }
+
+        return centerDanceKey == KeyCode.None ? KeyCode.E : centerDanceKey;
+    }
+
+    private string GetAutoInteractionPrompt(Chapter1Interactable.InteractionType interactionType, string fallbackPrompt)
+    {
+        if (interactionType == Chapter1Interactable.InteractionType.DeliverWine)
+        {
+            return "按 R / 2 送酒";
+        }
+
+        if (interactionType == Chapter1Interactable.InteractionType.ShareFood)
+        {
+            return "按 T / 3 分享食物";
+        }
+
+        return fallbackPrompt;
     }
 
     private void PlayGiveItemAnimation(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget = null)
@@ -724,20 +879,62 @@ public class Chapter1PerformanceController : MonoBehaviour
     private IEnumerator GiveItemAnimationRoutine(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget)
     {
         interactionAnimationRunning = true;
+        bool shouldGuidePlayer = guidePlayerDuringItemInteractions && GetDancePlayerRoot() != null;
+        bool shouldLockControl = lockPlayerDuringInteractionAnimation || shouldGuidePlayer;
 
-        if (lockPlayerDuringInteractionAnimation)
+        if (shouldLockControl)
         {
             SetPlayerControl(false);
         }
 
         GameObject prop = CreateHeldProp(isWine);
-        Vector3 startPosition = GetItemPickupPosition(isWine);
-        Vector3 endPosition = GetItemReceiverPosition(isWine, receiverTarget);
-        prop.transform.position = startPosition;
+        Vector3 pickupPosition = GetItemPickupPosition(isWine);
+        Vector3 receiverPosition = GetItemReceiverPosition(isWine, receiverTarget);
+        prop.transform.position = pickupPosition;
 
-        ShowLine("動作", actionLine, interactionAnimationSeconds);
+        if (shouldGuidePlayer)
+        {
+            string pickupLine = isWine ? "系統帶你到火堆旁，拿起一瓶酒。" : "系統帶你到火堆旁，拿起食物。";
+            string walkLine = isWine ? "你拿著酒走到賓客旁邊。" : "你拿著食物走到族人旁邊。";
+            ShowLine("動作", pickupLine, guidedWalkToPickupSeconds + 0.6f);
 
-        float duration = Mathf.Max(0.4f, interactionAnimationSeconds);
+            Vector3 currentPlayerPosition = GetCurrentPlayerPosition();
+            Vector3 pickupCameraPosition = GetApproachCameraPosition(pickupPosition, currentPlayerPosition, guidedPickupDistance);
+            yield return MovePlayerCameraToPosition(pickupCameraPosition, pickupPosition, guidedWalkToPickupSeconds, null);
+
+            Vector3 handPosition = GetCarriedPropPosition();
+            yield return MovePropToPosition(prop, pickupPosition, handPosition, 0.35f, 0.15f);
+            yield return HoldPropInView(prop, firstPersonHoldSeconds);
+
+            ShowLine("動作", walkLine, guidedWalkToReceiverSeconds + 0.6f);
+            Vector3 receiverCameraPosition = GetApproachCameraPosition(receiverPosition, pickupPosition, guidedReceiverDistance);
+            yield return MovePlayerCameraToPosition(receiverCameraPosition, receiverPosition, guidedWalkToReceiverSeconds, prop);
+            yield return HoldPropInView(prop, 0.25f);
+
+            yield return MovePropToPosition(prop, GetCarriedPropPosition(), receiverPosition, guidedGiveSeconds, 0.12f);
+        }
+        else
+        {
+            ShowLine("動作", actionLine, interactionAnimationSeconds);
+            yield return MovePropToPosition(prop, pickupPosition, receiverPosition, interactionAnimationSeconds, interactionArcHeight);
+        }
+
+        prop.transform.position = receiverPosition;
+        Destroy(prop, 0.15f);
+
+        ShowLine(receiverName, receiverLine, 3f);
+
+        if (shouldLockControl)
+        {
+            SetPlayerControl(true);
+        }
+
+        interactionAnimationRunning = false;
+    }
+
+    private IEnumerator MovePropToPosition(GameObject prop, Vector3 startPosition, Vector3 endPosition, float seconds, float arcHeight)
+    {
+        float duration = Mathf.Max(0.05f, seconds);
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -746,30 +943,146 @@ public class Chapter1PerformanceController : MonoBehaviour
             float progress = Mathf.Clamp01(elapsed / duration);
             float eased = Mathf.SmoothStep(0f, 1f, progress);
             Vector3 position = Vector3.Lerp(startPosition, endPosition, eased);
-            position.y += Mathf.Sin(eased * Mathf.PI) * interactionArcHeight;
+            position.y += Mathf.Sin(eased * Mathf.PI) * arcHeight;
             prop.transform.position = position;
             prop.transform.Rotate(Vector3.up, 140f * Time.deltaTime, Space.World);
             yield return null;
         }
 
         prop.transform.position = endPosition;
-        Destroy(prop, 0.15f);
+    }
 
-        ShowLine(receiverName, receiverLine, 3f);
-
-        if (lockPlayerDuringInteractionAnimation)
+    private IEnumerator HoldPropInView(GameObject prop, float seconds)
+    {
+        if (prop == null)
         {
-            SetPlayerControl(true);
+            yield break;
         }
 
-        interactionAnimationRunning = false;
+        float duration = Mathf.Max(0.05f, seconds);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            PlaceCarriedProp(prop);
+            yield return null;
+        }
+    }
+
+    private IEnumerator MovePlayerCameraToPosition(Vector3 targetCameraPosition, Vector3 lookAtPosition, float seconds, GameObject carriedProp)
+    {
+        Transform root = GetDancePlayerRoot();
+        if (root == null)
+        {
+            yield break;
+        }
+
+        Vector3 startCameraPosition = GetCurrentPlayerPosition();
+        Vector3 startRootPosition = root.position;
+        targetCameraPosition.y = startCameraPosition.y;
+
+        Vector3 targetRootPosition = startRootPosition + (targetCameraPosition - startCameraPosition);
+        Quaternion startRotation = root.rotation;
+        Quaternion targetRotation = startRotation;
+        Vector3 faceDirection = lookAtPosition - targetCameraPosition;
+        faceDirection.y = 0f;
+
+        if (faceDirection.sqrMagnitude > 0.01f)
+        {
+            targetRotation = Quaternion.LookRotation(faceDirection.normalized, Vector3.up);
+        }
+
+        float duration = Mathf.Max(0.05f, seconds);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            float eased = Mathf.SmoothStep(0f, 1f, progress);
+            root.position = Vector3.Lerp(startRootPosition, targetRootPosition, eased);
+            root.rotation = Quaternion.Slerp(startRotation, targetRotation, eased);
+
+            if (carriedProp != null)
+            {
+                PlaceCarriedProp(carriedProp);
+            }
+
+            yield return null;
+        }
+
+        root.position = targetRootPosition;
+        root.rotation = targetRotation;
+
+        if (carriedProp != null)
+        {
+            PlaceCarriedProp(carriedProp);
+        }
+    }
+
+    private Vector3 GetApproachCameraPosition(Vector3 focusPosition, Vector3 fromPosition, float distance)
+    {
+        Vector3 approachDirection = fromPosition - focusPosition;
+        approachDirection.y = 0f;
+
+        if (approachDirection.sqrMagnitude < 0.01f && Camera.main != null)
+        {
+            approachDirection = -Camera.main.transform.forward;
+            approachDirection.y = 0f;
+        }
+
+        if (approachDirection.sqrMagnitude < 0.01f)
+        {
+            approachDirection = Vector3.back;
+        }
+
+        Vector3 position = focusPosition + approachDirection.normalized * Mathf.Max(0.3f, distance);
+        position.y = GetCurrentPlayerPosition().y;
+        return position;
+    }
+
+    private Vector3 GetCarriedPropPosition()
+    {
+        Transform viewTransform = GetPlayerViewTransform();
+        if (viewTransform != null)
+        {
+            return viewTransform.position
+                + viewTransform.forward * Mathf.Max(0.35f, carriedPropViewDistance)
+                + viewTransform.right * carriedPropViewRightOffset
+                - viewTransform.up * carriedPropViewDownOffset;
+        }
+
+        Transform root = GetDancePlayerRoot();
+        if (root != null)
+        {
+            return root.position + root.forward * 0.65f + Vector3.up * 1.15f + root.right * 0.22f;
+        }
+
+        return GetCurrentPlayerPosition() + Vector3.up * 1f;
+    }
+
+    private void PlaceCarriedProp(GameObject prop)
+    {
+        if (prop == null)
+        {
+            return;
+        }
+
+        prop.transform.position = GetCarriedPropPosition();
+
+        Transform viewTransform = GetPlayerViewTransform();
+        if (viewTransform != null)
+        {
+            prop.transform.rotation = Quaternion.LookRotation(viewTransform.forward, Vector3.up);
+        }
     }
 
     private GameObject CreateHeldProp(bool isWine)
     {
         PrimitiveType primitive = isWine ? PrimitiveType.Cylinder : PrimitiveType.Sphere;
         GameObject prop = GameObject.CreatePrimitive(primitive);
-        prop.name = isWine ? "Chapter1_WineCup_Animation" : "Chapter1_Food_Animation";
+        prop.name = isWine ? "Chapter1_WineBottle_Animation" : "Chapter1_Food_Animation";
 
         Collider propCollider = prop.GetComponent<Collider>();
         if (propCollider != null)
@@ -779,7 +1092,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         float scale = Mathf.Max(0.08f, heldPropScale);
         prop.transform.localScale = isWine
-            ? new Vector3(scale * 0.55f, scale * 0.75f, scale * 0.55f)
+            ? new Vector3(scale * 0.35f, scale * 1.45f, scale * 0.35f)
             : Vector3.one * scale;
 
         Renderer propRenderer = prop.GetComponent<Renderer>();
@@ -843,23 +1156,57 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         target = GameObject.Find(prefix + "1");
-        return target != null ? target.transform : null;
+        if (target != null)
+        {
+            return target.transform;
+        }
+
+        Transform existingTarget = FindExistingInteractionTarget(isWine, true);
+        if (existingTarget != null)
+        {
+            return existingTarget;
+        }
+
+        return FindExistingInteractionTarget(isWine, false);
+    }
+
+    private Transform FindExistingInteractionTarget(bool isWine, bool requireActive)
+    {
+        Chapter1Interactable.InteractionType targetType = isWine
+            ? Chapter1Interactable.InteractionType.DeliverWine
+            : Chapter1Interactable.InteractionType.ShareFood;
+        Chapter1Interactable[] interactables = FindObjectsOfType<Chapter1Interactable>(true);
+        Transform bestTarget = null;
+        float bestDistance = float.MaxValue;
+        Vector3 center = GetFireCenterPosition();
+
+        for (int i = 0; i < interactables.Length; i++)
+        {
+            Chapter1Interactable interactable = interactables[i];
+            if (interactable == null || interactable.interactionType != targetType)
+            {
+                continue;
+            }
+
+            if (requireActive && (!interactable.isActiveAndEnabled || !interactable.gameObject.activeInHierarchy))
+            {
+                continue;
+            }
+
+            float distance = (interactable.transform.position - center).sqrMagnitude;
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestTarget = interactable.transform;
+            }
+        }
+
+        return bestTarget;
     }
 
     private Vector3 GetAutoInteractionAnchor()
     {
-        if (danceCenter != null)
-        {
-            return danceCenter.position;
-        }
-
-        if (playerRoot != null)
-        {
-            return playerRoot.position;
-        }
-
-        Transform player = GetDancePlayerRoot();
-        return player != null ? player.position : transform.position;
+        return GetFireCenterPosition();
     }
 
     private Vector3 GetAutoInteractionForward()
@@ -1481,6 +1828,49 @@ public class Chapter1PerformanceController : MonoBehaviour
                 policeGroup = police.gameObject;
             }
         }
+    }
+
+    private void RepairInteractionHudRuntimeDefaults()
+    {
+        showFallbackHud = true;
+        showCenterInteractionMenu = true;
+        showWorldInteractionPrompt = true;
+        requireFireDistanceForCenterMenu = true;
+        autoCreateMissingExplorationInteractions = true;
+        fallbackUnlockFreeExplorationAfterSeconds = Mathf.Min(Mathf.Max(1f, fallbackUnlockFreeExplorationAfterSeconds), 3f);
+        centerInteractionRange = Mathf.Max(centerInteractionRange, 18f);
+        autoInteractionDistance = Mathf.Max(autoInteractionDistance, 4.5f);
+        heldPropScale = Mathf.Max(heldPropScale, 0.42f);
+        carriedPropViewDistance = Mathf.Max(carriedPropViewDistance, 0.95f);
+        firstPersonHoldSeconds = Mathf.Max(firstPersonHoldSeconds, 0.85f);
+    }
+
+    private Transform GetPlayerViewTransform()
+    {
+        if (playerRoot != null)
+        {
+            Camera[] childCameras = playerRoot.GetComponentsInChildren<Camera>(true);
+            for (int i = 0; i < childCameras.Length; i++)
+            {
+                Camera childCamera = childCameras[i];
+                if (childCamera != null && childCamera.isActiveAndEnabled)
+                {
+                    return childCamera.transform;
+                }
+            }
+
+            if (childCameras.Length > 0 && childCameras[0] != null)
+            {
+                return childCameras[0].transform;
+            }
+        }
+
+        if (Camera.main != null)
+        {
+            return Camera.main.transform;
+        }
+
+        return null;
     }
 
     private Transform GetDancePlayerRoot()
