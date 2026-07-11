@@ -3572,14 +3572,27 @@ MonoBehaviour:
   interactionType: 3
   interactKey: 101
   alsoUseEKey: 1
+  autoFindController: 1
   disableAfterUse: 0
+  hidePromptAfterUse: 0
   showPrompt: 1
   promptText: "\u6309 E / \u624B\u628A\u89F8\u767C \u52A0\u5165\u821E\u8E48"
+  restrictDancePromptToFreeExploration: 1
+  dancePromptRange: 4.5
+  promptMaxWidth: 380
+  promptHeight: 46
+  promptBottomMargin: 36
   useDistanceCheck: 1
   interactRange: 80
   playerTag: Player
   speakerName: "\u65CF\u4EBA"
   line: "\u9858\u7956\u9748\u5E87\u4F51\u65B0\u4EBA\u3002"
+  missionHint: "\u81EA\u7531\u63A2\u7D22\u5A5A\u79AE\uFF1A\u8207\u65CF\u4EBA\u4EA4\u8AC7\u3001\u5E6B\u65B0\u90CE\u9001\u9152\uFF0C\u6216\u9760\u8FD1\u821E\u5708\u52A0\u5165\u821E\u8E48\u3002"
+  rotateDialogueLines: 1
+  extraLines:
+  - "\u4ECA\u665A\u4E00\u5B9A\u8981\u559D\u9189\uFF01"
+  - "\u9858\u7956\u9748\u5E87\u4F51\u65B0\u4EBA\u3002"
+  - "\u706B\u5806\u4EAE\u8D77\u4F86\uFF0C\u7956\u9748\u6703\u770B\u898B\u6211\u5011\u7684\u6B4C\u8072\u3002"
 --- !u!65 &466568413
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4160,6 +4173,38 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 923012373}
   m_SourcePrefab: {fileID: 100100000, guid: 0fb3019f4ef6c594fbc83ea7f80bce07, type: 3}
+--- !u!1 &611581476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 611581477}
+  m_Layer: 0
+  m_Name: WeddingBGM
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &611581477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611581476}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3735.93, y: -5809.87, z: -121.81}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2033567277}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &663936338 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1507406190022473441, guid: 0fb3019f4ef6c594fbc83ea7f80bce07, type: 3}
@@ -6585,6 +6630,81 @@ MonoBehaviour:
   autoStartOnAwake: 0
   debugStartPoliceWithP: 1
   debugStartDanceWithJ: 1
+  autoBeginStoryIfControllerExists: 1
+  autoFindMissingReferences: 1
+  requireWineBeforeDance: 0
+  allowChoiceHotkeys: 1
+  showFallbackHud: 1
+  lockPlayerDuringPoliceEntrance: 0
+  fallbackUnlockFreeExplorationAfterSeconds: 3
+  defaultDialogueSeconds: 3
+  useExplorationTimer: 1
+  explorationDurationSeconds: 180
+  showExplorationTimer: 1
+  pauseCountdownDuringDance: 0
+  explorationTimerTitle: "\u81EA\u7531\u63A2\u7D22"
+  autoCreateMissingExplorationInteractions: 1
+  autoInteractionDistance: 4.5
+  autoInteractionMarkerSize: 0.7
+  showCenterInteractionMenu: 1
+  showWorldInteractionPrompt: 1
+  centerInteractionRange: 18
+  requireFireDistanceForCenterMenu: 1
+  preferControllerPositionForFireCenter: 1
+  maxDanceCenterOffsetForFireCenter: 18
+  centerDanceKey: 101
+  centerWineKey: 114
+  centerFoodKey: 116
+  centerDanceAltKey: 49
+  centerWineAltKey: 50
+  centerFoodAltKey: 51
+  centerDanceGamepadKey: 330
+  centerWineGamepadKey: 331
+  centerFoodGamepadKey: 332
+  reserveEForDanceAtFireCenter: 1
+  playInteractionAnimations: 1
+  interactionAnimationSeconds: 2.4
+  interactionArcHeight: 1.15
+  heldPropScale: 0.28
+  lockPlayerDuringInteractionAnimation: 0
+  guidePlayerDuringItemInteractions: 1
+  guidedWalkToPickupSeconds: 1.15
+  guidedWalkToReceiverSeconds: 1.65
+  guidedGiveSeconds: 0.55
+  guidedPickupDistance: 1.15
+  guidedReceiverDistance: 1.35
+  keepGuidedPlayerAboveGround: 1
+  guidedGroundLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  guidedGroundRaycastHeight: 25
+  guidedGroundRaycastDistance: 80
+  guidedGroundClearance: 0.06
+  firstPersonHoldSeconds: 0.85
+  carriedPropViewDistance: 0.95
+  carriedPropViewRightOffset: 0.22
+  carriedPropViewDownOffset: 0.05
+  winePropColor: {r: 0.45, g: 0.12, b: 0.08, a: 1}
+  foodPropColor: {r: 0.95, g: 0.58, b: 0.18, a: 1}
+  animatePoliceEntranceWithoutTimeline: 1
+  policeEntranceTarget: {fileID: 0}
+  policeEntranceDistance: 12
+  policeEntranceDuration: 4
+  rotatePoliceTowardPath: 1
+  primaryPoliceObjectName: "\u8B66\u5BDF"
+  primaryPoliceActor: {fileID: 0}
+  secondaryPoliceActor: {fileID: 0}
+  createSecondPoliceFromPrimary: 1
+  policePairSpacing: 1.25
+  policeEntranceStaggerSeconds: 0.25
+  guidePlayerToWitnessPoint: 1
+  witnessRunDistance: 9
+  witnessRunSeconds: 1.5
+  witnessLookAtHeight: 1.35
+  saveResultToPlayerPrefs: 1
+  conflictChoicePrefsKey: Chapter1_ConflictChoice
+  peopleInjuredPrefsKey: Chapter1_PeopleInjured
+  moralePrefsKey: Chapter1_Morale
 --- !u!4 &995566607
 Transform:
   m_ObjectHideFlags: 0
@@ -12265,6 +12385,135 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2140031079}
   m_SourcePrefab: {fileID: 100100000, guid: 0fb3019f4ef6c594fbc83ea7f80bce07, type: 3}
+--- !u!1 &2033567276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2033567277}
+  - component: {fileID: 2033567278}
+  m_Layer: 0
+  m_Name: Audio Source
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2033567277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033567276}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 611581477}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &2033567278
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033567276}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 7dd8e68e346da1343bd45d790d0245ae, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.48
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 2
+  MaxDistance: 20
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &2034774547
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12629,3 +12878,4 @@ SceneRoots:
   - {fileID: 174978203}
   - {fileID: 1300920463}
   - {fileID: 1260781612}
+  - {fileID: 611581477}
