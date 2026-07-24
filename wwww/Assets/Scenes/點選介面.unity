@@ -2269,7 +2269,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1015873325}
         m_TargetAssemblyTypeName: tiao, Assembly-CSharp
-        m_MethodName: Jump
+        m_MethodName: JumpToScene5
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
