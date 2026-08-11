@@ -373,12 +373,31 @@ public class Chapter1Interactable : MonoBehaviour
 
     private bool PassesStoryGate()
     {
-        if (!IsDanceInteraction() || !restrictDancePromptToFreeExploration)
+        if (controller == null)
+        {
+            return false;
+        }
+
+        // 「開始第一章」本身可以在自由探索前使用。
+        if (interactionType == InteractionType.BeginChapter)
         {
             return true;
         }
 
-        return controller != null && controller.CanUseDanceInteraction();
+        // 開場故事、日警劇情、選擇畫面、章節結尾期間，
+        // 全部世界互動提示都關閉，避免字幕還在播時 E / R / T 提示一起跑出來。
+        if (!controller.IsFreeExplorationActive())
+        {
+            return false;
+        }
+
+        // 舞蹈還有額外限制：只能在自由探索中，而且只能完成一次。
+        if (IsDanceInteraction() && restrictDancePromptToFreeExploration)
+        {
+            return controller.CanUseDanceInteraction();
+        }
+
+        return true;
     }
 
     private bool IsDanceInteraction()

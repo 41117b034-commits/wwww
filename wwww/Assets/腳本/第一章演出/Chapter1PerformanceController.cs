@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -48,6 +48,13 @@ public class Chapter1PerformanceController : MonoBehaviour
     public AudioSource tensionAmbience;
     public AudioSource heartbeatAudio;
 
+    [Header("Opening Narration")]
+    public AudioSource narrationAudio;
+    public AudioClip introVoice1;
+    public AudioClip introVoice2;
+    [Range(0f, 1f)] public float narrationVolume = 1f;
+    public float introLineGap = 0.35f;
+
     [Header("Quest Progress")]
     public int wineTargetCount = 3;
     public bool autoStartOnAwake = false;
@@ -63,7 +70,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public bool allowChoiceHotkeys = true;
     public bool showFallbackHud = true;
     public bool lockPlayerDuringPoliceEntrance = false;
-    public float fallbackUnlockFreeExplorationAfterSeconds = 3f;
     public float defaultDialogueSeconds = 3f;
 
     [Header("Free Exploration Timer")]
@@ -178,6 +184,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private string movementSensitiveMissionText = "";
     private Vector3 temporaryMissionStartPlayerPosition;
     private bool interactionAnimationRunning;
+    private bool openingStoryPlaying;
 
     private GUIStyle hudBoxStyle;
     private GUIStyle hudTitleStyle;
@@ -208,6 +215,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         RepairInteractionHudRuntimeDefaults();
+        EnsureNarrationAudioSource();
 
         if (choiceUI != null)
         {
@@ -237,10 +245,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         else
         {
+            // 如果不播放開場故事，就直接進入自由探索。
+            openingStoryPlaying = false;
             SetMission("自由探索婚禮：與族人交談、幫新郎送酒，或靠近舞圈加入舞蹈。");
+            UnlockFreeExploration();
+            SetPlayerControl(true);
         }
-
-        StartCoroutine(EnsureFreeExplorationFallback());
     }
 
     private void Update()
@@ -284,6 +294,18 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         EnsureHudStyles();
 
+        // 開場故事期間，只允許「故事字幕」出現。
+        // 若已經有 Chapter1DialogueUI，就完全不畫舊版 OnGUI 字幕，避免兩層字幕重疊。
+        if (openingStoryPlaying)
+        {
+            if (dialogueUI == null)
+            {
+                DrawFallbackDialogue();
+            }
+
+            return;
+        }
+
         if (showExplorationTimer && explorationTimerRunning)
         {
             DrawExplorationTimer();
@@ -302,14 +324,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             GUI.Label(new Rect(40f, 54f, missionWidth - 40f, 34f), missionText, hudBodyStyle);
         }
 
-        if (Time.time < fallbackLineUntil && (!string.IsNullOrEmpty(fallbackSpeaker) || !string.IsNullOrEmpty(fallbackLine)))
+        // 有正式的 DialogueUI 時，不再額外畫 fallback 對話框。
+        if (dialogueUI == null)
         {
-            float width = Mathf.Min(Screen.width - 40f, 840f);
-            float height = 118f;
-            Rect box = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 36f, width, height);
-            GUI.Box(box, GUIContent.none, hudBoxStyle);
-            GUI.Label(new Rect(box.x + 24f, box.y + 18f, box.width - 48f, 28f), fallbackSpeaker, hudTitleStyle);
-            GUI.Label(new Rect(box.x + 24f, box.y + 50f, box.width - 48f, 52f), fallbackLine, hudBodyStyle);
+            DrawFallbackDialogue();
         }
 
         if (waitingForChoice && choiceUI == null)
@@ -335,6 +353,21 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private void DrawFallbackDialogue()
+    {
+        if (Time.time >= fallbackLineUntil || (string.IsNullOrEmpty(fallbackSpeaker) && string.IsNullOrEmpty(fallbackLine)))
+        {
+            return;
+        }
+
+        float width = Mathf.Min(Screen.width - 40f, 840f);
+        float height = 118f;
+        Rect box = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 36f, width, height);
+        GUI.Box(box, GUIContent.none, hudBoxStyle);
+        GUI.Label(new Rect(box.x + 24f, box.y + 18f, box.width - 48f, 28f), fallbackSpeaker, hudTitleStyle);
+        GUI.Label(new Rect(box.x + 24f, box.y + 50f, box.width - 48f, 52f), fallbackLine, hudBodyStyle);
+    }
+
     public void BeginChapter()
     {
         if (storyStarted)
@@ -343,6 +376,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         storyStarted = true;
+        openingStoryPlaying = true;
         deliveredWineCount = 0;
         sharedFoodCount = 0;
         peopleInjured = 0;
@@ -358,48 +392,120 @@ public class Chapter1PerformanceController : MonoBehaviour
         startPoliceWhenDanceEnds = false;
         explorationTimerRemaining = Mathf.Max(1f, explorationDurationSeconds);
 
+        // 開場故事開始前先清掉所有遊戲 HUD / 提示，避免畫面同時塞滿任務與互動資訊。
+        missionText = "";
+        fallbackSpeaker = "";
+        fallbackLine = "";
+        fallbackLineUntil = 0f;
+        SetWorldInteractionPromptVisible(false);
+
+        if (choiceUI != null)
+        {
+            choiceUI.HideInstant();
+        }
+
+        if (dialogueUI != null)
+        {
+            dialogueUI.HideInstant();
+        }
+
         SetPlayerControl(false);
         StartCoroutine(BeginChapterRoutine());
     }
 
     private IEnumerator BeginChapterRoutine()
     {
+        openingStoryPlaying = true;
+        SetPlayerControl(false);
+        SetWorldInteractionPromptVisible(false);
+
         yield return Fade(1f, 0f, 1.2f);
 
-        ShowLine("字幕", "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。", 4f);
-        yield return new WaitForSeconds(3.8f);
+        // 第一段：年代與場景介紹。字幕顯示時間會自動配合配音長度。
+        yield return PlayOpeningNarrationLine(
+            "字幕",
+            "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。",
+            introVoice1,
+            4f);
 
-        ShowLine("旁白", "你睜開眼，看見族人圍著火堆歌舞。今晚本該只是祝福新人的夜晚。", 4.5f);
-        yield return new WaitForSeconds(4.2f);
+        yield return new WaitForSeconds(Mathf.Max(0f, introLineGap));
+
+        // 第二段：把玩家帶進婚禮現場。
+        yield return PlayOpeningNarrationLine(
+            "旁白",
+            "你睜開眼，看見族人圍著火堆歌舞。今晚本該只是祝福新人的夜晚。",
+            introVoice2,
+            4.5f);
+
+        yield return new WaitForSeconds(Mathf.Max(0f, introLineGap));
+
+        // 故事講完，先把字幕確實收掉，再開啟遊戲 HUD。
+        if (dialogueUI != null)
+        {
+            dialogueUI.HideInstant();
+        }
+
+        fallbackSpeaker = "";
+        fallbackLine = "";
+        fallbackLineUntil = 0f;
 
         if (weddingAmbience != null && !weddingAmbience.isPlaying)
         {
             weddingAmbience.Play();
         }
 
+        openingStoryPlaying = false;
+
+        // 到這裡才正式開始自由探索：任務、倒數、互動提示會從現在才出現。
         SetMission("自由探索婚禮：與族人交談、幫新郎送酒，或靠近舞圈加入舞蹈。");
         UnlockFreeExploration();
         SetPlayerControl(true);
     }
 
-    private IEnumerator EnsureFreeExplorationFallback()
+    private IEnumerator PlayOpeningNarrationLine(string speaker, string line, AudioClip clip, float fallbackSeconds)
     {
-        float waitSeconds = Mathf.Max(1f, fallbackUnlockFreeExplorationAfterSeconds);
-        yield return new WaitForSeconds(waitSeconds);
+        float duration = clip != null ? Mathf.Max(0.1f, clip.length) : Mathf.Max(0.1f, fallbackSeconds);
+        ShowLine(speaker, line, duration + 0.1f);
 
-        if (freeExplorationUnlocked || policeSequenceStarted || waitingForChoice || chapterCompleted)
+        if (clip == null)
         {
+            yield return new WaitForSeconds(duration);
             yield break;
         }
 
-        if (!storyStarted)
+        EnsureNarrationAudioSource();
+        if (narrationAudio == null)
         {
-            storyStarted = true;
+            yield return new WaitForSeconds(duration);
+            yield break;
         }
 
-        ShowLine("系統", "自由探索開始。靠近族人、酒桌或火堆旁的互動點，按 E 互動。", 3f);
-        UnlockFreeExploration();
-        SetPlayerControl(true);
+        narrationAudio.Stop();
+        narrationAudio.clip = clip;
+        narrationAudio.volume = narrationVolume;
+        narrationAudio.loop = false;
+        narrationAudio.Play();
+
+        while (narrationAudio != null && narrationAudio.isPlaying)
+        {
+            yield return null;
+        }
+    }
+
+    private void EnsureNarrationAudioSource()
+    {
+        if (narrationAudio == null)
+        {
+            narrationAudio = gameObject.AddComponent<AudioSource>();
+        }
+
+        if (narrationAudio != null)
+        {
+            narrationAudio.playOnAwake = false;
+            narrationAudio.loop = false;
+            narrationAudio.spatialBlend = 0f;
+            narrationAudio.volume = narrationVolume;
+        }
     }
 
     private void UnlockFreeExploration()
@@ -1952,12 +2058,19 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (dialogueUI != null)
         {
+            // 有正式字幕 UI 時，只使用它，避免 OnGUI 又畫一次造成重疊。
             dialogueUI.ShowLine(speaker, line, seconds);
+            fallbackSpeaker = "";
+            fallbackLine = "";
+            fallbackLineUntil = 0f;
         }
-
-        fallbackSpeaker = speaker;
-        fallbackLine = line;
-        fallbackLineUntil = Time.time + Mathf.Max(0.5f, seconds);
+        else
+        {
+            // 沒有綁 DialogueUI 才使用舊版 fallback HUD。
+            fallbackSpeaker = speaker;
+            fallbackLine = line;
+            fallbackLineUntil = Time.time + Mathf.Max(0.5f, seconds);
+        }
 
         Debug.Log("[Chapter1 Dialogue] " + speaker + ": " + line);
     }
@@ -2141,7 +2254,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         requireFireDistanceForCenterMenu = true;
         autoCreateMissingExplorationInteractions = true;
         startPoliceAfterDance = false;
-        fallbackUnlockFreeExplorationAfterSeconds = Mathf.Min(Mathf.Max(1f, fallbackUnlockFreeExplorationAfterSeconds), 3f);
         centerInteractionRange = Mathf.Max(centerInteractionRange, 18f);
         autoInteractionDistance = Mathf.Max(autoInteractionDistance, 4.5f);
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);
