@@ -12,7 +12,7 @@ public class Chapter1EyeOpening : MonoBehaviour
     public float fallbackDelay = 4.35f;
 
     [Tooltip("第一段配音結束後，再多等幾秒才睜眼。")]
-    public float extraDelay = 0f;
+    public float extraDelay = 2f;
 
     private IEnumerator Start()
     {
