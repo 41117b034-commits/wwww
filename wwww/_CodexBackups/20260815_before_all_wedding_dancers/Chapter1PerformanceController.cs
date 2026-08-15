@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -38,15 +37,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float danceLookAtHeight = 1.25f;
     public float danceFollowSharpness = 14f;
     public bool startPoliceAfterDance = false;
-
-    [Header("Wedding Crowd Dance")]
-    public bool autoStartWeddingCrowdDance = true;
-    public float weddingCrowdDanceRange = 95f;
-    public float weddingCrowdOrbitSpeedDegrees = -34f;
-    public float weddingCrowdStepHeight = 0.12f;
-    public float weddingCrowdStepFrequency = 2.2f;
-    public float weddingCrowdRadialStepDistance = 0.12f;
-    public float weddingCrowdSwayDegrees = 5f;
 
     [Header("UI")]
     public Chapter1DialogueUI dialogueUI;
@@ -181,7 +171,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion policeOriginalRotation;
     private bool hasPoliceOriginalTransform;
     private GameObject runtimeSecondPolice;
-    private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
 
     private string fallbackSpeaker = "";
     private string fallbackLine = "";
@@ -250,8 +239,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void Start()
     {
-        EnsureWeddingCrowdDancers();
-
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
         {
             BeginChapter();
@@ -1615,147 +1602,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        SetWeddingCrowdDancing(false);
         policeSequenceStarted = true;
         freeExplorationUnlocked = false;
         explorationTimerRunning = false;
         explorationTimerFinished = true;
         Debug.Log("[Chapter1] StartPoliceSequence called.");
         StartCoroutine(PoliceSequenceRoutine());
-    }
-
-    private void EnsureWeddingCrowdDancers()
-    {
-        if (!autoStartWeddingCrowdDance)
-        {
-            return;
-        }
-
-        // DanceTrigger marks the wedding circle. The interaction system may use a
-        // fallback center, so the crowd intentionally prefers this scene marker.
-        Transform center = danceCenter != null ? danceCenter : GetDanceCenter();
-        if (center == null)
-        {
-            Debug.LogWarning("[Chapter1] Wedding crowd dance skipped because no dance center was found.");
-            return;
-        }
-
-        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        List<RuntimeAnimatorController> crowdControllers = new List<RuntimeAnimatorController>();
-
-        for (int i = 0; i < animators.Length; i++)
-        {
-            Animator animator = animators[i];
-            if (!IsWeddingCrowdActor(animator, center))
-            {
-                continue;
-            }
-
-            RuntimeAnimatorController runtimeController = animator.runtimeAnimatorController;
-            if (runtimeController != null
-                && runtimeController.name.StartsWith("VillagerAnimator")
-                && !crowdControllers.Contains(runtimeController))
-            {
-                crowdControllers.Add(runtimeController);
-            }
-        }
-
-        int fallbackControllerIndex = 0;
-        for (int i = 0; i < animators.Length; i++)
-        {
-            Animator animator = animators[i];
-            if (!IsWeddingCrowdActor(animator, center))
-            {
-                continue;
-            }
-
-            if (animator.runtimeAnimatorController == null
-                && animator.avatar != null
-                && animator.avatar.isHuman
-                && crowdControllers.Count > 0)
-            {
-                animator.runtimeAnimatorController = crowdControllers[fallbackControllerIndex % crowdControllers.Count];
-                fallbackControllerIndex++;
-            }
-
-            animator.applyRootMotion = false;
-            Chapter1CircleDancer dancer = animator.GetComponent<Chapter1CircleDancer>();
-            bool created = dancer == null;
-            if (created)
-            {
-                dancer = animator.gameObject.AddComponent<Chapter1CircleDancer>();
-            }
-
-            dancer.center = center;
-            dancer.playOnAwake = true;
-            dancer.orbitSpeedDegrees = weddingCrowdOrbitSpeedDegrees;
-            dancer.stepHeight = weddingCrowdStepHeight;
-            dancer.stepFrequency = weddingCrowdStepFrequency;
-            dancer.radialStepDistance = weddingCrowdRadialStepDistance;
-            dancer.swayDegrees = weddingCrowdSwayDegrees;
-            dancer.faceCenter = true;
-            dancer.SetDancing(true);
-
-            if (!weddingCrowdDancers.Contains(dancer))
-            {
-                weddingCrowdDancers.Add(dancer);
-            }
-        }
-
-        Debug.Log("[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count);
-    }
-
-    private bool IsWeddingCrowdActor(Animator animator, Transform center)
-    {
-        if (animator == null
-            || !animator.gameObject.scene.IsValid()
-            || !animator.gameObject.activeInHierarchy
-            || animator.GetComponentInChildren<SkinnedMeshRenderer>(true) == null)
-        {
-            return false;
-        }
-
-        Transform actor = animator.transform;
-        if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
-        {
-            return false;
-        }
-
-        if (policeGroup != null && (actor.IsChildOf(policeGroup.transform) || policeGroup.transform.IsChildOf(actor)))
-        {
-            return false;
-        }
-
-        if (primaryPoliceActor != null && (actor.IsChildOf(primaryPoliceActor) || primaryPoliceActor.IsChildOf(actor)))
-        {
-            return false;
-        }
-
-        string actorName = actor.name.ToLowerInvariant();
-        if (actorName.Contains("police")
-            || actorName.Contains("警察")
-            || actorName.Contains("xr origin")
-            || actorName.Contains("controller"))
-        {
-            return false;
-        }
-
-        return GetFlatDistance(actor.position, center.position) <= Mathf.Max(1f, weddingCrowdDanceRange);
-    }
-
-    private void SetWeddingCrowdDancing(bool enabled)
-    {
-        for (int i = weddingCrowdDancers.Count - 1; i >= 0; i--)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            if (dancer == null)
-            {
-                weddingCrowdDancers.RemoveAt(i);
-                continue;
-            }
-
-            dancer.SetDancing(enabled);
-        }
     }
 
     private IEnumerator PoliceSequenceRoutine()
