@@ -607,7 +607,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        if (IsCenterActionPressed(GetDanceInteractionKey(), centerDanceAltKey, centerDanceGamepadKey) && CanUseDanceInteraction())
+        if (IsCenterActionPressed(centerDanceKey, centerDanceAltKey, centerDanceGamepadKey) && CanUseDanceInteraction())
         {
             JoinDance(null, playerRoot);
         }
@@ -624,13 +624,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private bool IsCenterActionPressed(KeyCode primaryKey, KeyCode altKey, KeyCode gamepadKey)
     {
         return IsKeyPressed(primaryKey) || IsKeyPressed(altKey) || IsKeyPressed(gamepadKey);
-    }
-
-    private KeyCode GetDanceInteractionKey()
-    {
-        // Older copies of the chapter scene serialized this field as None even
-        // though the HUD says E. Keep the keyboard prompt and actual input aligned.
-        return centerDanceKey == KeyCode.None ? KeyCode.E : centerDanceKey;
     }
 
     private bool IsKeyPressed(KeyCode key)
@@ -991,7 +984,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             return centerFoodKey == KeyCode.None || centerFoodKey == KeyCode.E ? KeyCode.T : centerFoodKey;
         }
 
-        return GetDanceInteractionKey();
+        return centerDanceKey == KeyCode.None ? KeyCode.E : centerDanceKey;
     }
 
     private string GetAutoInteractionPrompt(Chapter1Interactable.InteractionType interactionType, string fallbackPrompt)
@@ -2409,7 +2402,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         requireFireDistanceForCenterMenu = true;
         autoCreateMissingExplorationInteractions = true;
         startPoliceAfterDance = false;
-        centerDanceKey = GetDanceInteractionKey();
         centerInteractionRange = Mathf.Max(centerInteractionRange, 18f);
         autoInteractionDistance = Mathf.Max(autoInteractionDistance, 4.5f);
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);
