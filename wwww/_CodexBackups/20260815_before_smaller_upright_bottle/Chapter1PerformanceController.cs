@@ -138,7 +138,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     public GameObject wineBottleTemplate;
     public string wineBottleObjectName = "酒瓶";
     public bool hideWineBottleSourceWhileCarried = true;
-    public float wineBottleTargetSize = 0.38f;
+    public float wineBottleTargetSize = 0.65f;
     public Vector3 wineBottleHeldEulerOffset = Vector3.zero;
 
     [Header("Police Entrance Fallback")]
@@ -188,7 +188,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion policeOriginalRotation;
     private bool hasPoliceOriginalTransform;
     private GameObject runtimeSecondPolice;
-    private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
 
     private string fallbackSpeaker = "";
@@ -1372,28 +1371,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform viewTransform = GetPlayerViewTransform();
         if (viewTransform != null)
         {
-            if (prop.name == "Chapter1_WineBottle_Animation")
-            {
-                Vector3 horizontalView = Vector3.ProjectOnPlane(viewTransform.forward, Vector3.up);
-                if (horizontalView.sqrMagnitude < 0.001f)
-                {
-                    horizontalView = Vector3.ProjectOnPlane(viewTransform.right, Vector3.up);
-                }
-
-                if (horizontalView.sqrMagnitude < 0.001f)
-                {
-                    horizontalView = Vector3.forward;
-                }
-
-                Quaternion viewYaw = Quaternion.LookRotation(horizontalView.normalized, Vector3.up);
-                prop.transform.rotation = viewYaw
-                    * wineBottleUprightOffset
-                    * Quaternion.Euler(wineBottleHeldEulerOffset);
-            }
-            else
-            {
-                prop.transform.rotation = Quaternion.LookRotation(viewTransform.forward, Vector3.up);
-            }
+            Quaternion viewRotation = Quaternion.LookRotation(viewTransform.forward, Vector3.up);
+            prop.transform.rotation = prop.name == "Chapter1_WineBottle_Animation"
+                ? viewRotation * Quaternion.Euler(wineBottleHeldEulerOffset)
+                : viewRotation;
         }
     }
 
@@ -1404,7 +1385,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             GameObject sourceBottle = FindWineBottleTemplate();
             if (sourceBottle != null)
             {
-                CaptureWineBottleUprightOffset(sourceBottle.transform);
                 GameObject bottle = Instantiate(sourceBottle);
                 bottle.name = "Chapter1_WineBottle_Animation";
                 bottle.transform.SetParent(null, true);
@@ -1440,23 +1420,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return prop;
-    }
-
-    private void CaptureWineBottleUprightOffset(Transform sourceBottle)
-    {
-        Vector3 horizontalReference = Vector3.ProjectOnPlane(sourceBottle.forward, Vector3.up);
-        if (horizontalReference.sqrMagnitude < 0.001f)
-        {
-            horizontalReference = Vector3.ProjectOnPlane(sourceBottle.right, Vector3.up);
-        }
-
-        if (horizontalReference.sqrMagnitude < 0.001f)
-        {
-            horizontalReference = Vector3.forward;
-        }
-
-        Quaternion sourceYaw = Quaternion.LookRotation(horizontalReference.normalized, Vector3.up);
-        wineBottleUprightOffset = Quaternion.Inverse(sourceYaw) * sourceBottle.rotation;
     }
 
     private GameObject FindWineBottleTemplate()
@@ -2618,10 +2581,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         autoCreateMissingExplorationInteractions = true;
         startPoliceAfterDance = false;
         centerDanceKey = GetDanceInteractionKey();
-        if (wineBottleTargetSize <= 0f || wineBottleTargetSize > 0.4f)
-        {
-            wineBottleTargetSize = 0.38f;
-        }
         centerInteractionRange = Mathf.Max(centerInteractionRange, 18f);
         autoInteractionDistance = Mathf.Max(autoInteractionDistance, 4.5f);
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);

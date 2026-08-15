@@ -134,13 +134,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public Color winePropColor = new Color(0.45f, 0.12f, 0.08f, 1f);
     public Color foodPropColor = new Color(0.95f, 0.58f, 0.18f, 1f);
 
-    [Header("Wine Bottle Model")]
-    public GameObject wineBottleTemplate;
-    public string wineBottleObjectName = "酒瓶";
-    public bool hideWineBottleSourceWhileCarried = true;
-    public float wineBottleTargetSize = 0.38f;
-    public Vector3 wineBottleHeldEulerOffset = Vector3.zero;
-
     [Header("Police Entrance Fallback")]
     public bool animatePoliceEntranceWithoutTimeline = true;
     public Transform policeEntranceTarget;
@@ -188,7 +181,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion policeOriginalRotation;
     private bool hasPoliceOriginalTransform;
     private GameObject runtimeSecondPolice;
-    private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
 
     private string fallbackSpeaker = "";
@@ -1044,27 +1036,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 receiverPosition = GetItemReceiverPosition(isWine, receiverTarget);
         prop.transform.position = pickupPosition;
 
-        Renderer[] sourceRenderers = null;
-        bool[] sourceRendererStates = null;
-        if (isWine
-            && hideWineBottleSourceWhileCarried
-            && wineBottleTemplate != null
-            && wineBottleTemplate.scene.IsValid())
-        {
-            sourceRenderers = wineBottleTemplate.GetComponentsInChildren<Renderer>(true);
-            sourceRendererStates = new bool[sourceRenderers.Length];
-            for (int i = 0; i < sourceRenderers.Length; i++)
-            {
-                if (sourceRenderers[i] == null)
-                {
-                    continue;
-                }
-
-                sourceRendererStates[i] = sourceRenderers[i].enabled;
-                sourceRenderers[i].enabled = false;
-            }
-        }
-
         if (shouldGuidePlayer)
         {
             string pickupLine = isWine ? "系統帶你到火堆旁，拿起一瓶酒。" : "系統帶你到火堆旁，拿起食物。";
@@ -1094,17 +1065,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         prop.transform.position = receiverPosition;
         Destroy(prop, 0.15f);
-
-        if (sourceRenderers != null && sourceRendererStates != null)
-        {
-            for (int i = 0; i < sourceRenderers.Length; i++)
-            {
-                if (sourceRenderers[i] != null)
-                {
-                    sourceRenderers[i].enabled = sourceRendererStates[i];
-                }
-            }
-        }
 
         ShowLine(receiverName, receiverLine, 3f);
 
@@ -1372,52 +1332,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform viewTransform = GetPlayerViewTransform();
         if (viewTransform != null)
         {
-            if (prop.name == "Chapter1_WineBottle_Animation")
-            {
-                Vector3 horizontalView = Vector3.ProjectOnPlane(viewTransform.forward, Vector3.up);
-                if (horizontalView.sqrMagnitude < 0.001f)
-                {
-                    horizontalView = Vector3.ProjectOnPlane(viewTransform.right, Vector3.up);
-                }
-
-                if (horizontalView.sqrMagnitude < 0.001f)
-                {
-                    horizontalView = Vector3.forward;
-                }
-
-                Quaternion viewYaw = Quaternion.LookRotation(horizontalView.normalized, Vector3.up);
-                prop.transform.rotation = viewYaw
-                    * wineBottleUprightOffset
-                    * Quaternion.Euler(wineBottleHeldEulerOffset);
-            }
-            else
-            {
-                prop.transform.rotation = Quaternion.LookRotation(viewTransform.forward, Vector3.up);
-            }
+            prop.transform.rotation = Quaternion.LookRotation(viewTransform.forward, Vector3.up);
         }
     }
 
     private GameObject CreateHeldProp(bool isWine)
     {
-        if (isWine)
-        {
-            GameObject sourceBottle = FindWineBottleTemplate();
-            if (sourceBottle != null)
-            {
-                CaptureWineBottleUprightOffset(sourceBottle.transform);
-                GameObject bottle = Instantiate(sourceBottle);
-                bottle.name = "Chapter1_WineBottle_Animation";
-                bottle.transform.SetParent(null, true);
-                bottle.transform.localScale = sourceBottle.transform.lossyScale;
-                bottle.SetActive(true);
-                PrepareHeldProp(bottle);
-                FitHeldWineBottle(bottle);
-                return bottle;
-            }
-
-            Debug.LogWarning("[Chapter1] No scene object containing '" + wineBottleObjectName + "' was found. Using the cylinder fallback.");
-        }
-
         PrimitiveType primitive = isWine ? PrimitiveType.Cylinder : PrimitiveType.Sphere;
         GameObject prop = GameObject.CreatePrimitive(primitive);
         prop.name = isWine ? "Chapter1_WineBottle_Animation" : "Chapter1_Food_Animation";
@@ -1440,134 +1360,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return prop;
-    }
-
-    private void CaptureWineBottleUprightOffset(Transform sourceBottle)
-    {
-        Vector3 horizontalReference = Vector3.ProjectOnPlane(sourceBottle.forward, Vector3.up);
-        if (horizontalReference.sqrMagnitude < 0.001f)
-        {
-            horizontalReference = Vector3.ProjectOnPlane(sourceBottle.right, Vector3.up);
-        }
-
-        if (horizontalReference.sqrMagnitude < 0.001f)
-        {
-            horizontalReference = Vector3.forward;
-        }
-
-        Quaternion sourceYaw = Quaternion.LookRotation(horizontalReference.normalized, Vector3.up);
-        wineBottleUprightOffset = Quaternion.Inverse(sourceYaw) * sourceBottle.rotation;
-    }
-
-    private GameObject FindWineBottleTemplate()
-    {
-        if (wineBottleTemplate != null && wineBottleTemplate.name != "Chapter1_WineBottle_Animation")
-        {
-            return wineBottleTemplate;
-        }
-
-        string requestedName = string.IsNullOrWhiteSpace(wineBottleObjectName) ? "酒瓶" : wineBottleObjectName.Trim();
-        Transform exactMatch = FindTransformByName(requestedName);
-        if (exactMatch != null && exactMatch.name != "Chapter1_WineBottle_Animation")
-        {
-            wineBottleTemplate = exactMatch.gameObject;
-            Debug.Log("[Chapter1] Using scene wine bottle: " + wineBottleTemplate.name);
-            return wineBottleTemplate;
-        }
-
-        Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
-        Transform bestMatch = null;
-        float bestDistance = float.MaxValue;
-        Vector3 pickupCenter = GetFireCenterPosition();
-
-        for (int i = 0; i < allTransforms.Length; i++)
-        {
-            Transform candidate = allTransforms[i];
-            if (candidate == null
-                || !candidate.gameObject.scene.IsValid()
-                || candidate.name == "Chapter1_WineBottle_Animation"
-                || candidate.name.IndexOf(requestedName, System.StringComparison.OrdinalIgnoreCase) < 0)
-            {
-                continue;
-            }
-
-            float distance = (candidate.position - pickupCenter).sqrMagnitude;
-            if (distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestMatch = candidate;
-            }
-        }
-
-        if (bestMatch != null)
-        {
-            wineBottleTemplate = bestMatch.gameObject;
-            Debug.Log("[Chapter1] Using scene wine bottle: " + wineBottleTemplate.name);
-        }
-
-        return wineBottleTemplate;
-    }
-
-    private void PrepareHeldProp(GameObject prop)
-    {
-        Collider[] colliders = prop.GetComponentsInChildren<Collider>(true);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            colliders[i].enabled = false;
-        }
-
-        Rigidbody[] rigidbodies = prop.GetComponentsInChildren<Rigidbody>(true);
-        for (int i = 0; i < rigidbodies.Length; i++)
-        {
-            rigidbodies[i].useGravity = false;
-            rigidbodies[i].isKinematic = true;
-            rigidbodies[i].detectCollisions = false;
-        }
-
-        Chapter1Interactable[] interactables = prop.GetComponentsInChildren<Chapter1Interactable>(true);
-        for (int i = 0; i < interactables.Length; i++)
-        {
-            interactables[i].enabled = false;
-        }
-    }
-
-    private void FitHeldWineBottle(GameObject bottle)
-    {
-        Renderer[] renderers = bottle.GetComponentsInChildren<Renderer>(true);
-        bool hasBounds = false;
-        Bounds combinedBounds = new Bounds(bottle.transform.position, Vector3.zero);
-
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            if (renderers[i] == null)
-            {
-                continue;
-            }
-
-            if (!hasBounds)
-            {
-                combinedBounds = renderers[i].bounds;
-                hasBounds = true;
-            }
-            else
-            {
-                combinedBounds.Encapsulate(renderers[i].bounds);
-            }
-        }
-
-        if (!hasBounds)
-        {
-            return;
-        }
-
-        float largestDimension = Mathf.Max(combinedBounds.size.x, combinedBounds.size.y, combinedBounds.size.z);
-        if (largestDimension <= 0.0001f)
-        {
-            return;
-        }
-
-        float scaleMultiplier = Mathf.Max(0.08f, wineBottleTargetSize) / largestDimension;
-        bottle.transform.localScale *= scaleMultiplier;
     }
 
     private Vector3 GetItemPickupPosition(bool isWine)
@@ -2618,10 +2410,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         autoCreateMissingExplorationInteractions = true;
         startPoliceAfterDance = false;
         centerDanceKey = GetDanceInteractionKey();
-        if (wineBottleTargetSize <= 0f || wineBottleTargetSize > 0.4f)
-        {
-            wineBottleTargetSize = 0.38f;
-        }
         centerInteractionRange = Mathf.Max(centerInteractionRange, 18f);
         autoInteractionDistance = Mathf.Max(autoInteractionDistance, 4.5f);
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);
