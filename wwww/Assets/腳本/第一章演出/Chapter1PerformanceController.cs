@@ -1732,7 +1732,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         string prefix = isWine ? "Auto_WineGuest_" : "Auto_FoodShare_";
         int count = isWine ? Mathf.Max(1, wineTargetCount) : Mathf.Max(1, foodTargetCount);
         int progress = isWine ? deliveredWineCount : sharedFoodCount;
-        int index = ((Mathf.Max(1, progress) - 1) % count) + 1;
+
+        // 依目前進度找「下一位」尚未互動的目標。
+        // 例如進度 0 -> 1、進度 1 -> 2、進度 2 -> 3。
+        int index = (progress % count) + 1;
 
         GameObject target = GameObject.Find(prefix + index);
         if (target != null)
