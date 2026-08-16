@@ -67,6 +67,12 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Header("Quest Progress")]
     public int wineTargetCount = 3;
+    public int foodTargetCount = 2;
+    public bool requireWineAndFoodBeforeDance = true;
+    public bool requireAllWeddingTasksBeforePolice = true;
+    public bool autoStartPoliceAfterWeddingTasks = true;
+    public float policeStartDelayAfterWeddingTasks = 1.5f;
+    public bool showWeddingQuestProgress = true;
     public bool autoStartOnAwake = false;
 
     [Header("Debug")]
@@ -160,6 +166,35 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float witnessRunSeconds = 1.5f;
     public float witnessLookAtHeight = 1.35f;
 
+    [Header("Police Incident Scene References")]
+    public Transform groomActor;
+    public Transform shovedVillagerActor;
+    public Transform femaleVillagerActor;
+    public Transform hutEntrancePoint;
+    public Transform policeExitPoint;
+    public Transform ceremonyCup;
+    public Rigidbody ceremonyCupRigidbody;
+    public Transform[] interveneVillagers;
+    public Transform[] casualtyVillagers;
+
+    [Header("Police Incident Fallback Animation")]
+    public bool useFallbackIncidentAnimation = true;
+    public float policeApproachWomanSeconds = 1.1f;
+    public float dragToHutSeconds = 2.4f;
+    public float policeExitSeconds = 4f;
+    public float shoveDistance = 0.9f;
+    public float fallbackFallAngle = 78f;
+    public string policeWalkStateName = "Walk";
+    public string policeIdleStateName = "Idle";
+    public string villagerFallStateName = "Fall";
+
+    [Header("Police Incident Audio")]
+    public AudioSource policeEventAudio;
+    public AudioClip cupCrashClip;
+    public AudioClip struggleClip;
+    public AudioClip gunshotClip;
+    public AudioClip painfulCryClip;
+
     [Header("Result For Later Chapters")]
     public bool saveResultToPlayerPrefs = true;
     public string conflictChoicePrefsKey = "Chapter1_ConflictChoice";
@@ -168,6 +203,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private int deliveredWineCount;
     private int sharedFoodCount;
+    private readonly HashSet<int> deliveredWineTargets = new HashSet<int>();
+    private readonly HashSet<int> sharedFoodTargets = new HashSet<int>();
+    private bool policeStartQueued;
     private int peopleInjured;
     private int morale;
     private bool danceFinished;
@@ -279,7 +317,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (debugStartPoliceWithP && Input.GetKeyDown(KeyCode.P))
         {
             Debug.Log("[Chapter1] Debug P key pressed.");
-            StartPoliceSequence();
+            StartPoliceSequenceInternal(true);
         }
 
         if (debugStartDanceWithJ && Input.GetKeyDown(KeyCode.J))
@@ -400,6 +438,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         openingStoryPlaying = true;
         deliveredWineCount = 0;
         sharedFoodCount = 0;
+        deliveredWineTargets.Clear();
+        sharedFoodTargets.Clear();
+        policeStartQueued = false;
         peopleInjured = 0;
         morale = 0;
         danceFinished = false;
@@ -477,10 +518,11 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         openingStoryPlaying = false;
 
-        // 到這裡才正式開始自由探索：任務、倒數、互動提示會從現在才出現。
-        SetMission("自由探索婚禮：與族人交談、幫新郎送酒，或靠近舞圈加入舞蹈。");
+        // 到這裡才正式開始自由探索：先完成婚禮任務，再進入導火線事件。
         UnlockFreeExploration();
         SetPlayerControl(true);
+        ShowLine("新郎", "朋友，今晚人多。幫我把酒送給幾位賓客，也把火堆旁的食物分給族人；忙完再到舞圈一起跳吧。", 5f);
+        UpdateWeddingQuestMission();
     }
 
     private IEnumerator PlayOpeningNarrationLine(string speaker, string line, AudioClip clip, float fallbackSeconds)
@@ -545,6 +587,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (!useExplorationTimer)
         {
+            UpdateWeddingQuestMission();
             return;
         }
 
@@ -552,7 +595,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         explorationTimerFinished = false;
         explorationTimerRunning = true;
         startPoliceWhenDanceEnds = false;
-        SetMission("自由探索倒數開始：在時間結束前可以送酒、分享食物、與族人互動或加入舞蹈。");
+        UpdateWeddingQuestMission();
     }
 
     private void UpdateExplorationTimer()
@@ -578,10 +621,17 @@ public class Chapter1PerformanceController : MonoBehaviour
         explorationTimerFinished = true;
         explorationTimerRunning = false;
 
+        // 正式流程改成「完成婚禮任務」才觸發警察劇情，倒數不再強制開始事件。
+        if (requireAllWeddingTasksBeforePolice)
+        {
+            UpdateWeddingQuestMission();
+            TryStartPoliceAfterWeddingTasks();
+            return;
+        }
+
         if (danceRoutineRunning)
         {
             startPoliceWhenDanceEnds = true;
-            SetMission("倒數結束：舞蹈結束後，導火線事件就會發生。");
             return;
         }
 
@@ -807,7 +857,20 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private string GetCenterInteractionPromptText()
     {
-        string danceText = CanUseDanceInteraction() ? "E / 1 / 手把A  加入舞蹈" : "E / 1 / 手把A  舞蹈已完成";
+        string danceText;
+        if (danceFinished)
+        {
+            danceText = "E / 1 / 手把A  舞蹈已完成";
+        }
+        else if (!AreWineAndFoodTasksComplete())
+        {
+            danceText = "E / 1 / 手把A  先完成送酒與分享食物";
+        }
+        else
+        {
+            danceText = "E / 1 / 手把A  加入舞蹈";
+        }
+
         return danceText + "\nR / 2 / 手把B  送酒\nT / 3 / 手把X  分享食物";
     }
 
@@ -834,6 +897,30 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        int target = Mathf.Max(1, wineTargetCount);
+        if (deliveredWineCount >= target)
+        {
+            ShowLine("新郎", "酒已經送得差不多了，去看看還有沒有族人需要食物。", 2.5f);
+            UpdateWeddingQuestMission();
+            return;
+        }
+
+        if (receiverTarget == null)
+        {
+            receiverTarget = FindNextInteractionTarget(true);
+        }
+
+        if (receiverTarget != null)
+        {
+            int id = receiverTarget.GetInstanceID();
+            if (deliveredWineTargets.Contains(id))
+            {
+                ShowLine("賓客", "我已經拿到酒了，先送給其他人吧。", 2.4f);
+                return;
+            }
+            deliveredWineTargets.Add(id);
+        }
+
         deliveredWineCount++;
         morale++;
 
@@ -845,14 +932,15 @@ public class Chapter1PerformanceController : MonoBehaviour
             "哈哈，這杯我收下了。願祖靈庇佑新人。",
             receiverTarget);
 
-        int target = Mathf.Max(1, wineTargetCount);
         int shownCount = Mathf.Min(deliveredWineCount, target);
         SetTemporaryMission("送酒任務：" + shownCount + " / " + target + " 位賓客已收到酒。", 3.5f);
 
         if (deliveredWineCount >= target)
         {
-            StartCoroutine(ShowLineAfterDelay("新郎", "謝謝你，朋友。鼓聲越來越熱，去舞圈那邊吧。", 2.6f, 3.5f));
+            StartCoroutine(ShowLineAfterDelay("新郎", "謝謝你。酒送好了，再幫忙把食物分給族人，等等一起去舞圈。", 2.6f, 4f));
         }
+
+        TryStartPoliceAfterWeddingTasks();
     }
 
     public void ShareFood(string npcName, Transform receiverTarget = null)
@@ -861,6 +949,30 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             ShowLine("系統", "先等目前的互動動作結束。", 1.5f);
             return;
+        }
+
+        int target = Mathf.Max(1, foodTargetCount);
+        if (sharedFoodCount >= target)
+        {
+            ShowLine("族人", "食物已經分得差不多了，謝謝你。", 2.3f);
+            UpdateWeddingQuestMission();
+            return;
+        }
+
+        if (receiverTarget == null)
+        {
+            receiverTarget = FindNextInteractionTarget(false);
+        }
+
+        if (receiverTarget != null)
+        {
+            int id = receiverTarget.GetInstanceID();
+            if (sharedFoodTargets.Contains(id))
+            {
+                ShowLine("族人", "我已經拿到食物了，分給其他人吧。", 2.4f);
+                return;
+            }
+            sharedFoodTargets.Add(id);
         }
 
         sharedFoodCount++;
@@ -873,7 +985,16 @@ public class Chapter1PerformanceController : MonoBehaviour
             speaker,
             "謝謝你。今晚能這樣相聚，已經很難得。",
             receiverTarget);
-        SetTemporaryMission("你把食物分享給族人。", 3.5f);
+
+        int shownCount = Mathf.Min(sharedFoodCount, target);
+        SetTemporaryMission("分享食物：" + shownCount + " / " + target + " 位族人已收到食物。", 3.5f);
+
+        if (sharedFoodCount >= target)
+        {
+            StartCoroutine(ShowLineAfterDelay("新郎", "辛苦了。事情都忙得差不多了，來舞圈一起跳吧。", 2.4f, 3.5f));
+        }
+
+        TryStartPoliceAfterWeddingTasks();
     }
 
     private void CreateMissingExplorationInteractions()
@@ -912,21 +1033,19 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (!HasInteractionType(Chapter1Interactable.InteractionType.ShareFood))
         {
-            CreateAutoInteraction(
-                "Auto_FoodShare_1",
-                anchor - forward * 4f + right * 2.4f,
-                Chapter1Interactable.InteractionType.ShareFood,
-                "族人",
-                "按 E 分享食物",
-                new Color(0.85f, 0.45f, 0.12f, 1f));
-
-            CreateAutoInteraction(
-                "Auto_FoodShare_2",
-                anchor - forward * 4.5f - right * 2.4f,
-                Chapter1Interactable.InteractionType.ShareFood,
-                "族人",
-                "按 E 分享食物",
-                new Color(0.85f, 0.45f, 0.12f, 1f));
+            int foodCount = Mathf.Max(1, foodTargetCount);
+            for (int i = 0; i < foodCount; i++)
+            {
+                float side = i - (foodCount - 1) * 0.5f;
+                Vector3 position = anchor - forward * (4f + i * 0.35f) + right * side * 2.6f;
+                CreateAutoInteraction(
+                    "Auto_FoodShare_" + (i + 1),
+                    position,
+                    Chapter1Interactable.InteractionType.ShareFood,
+                    "族人",
+                    "按 E 分享食物",
+                    new Color(0.85f, 0.45f, 0.12f, 1f));
+            }
         }
     }
 
@@ -1611,7 +1730,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Transform FindNextInteractionTarget(bool isWine)
     {
         string prefix = isWine ? "Auto_WineGuest_" : "Auto_FoodShare_";
-        int count = isWine ? Mathf.Max(1, wineTargetCount) : 2;
+        int count = isWine ? Mathf.Max(1, wineTargetCount) : Mathf.Max(1, foodTargetCount);
         int progress = isWine ? deliveredWineCount : sharedFoodCount;
         int index = ((Mathf.Max(1, progress) - 1) % count) + 1;
 
@@ -1717,6 +1836,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        if (requireWineAndFoodBeforeDance && !AreWineAndFoodTasksComplete())
+        {
+            ShowLine("新郎", GetDanceLockedLine(), 3.5f);
+            UpdateWeddingQuestMission();
+            return;
+        }
+
         if (requireWineBeforeDance && deliveredWineCount < Mathf.Max(1, wineTargetCount))
         {
             ShowLine("新郎", "朋友，先幫我把酒送給大家，再一起來跳舞。", 3f);
@@ -1755,6 +1881,17 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         danceRoutineRunning = false;
         SetPlayerControl(true);
+        UpdateWeddingQuestMission();
+
+        if (requireAllWeddingTasksBeforePolice)
+        {
+            TryStartPoliceAfterWeddingTasks();
+            if (!policeStartQueued && !policeSequenceStarted)
+            {
+                SetTemporaryMission("舞蹈完成。還有婚禮任務尚未完成。", 4f, true);
+            }
+            yield break;
+        }
 
         if (startPoliceWhenDanceEnds)
         {
@@ -1824,12 +1961,26 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     public void StartPoliceSequence()
     {
+        StartPoliceSequenceInternal(false);
+    }
+
+    private void StartPoliceSequenceInternal(bool force)
+    {
         if (policeSequenceStarted)
         {
             Debug.Log("[Chapter1] Police sequence already started.");
             return;
         }
 
+        if (!force && requireAllWeddingTasksBeforePolice && !AreWeddingTasksComplete())
+        {
+            Debug.Log("[Chapter1] Police sequence blocked until wedding tasks are complete.");
+            ShowLine("系統", "先完成送酒、分享食物與舞蹈，導火線事件才會發生。", 3f);
+            UpdateWeddingQuestMission();
+            return;
+        }
+
+        policeStartQueued = false;
         SetWeddingCrowdDancing(false);
         policeSequenceStarted = true;
         freeExplorationUnlocked = false;
@@ -1837,6 +1988,72 @@ public class Chapter1PerformanceController : MonoBehaviour
         explorationTimerFinished = true;
         Debug.Log("[Chapter1] StartPoliceSequence called.");
         StartCoroutine(PoliceSequenceRoutine());
+    }
+
+    private bool AreWineAndFoodTasksComplete()
+    {
+        return deliveredWineCount >= Mathf.Max(1, wineTargetCount)
+            && sharedFoodCount >= Mathf.Max(1, foodTargetCount);
+    }
+
+    private bool AreWeddingTasksComplete()
+    {
+        return AreWineAndFoodTasksComplete() && danceFinished && !danceRoutineRunning;
+    }
+
+    private string GetDanceLockedLine()
+    {
+        bool wineDone = deliveredWineCount >= Mathf.Max(1, wineTargetCount);
+        bool foodDone = sharedFoodCount >= Mathf.Max(1, foodTargetCount);
+        if (!wineDone && !foodDone)
+        {
+            return "朋友，先幫我把酒送給賓客，也把食物分給族人，再一起來跳舞。";
+        }
+        if (!wineDone)
+        {
+            return "還有幾位賓客沒有酒，送完再一起跳舞。";
+        }
+        return "先把食物分給族人，忙完再一起跳舞。";
+    }
+
+    private string GetWeddingQuestMissionText()
+    {
+        int wineTarget = Mathf.Max(1, wineTargetCount);
+        int foodTarget = Mathf.Max(1, foodTargetCount);
+        string danceState = danceFinished ? "完成" : (AreWineAndFoodTasksComplete() ? "可加入" : "未開放");
+        return "婚禮任務：送酒 " + Mathf.Min(deliveredWineCount, wineTarget) + " / " + wineTarget
+            + "｜分享食物 " + Mathf.Min(sharedFoodCount, foodTarget) + " / " + foodTarget
+            + "｜舞蹈 " + danceState;
+    }
+
+    private void UpdateWeddingQuestMission()
+    {
+        if (!showWeddingQuestProgress || policeSequenceStarted || chapterCompleted)
+        {
+            return;
+        }
+        SetMission(GetWeddingQuestMissionText());
+    }
+
+    private void TryStartPoliceAfterWeddingTasks()
+    {
+        if (!autoStartPoliceAfterWeddingTasks || policeSequenceStarted || policeStartQueued || !AreWeddingTasksComplete())
+        {
+            return;
+        }
+
+        policeStartQueued = true;
+        StartCoroutine(StartPoliceAfterWeddingTasksDelay());
+    }
+
+    private IEnumerator StartPoliceAfterWeddingTasksDelay()
+    {
+        SetMission("婚禮任務完成。鼓聲正熱烈時，山路上忽然傳來急促的皮靴聲……");
+        yield return new WaitForSeconds(Mathf.Max(0f, policeStartDelayAfterWeddingTasks));
+        if (!policeSequenceStarted)
+        {
+            StartPoliceSequenceInternal(false);
+        }
     }
 
     private void EnsureWeddingCrowdDancers()
@@ -1977,7 +2194,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         SetPlayerControl(false);
         EnsurePoliceActorsForIntrusion();
-        SetMission("婚禮中斷：遠處傳來皮靴聲。你趕到外圍，目睹日警闖入會場。");
+        SetMission("婚禮中斷：兩名日本警察闖入會場。");
 
         if (weddingAmbience != null)
         {
@@ -1989,7 +2206,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             tensionAmbience.Play();
         }
 
-        ShowLine("旁白", "鼓聲慢了下來。你聽見山路傳來急促的皮靴聲，便小跑到會場外圍查看。", 4f);
+        ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
         yield return MovePlayerToWitnessPoint();
         yield return new WaitForSeconds(0.35f);
 
@@ -2013,8 +2230,30 @@ public class Chapter1PerformanceController : MonoBehaviour
         ShowLine("新郎", "我們只是辦婚禮，沒有冒犯。", 3.2f);
         yield return new WaitForSeconds(3.2f);
 
-        ShowLine("旁白", "酒杯被推倒，火光照在族人握緊的手上。有人低聲喊著：住手。", 4.5f);
-        yield return new WaitForSeconds(4f);
+        if (useFallbackIncidentAnimation)
+        {
+            yield return KnockCupAndShoveVillagerFallback();
+        }
+        else
+        {
+            ShowLine("旁白", "警察推倒酒杯，又粗暴地推開靠近的族人。", 3.5f);
+            yield return new WaitForSeconds(3.2f);
+        }
+
+        Transform harassingPolice = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
+        if (femaleVillagerActor != null && harassingPolice != null)
+        {
+            ShowLine("旁白", "另一名警察把目光轉向一名女性族人，伸手逼近她。周圍的族人立刻騷動起來。", 4f);
+            yield return MoveActorNearTarget(harassingPolice, femaleVillagerActor.position, 1.0f, policeApproachWomanSeconds);
+            ShowLine("女性族人", "放開我！", 2.5f);
+            PlayPoliceEventClip(struggleClip);
+            yield return new WaitForSeconds(2.3f);
+        }
+        else
+        {
+            ShowLine("旁白", "一名警察試圖騷擾女性族人，四周的怒氣瞬間升高。", 3.8f);
+            yield return new WaitForSeconds(3.4f);
+        }
 
         ShowConflictChoice();
     }
@@ -2067,11 +2306,13 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         SetActiveIncludingParents(firstPolice);
         firstPolice.position = firstStart;
+        PlayAnimatorStateIfAvailable(firstPolice, policeWalkStateName);
 
         if (secondPolice != null)
         {
             SetActiveIncludingParents(secondPolice);
             secondPolice.position = secondStart;
+            PlayAnimatorStateIfAvailable(secondPolice, policeWalkStateName);
         }
 
         Quaternion walkingRotation = endRotation;
@@ -2109,11 +2350,13 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         firstPolice.position = firstEnd;
         firstPolice.rotation = endRotation;
+        PlayAnimatorStateIfAvailable(firstPolice, policeIdleStateName);
 
         if (secondPolice != null)
         {
             secondPolice.position = secondEnd;
             secondPolice.rotation = endRotation;
+            PlayAnimatorStateIfAvailable(secondPolice, policeIdleStateName);
         }
     }
 
@@ -2317,41 +2560,321 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator ResolveChoiceRoutine(ConflictChoice choice)
     {
+        if (heartbeatAudio != null)
+        {
+            heartbeatAudio.Stop();
+        }
+
         if (choice == ConflictChoice.Intervene)
         {
             morale += 2;
-            peopleInjured += 2;
+            peopleInjured += Mathf.Max(1, casualtyVillagers != null && casualtyVillagers.Length > 0 ? casualtyVillagers.Length : 2);
             SetMission("分支：你選擇上前阻止。族人的憤怒被點燃，場面急速失控。");
-            ShowLine("你", "夠了。不要再羞辱我們。", 3f);
-            yield return new WaitForSeconds(2.8f);
+            ShowLine("你", "夠了！不要再羞辱我們！", 2.8f);
+            yield return new WaitForSeconds(2.4f);
 
-            ShowLine("旁白", "幾名族人跟著衝上前，日警的手摸向槍套。畫面在混亂聲中壓暗。", 4.5f);
-            PlayDirector(interveneTimeline);
-            yield return WaitForDirector(interveneTimeline, 8f);
+            if (interveneTimeline != null)
+            {
+                PlayDirector(interveneTimeline);
+                yield return WaitForDirector(interveneTimeline, 8f);
+            }
+            else
+            {
+                yield return InterveneFallbackRoutine();
+            }
         }
         else
         {
             morale -= 1;
             peopleInjured += 1;
             SetMission("分支：你選擇沉默觀望。壓抑沒有消失，只是更深地留在族人心裡。");
-            ShowLine("新郎", "我們還要忍到什麼時候？", 3f);
-            yield return new WaitForSeconds(2.8f);
 
-            ShowLine("旁白", "你沒有上前。火堆旁只剩下低沉的喘息、退後的腳步，和無法說出口的屈辱。", 4.5f);
-            PlayDirector(watchTimeline);
-            yield return WaitForDirector(watchTimeline, 8f);
+            if (watchTimeline != null)
+            {
+                PlayDirector(watchTimeline);
+                yield return WaitForDirector(watchTimeline, 8f);
+            }
+            else
+            {
+                yield return WatchFallbackRoutine();
+            }
         }
 
-        ShowLine("族人長者", "今天的事，族人不會忘記。", 4f);
-        PlayDirector(endingTimeline);
-        yield return WaitForDirector(endingTimeline, 6f);
+        ShowLine("族人長者", "今天的事，族人不會忘記。", 3.5f);
 
-        ShowLine("字幕", "壓抑，正在接近臨界點。", 4f);
-        SetMission("第一章結尾：族人望著日警下山的背影，憤怒與無力留在婚禮現場。");
+        if (endingTimeline != null)
+        {
+            PlayDirector(endingTimeline);
+            yield return WaitForDirector(endingTimeline, 6f);
+        }
+        else
+        {
+            yield return EndingFallbackRoutine();
+        }
+
+        ShowLine("字幕", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。", 5f);
+        SetMission("第一章結尾：族人望著日警下山的背影，憤恨與無力留在婚禮現場。");
         SaveChapterResult();
         chapterCompleted = true;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         yield return Fade(0f, 1f, 1.5f);
+    }
+
+    private IEnumerator KnockCupAndShoveVillagerFallback()
+    {
+        ShowLine("旁白", "警察冷笑著抬手，把桌邊的酒杯掃倒。", 2.8f);
+        PlayPoliceEventClip(cupCrashClip);
+
+        if (ceremonyCupRigidbody != null)
+        {
+            ceremonyCupRigidbody.isKinematic = false;
+            ceremonyCupRigidbody.useGravity = true;
+            Vector3 forceDirection = primaryPoliceActor != null ? primaryPoliceActor.forward : Vector3.forward;
+            ceremonyCupRigidbody.AddForce(forceDirection * 1.6f + Vector3.up * 0.55f, ForceMode.Impulse);
+        }
+        else if (ceremonyCup != null)
+        {
+            ceremonyCup.Rotate(Vector3.forward, 78f, Space.Self);
+        }
+
+        yield return new WaitForSeconds(1.2f);
+        ShowLine("旁白", "一名族人上前質問，立刻被粗暴地推開。", 2.8f);
+
+        if (shovedVillagerActor != null)
+        {
+            Vector3 away = shovedVillagerActor.position - (primaryPoliceActor != null ? primaryPoliceActor.position : GetFireCenterPosition());
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.01f) away = -shovedVillagerActor.forward;
+            Vector3 destination = shovedVillagerActor.position + away.normalized * Mathf.Max(0.3f, shoveDistance);
+            yield return MoveTransform(shovedVillagerActor, destination, 0.45f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.7f);
+        }
+    }
+
+    private IEnumerator WatchFallbackRoutine()
+    {
+        ShowLine("日警", "都給我安靜。你們最好記住自己的身分。", 3.2f);
+        yield return new WaitForSeconds(2.8f);
+
+        Transform draggingPolice = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
+        if (femaleVillagerActor != null && draggingPolice != null && hutEntrancePoint != null)
+        {
+            ShowLine("旁白", "你沒有上前。警察強行拉著女性族人往小木屋走去。", 3.8f);
+            yield return MoveTwoActorsToPoint(draggingPolice, femaleVillagerActor, hutEntrancePoint.position, dragToHutSeconds);
+            femaleVillagerActor.gameObject.SetActive(false);
+            PlayPoliceEventClip(painfulCryClip);
+            ShowLine("旁白", "木屋門關上後，裡面傳出痛苦的叫喊聲。屋外的人全都僵在原地。", 5f);
+            yield return new WaitForSeconds(4.6f);
+        }
+        else
+        {
+            PlayPoliceEventClip(painfulCryClip);
+            ShowLine("旁白", "你沉默地站在原地。警察把女性族人帶向木屋，屋內隨後傳出痛苦的叫喊聲。", 5f);
+            yield return new WaitForSeconds(4.6f);
+        }
+    }
+
+    private IEnumerator InterveneFallbackRoutine()
+    {
+        ShowLine("旁白", "幾名族人憤而衝上前，聯手把警察推開，混亂中拳腳相向。", 4f);
+        yield return MoveInterveningVillagersTowardPolice(1.0f);
+        yield return new WaitForSeconds(1.3f);
+
+        PlayPoliceEventClip(gunshotClip);
+        ShowLine("旁白", "砰——槍聲突然響起。幾名族人在混亂中倒下，所有人瞬間停住。", 4.5f);
+        MakeCasualtiesFall();
+        yield return new WaitForSeconds(4f);
+    }
+
+    private IEnumerator EndingFallbackRoutine()
+    {
+        ShowLine("旁白", "兩名警察整理衣服，轉身沿著山路離開。婚禮現場只剩火堆與沉默。", 4.5f);
+
+        Transform first = primaryPoliceActor;
+        Transform second = secondaryPoliceActor;
+        Vector3 target;
+        if (policeExitPoint != null)
+        {
+            target = policeExitPoint.position;
+        }
+        else
+        {
+            Vector3 center = GetFireCenterPosition();
+            Vector3 away = first != null ? first.position - center : Vector3.forward;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.01f) away = Vector3.forward;
+            target = center + away.normalized * 12f;
+        }
+
+        yield return MovePolicePairToExit(first, second, target, policeExitSeconds);
+        yield return new WaitForSeconds(1f);
+    }
+
+    private IEnumerator MoveInterveningVillagersTowardPolice(float seconds)
+    {
+        if (interveneVillagers == null || interveneVillagers.Length == 0 || primaryPoliceActor == null)
+        {
+            yield return new WaitForSeconds(seconds);
+            yield break;
+        }
+
+        Vector3[] starts = new Vector3[interveneVillagers.Length];
+        Vector3[] ends = new Vector3[interveneVillagers.Length];
+        for (int i = 0; i < interveneVillagers.Length; i++)
+        {
+            Transform actor = interveneVillagers[i];
+            if (actor == null) continue;
+            starts[i] = actor.position;
+            Vector3 dir = actor.position - primaryPoliceActor.position;
+            dir.y = 0f;
+            if (dir.sqrMagnitude < 0.01f) dir = Vector3.right * (i + 1);
+            ends[i] = primaryPoliceActor.position + dir.normalized * (0.7f + i * 0.18f);
+        }
+
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.1f, seconds);
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            for (int i = 0; i < interveneVillagers.Length; i++)
+            {
+                if (interveneVillagers[i] != null)
+                    interveneVillagers[i].position = Vector3.Lerp(starts[i], ends[i], t);
+            }
+            yield return null;
+        }
+    }
+
+    private void MakeCasualtiesFall()
+    {
+        if (casualtyVillagers == null) return;
+        for (int i = 0; i < casualtyVillagers.Length; i++)
+        {
+            Transform casualty = casualtyVillagers[i];
+            if (casualty == null) continue;
+            Animator animator = casualty.GetComponentInChildren<Animator>();
+            if (animator != null && !string.IsNullOrWhiteSpace(villagerFallStateName))
+            {
+                int hash = Animator.StringToHash(villagerFallStateName);
+                if (animator.HasState(0, hash))
+                {
+                    animator.Play(hash, 0, 0f);
+                    continue;
+                }
+            }
+            casualty.Rotate(Vector3.forward, fallbackFallAngle, Space.Self);
+        }
+    }
+
+    private IEnumerator MoveActorNearTarget(Transform actor, Vector3 targetPosition, float stopDistance, float seconds)
+    {
+        if (actor == null) yield break;
+        Vector3 direction = targetPosition - actor.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.001f) yield break;
+        Vector3 destination = targetPosition - direction.normalized * Mathf.Max(0.2f, stopDistance);
+        yield return MoveTransform(actor, destination, seconds);
+    }
+
+    private IEnumerator MoveTransform(Transform target, Vector3 destination, float seconds)
+    {
+        if (target == null) yield break;
+        Vector3 start = target.position;
+        Quaternion startRot = target.rotation;
+        Vector3 flat = destination - start;
+        flat.y = 0f;
+        Quaternion endRot = flat.sqrMagnitude > 0.01f ? Quaternion.LookRotation(flat.normalized, Vector3.up) : startRot;
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.05f, seconds);
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            target.position = Vector3.Lerp(start, destination, t);
+            target.rotation = Quaternion.Slerp(startRot, endRot, t);
+            yield return null;
+        }
+        target.position = destination;
+    }
+
+    private IEnumerator MoveTwoActorsToPoint(Transform police, Transform villager, Vector3 point, float seconds)
+    {
+        if (police == null || villager == null) yield break;
+        Vector3 policeOffset = police.position - villager.position;
+        policeOffset.y = 0f;
+        if (policeOffset.sqrMagnitude < 0.05f) policeOffset = Vector3.right * 0.65f;
+        policeOffset = policeOffset.normalized * 0.65f;
+        Vector3 policeTarget = point + policeOffset;
+        Vector3 villagerTarget = point;
+        Vector3 pStart = police.position;
+        Vector3 vStart = villager.position;
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.1f, seconds);
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            police.position = Vector3.Lerp(pStart, policeTarget, t);
+            villager.position = Vector3.Lerp(vStart, villagerTarget, t);
+            yield return null;
+        }
+        police.position = policeTarget;
+        villager.position = villagerTarget;
+    }
+
+    private IEnumerator MovePolicePairToExit(Transform first, Transform second, Vector3 target, float seconds)
+    {
+        if (first == null && second == null)
+        {
+            yield return new WaitForSeconds(Mathf.Max(0.1f, seconds));
+            yield break;
+        }
+
+        Vector3 firstStart = first != null ? first.position : Vector3.zero;
+        Vector3 secondStart = second != null ? second.position : Vector3.zero;
+        Vector3 side = Vector3.right * Mathf.Max(0.4f, policePairSpacing * 0.5f);
+        Vector3 firstTarget = target - side;
+        Vector3 secondTarget = target + side;
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.1f, seconds);
+        PlayAnimatorStateIfAvailable(first, policeWalkStateName);
+        PlayAnimatorStateIfAvailable(second, policeWalkStateName);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            if (first != null) first.position = Vector3.Lerp(firstStart, firstTarget, t);
+            if (second != null) second.position = Vector3.Lerp(secondStart, secondTarget, t);
+            yield return null;
+        }
+        PlayAnimatorStateIfAvailable(first, policeIdleStateName);
+        PlayAnimatorStateIfAvailable(second, policeIdleStateName);
+    }
+
+    private void PlayAnimatorStateIfAvailable(Transform actor, string stateName)
+    {
+        if (actor == null || string.IsNullOrWhiteSpace(stateName)) return;
+        Animator animator = actor.GetComponentInChildren<Animator>();
+        if (animator == null) return;
+        int hash = Animator.StringToHash(stateName);
+        if (animator.HasState(0, hash)) animator.Play(hash, 0, 0f);
+    }
+
+    private void PlayPoliceEventClip(AudioClip clip)
+    {
+        if (clip == null) return;
+        if (policeEventAudio == null)
+        {
+            policeEventAudio = gameObject.AddComponent<AudioSource>();
+            policeEventAudio.playOnAwake = false;
+            policeEventAudio.spatialBlend = 0f;
+        }
+        policeEventAudio.PlayOneShot(clip);
     }
 
     public void SetPlayerControl(bool enabled)
@@ -2589,6 +3112,43 @@ public class Chapter1PerformanceController : MonoBehaviour
             primaryPoliceActor = FindTransformByName(primaryPoliceObjectName);
         }
 
+
+        if (groomActor == null)
+        {
+            groomActor = FindTransformByName("新郎");
+        }
+
+        if (femaleVillagerActor == null)
+        {
+            femaleVillagerActor = FindTransformByName("新娘");
+            if (femaleVillagerActor == null) femaleVillagerActor = FindTransformByName("女性族人");
+        }
+
+        if (shovedVillagerActor == null)
+        {
+            shovedVillagerActor = FindTransformByName("被推族人");
+        }
+
+        if (ceremonyCup == null)
+        {
+            ceremonyCup = FindTransformByName("酒杯");
+        }
+        if (ceremonyCupRigidbody == null && ceremonyCup != null)
+        {
+            ceremonyCupRigidbody = ceremonyCup.GetComponent<Rigidbody>();
+        }
+
+        if (hutEntrancePoint == null)
+        {
+            hutEntrancePoint = FindTransformByName("小木屋入口");
+            if (hutEntrancePoint == null) hutEntrancePoint = FindTransformByName("HutEntrancePoint");
+        }
+
+        if (policeExitPoint == null)
+        {
+            policeExitPoint = FindTransformByName("PoliceExitPoint");
+        }
+
         if (policeGroup == null)
         {
             Transform police = FindTransformByName("PoliceIntrusionSequence");
@@ -2614,9 +3174,16 @@ public class Chapter1PerformanceController : MonoBehaviour
         showFallbackHud = true;
         showCenterInteractionMenu = true;
         showWorldInteractionPrompt = true;
-        requireFireDistanceForCenterMenu = true;
+        // 不再在遊戲開始時強制恢復火堆距離限制。
+        // 這樣 Inspector 中取消 Require Fire Distance For Center Menu 才會真的生效。
+        requireFireDistanceForCenterMenu = false;
         autoCreateMissingExplorationInteractions = true;
         startPoliceAfterDance = false;
+        requireWineBeforeDance = true;
+        requireWineAndFoodBeforeDance = true;
+        requireAllWeddingTasksBeforePolice = true;
+        autoStartPoliceAfterWeddingTasks = true;
+        foodTargetCount = Mathf.Max(1, foodTargetCount);
         centerDanceKey = GetDanceInteractionKey();
         if (wineBottleTargetSize <= 0f || wineBottleTargetSize > 0.4f)
         {

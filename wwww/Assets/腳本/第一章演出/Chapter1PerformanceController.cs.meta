@@ -1,2 +1,48 @@
 fileFormatVersion: 2
-guid: a2482ddb1974a494ea3ff756fa9fcd86
+guid: a4f1f9f47bae09941a8b3764c648de30
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - playerController: {instanceID: 0}
+  - characterController: {instanceID: 0}
+  - danceTimeline: {instanceID: 0}
+  - policeEnterTimeline: {instanceID: 0}
+  - interveneTimeline: {instanceID: 0}
+  - watchTimeline: {instanceID: 0}
+  - endingTimeline: {instanceID: 0}
+  - policeGroup: {instanceID: 0}
+  - weddingNpcGroup: {instanceID: 0}
+  - choiceFocusPoint: {instanceID: 0}
+  - playerRoot: {instanceID: 0}
+  - danceCenter: {instanceID: 0}
+  - dialogueUI: {instanceID: 0}
+  - choiceUI: {instanceID: 0}
+  - fadeCanvas: {instanceID: 0}
+  - weddingAmbience: {instanceID: 0}
+  - tensionAmbience: {instanceID: 0}
+  - heartbeatAudio: {instanceID: 0}
+  - narrationAudio: {instanceID: 0}
+  - introVoice1: {fileID: 8300000, guid: 93a10ef5466c75440b5af199daabeea6, type: 3}
+  - introVoice2: {fileID: 8300000, guid: 847d45c53231af140bfa0d32a2fb0e7e, type: 3}
+  - wineBottleTemplate: {fileID: 919132149155446097, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
+  - policeEntranceTarget: {instanceID: 0}
+  - primaryPoliceActor: {instanceID: 0}
+  - secondaryPoliceActor: {instanceID: 0}
+  - groomActor: {instanceID: 0}
+  - shovedVillagerActor: {instanceID: 0}
+  - femaleVillagerActor: {instanceID: 0}
+  - hutEntrancePoint: {instanceID: 0}
+  - policeExitPoint: {instanceID: 0}
+  - ceremonyCup: {instanceID: 0}
+  - ceremonyCupRigidbody: {instanceID: 0}
+  - policeEventAudio: {instanceID: 0}
+  - cupCrashClip: {instanceID: 0}
+  - struggleClip: {instanceID: 0}
+  - gunshotClip: {instanceID: 0}
+  - painfulCryClip: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
