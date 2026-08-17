@@ -6289,12 +6289,12 @@ MonoBehaviour:
   physicalInteractGamepadKey: 330
   physicalCancelKey: 113
   physicalPickupRange: 2.1
-  physicalDeliveryRange: 2.25
+  physicalDeliveryRange: 4
   physicalGiveSeconds: 0.45
   winePickupPoint: {fileID: 241933309}
   foodPickupPoint: {fileID: 2035685197}
   carryHoldPoint: {fileID: 0}
-  foodCarryTemplate: {fileID: 0}
+  foodCarryTemplate: {fileID: 2035685190}
   foodPickupObjectName: "\u98DF\u7269"
   wineDeliveryTargets:
   - {fileID: 1604896042}
@@ -7613,7 +7613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_Name
-      value: tripo_convert_33432f6c-9a70-4319-81af-522d42ff24f9 (1)
+      value: "\u8CFD\u5FB7\u514B\u5C0F\u5B69"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

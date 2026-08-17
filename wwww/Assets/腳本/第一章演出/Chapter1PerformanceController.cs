@@ -143,7 +143,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     public Transform foodPickupPoint;
     public Transform carryHoldPoint;
     public GameObject foodCarryTemplate;
-    public string foodPickupObjectName = "食物";
+    public string foodPickupObjectName = "烤魚";
     public Transform[] wineDeliveryTargets;
     public Transform[] foodDeliveryTargets;
     public Vector3 carryHoldLocalEuler = Vector3.zero;
@@ -934,6 +934,17 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        // 送酒與食物都完成後，E 必須留給舞蹈。
+        // 不要讓實體拿取系統先把 E 吃掉，否則下面的 UpdateCenterInteractionInput()
+        // 永遠收不到這次按鍵。
+        if (carriedWeddingItem == WeddingCarryItem.None
+            && AreWineAndFoodTasksComplete()
+            && !danceFinished
+            && !danceRoutineRunning)
+        {
+            return;
+        }
+
         physicalDeliveryInputConsumed = true;
 
         if (carriedWeddingItem == WeddingCarryItem.None)
@@ -989,11 +1000,33 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 playerPosition = GetCurrentPlayerPosition();
         float wineDistance = wineSource != null
-            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(wineSource))
+            ? GetPhysicalPickupDistance(wineSource, playerPosition)
             : float.MaxValue;
         float foodDistance = foodSource != null
-            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(foodSource))
+            ? GetPhysicalPickupDistance(foodSource, playerPosition)
             : float.MaxValue;
+
+        // 如果 Inspector 的 Food Pickup Point 指錯/太遠，
+        // 但玩家眼前有「烤魚、魚、食物」等物件，優先使用最近的食物。
+        if (!foodComplete)
+        {
+            Transform nearbyFood = FindBestScenePickupByKeywords(
+                "烤魚", "魚", "食物", "烤肉", "food", "fish", "meat");
+
+            if (nearbyFood != null)
+            {
+                float nearbyFoodDistance =
+                    GetPhysicalPickupDistance(nearbyFood, playerPosition);
+
+                if (foodSource == null
+                    || nearbyFoodDistance + 0.35f < foodDistance)
+                {
+                    foodSource = nearbyFood;
+                    foodPickupPoint = nearbyFood;
+                    foodDistance = nearbyFoodDistance;
+                }
+            }
+        }
 
         bool canPickupWine = !wineComplete && wineSource != null && wineDistance <= Mathf.Max(0.5f, physicalPickupRange);
         bool canPickupFood = !foodComplete && foodSource != null && foodDistance <= Mathf.Max(0.5f, physicalPickupRange);
@@ -1260,9 +1293,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             string.IsNullOrWhiteSpace(foodPickupObjectName) ? "食物" : foodPickupObjectName.Trim(),
             "食物",
             "烤肉",
-            "肉",
+            "烤魚",
+            "魚",
             "food",
             "meat",
+            "fish",
             "pig");
 
         if (foodFound != null)
@@ -1333,9 +1368,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             float distance =
-                GetFlatDistance(
-                    playerPosition,
-                    GetPhysicalPickupWorldPosition(candidate));
+                GetPhysicalPickupDistance(
+                    candidate,
+                    playerPosition);
 
             if (distance < bestDistance)
             {
@@ -1345,6 +1380,46 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return best;
+    }
+
+    private float GetPhysicalPickupDistance(Transform source, Vector3 playerPosition)
+    {
+        if (source == null)
+        {
+            return float.MaxValue;
+        }
+
+        Renderer[] renderers = source.GetComponentsInChildren<Renderer>(true);
+        float bestDistance = float.MaxValue;
+        bool foundRenderer = false;
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer == null || !renderer.enabled)
+            {
+                continue;
+            }
+
+            foundRenderer = true;
+
+            // 距離取「模型表面最近點」，所以就算 Pivot/Root 在很遠的位置，
+            // 玩家站在烤魚旁邊仍然會被判定為靠近。
+            Vector3 closestPoint = renderer.bounds.ClosestPoint(playerPosition);
+            float distance = GetFlatDistance(playerPosition, closestPoint);
+
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+            }
+        }
+
+        if (foundRenderer)
+        {
+            return bestDistance;
+        }
+
+        return GetFlatDistance(playerPosition, source.position);
     }
 
     private Vector3 GetPhysicalPickupWorldPosition(Transform source)
@@ -1882,16 +1957,32 @@ public class Chapter1PerformanceController : MonoBehaviour
             Vector3 playerPosition = GetCurrentPlayerPosition();
 
             float wineDistance = wineSource != null
-                ? GetFlatDistance(
-                    playerPosition,
-                    GetPhysicalPickupWorldPosition(wineSource))
+                ? GetPhysicalPickupDistance(wineSource, playerPosition)
                 : float.MaxValue;
 
             float foodDistance = foodSource != null
-                ? GetFlatDistance(
-                    playerPosition,
-                    GetPhysicalPickupWorldPosition(foodSource))
+                ? GetPhysicalPickupDistance(foodSource, playerPosition)
                 : float.MaxValue;
+
+            if (!foodComplete)
+            {
+                Transform nearbyFood = FindBestScenePickupByKeywords(
+                    "烤魚", "魚", "食物", "烤肉", "food", "fish", "meat");
+
+                if (nearbyFood != null)
+                {
+                    float nearbyFoodDistance =
+                        GetPhysicalPickupDistance(nearbyFood, playerPosition);
+
+                    if (foodSource == null
+                        || nearbyFoodDistance + 0.35f < foodDistance)
+                    {
+                        foodSource = nearbyFood;
+                        foodPickupPoint = nearbyFood;
+                        foodDistance = nearbyFoodDistance;
+                    }
+                }
+            }
 
             if (!wineComplete
                 && wineDistance <= Mathf.Max(0.5f, physicalPickupRange)
@@ -4597,7 +4688,17 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     public bool CanUseDanceInteraction()
     {
-        return IsFreeExplorationActive() && !danceFinished && !danceRoutineRunning;
+        if (!IsFreeExplorationActive() || danceFinished || danceRoutineRunning)
+        {
+            return false;
+        }
+
+        if (requireWineAndFoodBeforeDance && !AreWineAndFoodTasksComplete())
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public bool ShouldReserveEForDanceAtFireCenter()
