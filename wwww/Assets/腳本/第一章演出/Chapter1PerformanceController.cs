@@ -58,6 +58,12 @@ public class Chapter1PerformanceController : MonoBehaviour
     public AudioSource tensionAmbience;
     public AudioSource heartbeatAudio;
 
+    [Header("Wedding Music Volume")]
+    [Tooltip("婚禮背景音樂固定音量。0.005 = 很小聲。")]
+    [Range(0f, 1f)] public float weddingMusicVolume = 0.005f;
+    [Tooltip("警察事件開始前，每幀把 Wedding Ambience 音量鎖在 Wedding Music Volume，避免進 Play 後被其他設定改回 1。")]
+    public bool lockWeddingMusicVolumeUntilPolice = true;
+
     [Header("Story Music Transition")]
     public bool useStoryMusicCrossfade = true;
     public float storyMusicCrossfadeSeconds = 1.6f;
@@ -350,6 +356,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         RepairInteractionHudRuntimeDefaults();
         EnsureNarrationAudioSource();
+        ApplyWeddingMusicVolume();
 
         if (choiceUI != null)
         {
@@ -423,6 +430,26 @@ public class Chapter1PerformanceController : MonoBehaviour
         UpdateExplorationTimer();
         UpdateTemporaryMissionMovementClear();
         UpdateWorldInteractionPrompt();
+    }
+
+    private void LateUpdate()
+    {
+        // 婚禮階段固定背景音量，防止 Play 後被其他腳本、
+        // Animator / Timeline 或序列化舊值改回 1。
+        if (lockWeddingMusicVolumeUntilPolice && !policeSequenceStarted)
+        {
+            ApplyWeddingMusicVolume();
+        }
+    }
+
+    private void ApplyWeddingMusicVolume()
+    {
+        if (weddingAmbience == null)
+        {
+            return;
+        }
+
+        weddingAmbience.volume = Mathf.Clamp01(weddingMusicVolume);
     }
 
     private void OnGUI()
@@ -681,6 +708,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (weddingAmbience != null && !weddingAmbience.isPlaying)
         {
+            ApplyWeddingMusicVolume();
             weddingAmbience.Play();
         }
 
