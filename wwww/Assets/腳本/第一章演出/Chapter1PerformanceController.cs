@@ -201,6 +201,15 @@ public class Chapter1PerformanceController : MonoBehaviour
     public AudioClip gunshotClip;
     public AudioClip painfulCryClip;
 
+    [Header("Police Dialogue Voice")]
+    public AudioSource policeDialogueAudio;
+    [Range(0f, 1f)] public float policeDialogueVolume = 1f;
+    public AudioClip policeInsultVoice;
+    public AudioClip groomReplyVoice;
+    public AudioClip femaleResistVoice;
+    public AudioClip playerInterveneVoice;
+    public AudioClip policeWatchCommandVoice;
+
     [Header("Result For Later Chapters")]
     public bool saveResultToPlayerPrefs = true;
     public string conflictChoicePrefsKey = "Chapter1_ConflictChoice";
@@ -2236,13 +2245,19 @@ public class Chapter1PerformanceController : MonoBehaviour
         // 像過場動畫一樣：警察進場後，鏡頭自動轉向說話者。
         yield return CinematicPanTo(primaryPoliceActor, policeCameraPanSeconds);
 
-        ShowLine("日警", "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？", 4f);
-        yield return new WaitForSeconds(4f);
+        yield return PlayPoliceVoicedLine(
+            "日警",
+            "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
+            policeInsultVoice,
+            4f);
 
         yield return CinematicPanTo(groomActor, policeCameraPanSeconds);
 
-        ShowLine("新郎", "我們只是辦婚禮，沒有冒犯。", 3.2f);
-        yield return new WaitForSeconds(3.2f);
+        yield return PlayPoliceVoicedLine(
+            "新郎",
+            "我們只是辦婚禮，沒有冒犯。",
+            groomReplyVoice,
+            3.2f);
 
         if (useFallbackIncidentAnimation)
         {
@@ -2263,9 +2278,12 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             ShowLine("旁白", "另一名警察把目光轉向一名女性族人，伸手逼近她。周圍的族人立刻騷動起來。", 4f);
             yield return MoveActorNearTarget(harassingPolice, femaleVillagerActor.position, 1.0f, policeApproachWomanSeconds);
-            ShowLine("女性族人", "放開我！", 2.5f);
             PlayPoliceEventClip(struggleClip);
-            yield return new WaitForSeconds(2.3f);
+            yield return PlayPoliceVoicedLine(
+                "女性族人",
+                "放開我！",
+                femaleResistVoice,
+                2.5f);
         }
         else
         {
@@ -2646,8 +2664,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             morale += 2;
             peopleInjured += Mathf.Max(1, casualtyVillagers != null && casualtyVillagers.Length > 0 ? casualtyVillagers.Length : 2);
             SetMission("分支：你選擇上前阻止。族人的憤怒被點燃，場面急速失控。");
-            ShowLine("你", "夠了！不要再羞辱我們！", 2.8f);
-            yield return new WaitForSeconds(2.4f);
+            yield return PlayPoliceVoicedLine(
+                "你",
+                "夠了！不要再羞辱我們！",
+                playerInterveneVoice,
+                2.8f);
 
             if (interveneTimeline != null)
             {
@@ -2732,8 +2753,11 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator WatchFallbackRoutine()
     {
-        ShowLine("日警", "都給我安靜。你們最好記住自己的身分。", 3.2f);
-        yield return new WaitForSeconds(2.8f);
+        yield return PlayPoliceVoicedLine(
+            "日警",
+            "都給我安靜。你們最好記住自己的身分。",
+            policeWatchCommandVoice,
+            3.2f);
 
         Transform draggingPolice = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
         if (femaleVillagerActor != null && draggingPolice != null && hutEntrancePoint != null)
@@ -2939,6 +2963,58 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (animator == null) return;
         int hash = Animator.StringToHash(stateName);
         if (animator.HasState(0, hash)) animator.Play(hash, 0, 0f);
+    }
+
+    private void EnsurePoliceDialogueAudioSource()
+    {
+        if (policeDialogueAudio == null)
+        {
+            policeDialogueAudio = gameObject.AddComponent<AudioSource>();
+        }
+
+        policeDialogueAudio.playOnAwake = false;
+        policeDialogueAudio.loop = false;
+
+        // 過場對話先使用 2D，確保玩家不會因角色距離而聽不到。
+        policeDialogueAudio.spatialBlend = 0f;
+        policeDialogueAudio.volume = Mathf.Clamp01(policeDialogueVolume);
+    }
+
+    private IEnumerator PlayPoliceVoicedLine(
+        string speaker,
+        string line,
+        AudioClip voiceClip,
+        float fallbackSeconds)
+    {
+        float duration = voiceClip != null
+            ? Mathf.Max(0.1f, voiceClip.length)
+            : Mathf.Max(0.1f, fallbackSeconds);
+
+        ShowLine(speaker, line, duration + 0.1f);
+
+        if (voiceClip == null)
+        {
+            yield return new WaitForSeconds(duration);
+            yield break;
+        }
+
+        EnsurePoliceDialogueAudioSource();
+
+        if (policeDialogueAudio == null)
+        {
+            yield return new WaitForSeconds(duration);
+            yield break;
+        }
+
+        policeDialogueAudio.Stop();
+        policeDialogueAudio.clip = voiceClip;
+        policeDialogueAudio.volume = Mathf.Clamp01(policeDialogueVolume);
+        policeDialogueAudio.Play();
+
+        while (policeDialogueAudio != null && policeDialogueAudio.isPlaying)
+        {
+            yield return null;
+        }
     }
 
     private void PlayPoliceEventClip(AudioClip clip)
