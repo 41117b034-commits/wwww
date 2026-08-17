@@ -127,6 +127,46 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float interactionArcHeight = 1.15f;
     public float heldPropScale = 0.28f;
     public bool lockPlayerDuringInteractionAnimation = false;
+    [Tooltip("開啟後，送酒/送食物必須由玩家自己走到目標旁邊互動，不會再由系統自動帶路。")]
+    public bool manualWalkForItemTasks = true;
+
+    [Header("Physical Wedding Delivery - Recommended")]
+    [Tooltip("最佳版：玩家先走到酒/食物旁拿取，再自己走到 NPC 旁交付。完全不移動 XR Origin。")]
+    public bool usePhysicalWeddingDelivery = true;
+    public KeyCode physicalInteractKey = KeyCode.E;
+    public KeyCode physicalInteractGamepadKey = KeyCode.JoystickButton0;
+    public KeyCode physicalCancelKey = KeyCode.Q;
+    public float physicalPickupRange = 3.2f;
+    public float physicalDeliveryRange = 2.25f;
+    public float physicalGiveSeconds = 0.45f;
+    public Transform winePickupPoint;
+    public Transform foodPickupPoint;
+    public Transform carryHoldPoint;
+    public GameObject foodCarryTemplate;
+    public string foodPickupObjectName = "食物";
+    public Transform[] wineDeliveryTargets;
+    public Transform[] foodDeliveryTargets;
+    public Vector3 carryHoldLocalEuler = Vector3.zero;
+
+    [Header("Delivery Target Guidance - Very Obvious")]
+    public bool showDeliveryTargetMarker = true;
+    [Tooltip("可選：自訂箭頭/驚嘆號 Prefab。留 None 會自動生成黃色旋轉菱形。")]
+    public GameObject deliveryTargetMarkerPrefab;
+    public float deliveryTargetMarkerHeight = 2.35f;
+    public float deliveryTargetMarkerScale = 0.42f;
+    public float deliveryTargetMarkerBobHeight = 0.16f;
+    public float deliveryTargetMarkerSpinSpeed = 110f;
+    public bool pulseDeliveryTargetMarker = true;
+    public Color deliveryTargetMarkerColor = new Color(1f, 0.78f, 0.05f, 1f);
+    public bool showDeliveryTargetNameAndDistance = true;
+
+    [Header("Delivery NPC Stationary")]
+    [Tooltip("勾選後，Wine/Food Delivery Targets 裡的 NPC 不會再繞圈，會固定站著等玩家。")]
+    public bool keepDeliveryTargetsStationary = true;
+    [Tooltip("如果 NPC 是 DanceCirclePivot 的子物件，會把該角色 Root 從旋轉 Pivot 底下移出，保留原本世界位置。")]
+    public bool detachDeliveryTargetsFromDancePivot = true;
+    public string deliveryTargetIdleStateName = "Idle";
+
     public bool guidePlayerDuringItemInteractions = true;
     public float guidedWalkToPickupSeconds = 1.15f;
     public float guidedWalkToReceiverSeconds = 1.65f;
@@ -221,6 +261,22 @@ public class Chapter1PerformanceController : MonoBehaviour
     public string conflictChoicePrefsKey = "Chapter1_ConflictChoice";
     public string peopleInjuredPrefsKey = "Chapter1_PeopleInjured";
     public string moralePrefsKey = "Chapter1_Morale";
+
+    private enum WeddingCarryItem
+    {
+        None,
+        Wine,
+        Food
+    }
+
+    private WeddingCarryItem carriedWeddingItem = WeddingCarryItem.None;
+    private GameObject physicalCarriedProp;
+    private bool physicalDeliveryAnimating;
+    private bool physicalDeliveryInputConsumed;
+
+    private GameObject activeDeliveryTargetMarker;
+    private Transform activeDeliveryTarget;
+    private Vector3 deliveryMarkerBaseScale = Vector3.one;
 
     private int deliveredWineCount;
     private int sharedFoodCount;
@@ -318,6 +374,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private void Start()
     {
         EnsureWeddingCrowdDancers();
+        PrepareDeliveryTaskNPCs();
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
         {
@@ -359,6 +416,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
+        physicalDeliveryInputConsumed = false;
+        UpdatePhysicalWeddingDelivery();
+        UpdateDeliveryTargetGuidance();
         UpdateCenterInteractionInput();
         UpdateExplorationTimer();
         UpdateTemporaryMissionMovementClear();
@@ -374,8 +434,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         EnsureHudStyles();
 
-        // 開場故事期間，只允許「故事字幕」出現。
-        // 若已經有 Chapter1DialogueUI，就完全不畫舊版 OnGUI 字幕，避免兩層字幕重疊。
+        // 開場期間只顯示字幕，不顯示任務 HUD。
         if (openingStoryPlaying)
         {
             if (dialogueUI == null)
@@ -391,20 +450,44 @@ public class Chapter1PerformanceController : MonoBehaviour
             DrawExplorationTimer();
         }
 
+        // 左上只放簡潔任務進度，不再塞長句。
+        string displayMission = GetCleanMissionDisplayText();
+        if (!string.IsNullOrEmpty(displayMission))
+        {
+            float missionWidth = Mathf.Min(Screen.width - 40f, 430f);
+            float missionHeight = IsFreeExplorationActive() ? 78f : 92f;
+
+            Rect missionBox = new Rect(20f, 20f, missionWidth, missionHeight);
+            GUI.Box(missionBox, GUIContent.none, hudBoxStyle);
+
+            string title = IsFreeExplorationActive() ? "婚禮任務" : "目前目標";
+
+            GUI.Label(
+                new Rect(
+                    missionBox.x + 18f,
+                    missionBox.y + 10f,
+                    missionBox.width - 36f,
+                    24f),
+                title,
+                hudTitleStyle);
+
+            GUI.Label(
+                new Rect(
+                    missionBox.x + 18f,
+                    missionBox.y + 35f,
+                    missionBox.width - 36f,
+                    missionBox.height - 40f),
+                displayMission,
+                hudBodyStyle);
+        }
+
+        // 互動提示只在底部中央顯示一個小框。
         if (ShouldShowCenterInteractionMenu())
         {
             DrawCenterInteractionMenu();
         }
 
-        if (!string.IsNullOrEmpty(missionText))
-        {
-            float missionWidth = Mathf.Min(Screen.width - 40f, 560f);
-            GUI.Box(new Rect(20f, 20f, missionWidth, 74f), GUIContent.none, hudBoxStyle);
-            GUI.Label(new Rect(40f, 30f, missionWidth - 40f, 24f), "目前目標", hudTitleStyle);
-            GUI.Label(new Rect(40f, 54f, missionWidth - 40f, 34f), missionText, hudBodyStyle);
-        }
-
-        // 有正式的 DialogueUI 時，不再額外畫 fallback 對話框。
+        // 有正式 DialogueUI 時不重複畫 fallback 字幕。
         if (dialogueUI == null)
         {
             DrawFallbackDialogue();
@@ -412,25 +495,65 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (waitingForChoice && choiceUI == null)
         {
-            float width = Mathf.Min(Screen.width - 40f, 680f);
-            float height = 190f;
-            Rect box = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
+            float width = Mathf.Min(Screen.width - 40f, 620f);
+            float height = 178f;
+            Rect box = new Rect(
+                (Screen.width - width) * 0.5f,
+                (Screen.height - height) * 0.5f,
+                width,
+                height);
+
             GUI.Box(box, GUIContent.none, hudBoxStyle);
-            GUI.Label(new Rect(box.x + 24f, box.y + 22f, box.width - 48f, 36f), choiceQuestion, hudTitleStyle);
 
-            Rect optionA = new Rect(box.x + 24f, box.y + 76f, box.width - 48f, 42f);
-            Rect optionB = new Rect(box.x + 24f, box.y + 126f, box.width - 48f, 42f);
+            GUI.Label(
+                new Rect(box.x + 24f, box.y + 18f, box.width - 48f, 36f),
+                choiceQuestion,
+                hudTitleStyle);
 
-            if (GUI.Button(optionA, "1  " + optionALabel, hudButtonStyle))
+            Rect optionA =
+                new Rect(box.x + 24f, box.y + 68f, box.width - 48f, 40f);
+
+            Rect optionB =
+                new Rect(box.x + 24f, box.y + 116f, box.width - 48f, 40f);
+
+            if (GUI.Button(optionA, "1　" + optionALabel, hudButtonStyle))
             {
                 ChooseIntervene();
             }
 
-            if (GUI.Button(optionB, "2  " + optionBLabel, hudButtonStyle))
+            if (GUI.Button(optionB, "2　" + optionBLabel, hudButtonStyle))
             {
                 ChooseWatch();
             }
         }
+    }
+
+    private string GetCleanMissionDisplayText()
+    {
+        if (!IsFreeExplorationActive())
+        {
+            return missionText;
+        }
+
+        int wineTarget = Mathf.Max(1, wineTargetCount);
+        int foodTarget = Mathf.Max(1, foodTargetCount);
+
+        string wine =
+            deliveredWineCount >= wineTarget
+                ? "送酒 " + wineTarget + "/" + wineTarget + " ✓"
+                : "送酒 " + deliveredWineCount + "/" + wineTarget;
+
+        string food =
+            sharedFoodCount >= foodTarget
+                ? "食物 " + foodTarget + "/" + foodTarget + " ✓"
+                : "食物 " + sharedFoodCount + "/" + foodTarget;
+
+        string dance =
+            danceFinished
+                ? "舞蹈 ✓"
+                : (AreWineAndFoodTasksComplete() ? "舞蹈 可進行" : "舞蹈 未開放");
+
+        return wine + "　｜　" + food + "　｜　" + dance;
     }
 
     private void DrawFallbackDialogue()
@@ -440,12 +563,25 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        float width = Mathf.Min(Screen.width - 40f, 840f);
-        float height = 118f;
-        Rect box = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 36f, width, height);
+        float width = Mathf.Min(Screen.width - 40f, 720f);
+        float height = 96f;
+        Rect box = new Rect(
+            (Screen.width - width) * 0.5f,
+            Screen.height - height - 24f,
+            width,
+            height);
+
         GUI.Box(box, GUIContent.none, hudBoxStyle);
-        GUI.Label(new Rect(box.x + 24f, box.y + 18f, box.width - 48f, 28f), fallbackSpeaker, hudTitleStyle);
-        GUI.Label(new Rect(box.x + 24f, box.y + 50f, box.width - 48f, 52f), fallbackLine, hudBodyStyle);
+
+        GUI.Label(
+            new Rect(box.x + 20f, box.y + 12f, box.width - 40f, 24f),
+            fallbackSpeaker,
+            hudTitleStyle);
+
+        GUI.Label(
+            new Rect(box.x + 20f, box.y + 39f, box.width - 40f, 46f),
+            fallbackLine,
+            hudBodyStyle);
     }
 
     public void BeginChapter()
@@ -457,6 +593,17 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         storyStarted = true;
         openingStoryPlaying = true;
+
+        if (physicalCarriedProp != null)
+        {
+            Destroy(physicalCarriedProp);
+            physicalCarriedProp = null;
+        }
+        carriedWeddingItem = WeddingCarryItem.None;
+        physicalDeliveryAnimating = false;
+        physicalDeliveryInputConsumed = false;
+        ClearDeliveryTargetMarker();
+
         deliveredWineCount = 0;
         sharedFoodCount = 0;
         deliveredWineTargets.Clear();
@@ -601,6 +748,12 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         freeExplorationUnlocked = true;
         CreateMissingExplorationInteractions();
+
+        if (usePhysicalWeddingDelivery)
+        {
+            DisableLegacyItemTaskInteractables();
+        }
+
         StartExplorationTimer();
     }
 
@@ -661,14 +814,23 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void DrawExplorationTimer()
     {
-        float width = 220f;
-        float height = 78f;
+        float width = 168f;
+        float height = 68f;
         float x = Screen.width - width - 20f;
         float y = 20f;
+
         Rect box = new Rect(x, y, width, height);
         GUI.Box(box, GUIContent.none, timerBoxStyle);
-        GUI.Label(new Rect(x + 16f, y + 10f, width - 32f, 24f), explorationTimerTitle, timerTitleStyle);
-        GUI.Label(new Rect(x + 16f, y + 34f, width - 32f, 34f), FormatTimer(explorationTimerRemaining), timerNumberStyle);
+
+        GUI.Label(
+            new Rect(x + 14f, y + 7f, width - 28f, 22f),
+            explorationTimerTitle,
+            timerTitleStyle);
+
+        GUI.Label(
+            new Rect(x + 14f, y + 27f, width - 28f, 32f),
+            FormatTimer(explorationTimerRemaining),
+            timerNumberStyle);
     }
 
     private string FormatTimer(float seconds)
@@ -686,17 +848,865 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        // 實體送酒/送食物模式會先吃掉 E，避免交付同時誤觸舞蹈。
+        if (usePhysicalWeddingDelivery && physicalDeliveryInputConsumed)
+        {
+            return;
+        }
+
         if (IsCenterActionPressed(GetDanceInteractionKey(), centerDanceAltKey, centerDanceGamepadKey) && CanUseDanceInteraction())
         {
             JoinDance(null, playerRoot);
+            return;
         }
-        else if (IsCenterActionPressed(centerWineKey, centerWineAltKey, centerWineGamepadKey))
+
+        if (usePhysicalWeddingDelivery)
         {
-            DeliverWine("賓客", FindNextInteractionTarget(true));
+            // 最佳版不再使用遠端 R/T 自動送達。
+            if (IsCenterActionPressed(centerWineKey, centerWineAltKey, centerWineGamepadKey))
+            {
+                ShowLine("任務", "請先走到酒旁邊拿起酒，再自己走到賓客旁按 E 交付。", 2.6f);
+            }
+            else if (IsCenterActionPressed(centerFoodKey, centerFoodAltKey, centerFoodGamepadKey))
+            {
+                ShowLine("任務", "請先走到食物旁邊拿起食物，再自己走到族人旁按 E 交付。", 2.6f);
+            }
+            return;
+        }
+
+        if (IsCenterActionPressed(centerWineKey, centerWineAltKey, centerWineGamepadKey))
+        {
+            if (manualWalkForItemTasks)
+            {
+                ShowLine("任務", "請自己走到送酒目標旁邊，靠近後按 R / E 送酒。", 2.4f);
+            }
+            else
+            {
+                DeliverWine("賓客", FindNextInteractionTarget(true));
+            }
         }
         else if (IsCenterActionPressed(centerFoodKey, centerFoodAltKey, centerFoodGamepadKey))
         {
-            ShareFood("族人", FindNextInteractionTarget(false));
+            if (manualWalkForItemTasks)
+            {
+                ShowLine("任務", "請自己走到分享食物的族人旁邊，靠近後按 T / E 分享食物。", 2.4f);
+            }
+            else
+            {
+                ShareFood("族人", FindNextInteractionTarget(false));
+            }
+        }
+    }
+
+    private void UpdatePhysicalWeddingDelivery()
+    {
+        if (!usePhysicalWeddingDelivery || !IsFreeExplorationActive() || policeSequenceStarted || waitingForChoice)
+        {
+            return;
+        }
+
+        if (physicalCarriedProp != null && !physicalDeliveryAnimating)
+        {
+            PlacePhysicalCarriedProp();
+        }
+
+        if (physicalDeliveryAnimating)
+        {
+            return;
+        }
+
+        if (IsKeyPressed(physicalCancelKey) && carriedWeddingItem != WeddingCarryItem.None)
+        {
+            CancelPhysicalCarry();
+            physicalDeliveryInputConsumed = true;
+            return;
+        }
+
+        KeyCode resolvedPhysicalInteractKey =
+            physicalInteractKey == KeyCode.None ? KeyCode.E : physicalInteractKey;
+
+        bool interactPressed =
+            IsKeyPressed(resolvedPhysicalInteractKey)
+            || IsKeyPressed(physicalInteractGamepadKey);
+
+        if (!interactPressed)
+        {
+            return;
+        }
+
+        physicalDeliveryInputConsumed = true;
+
+        if (carriedWeddingItem == WeddingCarryItem.None)
+        {
+            TryPickupPhysicalWeddingItem();
+            return;
+        }
+
+        bool isWine = carriedWeddingItem == WeddingCarryItem.Wine;
+        Transform receiver = GetDesignatedPhysicalDeliveryTarget(isWine);
+
+        if (receiver == null)
+        {
+            ShowLine(
+                "系統",
+                isWine
+                    ? "尚未設定下一位送酒 NPC。請設定 Wine Delivery Targets。"
+                    : "尚未設定下一位分享食物 NPC。請設定 Food Delivery Targets。",
+                2.8f);
+            return;
+        }
+
+        float receiverDistance =
+            GetFlatDistance(GetCurrentPlayerPosition(), receiver.position);
+
+        if (receiverDistance > Mathf.Max(0.5f, physicalDeliveryRange))
+        {
+            ShowLine(
+                "任務",
+                "目標：" + receiver.name
+                + "　距離約 " + receiverDistance.ToString("0.0") + "m"
+                + "\n請走到頭上有黃色標記的 NPC 旁邊再按 E。",
+                2.6f);
+            return;
+        }
+
+        StartCoroutine(CompletePhysicalWeddingDelivery(receiver, isWine));
+    }
+
+    private void TryPickupPhysicalWeddingItem()
+    {
+        bool wineComplete = deliveredWineCount >= Mathf.Max(1, wineTargetCount);
+        bool foodComplete = sharedFoodCount >= Mathf.Max(1, foodTargetCount);
+
+        if (wineComplete && foodComplete)
+        {
+            ShowLine("任務", "送酒與分享食物都完成了，去舞圈加入舞蹈吧。", 2.3f);
+            return;
+        }
+
+        Transform wineSource = ResolvePhysicalPickupPoint(true);
+        Transform foodSource = ResolvePhysicalPickupPoint(false);
+
+        Vector3 playerPosition = GetCurrentPlayerPosition();
+        float wineDistance = wineSource != null
+            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(wineSource))
+            : float.MaxValue;
+        float foodDistance = foodSource != null
+            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(foodSource))
+            : float.MaxValue;
+
+        bool canPickupWine = !wineComplete && wineSource != null && wineDistance <= Mathf.Max(0.5f, physicalPickupRange);
+        bool canPickupFood = !foodComplete && foodSource != null && foodDistance <= Mathf.Max(0.5f, physicalPickupRange);
+
+        if (!canPickupWine && !canPickupFood)
+        {
+            if (!wineComplete && wineSource == null)
+            {
+                ShowLine("系統", "尚未指定 Wine Pickup Point。請在 Inspector 把酒瓶/酒甕位置拖進去。", 3f);
+                return;
+            }
+
+            if (!foodComplete && foodSource == null)
+            {
+                ShowLine("系統", "尚未指定 Food Pickup Point。請在 Inspector 把食物位置拖進去。", 3f);
+                return;
+            }
+
+            string distanceHint = "";
+            if (!wineComplete && wineSource != null && wineDistance < float.MaxValue)
+            {
+                distanceHint = "（離酒約 " + wineDistance.ToString("0.0") + "m）";
+            }
+            else if (!foodComplete && foodSource != null && foodDistance < float.MaxValue)
+            {
+                distanceHint = "（離食物約 " + foodDistance.ToString("0.0") + "m）";
+            }
+
+            ShowLine(
+                "任務",
+                (!wineComplete && !foodComplete
+                    ? "再靠近酒或食物一點，然後按 E 拿取。"
+                    : (!wineComplete ? "再靠近酒一點，然後按 E 拿取。" : "再靠近食物一點，然後按 E 拿取。"))
+                    + distanceHint,
+                2.5f);
+            return;
+        }
+
+        bool pickupWine = canPickupWine && (!canPickupFood || wineDistance <= foodDistance);
+        PickupPhysicalWeddingItem(pickupWine);
+    }
+
+    private void PickupPhysicalWeddingItem(bool isWine)
+    {
+        if (physicalCarriedProp != null)
+        {
+            Destroy(physicalCarriedProp);
+            physicalCarriedProp = null;
+        }
+
+        carriedWeddingItem = isWine ? WeddingCarryItem.Wine : WeddingCarryItem.Food;
+        physicalCarriedProp = CreatePhysicalCarryProp(isWine);
+        RefreshDeliveryTargetMarker();
+
+        if (physicalCarriedProp == null)
+        {
+            carriedWeddingItem = WeddingCarryItem.None;
+            ShowLine("系統", "拿取物件建立失敗。", 2f);
+            return;
+        }
+
+        PlacePhysicalCarriedProp();
+
+        ShowLine(
+            "動作",
+            isWine
+                ? "你拿起一瓶酒。現在自己走到尚未收到酒的賓客旁邊。"
+                : "你拿起食物。現在自己走到尚未收到食物的族人旁邊。",
+            2.8f);
+
+        SetTemporaryMission(
+            isWine
+                ? "手上：酒　走到賓客旁，靠近後按 E 交付。Q 可放回。"
+                : "手上：食物　走到族人旁，靠近後按 E 交付。Q 可放回。",
+            4f);
+    }
+
+    private GameObject CreatePhysicalCarryProp(bool isWine)
+    {
+        if (!isWine && foodCarryTemplate != null)
+        {
+            GameObject food = Instantiate(foodCarryTemplate);
+            food.name = "Chapter1_Food_PhysicalCarry";
+            food.SetActive(true);
+            PrepareHeldProp(food);
+            return food;
+        }
+
+        GameObject prop = CreateHeldProp(isWine);
+        if (prop != null)
+        {
+            prop.name = isWine ? "Chapter1_Wine_PhysicalCarry" : "Chapter1_Food_PhysicalCarry";
+            PrepareHeldProp(prop);
+        }
+        return prop;
+    }
+
+    private void PlacePhysicalCarriedProp()
+    {
+        if (physicalCarriedProp == null)
+        {
+            return;
+        }
+
+        if (carryHoldPoint != null)
+        {
+            physicalCarriedProp.transform.position = carryHoldPoint.position;
+            physicalCarriedProp.transform.rotation = carryHoldPoint.rotation * Quaternion.Euler(carryHoldLocalEuler);
+            return;
+        }
+
+        // 沒指定手部 Hold Point 時，自動固定在玩家視野右下方，PC/VR 都能測。
+        physicalCarriedProp.transform.position = GetCarriedPropPosition();
+
+        Transform view = GetPlayerViewTransform();
+        if (view == null)
+        {
+            return;
+        }
+
+        if (carriedWeddingItem == WeddingCarryItem.Wine)
+        {
+            Vector3 horizontalView = Vector3.ProjectOnPlane(view.forward, Vector3.up);
+            if (horizontalView.sqrMagnitude < 0.001f)
+            {
+                horizontalView = Vector3.forward;
+            }
+
+            Quaternion viewYaw = Quaternion.LookRotation(horizontalView.normalized, Vector3.up);
+            physicalCarriedProp.transform.rotation =
+                viewYaw * wineBottleUprightOffset * Quaternion.Euler(wineBottleHeldEulerOffset);
+        }
+        else
+        {
+            physicalCarriedProp.transform.rotation =
+                Quaternion.LookRotation(view.forward, Vector3.up) * Quaternion.Euler(carryHoldLocalEuler);
+        }
+    }
+
+    private IEnumerator CompletePhysicalWeddingDelivery(Transform receiver, bool isWine)
+    {
+        if (receiver == null || physicalCarriedProp == null)
+        {
+            yield break;
+        }
+
+        physicalDeliveryAnimating = true;
+
+        GameObject prop = physicalCarriedProp;
+        Vector3 start = prop.transform.position;
+        Vector3 end = receiver.position + Vector3.up * 1.05f;
+        float duration = Mathf.Max(0.15f, physicalGiveSeconds);
+        float elapsed = 0f;
+
+        while (elapsed < duration && prop != null)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            Vector3 p = Vector3.Lerp(start, end, t);
+            p.y += Mathf.Sin(t * Mathf.PI) * 0.08f;
+            prop.transform.position = p;
+            yield return null;
+        }
+
+        if (prop != null)
+        {
+            Destroy(prop);
+        }
+
+        physicalCarriedProp = null;
+        carriedWeddingItem = WeddingCarryItem.None;
+        ClearDeliveryTargetMarker();
+
+        // 任務計數沿用原本已經測通的 DeliverWine / ShareFood，
+        // 但暫時關掉舊動畫，避免又生成第二個酒瓶/食物。
+        bool oldPlayInteractionAnimations = playInteractionAnimations;
+        playInteractionAnimations = false;
+
+        if (isWine)
+        {
+            DeliverWine(receiver.name, receiver);
+        }
+        else
+        {
+            ShareFood(receiver.name, receiver);
+        }
+
+        playInteractionAnimations = oldPlayInteractionAnimations;
+        physicalDeliveryAnimating = false;
+    }
+
+    private void CancelPhysicalCarry()
+    {
+        if (physicalCarriedProp != null)
+        {
+            Destroy(physicalCarriedProp);
+            physicalCarriedProp = null;
+        }
+
+        carriedWeddingItem = WeddingCarryItem.None;
+        physicalDeliveryAnimating = false;
+        ClearDeliveryTargetMarker();
+        ShowLine("動作", "你先把手上的物品放回去了。", 1.8f);
+        UpdateWeddingQuestMission();
+    }
+
+    private Transform ResolvePhysicalPickupPoint(bool isWine)
+    {
+        if (isWine)
+        {
+            // Wine Pickup Point 必須是「場景裡的物件」，不能是 Project 裡的 Prefab 資產。
+            if (IsValidScenePickupTransform(winePickupPoint))
+            {
+                return winePickupPoint;
+            }
+
+            winePickupPoint = null;
+
+            if (wineBottleTemplate != null
+                && wineBottleTemplate.scene.IsValid()
+                && wineBottleTemplate.activeInHierarchy)
+            {
+                winePickupPoint = wineBottleTemplate.transform;
+                return winePickupPoint;
+            }
+
+            string requestedName =
+                string.IsNullOrWhiteSpace(wineBottleObjectName)
+                    ? "酒瓶"
+                    : wineBottleObjectName.Trim();
+
+            Transform found = FindBestScenePickupByKeywords(
+                requestedName,
+                "酒瓶",
+                "酒",
+                "wine",
+                "bottle",
+                "酒甕");
+
+            if (found != null)
+            {
+                winePickupPoint = found;
+                return winePickupPoint;
+            }
+
+            // 最後保底：如果酒就在婚禮火堆附近，但物件命名太特殊，
+            // 仍允許玩家到舞圈/火堆附近按 E 測試流程。
+            if (danceCenter != null)
+            {
+                return danceCenter;
+            }
+
+            return null;
+        }
+
+        if (IsValidScenePickupTransform(foodPickupPoint))
+        {
+            return foodPickupPoint;
+        }
+
+        foodPickupPoint = null;
+
+        Transform foodFound = FindBestScenePickupByKeywords(
+            string.IsNullOrWhiteSpace(foodPickupObjectName) ? "食物" : foodPickupObjectName.Trim(),
+            "食物",
+            "烤肉",
+            "肉",
+            "food",
+            "meat",
+            "pig");
+
+        if (foodFound != null)
+        {
+            foodPickupPoint = foodFound;
+            return foodPickupPoint;
+        }
+
+        // 食物沒指定時也以婚禮中心作為保底測試點。
+        if (danceCenter != null)
+        {
+            return danceCenter;
+        }
+
+        return null;
+    }
+
+    private bool IsValidScenePickupTransform(Transform candidate)
+    {
+        return candidate != null
+            && candidate.gameObject != null
+            && candidate.gameObject.scene.IsValid()
+            && candidate.gameObject.activeInHierarchy;
+    }
+
+    private Transform FindBestScenePickupByKeywords(params string[] keywords)
+    {
+        Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+        Transform best = null;
+        float bestDistance = float.MaxValue;
+        Vector3 playerPosition = GetCurrentPlayerPosition();
+
+        for (int i = 0; i < allTransforms.Length; i++)
+        {
+            Transform candidate = allTransforms[i];
+            if (!IsValidScenePickupTransform(candidate))
+            {
+                continue;
+            }
+
+            string candidateName = candidate.name;
+            if (string.IsNullOrWhiteSpace(candidateName))
+            {
+                continue;
+            }
+
+            bool nameMatched = false;
+            for (int k = 0; k < keywords.Length; k++)
+            {
+                string keyword = keywords[k];
+                if (string.IsNullOrWhiteSpace(keyword))
+                {
+                    continue;
+                }
+
+                if (candidateName.IndexOf(
+                    keyword,
+                    System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    nameMatched = true;
+                    break;
+                }
+            }
+
+            if (!nameMatched)
+            {
+                continue;
+            }
+
+            float distance =
+                GetFlatDistance(
+                    playerPosition,
+                    GetPhysicalPickupWorldPosition(candidate));
+
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
+
+    private Vector3 GetPhysicalPickupWorldPosition(Transform source)
+    {
+        if (source == null)
+        {
+            return GetCurrentPlayerPosition();
+        }
+
+        Renderer[] renderers = source.GetComponentsInChildren<Renderer>(true);
+        bool hasBounds = false;
+        Bounds combinedBounds = new Bounds(source.position, Vector3.zero);
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer == null || !renderer.enabled)
+            {
+                continue;
+            }
+
+            if (!hasBounds)
+            {
+                combinedBounds = renderer.bounds;
+                hasBounds = true;
+            }
+            else
+            {
+                combinedBounds.Encapsulate(renderer.bounds);
+            }
+        }
+
+        return hasBounds ? combinedBounds.center : source.position;
+    }
+
+    private Transform GetDesignatedPhysicalDeliveryTarget(bool isWine)
+    {
+        Transform[] targets = isWine ? wineDeliveryTargets : foodDeliveryTargets;
+        HashSet<int> completedTargets = isWine ? deliveredWineTargets : sharedFoodTargets;
+
+        if (targets == null || targets.Length == 0)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            Transform candidate = targets[i];
+            if (candidate == null)
+            {
+                continue;
+            }
+
+            if (completedTargets.Contains(candidate.GetInstanceID()))
+            {
+                continue;
+            }
+
+            return candidate;
+        }
+
+        return null;
+    }
+
+    private void RefreshDeliveryTargetMarker()
+    {
+        if (!showDeliveryTargetMarker || carriedWeddingItem == WeddingCarryItem.None)
+        {
+            ClearDeliveryTargetMarker();
+            return;
+        }
+
+        Transform target = GetDesignatedPhysicalDeliveryTarget(
+            carriedWeddingItem == WeddingCarryItem.Wine);
+
+        if (target == null)
+        {
+            ClearDeliveryTargetMarker();
+            return;
+        }
+
+        if (activeDeliveryTargetMarker != null && activeDeliveryTarget == target)
+        {
+            return;
+        }
+
+        ClearDeliveryTargetMarker();
+        activeDeliveryTarget = target;
+
+        if (keepDeliveryTargetsStationary)
+        {
+            StopDeliveryTargetNPC(target);
+        }
+
+        if (deliveryTargetMarkerPrefab != null)
+        {
+            activeDeliveryTargetMarker = Instantiate(deliveryTargetMarkerPrefab);
+        }
+        else
+        {
+            activeDeliveryTargetMarker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            Collider markerCollider = activeDeliveryTargetMarker.GetComponent<Collider>();
+            if (markerCollider != null)
+            {
+                Destroy(markerCollider);
+            }
+
+            Renderer markerRenderer = activeDeliveryTargetMarker.GetComponent<Renderer>();
+            if (markerRenderer != null && markerRenderer.material != null)
+            {
+                Material material = markerRenderer.material;
+
+                if (material.HasProperty("_BaseColor"))
+                {
+                    material.SetColor("_BaseColor", deliveryTargetMarkerColor);
+                }
+
+                if (material.HasProperty("_Color"))
+                {
+                    material.SetColor("_Color", deliveryTargetMarkerColor);
+                }
+
+                if (material.HasProperty("_EmissionColor"))
+                {
+                    material.EnableKeyword("_EMISSION");
+                    material.SetColor("_EmissionColor", deliveryTargetMarkerColor * 2.2f);
+                }
+            }
+
+            activeDeliveryTargetMarker.transform.rotation =
+                Quaternion.Euler(45f, 45f, 45f);
+        }
+
+        activeDeliveryTargetMarker.name = "DeliveryTargetMarker_" + target.name;
+        deliveryMarkerBaseScale =
+            Vector3.one * Mathf.Max(0.08f, deliveryTargetMarkerScale);
+        activeDeliveryTargetMarker.transform.localScale = deliveryMarkerBaseScale;
+    }
+
+    private void UpdateDeliveryTargetGuidance()
+    {
+        if (!showDeliveryTargetMarker
+            || carriedWeddingItem == WeddingCarryItem.None
+            || policeSequenceStarted
+            || !IsFreeExplorationActive())
+        {
+            ClearDeliveryTargetMarker();
+            return;
+        }
+
+        Transform expectedTarget =
+            GetDesignatedPhysicalDeliveryTarget(
+                carriedWeddingItem == WeddingCarryItem.Wine);
+
+        if (expectedTarget == null)
+        {
+            ClearDeliveryTargetMarker();
+            return;
+        }
+
+        if (activeDeliveryTargetMarker == null || activeDeliveryTarget != expectedTarget)
+        {
+            RefreshDeliveryTargetMarker();
+        }
+
+        if (activeDeliveryTargetMarker == null || activeDeliveryTarget == null)
+        {
+            return;
+        }
+
+        float bob =
+            Mathf.Sin(Time.time * 3.2f)
+            * Mathf.Max(0f, deliveryTargetMarkerBobHeight);
+
+        activeDeliveryTargetMarker.transform.position =
+            activeDeliveryTarget.position
+            + Vector3.up * (deliveryTargetMarkerHeight + bob);
+
+        activeDeliveryTargetMarker.transform.Rotate(
+            Vector3.up,
+            deliveryTargetMarkerSpinSpeed * Time.deltaTime,
+            Space.World);
+
+        if (pulseDeliveryTargetMarker)
+        {
+            float pulse = 1f + Mathf.Sin(Time.time * 5f) * 0.16f;
+            activeDeliveryTargetMarker.transform.localScale =
+                deliveryMarkerBaseScale * pulse;
+        }
+        else
+        {
+            activeDeliveryTargetMarker.transform.localScale =
+                deliveryMarkerBaseScale;
+        }
+    }
+
+    private void ClearDeliveryTargetMarker()
+    {
+        if (activeDeliveryTargetMarker != null)
+        {
+            Destroy(activeDeliveryTargetMarker);
+            activeDeliveryTargetMarker = null;
+        }
+
+        activeDeliveryTarget = null;
+    }
+
+    private Transform FindNearestPhysicalDeliveryTarget(bool isWine, float maxRange)
+    {
+        Transform[] configuredTargets = isWine ? wineDeliveryTargets : foodDeliveryTargets;
+        HashSet<int> completedTargets = isWine ? deliveredWineTargets : sharedFoodTargets;
+
+        Transform best = null;
+        float bestDistance = Mathf.Max(0.5f, maxRange);
+        Vector3 playerPosition = GetCurrentPlayerPosition();
+
+        if (configuredTargets != null && configuredTargets.Length > 0)
+        {
+            for (int i = 0; i < configuredTargets.Length; i++)
+            {
+                Transform candidate = configuredTargets[i];
+                if (candidate == null || completedTargets.Contains(candidate.GetInstanceID()))
+                {
+                    continue;
+                }
+
+                float distance = GetFlatDistance(playerPosition, candidate.position);
+                if (distance <= bestDistance)
+                {
+                    bestDistance = distance;
+                    best = candidate;
+                }
+            }
+
+            return best;
+        }
+
+        // 沒填陣列時才回退到場景內既有 DeliverWine / ShareFood 互動物件。
+        Chapter1Interactable.InteractionType wantedType = isWine
+            ? Chapter1Interactable.InteractionType.DeliverWine
+            : Chapter1Interactable.InteractionType.ShareFood;
+
+        Chapter1Interactable[] interactables = FindObjectsOfType<Chapter1Interactable>(true);
+        for (int i = 0; i < interactables.Length; i++)
+        {
+            Chapter1Interactable interactable = interactables[i];
+            if (interactable == null || interactable.interactionType != wantedType)
+            {
+                continue;
+            }
+
+            Transform candidate = interactable.transform;
+            if (completedTargets.Contains(candidate.GetInstanceID()))
+            {
+                continue;
+            }
+
+            float distance = GetFlatDistance(playerPosition, candidate.position);
+            if (distance <= bestDistance)
+            {
+                bestDistance = distance;
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
+
+    private string GetPhysicalWeddingDeliveryPrompt(string danceText)
+    {
+        int wineTarget = Mathf.Max(1, wineTargetCount);
+        int foodTarget = Mathf.Max(1, foodTargetCount);
+        bool wineComplete = deliveredWineCount >= wineTarget;
+        bool foodComplete = sharedFoodCount >= foodTarget;
+
+        if (carriedWeddingItem != WeddingCarryItem.None)
+        {
+            bool isWine = carriedWeddingItem == WeddingCarryItem.Wine;
+            Transform receiver = GetDesignatedPhysicalDeliveryTarget(isWine);
+
+            if (receiver != null)
+            {
+                float distance =
+                    GetFlatDistance(GetCurrentPlayerPosition(), receiver.position);
+
+                string targetLine = showDeliveryTargetNameAndDistance
+                    ? "目標：" + receiver.name + "　" + distance.ToString("0.0") + "m"
+                    : "請跟著黃色標記";
+
+                string actionLine = distance <= Mathf.Max(0.5f, physicalDeliveryRange)
+                    ? "E / 手把A  交付"
+                    : "走向頭上有黃色標記的 NPC";
+
+                return "手上：" + (isWine ? "酒" : "食物")
+                    + "\\n" + targetLine
+                    + "\\n" + actionLine
+                    + "\\nQ  放回物品";
+            }
+
+            return "手上：" + (isWine ? "酒" : "食物")
+                + "\\n尚未設定交付 NPC"
+                + "\\nQ  放回物品";
+        }
+
+        if (wineComplete && foodComplete)
+        {
+            return danceText;
+        }
+
+        Transform wineSource = ResolvePhysicalPickupPoint(true);
+        Transform foodSource = ResolvePhysicalPickupPoint(false);
+        Vector3 playerPosition = GetCurrentPlayerPosition();
+
+        float wineDistance = wineSource != null
+            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(wineSource))
+            : float.MaxValue;
+        float foodDistance = foodSource != null
+            ? GetFlatDistance(playerPosition, GetPhysicalPickupWorldPosition(foodSource))
+            : float.MaxValue;
+
+        if (!wineComplete && wineDistance <= Mathf.Max(0.5f, physicalPickupRange)
+            && (foodComplete || wineDistance <= foodDistance))
+        {
+            return "送酒 " + deliveredWineCount + " / " + wineTarget
+                + "\\nE / 手把A  拿起酒"
+                + "\\n拿到後自己走去賓客旁";
+        }
+
+        if (!foodComplete && foodDistance <= Mathf.Max(0.5f, physicalPickupRange))
+        {
+            return "分享食物 " + sharedFoodCount + " / " + foodTarget
+                + "\\nE / 手把A  拿起食物"
+                + "\\n拿到後自己走去族人旁";
+        }
+
+        string wineLine = wineComplete
+            ? "送酒 " + wineTarget + " / " + wineTarget + " ✓"
+            : "送酒 " + deliveredWineCount + " / " + wineTarget + "：先走到酒旁";
+        string foodLine = foodComplete
+            ? "分享食物 " + foodTarget + " / " + foodTarget + " ✓"
+            : "分享食物 " + sharedFoodCount + " / " + foodTarget + "：先走到食物旁";
+
+        return wineLine + "\\n" + foodLine + "\\n" + danceText;
+    }
+
+    private void DisableLegacyItemTaskInteractables()
+    {
+        Chapter1Interactable[] interactables = FindObjectsOfType<Chapter1Interactable>(true);
+        for (int i = 0; i < interactables.Length; i++)
+        {
+            Chapter1Interactable interactable = interactables[i];
+            if (interactable == null)
+            {
+                continue;
+            }
+
+            if (interactable.interactionType == Chapter1Interactable.InteractionType.DeliverWine
+                || interactable.interactionType == Chapter1Interactable.InteractionType.ShareFood)
+            {
+                interactable.enabled = false;
+            }
         }
     }
 
@@ -804,11 +1814,114 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void DrawCenterInteractionMenu()
     {
-        string text = GetCenterInteractionPromptText();
-        float width = Mathf.Min(Screen.width - 40f, 380f);
-        float height = 104f;
-        Rect rect = new Rect((Screen.width - width) * 0.5f, Screen.height - height - 28f, width, height);
+        string text = GetCleanInteractionPromptText();
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        float width = Mathf.Min(Screen.width - 40f, 560f);
+        float height = 58f;
+        float bottomMargin =
+            (Time.time < fallbackLineUntil && dialogueUI == null) ? 126f : 24f;
+
+        Rect rect = new Rect(
+            (Screen.width - width) * 0.5f,
+            Screen.height - height - bottomMargin,
+            width,
+            height);
+
         GUI.Box(rect, text, centerMenuStyle);
+    }
+
+    private string GetCleanInteractionPromptText()
+    {
+        if (usePhysicalWeddingDelivery)
+        {
+            int wineTarget = Mathf.Max(1, wineTargetCount);
+            int foodTarget = Mathf.Max(1, foodTargetCount);
+
+            bool wineComplete = deliveredWineCount >= wineTarget;
+            bool foodComplete = sharedFoodCount >= foodTarget;
+
+            if (carriedWeddingItem != WeddingCarryItem.None)
+            {
+                bool isWine = carriedWeddingItem == WeddingCarryItem.Wine;
+                Transform receiver = GetDesignatedPhysicalDeliveryTarget(isWine);
+
+                if (receiver == null)
+                {
+                    return "尚未設定交付 NPC";
+                }
+
+                float distance =
+                    GetFlatDistance(
+                        GetCurrentPlayerPosition(),
+                        receiver.position);
+
+                if (distance <= Mathf.Max(0.5f, physicalDeliveryRange))
+                {
+                    return "[ E ]  交給 " + receiver.name;
+                }
+
+                return "目標：" + receiver.name
+                    + "　" + distance.ToString("0.0") + "m"
+                    + "　｜　跟著黃色標記";
+            }
+
+            if (wineComplete && foodComplete)
+            {
+                return danceFinished
+                    ? ""
+                    : "[ E ]  加入舞蹈";
+            }
+
+            Transform wineSource = ResolvePhysicalPickupPoint(true);
+            Transform foodSource = ResolvePhysicalPickupPoint(false);
+            Vector3 playerPosition = GetCurrentPlayerPosition();
+
+            float wineDistance = wineSource != null
+                ? GetFlatDistance(
+                    playerPosition,
+                    GetPhysicalPickupWorldPosition(wineSource))
+                : float.MaxValue;
+
+            float foodDistance = foodSource != null
+                ? GetFlatDistance(
+                    playerPosition,
+                    GetPhysicalPickupWorldPosition(foodSource))
+                : float.MaxValue;
+
+            if (!wineComplete
+                && wineDistance <= Mathf.Max(0.5f, physicalPickupRange)
+                && (foodComplete || wineDistance <= foodDistance))
+            {
+                return "[ E ]  拿酒";
+            }
+
+            if (!foodComplete
+                && foodDistance <= Mathf.Max(0.5f, physicalPickupRange))
+            {
+                return "[ E ]  拿食物";
+            }
+
+            if (!wineComplete && !foodComplete)
+            {
+                return "先到酒或食物旁拿取物品";
+            }
+
+            return !wineComplete
+                ? "前往酒的位置"
+                : "前往食物的位置";
+        }
+
+        if (AreWineAndFoodTasksComplete() && !danceFinished)
+        {
+            return "[ E ]  加入舞蹈";
+        }
+
+        return "";
     }
 
     private void UpdateWorldInteractionPrompt()
@@ -881,15 +1994,27 @@ public class Chapter1PerformanceController : MonoBehaviour
         string danceText;
         if (danceFinished)
         {
-            danceText = "E / 1 / 手把A  舞蹈已完成";
+            danceText = "舞蹈已完成";
         }
         else if (!AreWineAndFoodTasksComplete())
         {
-            danceText = "E / 1 / 手把A  先完成送酒與分享食物";
+            danceText = "完成送酒與分享食物後解鎖舞蹈";
         }
         else
         {
             danceText = "E / 1 / 手把A  加入舞蹈";
+        }
+
+        if (usePhysicalWeddingDelivery)
+        {
+            return GetPhysicalWeddingDeliveryPrompt(danceText);
+        }
+
+        if (manualWalkForItemTasks)
+        {
+            return danceText
+                + "\nR / 2 / 手把B  走近賓客後送酒"
+                + "\nT / 3 / 手把X  走近族人後分享食物";
         }
 
         return danceText + "\nR / 2 / 手把B  送酒\nT / 3 / 手把X  分享食物";
@@ -1146,12 +2271,12 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (interactionType == Chapter1Interactable.InteractionType.DeliverWine)
         {
-            return "按 R / 2 送酒";
+            return "靠近後按 R / 2 送酒";
         }
 
         if (interactionType == Chapter1Interactable.InteractionType.ShareFood)
         {
-            return "按 T / 3 分享食物";
+            return "靠近後按 T / 3 分享食物";
         }
 
         return fallbackPrompt;
@@ -1171,8 +2296,15 @@ public class Chapter1PerformanceController : MonoBehaviour
     private IEnumerator GiveItemAnimationRoutine(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget)
     {
         interactionAnimationRunning = true;
-        bool shouldGuidePlayer = guidePlayerDuringItemInteractions && GetDancePlayerRoot() != null;
-        bool shouldLockControl = lockPlayerDuringInteractionAnimation || shouldGuidePlayer;
+        bool shouldGuidePlayer =
+            !usePhysicalWeddingDelivery
+            && !manualWalkForItemTasks
+            && guidePlayerDuringItemInteractions
+            && GetDancePlayerRoot() != null;
+
+        bool shouldLockControl =
+            !manualWalkForItemTasks
+            && (lockPlayerDuringInteractionAnimation || shouldGuidePlayer);
 
         if (shouldLockControl)
         {
@@ -1228,8 +2360,25 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         else
         {
-            ShowLine("動作", actionLine, interactionAnimationSeconds);
-            yield return MovePropToPosition(prop, pickupPosition, receiverPosition, interactionAnimationSeconds, interactionArcHeight);
+            if (manualWalkForItemTasks)
+            {
+                // 玩家已經自己走到 NPC 旁邊，只播放近距離的交付動作，不移動 XR Origin。
+                Vector3 handPosition = GetCarriedPropPosition();
+                prop.transform.position = handPosition;
+                ShowLine("動作", isWine ? "你把酒遞給眼前的賓客。" : "你把食物遞給眼前的族人。", guidedGiveSeconds + 0.7f);
+                yield return HoldPropInView(prop, 0.18f);
+                yield return MovePropToPosition(
+                    prop,
+                    GetCarriedPropPosition(),
+                    receiverPosition,
+                    Mathf.Max(0.25f, guidedGiveSeconds),
+                    0.12f);
+            }
+            else
+            {
+                ShowLine("動作", actionLine, interactionAnimationSeconds);
+                yield return MovePropToPosition(prop, pickupPosition, receiverPosition, interactionAnimationSeconds, interactionArcHeight);
+            }
         }
 
         prop.transform.position = receiverPosition;
@@ -2199,6 +3348,250 @@ public class Chapter1PerformanceController : MonoBehaviour
         return GetFlatDistance(actor.position, center.position) <= Mathf.Max(1f, weddingCrowdDanceRange);
     }
 
+    private void PrepareDeliveryTaskNPCs()
+    {
+        if (!keepDeliveryTargetsStationary)
+        {
+            return;
+        }
+
+        StopDeliveryTargetArray(wineDeliveryTargets);
+        StopDeliveryTargetArray(foodDeliveryTargets);
+    }
+
+    private void StopDeliveryTargetArray(Transform[] targets)
+    {
+        if (targets == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            StopDeliveryTargetNPC(targets[i]);
+        }
+    }
+
+    private void StopDeliveryTargetNPC(Transform target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        // 你目前的婚禮舞圈如果是靠 DanceCirclePivot 父物件旋轉，
+        // 只關 Chapter1CircleDancer 是不夠的；子物件仍會被父物件帶著繞圈。
+        // 所以先找出「角色 Root」，再把它從旋轉 Pivot 底下移出去。
+        Transform actorRoot = GetDeliveryActorRoot(target);
+
+        if (detachDeliveryTargetsFromDancePivot && actorRoot != null)
+        {
+            DetachActorFromDancePivot(actorRoot);
+        }
+
+        Transform searchRoot = actorRoot != null ? actorRoot : target;
+
+        // 關掉角色自己身上的繞圈元件。
+        Chapter1CircleDancer[] childDancers =
+            searchRoot.GetComponentsInChildren<Chapter1CircleDancer>(true);
+
+        for (int i = 0; i < childDancers.Length; i++)
+        {
+            Chapter1CircleDancer dancer = childDancers[i];
+            if (dancer == null)
+            {
+                continue;
+            }
+
+            dancer.SetDancing(false);
+            dancer.enabled = false;
+        }
+
+        Chapter1CircleDancer parentDancer =
+            searchRoot.GetComponentInParent<Chapter1CircleDancer>();
+
+        if (parentDancer != null)
+        {
+            parentDancer.SetDancing(false);
+            parentDancer.enabled = false;
+        }
+
+        // 切回 Idle。
+        Animator[] animators = searchRoot.GetComponentsInChildren<Animator>(true);
+
+        if (animators.Length == 0)
+        {
+            Animator parentAnimator = searchRoot.GetComponentInParent<Animator>();
+            if (parentAnimator != null)
+            {
+                animators = new Animator[] { parentAnimator };
+            }
+        }
+
+        string idleState =
+            string.IsNullOrWhiteSpace(deliveryTargetIdleStateName)
+                ? "Idle"
+                : deliveryTargetIdleStateName.Trim();
+
+        int idleHash = Animator.StringToHash(idleState);
+
+        for (int i = 0; i < animators.Length; i++)
+        {
+            Animator animator = animators[i];
+            if (animator == null)
+            {
+                continue;
+            }
+
+            animator.applyRootMotion = false;
+
+            if (animator.runtimeAnimatorController != null)
+            {
+                if (animator.HasState(0, idleHash))
+                {
+                    animator.CrossFade(idleHash, 0.08f, 0);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        "[Chapter1] 任務 NPC " + searchRoot.name
+                        + " 的 Animator 找不到 Idle State："
+                        + idleState);
+                }
+            }
+        }
+    }
+
+    private Transform GetDeliveryActorRoot(Transform target)
+    {
+        if (target == null)
+        {
+            return null;
+        }
+
+        // 如果拖到 Model / Armature / Mesh，也盡量往上找到完整角色。
+        Transform current = target;
+        Transform best = target;
+
+        while (current.parent != null)
+        {
+            Transform parent = current.parent;
+            string parentName = parent.name.ToLowerInvariant();
+
+            if (IsDancePivotTransform(parent))
+            {
+                // current 就是 Dance Pivot 底下的角色 Root。
+                return current;
+            }
+
+            // 遇到明顯的場景總群組就不要再往上吃。
+            if (parentName.Contains("weddingnpcgroup")
+                || parentName.Contains("npcgroup")
+                || parentName.Contains("villagergroup")
+                || parentName.Contains("crowdgroup"))
+            {
+                return current;
+            }
+
+            best = current;
+            current = parent;
+        }
+
+        // 沒找到 Pivot 時，優先使用 Animator 所在的角色層級。
+        Animator childAnimator = target.GetComponentInChildren<Animator>(true);
+        if (childAnimator != null)
+        {
+            Transform animatorTransform = childAnimator.transform;
+            Transform actor = animatorTransform;
+
+            while (actor.parent != null
+                && !IsDancePivotTransform(actor.parent)
+                && actor.parent.GetComponentInParent<Animator>() == null)
+            {
+                actor = actor.parent;
+            }
+
+            return actor;
+        }
+
+        Animator parentAnimator = target.GetComponentInParent<Animator>();
+        if (parentAnimator != null)
+        {
+            return parentAnimator.transform;
+        }
+
+        return best;
+    }
+
+    private bool IsDancePivotTransform(Transform candidate)
+    {
+        if (candidate == null)
+        {
+            return false;
+        }
+
+        if (danceCenter != null && candidate == danceCenter)
+        {
+            return true;
+        }
+
+        string n = candidate.name.ToLowerInvariant();
+
+        return n.Contains("dancecirclepivot")
+            || n.Contains("dancepivot")
+            || n.Contains("circlepivot")
+            || (n.Contains("dance") && n.Contains("pivot"))
+            || (n.Contains("舞") && n.Contains("圈"));
+    }
+
+    private void DetachActorFromDancePivot(Transform actorRoot)
+    {
+        if (actorRoot == null || actorRoot.parent == null)
+        {
+            return;
+        }
+
+        Transform parent = actorRoot.parent;
+
+        // 往上找旋轉舞圈 Pivot。
+        Transform pivot = null;
+        Transform cursor = parent;
+
+        while (cursor != null)
+        {
+            if (IsDancePivotTransform(cursor))
+            {
+                pivot = cursor;
+                break;
+            }
+
+            // 不要一路爬到整個場景根節點。
+            if (cursor.parent == null)
+            {
+                break;
+            }
+
+            cursor = cursor.parent;
+        }
+
+        if (pivot == null)
+        {
+            return;
+        }
+
+        // 把角色移到 Pivot 的上一層；true 會保留世界座標/旋轉/縮放，
+        // 所以角色不會瞬移。
+        Transform newParent = pivot.parent;
+        actorRoot.SetParent(newParent, true);
+
+        Debug.Log(
+            "[Chapter1] 任務 NPC 已離開舞圈 Pivot："
+            + actorRoot.name
+            + "，不再跟著 "
+            + pivot.name
+            + " 繞圈。");
+    }
+
     private void SetWeddingCrowdDancing(bool enabled)
     {
         for (int i = weddingCrowdDancers.Count - 1; i >= 0; i--)
@@ -2210,8 +3603,54 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
+            if (enabled && keepDeliveryTargetsStationary && IsDeliveryTaskNPC(dancer.transform))
+            {
+                dancer.SetDancing(false);
+                dancer.enabled = false;
+                continue;
+            }
+
+            dancer.enabled = true;
             dancer.SetDancing(enabled);
         }
+    }
+
+    private bool IsDeliveryTaskNPC(Transform candidate)
+    {
+        return TransformBelongsToAnyDeliveryTarget(candidate, wineDeliveryTargets)
+            || TransformBelongsToAnyDeliveryTarget(candidate, foodDeliveryTargets);
+    }
+
+    private bool TransformBelongsToAnyDeliveryTarget(Transform candidate, Transform[] targets)
+    {
+        if (candidate == null || targets == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            Transform target = targets[i];
+            if (target == null)
+            {
+                continue;
+            }
+
+            Transform actorRoot = GetDeliveryActorRoot(target);
+            if (actorRoot == null)
+            {
+                actorRoot = target;
+            }
+
+            if (candidate == actorRoot
+                || candidate.IsChildOf(actorRoot)
+                || actorRoot.IsChildOf(candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private IEnumerator CrossfadeStoryMusic(
@@ -3399,7 +4838,10 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         showFallbackHud = true;
         showCenterInteractionMenu = true;
-        showWorldInteractionPrompt = true;
+
+        // 正式遊戲版：關掉跟著鏡頭的巨大 3D TextMesh 提示。
+        // 互動提示統一放在螢幕底部的小型 HUD。
+        showWorldInteractionPrompt = false;
         // 不再在遊戲開始時強制恢復火堆距離限制。
         // 這樣 Inspector 中取消 Require Fire Distance For Center Menu 才會真的生效。
         requireFireDistanceForCenterMenu = false;
@@ -3585,25 +5027,26 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        Texture2D background = MakeTexture(new Color(0.03f, 0.03f, 0.03f, 0.78f));
+        Texture2D background =
+            MakeTexture(new Color(0.025f, 0.025f, 0.025f, 0.68f));
 
         hudBoxStyle = new GUIStyle(GUI.skin.box);
         hudBoxStyle.normal.background = background;
-        hudBoxStyle.padding = new RectOffset(18, 18, 14, 14);
+        hudBoxStyle.padding = new RectOffset(16, 16, 10, 10);
 
         hudTitleStyle = new GUIStyle(GUI.skin.label);
-        hudTitleStyle.normal.textColor = new Color(1f, 0.9f, 0.68f, 1f);
-        hudTitleStyle.fontSize = Mathf.Clamp(Screen.height / 34, 18, 28);
+        hudTitleStyle.normal.textColor = new Color(1f, 0.86f, 0.52f, 1f);
+        hudTitleStyle.fontSize = Mathf.Clamp(Screen.height / 46, 16, 22);
         hudTitleStyle.fontStyle = FontStyle.Bold;
         hudTitleStyle.wordWrap = true;
 
         hudBodyStyle = new GUIStyle(GUI.skin.label);
-        hudBodyStyle.normal.textColor = Color.white;
-        hudBodyStyle.fontSize = Mathf.Clamp(Screen.height / 42, 16, 24);
+        hudBodyStyle.normal.textColor = new Color(0.96f, 0.96f, 0.96f, 1f);
+        hudBodyStyle.fontSize = Mathf.Clamp(Screen.height / 58, 14, 19);
         hudBodyStyle.wordWrap = true;
 
         hudButtonStyle = new GUIStyle(GUI.skin.button);
-        hudButtonStyle.fontSize = Mathf.Clamp(Screen.height / 38, 17, 25);
+        hudButtonStyle.fontSize = Mathf.Clamp(Screen.height / 50, 16, 21);
         hudButtonStyle.alignment = TextAnchor.MiddleLeft;
         hudButtonStyle.padding = new RectOffset(18, 18, 8, 8);
         hudButtonStyle.wordWrap = true;
@@ -3614,23 +5057,24 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         timerTitleStyle = new GUIStyle(GUI.skin.label);
         timerTitleStyle.normal.textColor = new Color(1f, 0.9f, 0.68f, 1f);
-        timerTitleStyle.fontSize = Mathf.Clamp(Screen.height / 48, 14, 20);
+        timerTitleStyle.fontSize = Mathf.Clamp(Screen.height / 60, 13, 17);
         timerTitleStyle.fontStyle = FontStyle.Bold;
         timerTitleStyle.alignment = TextAnchor.MiddleRight;
 
         timerNumberStyle = new GUIStyle(GUI.skin.label);
         timerNumberStyle.normal.textColor = Color.white;
-        timerNumberStyle.fontSize = Mathf.Clamp(Screen.height / 30, 24, 38);
+        timerNumberStyle.fontSize = Mathf.Clamp(Screen.height / 38, 22, 30);
         timerNumberStyle.fontStyle = FontStyle.Bold;
         timerNumberStyle.alignment = TextAnchor.MiddleRight;
 
         centerMenuStyle = new GUIStyle(GUI.skin.box);
         centerMenuStyle.normal.background = background;
         centerMenuStyle.normal.textColor = Color.white;
-        centerMenuStyle.fontSize = Mathf.Clamp(Screen.height / 52, 14, 20);
-        centerMenuStyle.alignment = TextAnchor.MiddleLeft;
-        centerMenuStyle.padding = new RectOffset(18, 18, 10, 10);
-        centerMenuStyle.wordWrap = true;
+        centerMenuStyle.fontSize = Mathf.Clamp(Screen.height / 50, 15, 21);
+        centerMenuStyle.fontStyle = FontStyle.Bold;
+        centerMenuStyle.alignment = TextAnchor.MiddleCenter;
+        centerMenuStyle.padding = new RectOffset(16, 16, 8, 8);
+        centerMenuStyle.wordWrap = false;
     }
 
     private Texture2D MakeTexture(Color color)
