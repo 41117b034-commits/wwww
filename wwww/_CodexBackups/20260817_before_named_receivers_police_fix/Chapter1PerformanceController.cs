@@ -148,22 +148,12 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float wineBottleTargetSize = 0.38f;
     public Vector3 wineBottleHeldEulerOffset = Vector3.zero;
 
-    [Header("Named Wine Receivers")]
-    public string[] orderedWineReceiverNames = { "接酒1", "接酒2", "接酒3" };
-    public bool arrangeNamedWineReceiversOnStart = true;
-    public bool normalizeNamedWineReceiverScale = true;
-    public float namedWineReceiverRadius = 7.2f;
-    public float namedWineReceiverGroundClearance = 0.03f;
-    public float fallbackWeddingCharacterHeight = 1.72f;
-
     [Header("Police Entrance Fallback")]
     public bool animatePoliceEntranceWithoutTimeline = true;
     public Transform policeEntranceTarget;
     public float policeEntranceDistance = 12f;
     public float policeEntranceDuration = 4f;
     public bool rotatePoliceTowardPath = true;
-    public bool placePoliceEntranceInPlayerView = true;
-    public float policeEntranceEndRadius = 4.5f;
 
     [Header("Police Intrusion Staging")]
     public string primaryPoliceObjectName = "警察";
@@ -240,7 +230,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GameObject runtimeSecondPolice;
     private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
-    private readonly List<Transform> namedWineReceivers = new List<Transform>();
 
     private string fallbackSpeaker = "";
     private string fallbackLine = "";
@@ -293,12 +282,22 @@ public class Chapter1PerformanceController : MonoBehaviour
             choiceUI.Bind(this);
         }
 
-        HidePoliceActorsAtStart();
+        if (policeGroup != null)
+        {
+            policeOriginalPosition = policeGroup.transform.position;
+            policeOriginalRotation = policeGroup.transform.rotation;
+            hasPoliceOriginalTransform = true;
+            policeGroup.SetActive(false);
+            Debug.Log("[Chapter1] Police group hidden at start: " + policeGroup.name);
+        }
+        else
+        {
+            Debug.LogWarning("[Chapter1] Police group is not assigned.");
+        }
     }
 
     private void Start()
     {
-        PrepareNamedWineReceivers();
         EnsureWeddingCrowdDancers();
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
@@ -991,283 +990,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         TryStartPoliceAfterWeddingTasks();
     }
 
-    private void PrepareNamedWineReceivers()
-    {
-        RefreshNamedWineReceivers();
-        if (namedWineReceivers.Count == 0)
-        {
-            Debug.LogWarning("[Chapter1] Named wine receivers were not found. Expected 接酒1, 接酒2 and 接酒3.");
-            return;
-        }
-
-        float referenceHeight = normalizeNamedWineReceiverScale
-            ? GetWeddingCharacterReferenceHeight()
-            : 0f;
-        Vector3 center = GetFireCenterPosition();
-        Vector3 forward = GetAutoInteractionForward();
-        if (forward.sqrMagnitude < 0.01f)
-        {
-            forward = Vector3.forward;
-        }
-
-        float[] angles = { -55f, 65f, 180f };
-        for (int i = 0; i < namedWineReceivers.Count; i++)
-        {
-            Transform receiver = namedWineReceivers[i];
-            if (receiver == null)
-            {
-                continue;
-            }
-
-            SetActiveIncludingParents(receiver);
-            StopNamedWineReceiverMovement(receiver);
-
-            if (normalizeNamedWineReceiverScale && referenceHeight > 0.1f)
-            {
-                NormalizeActorVisualHeight(receiver, referenceHeight);
-            }
-
-            if (arrangeNamedWineReceiversOnStart)
-            {
-                float angle = angles[Mathf.Min(i, angles.Length - 1)];
-                Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * forward.normalized;
-                Vector3 targetPosition = center + direction * Mathf.Max(3.5f, namedWineReceiverRadius);
-                targetPosition = GetGroundedActorPosition(receiver, targetPosition, receiver.position, namedWineReceiverGroundClearance);
-                receiver.position = targetPosition;
-
-                Vector3 faceCenter = center - targetPosition;
-                faceCenter.y = 0f;
-                if (faceCenter.sqrMagnitude > 0.01f)
-                {
-                    receiver.rotation = Quaternion.LookRotation(faceCenter.normalized, Vector3.up);
-                }
-            }
-
-            PlayAnimatorStateIfAvailable(receiver, policeIdleStateName);
-        }
-
-        for (int i = 1; i <= Mathf.Max(3, wineTargetCount); i++)
-        {
-            GameObject oldMarker = GameObject.Find("Auto_WineGuest_" + i);
-            if (oldMarker != null)
-            {
-                oldMarker.SetActive(false);
-            }
-        }
-
-        Debug.Log("[Chapter1] Named wine receivers prepared: " + namedWineReceivers.Count);
-    }
-
-    private void RefreshNamedWineReceivers()
-    {
-        namedWineReceivers.Clear();
-        if (orderedWineReceiverNames == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < orderedWineReceiverNames.Length; i++)
-        {
-            Transform receiver = FindTransformByName(orderedWineReceiverNames[i]);
-            if (receiver != null && !namedWineReceivers.Contains(receiver))
-            {
-                namedWineReceivers.Add(receiver);
-            }
-        }
-    }
-
-    private bool HasAllNamedWineReceivers()
-    {
-        if (orderedWineReceiverNames == null || orderedWineReceiverNames.Length < 3)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (FindTransformByName(orderedWineReceiverNames[i]) == null)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private Transform FindOrderedWineReceiver(HashSet<int> completedTargets)
-    {
-        if (orderedWineReceiverNames == null || orderedWineReceiverNames.Length == 0)
-        {
-            return null;
-        }
-
-        int startIndex = Mathf.Clamp(deliveredWineCount, 0, orderedWineReceiverNames.Length - 1);
-        for (int i = startIndex; i < orderedWineReceiverNames.Length; i++)
-        {
-            Transform receiver = FindTransformByName(orderedWineReceiverNames[i]);
-            if (receiver != null && !completedTargets.Contains(receiver.GetInstanceID()))
-            {
-                return receiver;
-            }
-        }
-
-        return null;
-    }
-
-    private bool IsNamedWineReceiverOrChild(Transform actor)
-    {
-        Transform current = actor;
-        while (current != null)
-        {
-            if (orderedWineReceiverNames != null)
-            {
-                for (int i = 0; i < orderedWineReceiverNames.Length; i++)
-                {
-                    if (current.name == orderedWineReceiverNames[i])
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            current = current.parent;
-        }
-
-        return false;
-    }
-
-    private void StopNamedWineReceiverMovement(Transform receiver)
-    {
-        Chapter1CircleDancer[] dancers = receiver.GetComponentsInChildren<Chapter1CircleDancer>(true);
-        for (int i = 0; i < dancers.Length; i++)
-        {
-            dancers[i].SetDancing(false);
-            dancers[i].enabled = false;
-            weddingCrowdDancers.Remove(dancers[i]);
-        }
-
-        Behaviour[] behaviours = receiver.GetComponentsInChildren<Behaviour>(true);
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            Behaviour behaviour = behaviours[i];
-            if (behaviour == null || behaviour is Animator || behaviour is Chapter1Interactable)
-            {
-                continue;
-            }
-
-            string typeName = behaviour.GetType().Name;
-            if (typeName.IndexOf("NavMeshAgent", System.StringComparison.OrdinalIgnoreCase) >= 0
-                || typeName.IndexOf("Wander", System.StringComparison.OrdinalIgnoreCase) >= 0
-                || typeName.IndexOf("Patrol", System.StringComparison.OrdinalIgnoreCase) >= 0
-                || typeName.IndexOf("Follow", System.StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                behaviour.enabled = false;
-            }
-        }
-
-        Rigidbody[] bodies = receiver.GetComponentsInChildren<Rigidbody>(true);
-        for (int i = 0; i < bodies.Length; i++)
-        {
-            bodies[i].isKinematic = true;
-        }
-
-        Animator[] animators = receiver.GetComponentsInChildren<Animator>(true);
-        for (int i = 0; i < animators.Length; i++)
-        {
-            animators[i].applyRootMotion = false;
-        }
-    }
-
-    private float GetWeddingCharacterReferenceHeight()
-    {
-        List<float> heights = new List<float>();
-        Vector3 center = GetFireCenterPosition();
-        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        for (int i = 0; i < animators.Length; i++)
-        {
-            Animator animator = animators[i];
-            if (animator == null
-                || !animator.gameObject.scene.IsValid()
-                || !animator.gameObject.activeInHierarchy
-                || IsNamedWineReceiverOrChild(animator.transform)
-                || (primaryPoliceActor != null && animator.transform.IsChildOf(primaryPoliceActor))
-                || GetFlatDistance(animator.transform.position, center) > Mathf.Max(12f, weddingCrowdDanceRange))
-            {
-                continue;
-            }
-
-            float height = GetActorVisualHeight(animator.transform);
-            if (height >= 0.7f && height <= 3.5f)
-            {
-                heights.Add(height);
-            }
-        }
-
-        if (heights.Count == 0)
-        {
-            return Mathf.Max(0.7f, fallbackWeddingCharacterHeight);
-        }
-
-        heights.Sort();
-        return heights[heights.Count / 2];
-    }
-
-    private void NormalizeActorVisualHeight(Transform actor, float targetHeight)
-    {
-        float currentHeight = GetActorVisualHeight(actor);
-        if (currentHeight <= 0.05f)
-        {
-            return;
-        }
-
-        float multiplier = Mathf.Clamp(targetHeight / currentHeight, 0.1f, 10f);
-        actor.localScale *= multiplier;
-    }
-
-    private float GetActorVisualHeight(Transform actor)
-    {
-        Renderer[] renderers = actor.GetComponentsInChildren<Renderer>(true);
-        bool hasBounds = false;
-        Bounds combinedBounds = new Bounds();
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Renderer renderer = renderers[i];
-            if (renderer == null)
-            {
-                continue;
-            }
-
-            if (!hasBounds)
-            {
-                combinedBounds = renderer.bounds;
-                hasBounds = true;
-            }
-            else
-            {
-                combinedBounds.Encapsulate(renderer.bounds);
-            }
-        }
-
-        return hasBounds ? combinedBounds.size.y : 0f;
-    }
-
-    private Vector3 GetGroundedActorPosition(Transform actor, Vector3 candidate, Vector3 fallback, float clearance)
-    {
-        if (TryGetTerrainGroundY(candidate, out float terrainGroundY))
-        {
-            candidate.y = terrainGroundY + Mathf.Max(0f, clearance);
-            return candidate;
-        }
-
-        candidate.y = fallback.y;
-        if (TryGetPhysicsGroundY(actor, candidate, out float physicsGroundY))
-        {
-            candidate.y = physicsGroundY + Mathf.Max(0f, clearance);
-        }
-
-        return candidate;
-    }
-
     private void CreateMissingExplorationInteractions()
     {
         if (autoInteractionsCreated)
@@ -1286,8 +1008,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         int wineCount = Mathf.Max(1, wineTargetCount);
-        if (!HasAllNamedWineReceivers()
-            && !HasInteractionType(Chapter1Interactable.InteractionType.DeliverWine))
+        if (!HasInteractionType(Chapter1Interactable.InteractionType.DeliverWine))
         {
             for (int i = 0; i < wineCount; i++)
             {
@@ -2006,15 +1727,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         int progress = isWine ? deliveredWineCount : sharedFoodCount;
         HashSet<int> completedTargets = isWine ? deliveredWineTargets : sharedFoodTargets;
 
-        if (isWine)
-        {
-            Transform namedReceiver = FindOrderedWineReceiver(completedTargets);
-            if (namedReceiver != null)
-            {
-                return namedReceiver;
-            }
-        }
-
         for (int offset = 0; offset < count; offset++)
         {
             int index = ((progress + offset) % count) + 1;
@@ -2043,16 +1755,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Transform ResolveUnusedInteractionTarget(bool isWine, Transform candidate)
     {
         HashSet<int> completedTargets = isWine ? deliveredWineTargets : sharedFoodTargets;
-
-        if (isWine)
-        {
-            Transform namedReceiver = FindOrderedWineReceiver(completedTargets);
-            if (namedReceiver != null)
-            {
-                return namedReceiver;
-            }
-        }
-
         if (candidate != null && !completedTargets.Contains(candidate.GetInstanceID()))
         {
             return candidate;
@@ -2494,11 +2196,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform actor = animator.transform;
-        if (IsNamedWineReceiverOrChild(actor))
-        {
-            return false;
-        }
-
         if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
         {
             return false;
@@ -2621,11 +2318,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform secondPolice = secondaryPoliceActor;
-        Vector3 focusPosition = GetEntranceFocusPosition(GetFireCenterPosition());
-        Vector3 endPosition = GetPoliceEntranceEndPosition(firstPolice, focusPosition);
-        Quaternion endRotation = policeEntranceTarget != null
-            ? policeEntranceTarget.rotation
-            : GetLookRotationOnPlane(endPosition, focusPosition, firstPolice.rotation);
+        Vector3 endPosition = policeEntranceTarget != null ? policeEntranceTarget.position : (hasPoliceOriginalTransform ? policeOriginalPosition : firstPolice.position);
+        Quaternion endRotation = hasPoliceOriginalTransform ? policeOriginalRotation : firstPolice.rotation;
+        Vector3 focusPosition = GetEntranceFocusPosition(endPosition);
         Vector3 awayFromFocus = endPosition - focusPosition;
         awayFromFocus.y = 0f;
 
@@ -2641,8 +2336,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Vector3 startPosition = endPosition + awayFromFocus.normalized * Mathf.Max(1f, policeEntranceDistance);
-        endPosition = GetGroundedActorPosition(firstPolice, endPosition, hasPoliceOriginalTransform ? policeOriginalPosition : firstPolice.position, 0.03f);
-        startPosition = GetGroundedActorPosition(firstPolice, startPosition, endPosition, 0.03f);
         Vector3 pathDirection = endPosition - startPosition;
         pathDirection.y = 0f;
 
@@ -2659,14 +2352,14 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 secondStart = startPosition + sideDirection * halfSpacing;
         Vector3 secondEnd = endPosition + sideDirection * halfSpacing;
 
+        SetActiveIncludingParents(firstPolice);
         firstPolice.position = firstStart;
-        PreparePoliceActorForVisibility(firstPolice);
         PlayAnimatorStateIfAvailable(firstPolice, policeWalkStateName);
 
         if (secondPolice != null)
         {
+            SetActiveIncludingParents(secondPolice);
             secondPolice.position = secondStart;
-            PreparePoliceActorForVisibility(secondPolice);
             PlayAnimatorStateIfAvailable(secondPolice, policeWalkStateName);
         }
 
@@ -2715,48 +2408,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
-    private void HidePoliceActorsAtStart()
-    {
-        if (primaryPoliceActor == null && !string.IsNullOrWhiteSpace(primaryPoliceObjectName))
-        {
-            primaryPoliceActor = FindTransformByName(primaryPoliceObjectName);
-        }
-
-        if (primaryPoliceActor == null && policeGroup != null)
-        {
-            primaryPoliceActor = policeGroup.transform;
-        }
-
-        if (primaryPoliceActor == null)
-        {
-            Debug.LogWarning("[Chapter1] Police actor was not found at startup.");
-            return;
-        }
-
-        if (policeGroup == null
-            || (primaryPoliceActor != policeGroup.transform && !primaryPoliceActor.IsChildOf(policeGroup.transform)))
-        {
-            policeGroup = primaryPoliceActor.gameObject;
-        }
-
-        policeOriginalPosition = primaryPoliceActor.position;
-        policeOriginalRotation = primaryPoliceActor.rotation;
-        hasPoliceOriginalTransform = true;
-
-        if (secondaryPoliceActor == null)
-        {
-            secondaryPoliceActor = FindSecondaryPoliceActor();
-        }
-
-        if (secondaryPoliceActor != null)
-        {
-            secondaryPoliceActor.gameObject.SetActive(false);
-        }
-
-        policeGroup.SetActive(false);
-        Debug.Log("[Chapter1] Police hidden until intrusion: " + primaryPoliceActor.name);
-    }
-
     private void EnsurePoliceActorsForIntrusion()
     {
         if (primaryPoliceActor == null)
@@ -2772,9 +2423,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        if (primaryPoliceActor != null
-            && (policeGroup == null
-                || (primaryPoliceActor != policeGroup.transform && !primaryPoliceActor.IsChildOf(policeGroup.transform))))
+        if (policeGroup == null && primaryPoliceActor != null)
         {
             policeGroup = primaryPoliceActor.gameObject;
         }
@@ -2806,79 +2455,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             secondaryPoliceActor = null;
         }
-    }
-
-    private Vector3 GetPoliceEntranceEndPosition(Transform firstPolice, Vector3 focusPosition)
-    {
-        if (policeEntranceTarget != null)
-        {
-            return policeEntranceTarget.position;
-        }
-
-        if (!placePoliceEntranceInPlayerView)
-        {
-            return hasPoliceOriginalTransform ? policeOriginalPosition : firstPolice.position;
-        }
-
-        Vector3 center = GetFireCenterPosition();
-        Vector3 playerSide = GetCurrentPlayerPosition() - center;
-        playerSide.y = 0f;
-        if (playerSide.sqrMagnitude < 0.01f)
-        {
-            playerSide = GetAutoInteractionForward();
-            playerSide.y = 0f;
-        }
-
-        if (playerSide.sqrMagnitude < 0.01f)
-        {
-            playerSide = Vector3.back;
-        }
-
-        Vector3 entranceSide = -playerSide.normalized;
-        return focusPosition + entranceSide * Mathf.Max(2.5f, policeEntranceEndRadius);
-    }
-
-    private Quaternion GetLookRotationOnPlane(Vector3 from, Vector3 to, Quaternion fallback)
-    {
-        Vector3 direction = to - from;
-        direction.y = 0f;
-        return direction.sqrMagnitude > 0.01f
-            ? Quaternion.LookRotation(direction.normalized, Vector3.up)
-            : fallback;
-    }
-
-    private void PreparePoliceActorForVisibility(Transform actor)
-    {
-        if (actor == null)
-        {
-            return;
-        }
-
-        SetActiveIncludingParents(actor);
-
-        Renderer[] renderers = actor.GetComponentsInChildren<Renderer>(true);
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            renderers[i].enabled = true;
-            renderers[i].forceRenderingOff = false;
-
-            SkinnedMeshRenderer skinnedRenderer = renderers[i] as SkinnedMeshRenderer;
-            if (skinnedRenderer != null)
-            {
-                skinnedRenderer.updateWhenOffscreen = true;
-            }
-        }
-
-        Animator[] animators = actor.GetComponentsInChildren<Animator>(true);
-        for (int i = 0; i < animators.Length; i++)
-        {
-            animators[i].enabled = true;
-            animators[i].cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        }
-
-        Debug.Log("[Chapter1] Police visible: " + actor.name
-            + " at " + actor.position
-            + ", renderers=" + renderers.Length);
     }
 
     private void SetActiveIncludingParents(Transform target)
