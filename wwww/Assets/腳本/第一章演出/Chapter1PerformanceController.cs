@@ -58,6 +58,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     public AudioSource tensionAmbience;
     public AudioSource heartbeatAudio;
 
+    [Header("Story Music Transition")]
+    public bool useStoryMusicCrossfade = true;
+    public float storyMusicCrossfadeSeconds = 1.6f;
+    [Range(0f, 1f)] public float tensionMusicTargetVolume = 0.12f;
+
     [Header("Opening Narration")]
     public AudioSource narrationAudio;
     public AudioClip introVoice1;
@@ -206,6 +211,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0f, 1f)] public float policeDialogueVolume = 1f;
     public AudioClip policeInsultVoice;
     public AudioClip groomReplyVoice;
+    [Range(0f, 2f)] public float groomReplyVolumeScale = 1.4f;
     public AudioClip femaleResistVoice;
     public AudioClip playerInterveneVoice;
     public AudioClip policeWatchCommandVoice;
@@ -2208,20 +2214,86 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private IEnumerator CrossfadeStoryMusic(
+        AudioSource from,
+        AudioSource to,
+        float seconds,
+        float targetVolume)
+    {
+        float duration = Mathf.Max(0.05f, seconds);
+        float fromStartVolume = from != null ? from.volume : 0f;
+        float toTargetVolume = Mathf.Clamp01(targetVolume);
+
+        if (to != null)
+        {
+            to.loop = true;
+            to.playOnAwake = false;
+            to.volume = 0f;
+
+            if (!to.isPlaying)
+            {
+                to.Play();
+            }
+        }
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+
+            if (from != null)
+            {
+                from.volume = Mathf.Lerp(fromStartVolume, 0f, t);
+            }
+
+            if (to != null)
+            {
+                to.volume = Mathf.Lerp(0f, toTargetVolume, t);
+            }
+
+            yield return null;
+        }
+
+        if (from != null)
+        {
+            from.Stop();
+            from.volume = fromStartVolume;
+        }
+
+        if (to != null)
+        {
+            to.volume = toTargetVolume;
+        }
+    }
+
     private IEnumerator PoliceSequenceRoutine()
     {
         SetPlayerControl(false);
         EnsurePoliceActorsForIntrusion();
         SetMission("婚禮中斷：兩名日本警察闖入會場。");
 
-        if (weddingAmbience != null)
+        if (useStoryMusicCrossfade)
         {
-            weddingAmbience.Stop();
+            StartCoroutine(CrossfadeStoryMusic(
+                weddingAmbience,
+                tensionAmbience,
+                storyMusicCrossfadeSeconds,
+                tensionMusicTargetVolume));
         }
-
-        if (tensionAmbience != null)
+        else
         {
-            tensionAmbience.Play();
+            if (weddingAmbience != null)
+            {
+                weddingAmbience.Stop();
+            }
+
+            if (tensionAmbience != null)
+            {
+                tensionAmbience.loop = true;
+                tensionAmbience.volume = tensionMusicTargetVolume;
+                tensionAmbience.Play();
+            }
         }
 
         ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
@@ -2257,7 +2329,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             "新郎",
             "我們只是辦婚禮，沒有冒犯。",
             groomReplyVoice,
-            3.2f);
+            3.2f,
+            groomReplyVolumeScale);
 
         if (useFallbackIncidentAnimation)
         {
@@ -2984,7 +3057,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         string speaker,
         string line,
         AudioClip voiceClip,
-        float fallbackSeconds)
+        float fallbackSeconds,
+        float volumeScale = 1f)
     {
         float duration = voiceClip != null
             ? Mathf.Max(0.1f, voiceClip.length)
@@ -3007,9 +3081,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         policeDialogueAudio.Stop();
-        policeDialogueAudio.clip = voiceClip;
+        policeDialogueAudio.clip = null;
         policeDialogueAudio.volume = Mathf.Clamp01(policeDialogueVolume);
-        policeDialogueAudio.Play();
+        policeDialogueAudio.PlayOneShot(voiceClip, Mathf.Max(0f, volumeScale));
 
         while (policeDialogueAudio != null && policeDialogueAudio.isPlaying)
         {

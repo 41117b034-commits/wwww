@@ -1397,6 +1397,135 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 680081723}
   m_SourcePrefab: {fileID: 100100000, guid: d8437141b1e98e5419d4dc09dc343b9e, type: 3}
+--- !u!1 &145637398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 145637400}
+  - component: {fileID: 145637399}
+  m_Layer: 0
+  m_Name: TensionBGN
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &145637399
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145637398}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 03371cbdb84314d428f1612a64e41313, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &145637400
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145637398}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7068998, y: -0.050476134, z: -0.017108444, w: 0.7053029}
+  m_LocalPosition: {x: 3615.1, y: -5823.2, z: -82.6}
+  m_LocalScale: {x: 11.679252, y: 11.67926, z: 11.67926}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &166104092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6012,9 +6141,12 @@ MonoBehaviour:
   dialogueUI: {fileID: 0}
   choiceUI: {fileID: 0}
   fadeCanvas: {fileID: 0}
-  weddingAmbience: {fileID: 0}
-  tensionAmbience: {fileID: 0}
+  weddingAmbience: {fileID: 1634240005}
+  tensionAmbience: {fileID: 145637399}
   heartbeatAudio: {fileID: 0}
+  useStoryMusicCrossfade: 1
+  storyMusicCrossfadeSeconds: 1.6
+  tensionMusicTargetVolume: 0.12
   narrationAudio: {fileID: 0}
   introVoice1: {fileID: 8300000, guid: 93a10ef5466c75440b5af199daabeea6, type: 3}
   introVoice2: {fileID: 8300000, guid: 847d45c53231af140bfa0d32a2fb0e7e, type: 3}
@@ -6141,6 +6273,7 @@ MonoBehaviour:
   policeDialogueVolume: 1
   policeInsultVoice: {fileID: 8300000, guid: 4bf350881b051334cb64bfb8ea853312, type: 3}
   groomReplyVoice: {fileID: 8300000, guid: db9b5c34c78fa704f93ef59e3c4e5f27, type: 3}
+  groomReplyVolumeScale: 1.4
   femaleResistVoice: {fileID: 8300000, guid: 746d18eb6eaa4a947ab5826f7cedd8ff, type: 3}
   playerInterveneVoice: {fileID: 8300000, guid: e57e9ea8e78b10647bcdc51192a719ec, type: 3}
   policeWatchCommandVoice: {fileID: 8300000, guid: 604c2c977a0747740aeb4d75b5ea521d, type: 3}
@@ -18834,6 +18967,7 @@ SceneRoots:
   - {fileID: 1634240006}
   - {fileID: 1991399224}
   - {fileID: 1108419086}
+  - {fileID: 145637400}
   - {fileID: 1822936992}
   - {fileID: 1037803652}
   - {fileID: 898807143}
