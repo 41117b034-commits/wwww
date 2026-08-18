@@ -166,6 +166,19 @@ public class Chapter1PerformanceController : MonoBehaviour
     public Color deliveryTargetMarkerColor = new Color(1f, 0.78f, 0.05f, 1f);
     public bool showDeliveryTargetNameAndDistance = true;
 
+    [Header("Delivery Ground Arrow Path")]
+    public bool showDeliveryGroundArrows;
+    public int deliveryGroundArrowMaxCount = 12;
+    public float deliveryGroundArrowSpacing = 2.2f;
+    public float deliveryGroundArrowStartDistance = 1.2f;
+    public float deliveryGroundArrowEndDistance = 1.1f;
+    public float deliveryGroundArrowHeight = 0.08f;
+    public float deliveryGroundArrowSize = 1.05f;
+    public float deliveryGroundArrowRefreshSeconds = 0.12f;
+    public float deliveryGroundArrowPulseAmount = 0.1f;
+    public float deliveryGroundArrowPulseSpeed = 4.5f;
+    public Color deliveryGroundArrowColor = new Color(1f, 0.82f, 0.02f, 1f);
+
     [Header("Delivery NPC Stationary")]
     [Tooltip("勾選後，Wine/Food Delivery Targets 裡的 NPC 不會再繞圈，會固定站著等玩家。")]
     public bool keepDeliveryTargetsStationary = true;
@@ -190,6 +203,12 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float carriedPropViewDownOffset = 0.05f;
     public Color winePropColor = new Color(0.45f, 0.12f, 0.08f, 1f);
     public Color foodPropColor = new Color(0.95f, 0.58f, 0.18f, 1f);
+
+    [Header("New Police Scene Food Carry Presentation")]
+    public float newPoliceSceneFoodViewDistance = 1.65f;
+    public float newPoliceSceneFoodViewRightOffset = 0.3f;
+    public float newPoliceSceneFoodViewDownOffset = 0.13f;
+    public float newPoliceSceneFoodTargetSize = 0.72f;
 
     [Header("Wine Bottle Model")]
     public GameObject wineBottleTemplate;
@@ -283,6 +302,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GameObject activeDeliveryTargetMarker;
     private Transform activeDeliveryTarget;
     private Vector3 deliveryMarkerBaseScale = Vector3.one;
+    private readonly List<GameObject> activeDeliveryGroundArrows = new List<GameObject>();
+    private float nextDeliveryGroundArrowRefreshTime;
 
     private int deliveredWineCount;
     private int sharedFoodCount;
@@ -1140,6 +1161,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             food.name = "Chapter1_Food_PhysicalCarry";
             food.SetActive(true);
             PrepareHeldProp(food);
+            FitNewPoliceSceneHeldFood(food);
             return food;
         }
 
@@ -1514,7 +1536,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void RefreshDeliveryTargetMarker()
     {
-        if (!showDeliveryTargetMarker || carriedWeddingItem == WeddingCarryItem.None)
+        bool showGroundArrows = ShouldShowDeliveryGroundArrows();
+        if ((!showDeliveryTargetMarker && !showGroundArrows)
+            || carriedWeddingItem == WeddingCarryItem.None)
         {
             ClearDeliveryTargetMarker();
             return;
@@ -1529,8 +1553,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        if (activeDeliveryTargetMarker != null && activeDeliveryTarget == target)
+        if (activeDeliveryTarget == target
+            && (!showDeliveryTargetMarker || activeDeliveryTargetMarker != null))
         {
+            RefreshDeliveryGroundArrows(true);
             return;
         }
 
@@ -1542,11 +1568,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             StopDeliveryTargetNPC(target);
         }
 
-        if (deliveryTargetMarkerPrefab != null)
+        if (showDeliveryTargetMarker && deliveryTargetMarkerPrefab != null)
         {
             activeDeliveryTargetMarker = Instantiate(deliveryTargetMarkerPrefab);
         }
-        else
+        else if (showDeliveryTargetMarker)
         {
             activeDeliveryTargetMarker = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
@@ -1582,15 +1608,21 @@ public class Chapter1PerformanceController : MonoBehaviour
                 Quaternion.Euler(45f, 45f, 45f);
         }
 
-        activeDeliveryTargetMarker.name = "DeliveryTargetMarker_" + target.name;
-        deliveryMarkerBaseScale =
-            Vector3.one * Mathf.Max(0.08f, deliveryTargetMarkerScale);
-        activeDeliveryTargetMarker.transform.localScale = deliveryMarkerBaseScale;
+        if (activeDeliveryTargetMarker != null)
+        {
+            activeDeliveryTargetMarker.name = "DeliveryTargetMarker_" + target.name;
+            deliveryMarkerBaseScale =
+                Vector3.one * Mathf.Max(0.08f, deliveryTargetMarkerScale);
+            activeDeliveryTargetMarker.transform.localScale = deliveryMarkerBaseScale;
+        }
+
+        RefreshDeliveryGroundArrows(true);
     }
 
     private void UpdateDeliveryTargetGuidance()
     {
-        if (!showDeliveryTargetMarker
+        bool showGroundArrows = ShouldShowDeliveryGroundArrows();
+        if ((!showDeliveryTargetMarker && !showGroundArrows)
             || carriedWeddingItem == WeddingCarryItem.None
             || policeSequenceStarted
             || !IsFreeExplorationActive())
@@ -1609,40 +1641,233 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        if (activeDeliveryTargetMarker == null || activeDeliveryTarget != expectedTarget)
+        if (activeDeliveryTarget != expectedTarget
+            || (showDeliveryTargetMarker && activeDeliveryTargetMarker == null))
         {
             RefreshDeliveryTargetMarker();
         }
 
-        if (activeDeliveryTargetMarker == null || activeDeliveryTarget == null)
+        if (activeDeliveryTarget == null)
         {
             return;
         }
 
-        float bob =
-            Mathf.Sin(Time.time * 3.2f)
-            * Mathf.Max(0f, deliveryTargetMarkerBobHeight);
+        RefreshDeliveryGroundArrows(false);
 
-        activeDeliveryTargetMarker.transform.position =
-            activeDeliveryTarget.position
-            + Vector3.up * (deliveryTargetMarkerHeight + bob);
-
-        activeDeliveryTargetMarker.transform.Rotate(
-            Vector3.up,
-            deliveryTargetMarkerSpinSpeed * Time.deltaTime,
-            Space.World);
-
-        if (pulseDeliveryTargetMarker)
+        if (activeDeliveryTargetMarker != null)
         {
-            float pulse = 1f + Mathf.Sin(Time.time * 5f) * 0.16f;
-            activeDeliveryTargetMarker.transform.localScale =
-                deliveryMarkerBaseScale * pulse;
+            float bob =
+                Mathf.Sin(Time.time * 3.2f)
+                * Mathf.Max(0f, deliveryTargetMarkerBobHeight);
+
+            activeDeliveryTargetMarker.transform.position =
+                activeDeliveryTarget.position
+                + Vector3.up * (deliveryTargetMarkerHeight + bob);
+
+            activeDeliveryTargetMarker.transform.Rotate(
+                Vector3.up,
+                deliveryTargetMarkerSpinSpeed * Time.deltaTime,
+                Space.World);
+
+            if (pulseDeliveryTargetMarker)
+            {
+                float pulse = 1f + Mathf.Sin(Time.time * 5f) * 0.16f;
+                activeDeliveryTargetMarker.transform.localScale =
+                    deliveryMarkerBaseScale * pulse;
+            }
+            else
+            {
+                activeDeliveryTargetMarker.transform.localScale =
+                    deliveryMarkerBaseScale;
+            }
         }
-        else
+    }
+
+    private bool ShouldShowDeliveryGroundArrows()
+    {
+        return showDeliveryGroundArrows || IsNewPoliceScene();
+    }
+
+    private void RefreshDeliveryGroundArrows(bool force)
+    {
+        if (!ShouldShowDeliveryGroundArrows()
+            || activeDeliveryTarget == null
+            || carriedWeddingItem == WeddingCarryItem.None)
         {
-            activeDeliveryTargetMarker.transform.localScale =
-                deliveryMarkerBaseScale;
+            ClearDeliveryGroundArrows();
+            return;
         }
+
+        if (!force && Time.unscaledTime < nextDeliveryGroundArrowRefreshTime)
+        {
+            return;
+        }
+
+        nextDeliveryGroundArrowRefreshTime =
+            Time.unscaledTime + Mathf.Max(0.03f, deliveryGroundArrowRefreshSeconds);
+
+        Vector3 playerPosition = GetCurrentPlayerPosition();
+        Vector3 targetPosition = activeDeliveryTarget.position;
+        Vector3 flatDirection = targetPosition - playerPosition;
+        flatDirection.y = 0f;
+
+        float distance = flatDirection.magnitude;
+        float startDistance = Mathf.Max(0.25f, deliveryGroundArrowStartDistance);
+        float endDistance = Mathf.Max(0.25f, deliveryGroundArrowEndDistance);
+        float usableDistance = distance - startDistance - endDistance;
+
+        if (flatDirection.sqrMagnitude < 0.01f || usableDistance <= 0f)
+        {
+            SetDeliveryGroundArrowCount(0);
+            return;
+        }
+
+        flatDirection.Normalize();
+        float spacing = Mathf.Max(0.6f, deliveryGroundArrowSpacing);
+        int arrowCount = Mathf.Clamp(
+            Mathf.FloorToInt(usableDistance / spacing) + 1,
+            1,
+            Mathf.Max(1, deliveryGroundArrowMaxCount));
+
+        SetDeliveryGroundArrowCount(arrowCount);
+
+        Quaternion arrowRotation = Quaternion.LookRotation(flatDirection, Vector3.up);
+        float pulseAmount = Mathf.Clamp(deliveryGroundArrowPulseAmount, 0f, 0.35f);
+        float baseSize = Mathf.Max(0.35f, deliveryGroundArrowSize);
+
+        for (int i = 0; i < arrowCount; i++)
+        {
+            GameObject arrow = activeDeliveryGroundArrows[i];
+            float pathDistance = arrowCount == 1
+                ? startDistance + usableDistance * 0.5f
+                : startDistance + usableDistance * i / (arrowCount - 1f);
+            Vector3 arrowPosition = playerPosition + flatDirection * pathDistance;
+
+            if (TryGetTerrainGroundY(arrowPosition, out float terrainGroundY))
+            {
+                arrowPosition.y = terrainGroundY + deliveryGroundArrowHeight;
+            }
+            else if (TryGetPhysicsGroundY(null, arrowPosition, out float physicsGroundY))
+            {
+                arrowPosition.y = physicsGroundY + deliveryGroundArrowHeight;
+            }
+            else
+            {
+                float pathProgress = Mathf.Clamp01(pathDistance / Mathf.Max(0.01f, distance));
+                arrowPosition.y = Mathf.Lerp(playerPosition.y, targetPosition.y, pathProgress)
+                    + deliveryGroundArrowHeight;
+            }
+
+            float phase = Time.unscaledTime * Mathf.Max(0f, deliveryGroundArrowPulseSpeed) - i * 0.42f;
+            float pulse = 1f + Mathf.Sin(phase) * pulseAmount;
+            arrow.transform.SetPositionAndRotation(arrowPosition, arrowRotation);
+            arrow.transform.localScale = Vector3.one * (baseSize * pulse);
+        }
+    }
+
+    private void SetDeliveryGroundArrowCount(int count)
+    {
+        int safeCount = Mathf.Max(0, count);
+
+        while (activeDeliveryGroundArrows.Count < safeCount)
+        {
+            activeDeliveryGroundArrows.Add(CreateDeliveryGroundArrow(
+                activeDeliveryGroundArrows.Count + 1));
+        }
+
+        for (int i = 0; i < activeDeliveryGroundArrows.Count; i++)
+        {
+            GameObject arrow = activeDeliveryGroundArrows[i];
+            if (arrow != null)
+            {
+                arrow.SetActive(i < safeCount);
+            }
+        }
+    }
+
+    private GameObject CreateDeliveryGroundArrow(int index)
+    {
+        GameObject arrowRoot = new GameObject("DeliveryGroundArrow_" + index);
+        arrowRoot.transform.SetParent(transform, true);
+
+        CreateDeliveryGroundArrowPart(
+            arrowRoot.transform,
+            "Shaft",
+            new Vector3(0f, 0f, -0.16f),
+            new Vector3(0.22f, 0.045f, 0.76f),
+            Quaternion.identity);
+        CreateDeliveryGroundArrowPart(
+            arrowRoot.transform,
+            "HeadLeft",
+            new Vector3(-0.15f, 0f, 0.31f),
+            new Vector3(0.2f, 0.05f, 0.55f),
+            Quaternion.Euler(0f, 45f, 0f));
+        CreateDeliveryGroundArrowPart(
+            arrowRoot.transform,
+            "HeadRight",
+            new Vector3(0.15f, 0f, 0.31f),
+            new Vector3(0.2f, 0.05f, 0.55f),
+            Quaternion.Euler(0f, -45f, 0f));
+
+        return arrowRoot;
+    }
+
+    private void CreateDeliveryGroundArrowPart(
+        Transform parent,
+        string partName,
+        Vector3 localPosition,
+        Vector3 localScale,
+        Quaternion localRotation)
+    {
+        GameObject part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        part.name = partName;
+        part.transform.SetParent(parent, false);
+        part.transform.localPosition = localPosition;
+        part.transform.localRotation = localRotation;
+        part.transform.localScale = localScale;
+
+        Collider partCollider = part.GetComponent<Collider>();
+        if (partCollider != null)
+        {
+            Destroy(partCollider);
+        }
+
+        Renderer partRenderer = part.GetComponent<Renderer>();
+        if (partRenderer == null || partRenderer.material == null)
+        {
+            return;
+        }
+
+        Material material = partRenderer.material;
+        if (material.HasProperty("_BaseColor"))
+        {
+            material.SetColor("_BaseColor", deliveryGroundArrowColor);
+        }
+
+        if (material.HasProperty("_Color"))
+        {
+            material.SetColor("_Color", deliveryGroundArrowColor);
+        }
+
+        if (material.HasProperty("_EmissionColor"))
+        {
+            material.EnableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", deliveryGroundArrowColor * 2.4f);
+        }
+    }
+
+    private void ClearDeliveryGroundArrows()
+    {
+        for (int i = 0; i < activeDeliveryGroundArrows.Count; i++)
+        {
+            if (activeDeliveryGroundArrows[i] != null)
+            {
+                Destroy(activeDeliveryGroundArrows[i]);
+            }
+        }
+
+        activeDeliveryGroundArrows.Clear();
+        nextDeliveryGroundArrowRefreshTime = 0f;
     }
 
     private void ClearDeliveryTargetMarker()
@@ -1653,6 +1878,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             activeDeliveryTargetMarker = null;
         }
 
+        ClearDeliveryGroundArrows();
         activeDeliveryTarget = null;
     }
 
@@ -2753,10 +2979,22 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform viewTransform = GetPlayerViewTransform();
         if (viewTransform != null)
         {
+            float viewDistance = carriedPropViewDistance;
+            float rightOffset = carriedPropViewRightOffset;
+            float downOffset = carriedPropViewDownOffset;
+
+            if (IsNewPoliceScene()
+                && carriedWeddingItem == WeddingCarryItem.Food)
+            {
+                viewDistance = Mathf.Max(viewDistance, newPoliceSceneFoodViewDistance);
+                rightOffset = newPoliceSceneFoodViewRightOffset;
+                downOffset = newPoliceSceneFoodViewDownOffset;
+            }
+
             return viewTransform.position
-                + viewTransform.forward * Mathf.Max(0.35f, carriedPropViewDistance)
-                + viewTransform.right * carriedPropViewRightOffset
-                - viewTransform.up * carriedPropViewDownOffset;
+                + viewTransform.forward * Mathf.Max(0.35f, viewDistance)
+                + viewTransform.right * rightOffset
+                - viewTransform.up * downOffset;
         }
 
         Transform root = GetDancePlayerRoot();
@@ -2937,6 +3175,55 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             interactables[i].enabled = false;
         }
+    }
+
+    private void FitNewPoliceSceneHeldFood(GameObject food)
+    {
+        if (!IsNewPoliceScene() || food == null)
+        {
+            return;
+        }
+
+        Renderer[] renderers = food.GetComponentsInChildren<Renderer>(true);
+        Bounds combinedBounds = new Bounds();
+        bool hasBounds = false;
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer == null || !renderer.enabled)
+            {
+                continue;
+            }
+
+            if (!hasBounds)
+            {
+                combinedBounds = renderer.bounds;
+                hasBounds = true;
+            }
+            else
+            {
+                combinedBounds.Encapsulate(renderer.bounds);
+            }
+        }
+
+        if (!hasBounds)
+        {
+            return;
+        }
+
+        float largestDimension = Mathf.Max(
+            combinedBounds.size.x,
+            combinedBounds.size.y,
+            combinedBounds.size.z);
+
+        if (largestDimension <= 0.0001f)
+        {
+            return;
+        }
+
+        float targetSize = Mathf.Max(0.2f, newPoliceSceneFoodTargetSize);
+        food.transform.localScale *= targetSize / largestDimension;
     }
 
     private void FitHeldWineBottle(GameObject bottle)
@@ -4991,6 +5278,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);
         carriedPropViewDistance = Mathf.Max(carriedPropViewDistance, 0.95f);
         firstPersonHoldSeconds = Mathf.Max(firstPersonHoldSeconds, 0.85f);
+    }
+
+    private bool IsNewPoliceScene()
+    {
+        return gameObject.scene.IsValid()
+            && string.Equals(gameObject.scene.name, "第一章新版警察", System.StringComparison.Ordinal);
     }
 
     private Transform GetPlayerViewTransform()
