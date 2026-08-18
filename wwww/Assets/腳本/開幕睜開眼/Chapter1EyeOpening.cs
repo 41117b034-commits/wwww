@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -70,6 +71,52 @@ public class Chapter1EyeOpening : MonoBehaviour
     [Tooltip("檢查手時整組手的額外旋轉。")]
     public Vector3 inspectEulerOffset = new Vector3(-9f, 0f, 0f);
 
+    [Header("觀察自己：快握拳再鬆開")]
+    [Tooltip("看手時會做一次接近握拳、再放鬆的動作。")]
+    public bool playFingerFlexWhileInspecting = true;
+
+    [Tooltip("可留空，會自動找 Hands_Rigged/Hand_Left。")]
+    public Transform leftFingerBoneRoot;
+
+    [Tooltip("可留空，會自動找 Hands_Rigged/Hand_Right。")]
+    public Transform rightFingerBoneRoot;
+
+    [Range(0f, 1f)]
+    [Tooltip("0=完全不握，1=完整握拳。建議 0.68~0.78，像在觀察自己的手而不是用力握拳。")]
+    public float almostFistAmount = 0.72f;
+
+    [Tooltip("手指快速彎曲時間。")]
+    public float fingerCloseSeconds = 0.48f;
+
+    [Tooltip("接近握拳後停一下。")]
+    public float fingerHoldSeconds = 0.12f;
+
+    [Tooltip("放鬆張開時間。")]
+    public float fingerOpenSeconds = 0.68f;
+
+    public enum FingerCurlAxis
+    {
+        X,
+        Y,
+        Z
+    }
+
+    [Tooltip("這個 Blender Rig 預設先用 X；如果手指往側邊歪，改 Z 試。")]
+    public FingerCurlAxis fingerCurlAxis = FingerCurlAxis.X;
+
+    [Tooltip("每節左手指骨最大彎曲角度。")]
+    public float leftFingerCurlDegrees = 48f;
+
+    [Tooltip("每節右手指骨最大彎曲角度。若右手反方向，改成 +48。")]
+    public float rightFingerCurlDegrees = -48f;
+
+    [Tooltip("跳過 Hand_Left / Hand_Right 底下第一層掌骨，只彎更深層的手指骨。")]
+    [Range(1, 4)]
+    public int minimumFingerBoneDepth = 2;
+
+    [Tooltip("Play 模式按 L 只測試握拳/鬆開，不重播整個開場。")]
+    public bool debugFingerFlexWithL = true;
+
     public float settleSeconds = 0.35f;
 
     [Header("看完後收手")]
@@ -106,6 +153,13 @@ public class Chapter1EyeOpening : MonoBehaviour
     // 已經扣除 FBX 奇怪 Pivot 與 Mesh Bounds 偏移。
     private Vector3 shownRootWorldPosition;
     private Quaternion shownRootWorldRotation;
+
+    private readonly List<Transform> leftFingerBones = new List<Transform>();
+    private readonly List<Quaternion> leftFingerOpenRotations = new List<Quaternion>();
+    private readonly List<Transform> rightFingerBones = new List<Transform>();
+    private readonly List<Quaternion> rightFingerOpenRotations = new List<Quaternion>();
+    private bool fingerPoseCached;
+    private bool fingerFlexRunning;
 
     private IEnumerator Start()
     {
@@ -203,6 +257,15 @@ public class Chapter1EyeOpening : MonoBehaviour
             && !sequenceRunning)
         {
             StartCoroutine(DebugReplay());
+        }
+
+        if (debugFingerFlexWithL
+            && Input.GetKeyDown(KeyCode.L)
+            && !fingerFlexRunning
+            && introHandsRoot != null
+            && introHandsRoot.activeInHierarchy)
+        {
+            StartCoroutine(PlayFingerObserveGesture());
         }
     }
 
@@ -302,6 +365,7 @@ public class Chapter1EyeOpening : MonoBehaviour
         }
 
         MakeAllHandRenderersVisible();
+        ResolveAndCacheFingerBones();
 
         // 等同於保留 Blender 匯入時的模型朝向。
         shownRootWorldRotation = handsRoot.rotation;
@@ -601,7 +665,13 @@ public class Chapter1EyeOpening : MonoBehaviour
         yield return WaitRealtime(
             inspectHoldSeconds);
 
-        // 2. 稍微靠近、翻手
+        // 2. 玩家像是在確認自己的手：快速接近握拳，再自然鬆開。
+        if (playFingerFlexWhileInspecting)
+        {
+            yield return PlayFingerObserveGesture();
+        }
+
+        // 3. 稍微靠近、翻手
         Vector3 inspectPosition =
             shownRootWorldPosition
             + playerCamera.transform.forward
@@ -651,7 +721,7 @@ public class Chapter1EyeOpening : MonoBehaviour
         handsRoot.rotation =
             shownRootWorldRotation;
 
-        // 3. 鏡頭回正
+        // 4. 鏡頭回正
         Quaternion cameraReturnStart =
             cameraOffsetRoot.localRotation;
 
@@ -684,7 +754,7 @@ public class Chapter1EyeOpening : MonoBehaviour
         cameraOffsetRoot.localRotation =
             cameraOffsetStartRotation;
 
-        // 4. 看完後先稍微沉一下，避免直接突然收掉。
+        // 5. 看完後先稍微沉一下，避免直接突然收掉。
         Vector3 settleTarget =
             shownRootWorldPosition
             - playerCamera.transform.up * 0.08f;
@@ -717,7 +787,7 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         handsRoot.position = settleTarget;
 
-        // 5. 雙手自然往下、往身體方向收回。
+        // 6. 雙手自然往下、往身體方向收回。
         if (retractHandsAfterInspect)
         {
             Transform cam =
@@ -771,6 +841,261 @@ public class Chapter1EyeOpening : MonoBehaviour
 
             handsRoot.rotation =
                 retractTargetRotation;
+        }
+    }
+
+    private void ResolveAndCacheFingerBones()
+    {
+        if (introHandsRoot == null)
+        {
+            return;
+        }
+
+        if (leftFingerBoneRoot == null)
+        {
+            leftFingerBoneRoot =
+                FindChildRecursive(
+                    introHandsRoot.transform,
+                    "Hand_Left");
+        }
+
+        if (rightFingerBoneRoot == null)
+        {
+            rightFingerBoneRoot =
+                FindChildRecursive(
+                    introHandsRoot.transform,
+                    "Hand_Right");
+        }
+
+        leftFingerBones.Clear();
+        leftFingerOpenRotations.Clear();
+        rightFingerBones.Clear();
+        rightFingerOpenRotations.Clear();
+
+        CacheFingerBones(
+            leftFingerBoneRoot,
+            0,
+            leftFingerBones,
+            leftFingerOpenRotations);
+
+        CacheFingerBones(
+            rightFingerBoneRoot,
+            0,
+            rightFingerBones,
+            rightFingerOpenRotations);
+
+        fingerPoseCached =
+            leftFingerBones.Count > 0
+            || rightFingerBones.Count > 0;
+
+        Debug.Log(
+            "[Intro] 手指骨快取完成：左 "
+            + leftFingerBones.Count
+            + "，右 "
+            + rightFingerBones.Count,
+            this);
+    }
+
+    private Transform FindChildRecursive(
+        Transform root,
+        string targetName)
+    {
+        if (root == null)
+        {
+            return null;
+        }
+
+        if (root.name == targetName)
+        {
+            return root;
+        }
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform found =
+                FindChildRecursive(
+                    root.GetChild(i),
+                    targetName);
+
+            if (found != null)
+            {
+                return found;
+            }
+        }
+
+        return null;
+    }
+
+    private void CacheFingerBones(
+        Transform current,
+        int depth,
+        List<Transform> bones,
+        List<Quaternion> rotations)
+    {
+        if (current == null)
+        {
+            return;
+        }
+
+        if (depth >= minimumFingerBoneDepth)
+        {
+            bones.Add(current);
+            rotations.Add(current.localRotation);
+        }
+
+        for (int i = 0; i < current.childCount; i++)
+        {
+            CacheFingerBones(
+                current.GetChild(i),
+                depth + 1,
+                bones,
+                rotations);
+        }
+    }
+
+    private IEnumerator PlayFingerObserveGesture()
+    {
+        if (fingerFlexRunning)
+        {
+            yield break;
+        }
+
+        if (!fingerPoseCached)
+        {
+            ResolveAndCacheFingerBones();
+        }
+
+        if (!fingerPoseCached)
+        {
+            Debug.LogWarning(
+                "[Intro] 找不到 Hand_Left / Hand_Right 的手指骨，略過握拳動畫。",
+                this);
+            yield break;
+        }
+
+        fingerFlexRunning = true;
+
+        // 快速接近握拳。
+        yield return AnimateFingerCurl(
+            0f,
+            almostFistAmount,
+            fingerCloseSeconds);
+
+        yield return WaitRealtime(
+            fingerHoldSeconds);
+
+        // 再放鬆張開。
+        yield return AnimateFingerCurl(
+            almostFistAmount,
+            0f,
+            fingerOpenSeconds);
+
+        ApplyFingerCurl(0f);
+
+        fingerFlexRunning = false;
+    }
+
+    private IEnumerator AnimateFingerCurl(
+        float from,
+        float to,
+        float seconds)
+    {
+        float duration =
+            Mathf.Max(0.05f, seconds);
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float t =
+                Smooth(
+                    elapsed / duration);
+
+            float amount =
+                Mathf.Lerp(
+                    from,
+                    to,
+                    t);
+
+            ApplyFingerCurl(amount);
+
+            yield return null;
+        }
+
+        ApplyFingerCurl(to);
+    }
+
+    private void ApplyFingerCurl(float amount)
+    {
+        Vector3 axis;
+
+        switch (fingerCurlAxis)
+        {
+            case FingerCurlAxis.Y:
+                axis = Vector3.up;
+                break;
+
+            case FingerCurlAxis.Z:
+                axis = Vector3.forward;
+                break;
+
+            default:
+                axis = Vector3.right;
+                break;
+        }
+
+        ApplyFingerCurlToHand(
+            leftFingerBones,
+            leftFingerOpenRotations,
+            axis,
+            leftFingerCurlDegrees,
+            amount);
+
+        ApplyFingerCurlToHand(
+            rightFingerBones,
+            rightFingerOpenRotations,
+            axis,
+            rightFingerCurlDegrees,
+            amount);
+    }
+
+    private void ApplyFingerCurlToHand(
+        List<Transform> bones,
+        List<Quaternion> openRotations,
+        Vector3 axis,
+        float curlDegrees,
+        float amount)
+    {
+        int count =
+            Mathf.Min(
+                bones.Count,
+                openRotations.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            Transform bone =
+                bones[i];
+
+            if (bone == null)
+            {
+                continue;
+            }
+
+            // 越靠近指尖稍微多彎一點，
+            // 會比所有關節完全相同更像自然握拳。
+            float depthBoost =
+                0.88f
+                + (i % 3) * 0.08f;
+
+            bone.localRotation =
+                openRotations[i]
+                * Quaternion.AngleAxis(
+                    curlDegrees
+                    * amount
+                    * depthBoost,
+                    axis);
         }
     }
 
