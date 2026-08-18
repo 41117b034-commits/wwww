@@ -7,80 +7,104 @@ public class Chapter1EyeOpening : MonoBehaviour
     public Chapter1PerformanceController chapterController;
     public EyeOpenEffect eyeOpenEffect;
 
-    [Tooltip("可留 None；自動找 Main Camera。")]
-    public Transform viewTransform;
+    [Tooltip("可留 None，會自動抓 Main Camera。")]
+    public Camera playerCamera;
 
-    [Header("開始時機")]
-    [Tooltip("如果沒有 Intro Voice 1，就使用這個等待時間。")]
+    [Tooltip("可留 None，會自動抓 Main Camera 的父物件 Camera Offset。")]
+    public Transform cameraOffsetRoot;
+
+    [Tooltip("拖入整個 Hands_Rigged。")]
+    public GameObject introHandsRoot;
+
+    [Header("開始時間")]
     public float fallbackDelay = 4.35f;
-
-    [Tooltip("第一段配音結束後額外等待。")]
     public float extraDelay = 0.08f;
 
     [Header("自然睜眼")]
     public bool useNaturalWakeUp = true;
+    public float pauseAfterEyesOpen = 0.25f;
 
-    [Tooltip("眼睛完全睜開後稍微停一下，再抬手。")]
-    public float pauseAfterEyesOpen = 0.20f;
+    [Header("真正『看手』的鏡頭")]
+    [Tooltip("鏡頭會真的往下看手，不只是把手移到畫面中。")]
+    public bool cameraLooksAtHands = true;
 
-    [Header("玩家看手動畫")]
-    public bool playHandCheckAnimation = true;
+    [Tooltip("VR 建議 12~18 度，不要太大。")]
+    public float lookDownDegrees = 15f;
 
-    [Tooltip("專門給開場用的手模型 Root。建議放在 Main Camera 底下。")]
-    public GameObject introHandsRoot;
+    public float cameraLookDownSeconds = 0.85f;
+    public float cameraReturnSeconds = 0.70f;
 
-    public Transform leftHand;
-    public Transform rightHand;
+    [Header("雙手位置")]
+    [Tooltip("自動把雙手放到玩家前方，不用自己猜 Transform。")]
+    public bool autoPlaceHandsInFront = true;
 
-    [Tooltip("如果你另外有正式 VR 手部，這裡可拖 Gameplay Hands Root；開場結束後會打開。")]
-    public GameObject gameplayHandsRoot;
+    [Tooltip("手距離眼睛多遠。")]
+    public float handsForwardDistance = 0.58f;
 
-    [Tooltip("開場手部動畫完成後，關閉 Intro Hands。若 Intro Hands 就是正式玩家手，取消勾選。")]
-    public bool hideIntroHandsAfterSequence = true;
+    [Tooltip("手比眼睛低多少。負值=往下。")]
+    public float handsVerticalOffset = -0.28f;
 
-    [Header("手部動作節奏")]
-    public float handRaiseDuration = 0.72f;
-    public float handRaiseStagger = 0.10f;
-    public float handInspectDuration = 1.45f;
-    public float handSettleDuration = 0.45f;
+    [Tooltip("一開始把手藏到更下面。")]
+    public float hiddenDownDistance = 0.58f;
 
-    [Header("手從畫面下方出現")]
-    public Vector3 leftHiddenLocalOffset =
-        new Vector3(-0.06f, -0.42f, -0.16f);
+    [Tooltip("一開始再往玩家方向縮一點。")]
+    public float hiddenBackDistance = 0.12f;
 
-    public Vector3 rightHiddenLocalOffset =
-        new Vector3(0.06f, -0.42f, -0.16f);
+    public float handRaiseSeconds = 0.95f;
 
-    [Header("看手時手腕轉動")]
-    public Vector3 leftInspectEulerOffset =
-        new Vector3(-8f, -24f, 10f);
+    [Header("看手動作")]
+    public float inspectHoldSeconds = 1.15f;
+    public float inspectMoveSeconds = 0.75f;
 
-    public Vector3 rightInspectEulerOffset =
-        new Vector3(-8f, 24f, -10f);
+    [Tooltip("看手時整雙手稍微靠近臉。")]
+    public float inspectCloserDistance = 0.07f;
 
-    [Tooltip("手在檢查時稍微靠近視線中心。")]
-    public Vector3 leftInspectPositionOffset =
-        new Vector3(0.045f, 0.035f, 0.035f);
+    [Tooltip("看手時整雙手稍微翻轉。")]
+    public Vector3 inspectEulerOffset = new Vector3(-10f, 0f, 0f);
 
-    public Vector3 rightInspectPositionOffset =
-        new Vector3(-0.045f, 0.035f, 0.035f);
+    [Header("結束")]
+    public float settleSeconds = 0.45f;
 
-    [Header("控制")]
-    [Tooltip("開場動畫播放期間持續鎖定玩家移動。")]
-    public bool keepPlayerLockedDuringIntro = true;
+    [Tooltip("測試時先不要勾，避免動畫結束後手立刻消失。")]
+    public bool hideHandsAfterSequence = false;
 
-    private Vector3 leftShownPosition;
-    private Vector3 rightShownPosition;
-    private Quaternion leftShownRotation;
-    private Quaternion rightShownRotation;
+    [Header("測試")]
+    [Tooltip("Play 模式按 K 可立即重播看手段落，不用每次重跑前面。")]
+    public bool debugReplayWithK = true;
 
-    private bool introRunning;
-    private bool handPoseSaved;
+    private bool sequenceRunning;
+
+    private Quaternion cameraOffsetStartRotation;
+
+    private Vector3 shownHandsWorldPosition;
+    private Quaternion shownHandsWorldRotation;
+
+    private Transform originalHandsParent;
 
     private IEnumerator Start()
     {
         ResolveReferences();
-        PrepareHands();
+
+        if (playerCamera == null)
+        {
+            Debug.LogError("[Chapter1EyeOpening] 找不到 Main Camera。", this);
+            yield break;
+        }
+
+        if (cameraOffsetRoot == null)
+        {
+            Debug.LogError("[Chapter1EyeOpening] 找不到 Camera Offset。", this);
+            yield break;
+        }
+
+        if (introHandsRoot == null)
+        {
+            Debug.LogError("[Chapter1EyeOpening] Intro Hands Root 沒有拖 Hands_Rigged。", this);
+            yield break;
+        }
+
+        PrepareHandsHierarchy();
+        CacheShownHandPose();
 
         float delay = fallbackDelay;
 
@@ -93,16 +117,12 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         delay += Mathf.Max(0f, extraDelay);
 
-        yield return WaitRealtime(Mathf.Max(0f, delay));
+        yield return WaitRealtime(delay);
 
-        introRunning = true;
+        sequenceRunning = true;
 
-        if (keepPlayerLockedDuringIntro && chapterController != null)
-        {
-            chapterController.SetPlayerControl(false);
-        }
+        Debug.Log("[Intro] 開始自然睜眼。", this);
 
-        // 1. 先做自然的睜眼、閉眼、再睜眼。
         if (eyeOpenEffect != null)
         {
             if (useNaturalWakeUp)
@@ -112,38 +132,50 @@ public class Chapter1EyeOpening : MonoBehaviour
             else
             {
                 eyeOpenEffect.OpenEyes();
-                yield return WaitRealtime(Mathf.Max(0.1f, eyeOpenEffect.openDuration));
+                yield return WaitRealtime(
+                    Mathf.Max(0.1f, eyeOpenEffect.openDuration));
             }
         }
 
         yield return WaitRealtime(pauseAfterEyesOpen);
 
-        // 2. 雙手慢慢抬到眼前，像剛醒來確認自己的身體。
-        if (playHandCheckAnimation)
-        {
-            yield return PlayHandsInspectionRoutine();
-        }
+        Debug.Log("[Intro] 開始真正的看手動畫。", this);
 
-        introRunning = false;
+        yield return PlayLookAtHands();
 
-        // 若主劇情已經解鎖自由探索，就把控制權交還玩家。
-        if (chapterController != null
-            && chapterController.IsFreeExplorationActive())
+        Debug.Log("[Intro] 看手動畫完成。", this);
+
+        sequenceRunning = false;
+
+        if (hideHandsAfterSequence && introHandsRoot != null)
         {
-            chapterController.SetPlayerControl(true);
+            introHandsRoot.SetActive(false);
         }
     }
 
     private void Update()
     {
-        // 主控制器可能在 Intro 還沒結束前先解鎖，
-        // 這裡會暫時把控制權鎖住，直到看手動畫完成。
-        if (introRunning
-            && keepPlayerLockedDuringIntro
-            && chapterController != null)
+        if (debugReplayWithK
+            && Input.GetKeyDown(KeyCode.K)
+            && !sequenceRunning)
         {
-            chapterController.SetPlayerControl(false);
+            StartCoroutine(DebugReplayHands());
         }
+    }
+
+    private IEnumerator DebugReplayHands()
+    {
+        sequenceRunning = true;
+
+        ResolveReferences();
+        PrepareHandsHierarchy();
+        CacheShownHandPose();
+
+        Debug.Log("[Intro] K 鍵：立即重播看手動畫。", this);
+
+        yield return PlayLookAtHands();
+
+        sequenceRunning = false;
     }
 
     private void ResolveReferences()
@@ -156,260 +188,313 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         if (eyeOpenEffect == null)
         {
-            eyeOpenEffect = GetComponent<EyeOpenEffect>();
-
-            if (eyeOpenEffect == null)
-            {
-                eyeOpenEffect =
-                    FindFirstObjectByType<EyeOpenEffect>(
-                        FindObjectsInactive.Include);
-            }
+            eyeOpenEffect =
+                FindFirstObjectByType<EyeOpenEffect>(
+                    FindObjectsInactive.Include);
         }
 
-        if (viewTransform == null && Camera.main != null)
+        if (playerCamera == null)
         {
-            viewTransform = Camera.main.transform;
+            playerCamera = Camera.main;
+        }
+
+        if (cameraOffsetRoot == null
+            && playerCamera != null)
+        {
+            // 你的結構：
+            // XR Origin (VR)
+            // └─ Camera Offset
+            //    └─ Main Camera
+            cameraOffsetRoot =
+                playerCamera.transform.parent;
         }
     }
 
-    private void PrepareHands()
+    private void PrepareHandsHierarchy()
     {
-        if (!playHandCheckAnimation)
+        if (introHandsRoot == null
+            || playerCamera == null
+            || cameraOffsetRoot == null)
         {
             return;
         }
 
-        if (introHandsRoot != null)
-        {
-            introHandsRoot.SetActive(true);
-        }
+        Transform hands = introHandsRoot.transform;
 
-        if (gameplayHandsRoot != null)
-        {
-            gameplayHandsRoot.SetActive(false);
-        }
+        originalHandsParent = hands.parent;
 
-        if (leftHand == null || rightHand == null)
+        // 關鍵修正：
+        // Hands_Rigged 如果放在 Main Camera 底下，
+        // 鏡頭低頭時手也會一起跟鏡頭轉，看起來就像「沒有看手」。
+        // 把它移到 XR Origin 底下，讓鏡頭和手可以相對移動。
+        Transform xrOrigin =
+            cameraOffsetRoot.parent;
+
+        if (xrOrigin != null
+            && hands.IsChildOf(playerCamera.transform))
         {
-            Debug.LogWarning(
-                "[Chapter1EyeOpening] 尚未指定 Left Hand / Right Hand。"
-                + "睜眼會正常播放，但不會播放看手動畫。",
+            hands.SetParent(xrOrigin, true);
+
+            Debug.Log(
+                "[Intro] Hands_Rigged 已自動移出 Main Camera，改放到 XR Origin 底下。",
                 this);
+        }
+
+        introHandsRoot.SetActive(true);
+    }
+
+    private void CacheShownHandPose()
+    {
+        if (introHandsRoot == null || playerCamera == null)
+        {
             return;
         }
 
-        leftShownPosition = leftHand.localPosition;
-        rightShownPosition = rightHand.localPosition;
-        leftShownRotation = leftHand.localRotation;
-        rightShownRotation = rightHand.localRotation;
+        Transform cam = playerCamera.transform;
+        Transform hands = introHandsRoot.transform;
 
-        handPoseSaved = true;
+        if (autoPlaceHandsInFront)
+        {
+            shownHandsWorldPosition =
+                cam.position
+                + cam.forward * handsForwardDistance
+                + cam.up * handsVerticalOffset;
+        }
+        else
+        {
+            shownHandsWorldPosition =
+                hands.position;
+        }
 
-        // 一開始雙手藏到畫面下方。
-        leftHand.localPosition =
-            leftShownPosition + leftHiddenLocalOffset;
+        // 保留你 FBX 原本正確的朝向，
+        // 不強制把模型旋轉成 Camera.rotation。
+        shownHandsWorldRotation =
+            hands.rotation;
 
-        rightHand.localPosition =
-            rightShownPosition + rightHiddenLocalOffset;
-
-        leftHand.localRotation =
-            leftShownRotation * Quaternion.Euler(18f, 5f, -10f);
-
-        rightHand.localRotation =
-            rightShownRotation * Quaternion.Euler(18f, -5f, 10f);
+        cameraOffsetStartRotation =
+            cameraOffsetRoot.localRotation;
     }
 
-    private IEnumerator PlayHandsInspectionRoutine()
+    private IEnumerator PlayLookAtHands()
     {
-        if (!handPoseSaved || leftHand == null || rightHand == null)
+        if (introHandsRoot == null
+            || playerCamera == null
+            || cameraOffsetRoot == null)
         {
             yield break;
         }
 
-        Vector3 leftStartPosition = leftHand.localPosition;
-        Vector3 rightStartPosition = rightHand.localPosition;
-        Quaternion leftStartRotation = leftHand.localRotation;
-        Quaternion rightStartRotation = rightHand.localRotation;
+        Transform cam = playerCamera.transform;
+        Transform hands = introHandsRoot.transform;
 
-        float raiseDuration = Mathf.Max(0.05f, handRaiseDuration);
+        introHandsRoot.SetActive(true);
+
+        // 每次播放都以目前頭部方向重新計算一次位置。
+        if (autoPlaceHandsInFront)
+        {
+            shownHandsWorldPosition =
+                cam.position
+                + cam.forward * handsForwardDistance
+                + cam.up * handsVerticalOffset;
+        }
+
+        cameraOffsetStartRotation =
+            cameraOffsetRoot.localRotation;
+
+        Vector3 hiddenPosition =
+            shownHandsWorldPosition
+            - cam.up * hiddenDownDistance
+            - cam.forward * hiddenBackDistance;
+
+        hands.position = hiddenPosition;
+        hands.rotation =
+            shownHandsWorldRotation
+            * Quaternion.Euler(12f, 0f, 0f);
+
+        Quaternion lookDownRotation =
+            cameraOffsetStartRotation
+            * Quaternion.Euler(lookDownDegrees, 0f, 0f);
+
+        // 1) 手抬起，同時鏡頭慢慢低頭。
+        float total =
+            Mathf.Max(handRaiseSeconds, cameraLookDownSeconds);
+
         float elapsed = 0f;
 
-        // 左手先一點、右手慢半拍，避免兩隻手像機器同步升起。
-        while (elapsed < raiseDuration + handRaiseStagger)
+        Vector3 handStart = hands.position;
+        Quaternion handStartRot = hands.rotation;
+
+        while (elapsed < total)
         {
             elapsed += Time.unscaledDeltaTime;
 
-            float leftT =
-                Smooth01(elapsed / raiseDuration);
+            float handT =
+                Smooth(
+                    elapsed / Mathf.Max(0.05f, handRaiseSeconds));
 
-            float rightT =
-                Smooth01(
-                    (elapsed - handRaiseStagger)
-                    / raiseDuration);
+            float cameraT =
+                Smooth(
+                    elapsed / Mathf.Max(0.05f, cameraLookDownSeconds));
 
-            leftHand.localPosition =
+            hands.position =
                 Vector3.Lerp(
-                    leftStartPosition,
-                    leftShownPosition,
-                    leftT);
+                    handStart,
+                    shownHandsWorldPosition,
+                    handT);
 
-            rightHand.localPosition =
-                Vector3.Lerp(
-                    rightStartPosition,
-                    rightShownPosition,
-                    rightT);
-
-            leftHand.localRotation =
+            hands.rotation =
                 Quaternion.Slerp(
-                    leftStartRotation,
-                    leftShownRotation,
-                    leftT);
+                    handStartRot,
+                    shownHandsWorldRotation,
+                    handT);
 
-            rightHand.localRotation =
-                Quaternion.Slerp(
-                    rightStartRotation,
-                    rightShownRotation,
-                    rightT);
+            if (cameraLooksAtHands)
+            {
+                cameraOffsetRoot.localRotation =
+                    Quaternion.Slerp(
+                        cameraOffsetStartRotation,
+                        lookDownRotation,
+                        cameraT);
+            }
 
             yield return null;
         }
 
-        leftHand.SetLocalPositionAndRotation(
-            leftShownPosition,
-            leftShownRotation);
+        hands.position = shownHandsWorldPosition;
+        hands.rotation = shownHandsWorldRotation;
 
-        rightHand.SetLocalPositionAndRotation(
-            rightShownPosition,
-            rightShownRotation);
+        if (cameraLooksAtHands)
+        {
+            cameraOffsetRoot.localRotation =
+                lookDownRotation;
+        }
 
-        // 慢慢翻一下手腕，像在確認「這是我的手」。
-        float inspectDuration = Mathf.Max(0.1f, handInspectDuration);
+        // 2) 停一下，讓玩家真的「看到自己的手」。
+        yield return WaitRealtime(inspectHoldSeconds);
+
+        // 3) 手靠近一點、翻一下。
+        Vector3 inspectPosition =
+            shownHandsWorldPosition
+            + cam.forward * inspectCloserDistance;
+
+        Quaternion inspectRotation =
+            shownHandsWorldRotation
+            * Quaternion.Euler(inspectEulerOffset);
+
         elapsed = 0f;
+        float inspectDuration =
+            Mathf.Max(0.1f, inspectMoveSeconds);
 
         while (elapsed < inspectDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            float normalized =
-                Mathf.Clamp01(elapsed / inspectDuration);
 
-            // 0 -> 1 -> 0，最後會自然回到原本姿勢。
-            float inspectAmount =
-                Mathf.Sin(normalized * Mathf.PI);
+            float n =
+                Mathf.Clamp01(
+                    elapsed / inspectDuration);
 
-            float microFloat =
-                Mathf.Sin(normalized * Mathf.PI * 2f)
-                * 0.008f;
+            float amount =
+                Mathf.Sin(n * Mathf.PI);
 
-            leftHand.localPosition =
-                leftShownPosition
-                + leftInspectPositionOffset * inspectAmount
-                + Vector3.up * microFloat;
+            hands.position =
+                Vector3.Lerp(
+                    shownHandsWorldPosition,
+                    inspectPosition,
+                    amount);
 
-            rightHand.localPosition =
-                rightShownPosition
-                + rightInspectPositionOffset * inspectAmount
-                + Vector3.up * microFloat;
-
-            leftHand.localRotation =
+            hands.rotation =
                 Quaternion.Slerp(
-                    leftShownRotation,
-                    leftShownRotation
-                        * Quaternion.Euler(leftInspectEulerOffset),
-                    inspectAmount);
-
-            rightHand.localRotation =
-                Quaternion.Slerp(
-                    rightShownRotation,
-                    rightShownRotation
-                        * Quaternion.Euler(rightInspectEulerOffset),
-                    inspectAmount);
+                    shownHandsWorldRotation,
+                    inspectRotation,
+                    amount);
 
             yield return null;
         }
 
-        // 最後回到正常手的位置，不要突然跳回去。
-        yield return SettleHandsToNormal();
+        hands.position = shownHandsWorldPosition;
+        hands.rotation = shownHandsWorldRotation;
 
-        if (hideIntroHandsAfterSequence)
-        {
-            if (introHandsRoot != null)
-            {
-                introHandsRoot.SetActive(false);
-            }
+        yield return WaitRealtime(0.20f);
 
-            if (gameplayHandsRoot != null)
-            {
-                gameplayHandsRoot.SetActive(true);
-            }
-        }
-    }
+        // 4) 鏡頭抬回原本視角。
+        Quaternion returnStart =
+            cameraOffsetRoot.localRotation;
 
-    private IEnumerator SettleHandsToNormal()
-    {
-        Vector3 leftStartPosition = leftHand.localPosition;
-        Vector3 rightStartPosition = rightHand.localPosition;
-        Quaternion leftStartRotation = leftHand.localRotation;
-        Quaternion rightStartRotation = rightHand.localRotation;
+        elapsed = 0f;
+        float returnDuration =
+            Mathf.Max(0.05f, cameraReturnSeconds);
 
-        float duration = Mathf.Max(0.05f, handSettleDuration);
-        float elapsed = 0f;
-
-        while (elapsed < duration)
+        while (elapsed < returnDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            float t = Smooth01(elapsed / duration);
 
-            leftHand.localPosition =
-                Vector3.Lerp(
-                    leftStartPosition,
-                    leftShownPosition,
-                    t);
+            float t =
+                Smooth(
+                    elapsed / returnDuration);
 
-            rightHand.localPosition =
-                Vector3.Lerp(
-                    rightStartPosition,
-                    rightShownPosition,
-                    t);
-
-            leftHand.localRotation =
-                Quaternion.Slerp(
-                    leftStartRotation,
-                    leftShownRotation,
-                    t);
-
-            rightHand.localRotation =
-                Quaternion.Slerp(
-                    rightStartRotation,
-                    rightShownRotation,
-                    t);
+            if (cameraLooksAtHands)
+            {
+                cameraOffsetRoot.localRotation =
+                    Quaternion.Slerp(
+                        returnStart,
+                        cameraOffsetStartRotation,
+                        t);
+            }
 
             yield return null;
         }
 
-        leftHand.SetLocalPositionAndRotation(
-            leftShownPosition,
-            leftShownRotation);
+        cameraOffsetRoot.localRotation =
+            cameraOffsetStartRotation;
 
-        rightHand.SetLocalPositionAndRotation(
-            rightShownPosition,
-            rightShownRotation);
+        // 5) 手稍微沉回自然位置。
+        Vector3 settleTarget =
+            shownHandsWorldPosition
+            - cam.up * 0.10f;
+
+        Vector3 settleStart =
+            hands.position;
+
+        elapsed = 0f;
+        float settleDuration =
+            Mathf.Max(0.05f, settleSeconds);
+
+        while (elapsed < settleDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float t =
+                Smooth(
+                    elapsed / settleDuration);
+
+            hands.position =
+                Vector3.Lerp(
+                    settleStart,
+                    settleTarget,
+                    t);
+
+            yield return null;
+        }
     }
 
-    private float Smooth01(float value)
+    private float Smooth(float value)
     {
-        float t = Mathf.Clamp01(value);
+        float t =
+            Mathf.Clamp01(value);
 
-        // smootherstep
-        return t * t * t * (t * (6f * t - 15f) + 10f);
+        return t * t * (3f - 2f * t);
     }
 
     private IEnumerator WaitRealtime(float seconds)
     {
-        float remaining = Mathf.Max(0f, seconds);
+        float remaining =
+            Mathf.Max(0f, seconds);
 
         while (remaining > 0f)
         {
-            remaining -= Time.unscaledDeltaTime;
+            remaining -=
+                Time.unscaledDeltaTime;
+
             yield return null;
         }
     }
