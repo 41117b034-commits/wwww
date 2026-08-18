@@ -7806,6 +7806,22 @@ MonoBehaviour:
   inspectMoveSeconds: 1.3
   inspectCloserDistance: 0.08
   inspectEulerOffset: {x: -9, y: 0, z: 0}
+  playFingerFlexWhileInspecting: 1
+  leftFingerBoneRoot: {fileID: 0}
+  rightFingerBoneRoot: {fileID: 0}
+  almostFistAmount: 0.72
+  fingerCloseSeconds: 0.48
+  fingerHoldSeconds: 0.12
+  fingerOpenSeconds: 0.68
+  rightHandFingerDelay: 0.07
+  fingerCurlVariation: 0.12
+  relaxedPauseSeconds: 0.24
+  fingerGestureWristEuler: {x: -2.5, y: 0, z: 1.5}
+  fingerCurlAxis: 0
+  leftFingerCurlDegrees: -48
+  rightFingerCurlDegrees: -48
+  minimumFingerBoneDepth: 2
+  debugFingerFlexWithL: 1
   settleSeconds: 0.45
   retractHandsAfterInspect: 1
   retractHandsSeconds: 0.75

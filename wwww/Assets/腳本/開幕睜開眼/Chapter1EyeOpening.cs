@@ -83,16 +83,29 @@ public class Chapter1EyeOpening : MonoBehaviour
 
     [Range(0f, 1f)]
     [Tooltip("0=完全不握，1=完整握拳。建議 0.68~0.78，像在觀察自己的手而不是用力握拳。")]
-    public float almostFistAmount = 0.72f;
+    public float almostFistAmount = 0.62f;
 
-    [Tooltip("手指快速彎曲時間。")]
-    public float fingerCloseSeconds = 0.48f;
+    [Tooltip("手指自然彎曲時間。不要太快，像是在確認自己的手。")]
+    public float fingerCloseSeconds = 0.62f;
 
-    [Tooltip("接近握拳後停一下。")]
-    public float fingerHoldSeconds = 0.12f;
+    [Tooltip("接近握拳後短暫停一下。")]
+    public float fingerHoldSeconds = 0.10f;
 
-    [Tooltip("放鬆張開時間。")]
-    public float fingerOpenSeconds = 0.68f;
+    [Tooltip("放鬆張開時間，略慢於握起來會比較自然。")]
+    public float fingerOpenSeconds = 0.86f;
+
+    [Tooltip("左右手不要完全同步；右手會稍微慢一點。")]
+    public float rightHandFingerDelay = 0.07f;
+
+    [Range(0f, 0.3f)]
+    [Tooltip("不同手指的彎曲量稍微不同，避免像機器手。")]
+    public float fingerCurlVariation = 0.12f;
+
+    [Tooltip("完全放鬆後停一下，再進下一段。")]
+    public float relaxedPauseSeconds = 0.24f;
+
+    [Tooltip("握放期間整雙手只有很輕微的手腕動作。")]
+    public Vector3 fingerGestureWristEuler = new Vector3(-2.5f, 0f, 1.5f);
 
     public enum FingerCurlAxis
     {
@@ -968,31 +981,226 @@ public class Chapter1EyeOpening : MonoBehaviour
         if (!fingerPoseCached)
         {
             Debug.LogWarning(
-                "[Intro] 找不到 Hand_Left / Hand_Right 的手指骨，略過握拳動畫。",
+                "[Intro] 找不到 Hand_Left / Hand_Right 的手指骨，略過手指觀察動畫。",
                 this);
             yield break;
         }
 
         fingerFlexRunning = true;
 
-        // 快速接近握拳。
-        yield return AnimateFingerCurl(
-            0f,
+        Transform handsRoot =
+            introHandsRoot != null
+                ? introHandsRoot.transform
+                : null;
+
+        Quaternion wristStartRotation =
+            handsRoot != null
+                ? handsRoot.rotation
+                : Quaternion.identity;
+
+        Quaternion wristGestureRotation =
+            wristStartRotation
+            * Quaternion.Euler(fingerGestureWristEuler);
+
+        // 第一段：手指慢慢彎起來。
+        // 不是完整握拳，只到約 60%，而且右手慢一點開始。
+        float duration =
+            Mathf.Max(
+                0.08f,
+                fingerCloseSeconds + rightHandFingerDelay);
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float leftT =
+                Smooth(
+                    elapsed
+                    / Mathf.Max(0.05f, fingerCloseSeconds));
+
+            float rightT =
+                Smooth(
+                    (elapsed - rightHandFingerDelay)
+                    / Mathf.Max(0.05f, fingerCloseSeconds));
+
+            ApplyNaturalFingerCurl(
+                leftT * almostFistAmount,
+                rightT * almostFistAmount);
+
+            if (handsRoot != null)
+            {
+                float wristAmount =
+                    Mathf.Sin(
+                        Mathf.Clamp01(elapsed / duration)
+                        * Mathf.PI);
+
+                handsRoot.rotation =
+                    Quaternion.Slerp(
+                        wristStartRotation,
+                        wristGestureRotation,
+                        wristAmount * 0.65f);
+            }
+
+            yield return null;
+        }
+
+        ApplyNaturalFingerCurl(
             almostFistAmount,
-            fingerCloseSeconds);
+            almostFistAmount);
 
         yield return WaitRealtime(
-            fingerHoldSeconds);
+            Mathf.Max(0f, fingerHoldSeconds));
 
-        // 再放鬆張開。
-        yield return AnimateFingerCurl(
-            almostFistAmount,
-            0f,
-            fingerOpenSeconds);
+        // 第二段：鬆開比握起來稍微慢，
+        // 左右手依然保留很小的時間差。
+        duration =
+            Mathf.Max(
+                0.08f,
+                fingerOpenSeconds + rightHandFingerDelay);
 
-        ApplyFingerCurl(0f);
+        elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            float leftT =
+                Smooth(
+                    elapsed
+                    / Mathf.Max(0.05f, fingerOpenSeconds));
+
+            float rightT =
+                Smooth(
+                    (elapsed - rightHandFingerDelay)
+                    / Mathf.Max(0.05f, fingerOpenSeconds));
+
+            ApplyNaturalFingerCurl(
+                Mathf.Lerp(almostFistAmount, 0f, leftT),
+                Mathf.Lerp(almostFistAmount, 0f, rightT));
+
+            if (handsRoot != null)
+            {
+                float t =
+                    Smooth(
+                        elapsed / duration);
+
+                handsRoot.rotation =
+                    Quaternion.Slerp(
+                        wristGestureRotation,
+                        wristStartRotation,
+                        t);
+            }
+
+            yield return null;
+        }
+
+        ApplyNaturalFingerCurl(0f, 0f);
+
+        if (handsRoot != null)
+        {
+            handsRoot.rotation =
+                wristStartRotation;
+        }
+
+        // 完全放鬆後停一點點，
+        // 看起來像玩家真的在感受自己的手，而不是播完一個機械動作。
+        yield return WaitRealtime(
+            Mathf.Max(0f, relaxedPauseSeconds));
 
         fingerFlexRunning = false;
+    }
+
+    private void ApplyNaturalFingerCurl(
+        float leftAmount,
+        float rightAmount)
+    {
+        Vector3 axis;
+
+        switch (fingerCurlAxis)
+        {
+            case FingerCurlAxis.Y:
+                axis = Vector3.up;
+                break;
+
+            case FingerCurlAxis.Z:
+                axis = Vector3.forward;
+                break;
+
+            default:
+                axis = Vector3.right;
+                break;
+        }
+
+        ApplyNaturalCurlToHand(
+            leftFingerBones,
+            leftFingerOpenRotations,
+            axis,
+            leftFingerCurlDegrees,
+            leftAmount,
+            0);
+
+        ApplyNaturalCurlToHand(
+            rightFingerBones,
+            rightFingerOpenRotations,
+            axis,
+            rightFingerCurlDegrees,
+            rightAmount,
+            1);
+    }
+
+    private void ApplyNaturalCurlToHand(
+        List<Transform> bones,
+        List<Quaternion> openRotations,
+        Vector3 axis,
+        float curlDegrees,
+        float amount,
+        int handSeed)
+    {
+        int count =
+            Mathf.Min(
+                bones.Count,
+                openRotations.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            Transform bone = bones[i];
+
+            if (bone == null)
+            {
+                continue;
+            }
+
+            // 每根骨頭有固定但很小的差異。
+            // 不用 Random，避免每幀跳動。
+            float variationWave =
+                Mathf.Sin(
+                    (i + 1) * 1.73f
+                    + handSeed * 2.11f);
+
+            float variation =
+                1f
+                + variationWave
+                * fingerCurlVariation;
+
+            // 同一根手指越末端，稍微多彎一點。
+            float jointWeight =
+                0.86f
+                + (i % 3) * 0.07f;
+
+            float finalAmount =
+                Mathf.Clamp01(
+                    amount * variation);
+
+            bone.localRotation =
+                openRotations[i]
+                * Quaternion.AngleAxis(
+                    curlDegrees
+                    * finalAmount
+                    * jointWeight,
+                    axis);
+        }
     }
 
     private IEnumerator AnimateFingerCurl(
