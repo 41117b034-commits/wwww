@@ -154,7 +154,6 @@ Transform:
   m_Children:
   - {fileID: 1205443031}
   - {fileID: 1913783449}
-  - {fileID: 2129238804}
   m_Father: {fileID: 2046250536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &24367170
@@ -6316,6 +6315,17 @@ MonoBehaviour:
   pulseDeliveryTargetMarker: 1
   deliveryTargetMarkerColor: {r: 1, g: 0.78, b: 0.05, a: 1}
   showDeliveryTargetNameAndDistance: 1
+  showDeliveryGroundArrows: 0
+  deliveryGroundArrowMaxCount: 12
+  deliveryGroundArrowSpacing: 2.2
+  deliveryGroundArrowStartDistance: 1.2
+  deliveryGroundArrowEndDistance: 1.1
+  deliveryGroundArrowHeight: 0.08
+  deliveryGroundArrowSize: 1.05
+  deliveryGroundArrowRefreshSeconds: 0.12
+  deliveryGroundArrowPulseAmount: 0.1
+  deliveryGroundArrowPulseSpeed: 4.5
+  deliveryGroundArrowColor: {r: 1, g: 0.82, b: 0.02, a: 1}
   keepDeliveryTargetsStationary: 1
   detachDeliveryTargetsFromDancePivot: 1
   deliveryTargetIdleStateName: Idle
@@ -6338,6 +6348,17 @@ MonoBehaviour:
   carriedPropViewDownOffset: 0.05
   winePropColor: {r: 0.45, g: 0.12, b: 0.08, a: 1}
   foodPropColor: {r: 0.95, g: 0.58, b: 0.18, a: 1}
+  newPoliceSceneFoodViewDistance: 1.65
+  newPoliceSceneFoodViewRightOffset: 0.3
+  newPoliceSceneFoodViewDownOffset: 0.13
+  newPoliceSceneFoodTargetSize: 0.72
+  showPickupLocationGuidance: 1
+  pickupLocationRefreshSeconds: 0.15
+  pickupLocationMarkerHeight: 1.65
+  pickupLocationMarkerBobHeight: 0.12
+  pickupLocationMarkerSpinSpeed: 80
+  winePickupLocationColor: {r: 1, g: 0.28, b: 0.06, a: 1}
+  foodPickupLocationColor: {r: 0.72, g: 1, b: 0.12, a: 1}
   wineBottleTemplate: {fileID: 919132149155446097, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
   wineBottleObjectName: "\u9152\u74F6"
   hideWineBottleSourceWhileCarried: 1
@@ -9768,15 +9789,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24c96c0d173c432458da36f745d5c8ca, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3734.32
+      value: 3696.6064
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24c96c0d173c432458da36f745d5c8ca, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5816.57
+      value: -5816.806
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24c96c0d173c432458da36f745d5c8ca, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -122.76
+      value: -133.91905
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 24c96c0d173c432458da36f745d5c8ca, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10647,7 +10668,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5816.46
+      value: -5816.4575
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10655,11 +10676,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.999691
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalRotation.y
@@ -10667,7 +10688,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.024859741
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -10679,7 +10700,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 2.849
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
       propertyPath: m_Name
@@ -18992,37 +19013,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.98117065, y: 0.5720522, z: 0.32121292}
   m_Center: {x: -0.00001907349, y: -0.00016784674, z: -0.00006866456}
---- !u!1 &2129238803
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2129238804}
-  m_Layer: 0
-  m_Name: IntroHands
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2129238804
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2129238803}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 24367169}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2131566871
 PrefabInstance:
   m_ObjectHideFlags: 0
