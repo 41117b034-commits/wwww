@@ -210,6 +210,15 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float newPoliceSceneFoodViewDownOffset = 0.13f;
     public float newPoliceSceneFoodTargetSize = 0.72f;
 
+    [Header("New Police Scene Pickup Location Guidance")]
+    public bool showPickupLocationGuidance = true;
+    public float pickupLocationRefreshSeconds = 0.15f;
+    public float pickupLocationMarkerHeight = 1.65f;
+    public float pickupLocationMarkerBobHeight = 0.12f;
+    public float pickupLocationMarkerSpinSpeed = 80f;
+    public Color winePickupLocationColor = new Color(1f, 0.28f, 0.06f, 1f);
+    public Color foodPickupLocationColor = new Color(0.72f, 1f, 0.12f, 1f);
+
     [Header("Wine Bottle Model")]
     public GameObject wineBottleTemplate;
     public string wineBottleObjectName = "酒瓶";
@@ -304,6 +313,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Vector3 deliveryMarkerBaseScale = Vector3.one;
     private readonly List<GameObject> activeDeliveryGroundArrows = new List<GameObject>();
     private float nextDeliveryGroundArrowRefreshTime;
+    private GameObject winePickupLocationMarker;
+    private GameObject foodPickupLocationMarker;
+    private Transform guidedWinePickupSource;
+    private Transform guidedFoodPickupSource;
+    private float nextPickupLocationRefreshTime;
 
     private int deliveredWineCount;
     private int sharedFoodCount;
@@ -355,6 +369,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GUIStyle timerTitleStyle;
     private GUIStyle timerNumberStyle;
     private GUIStyle centerMenuStyle;
+    private GUIStyle winePickupIndicatorStyle;
+    private GUIStyle foodPickupIndicatorStyle;
     private GameObject worldPromptObject;
     private TextMesh worldPromptText;
 
@@ -447,6 +463,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         physicalDeliveryInputConsumed = false;
         UpdatePhysicalWeddingDelivery();
         UpdateDeliveryTargetGuidance();
+        UpdatePickupLocationGuidance();
         UpdateCenterInteractionInput();
         UpdateExplorationTimer();
         UpdateTemporaryMissionMovementClear();
@@ -497,6 +514,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             DrawExplorationTimer();
         }
+
+        DrawPickupLocationIndicators();
 
         // 左上只放簡潔任務進度，不再塞長句。
         string displayMission = GetCleanMissionDisplayText();
@@ -738,7 +757,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         // 到這裡才正式開始自由探索：先完成婚禮任務，再進入導火線事件。
         UnlockFreeExploration();
         SetPlayerControl(true);
-        ShowLine("新郎", "朋友，今晚人多。幫我把酒送給幾位賓客，也把火堆旁的食物分給族人；忙完再到舞圈一起跳吧。", 5f);
+        ShowLine(
+            "新郎",
+            "朋友，今晚人多。跟著橘紅色標記拿酒送給賓客，再跟著黃綠色標記把食物分給族人；忙完再到舞圈一起跳吧。",
+            6f);
         UpdateWeddingQuestMission();
     }
 
@@ -1880,6 +1902,371 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         ClearDeliveryGroundArrows();
         activeDeliveryTarget = null;
+    }
+
+    private bool ShouldShowPickupLocationGuidance()
+    {
+        return showPickupLocationGuidance && IsNewPoliceScene();
+    }
+
+    private void UpdatePickupLocationGuidance()
+    {
+        bool shouldShow = ShouldShowPickupLocationGuidance()
+            && IsFreeExplorationActive()
+            && !policeSequenceStarted
+            && !waitingForChoice
+            && !physicalDeliveryAnimating
+            && carriedWeddingItem == WeddingCarryItem.None;
+
+        if (!shouldShow)
+        {
+            SetPickupLocationMarkersVisible(false, false);
+            return;
+        }
+
+        bool wineComplete = deliveredWineCount >= Mathf.Max(1, wineTargetCount);
+        bool foodComplete = sharedFoodCount >= Mathf.Max(1, foodTargetCount);
+
+        if (Time.unscaledTime >= nextPickupLocationRefreshTime)
+        {
+            nextPickupLocationRefreshTime =
+                Time.unscaledTime + Mathf.Max(0.05f, pickupLocationRefreshSeconds);
+
+            guidedWinePickupSource = wineComplete
+                ? null
+                : ResolvePhysicalPickupPoint(true);
+            guidedFoodPickupSource = foodComplete
+                ? null
+                : ResolvePhysicalPickupPoint(false);
+
+            UpdatePickupLocationMarker(
+                ref winePickupLocationMarker,
+                guidedWinePickupSource,
+                "WinePickupLocationMarker",
+                winePickupLocationColor,
+                !wineComplete);
+            UpdatePickupLocationMarker(
+                ref foodPickupLocationMarker,
+                guidedFoodPickupSource,
+                "FoodPickupLocationMarker",
+                foodPickupLocationColor,
+                !foodComplete);
+        }
+
+        AnimatePickupLocationMarker(winePickupLocationMarker, 0f);
+        AnimatePickupLocationMarker(foodPickupLocationMarker, 1.7f);
+    }
+
+    private void UpdatePickupLocationMarker(
+        ref GameObject marker,
+        Transform source,
+        string markerName,
+        Color markerColor,
+        bool taskIncomplete)
+    {
+        if (!taskIncomplete || source == null)
+        {
+            if (marker != null)
+            {
+                marker.SetActive(false);
+            }
+            return;
+        }
+
+        if (marker == null)
+        {
+            marker = CreatePickupLocationMarker(markerName, markerColor);
+        }
+
+        Vector3 markerPosition = GetPhysicalPickupWorldPosition(source);
+        if (TryGetTerrainGroundY(markerPosition, out float terrainGroundY))
+        {
+            markerPosition.y = terrainGroundY + 0.07f;
+        }
+        else if (TryGetPhysicsGroundY(source, markerPosition, out float physicsGroundY))
+        {
+            markerPosition.y = physicsGroundY + 0.07f;
+        }
+        else
+        {
+            markerPosition.y = source.position.y + 0.07f;
+        }
+
+        marker.transform.position = markerPosition;
+        marker.SetActive(true);
+    }
+
+    private GameObject CreatePickupLocationMarker(string markerName, Color markerColor)
+    {
+        GameObject marker = new GameObject(markerName);
+        marker.transform.SetParent(transform, true);
+
+        CreatePickupLocationMarkerPart(
+            marker.transform,
+            "GroundDisc",
+            PrimitiveType.Cylinder,
+            new Vector3(0f, 0.025f, 0f),
+            new Vector3(0.72f, 0.025f, 0.72f),
+            Quaternion.identity,
+            markerColor,
+            1.8f);
+
+        float beaconHeight = Mathf.Max(0.8f, pickupLocationMarkerHeight);
+        float beamLength = Mathf.Max(0.45f, beaconHeight - 0.32f);
+        CreatePickupLocationMarkerPart(
+            marker.transform,
+            "Beam",
+            PrimitiveType.Cylinder,
+            new Vector3(0f, beamLength * 0.5f, 0f),
+            new Vector3(0.055f, beamLength * 0.5f, 0.055f),
+            Quaternion.identity,
+            markerColor,
+            2.3f);
+
+        CreatePickupLocationMarkerPart(
+            marker.transform,
+            "Beacon",
+            PrimitiveType.Cube,
+            new Vector3(0f, beaconHeight, 0f),
+            Vector3.one * 0.34f,
+            Quaternion.Euler(45f, 45f, 45f),
+            markerColor,
+            2.8f);
+
+        return marker;
+    }
+
+    private void CreatePickupLocationMarkerPart(
+        Transform parent,
+        string partName,
+        PrimitiveType primitiveType,
+        Vector3 localPosition,
+        Vector3 localScale,
+        Quaternion localRotation,
+        Color markerColor,
+        float emissionMultiplier)
+    {
+        GameObject part = GameObject.CreatePrimitive(primitiveType);
+        part.name = partName;
+        part.transform.SetParent(parent, false);
+        part.transform.localPosition = localPosition;
+        part.transform.localRotation = localRotation;
+        part.transform.localScale = localScale;
+
+        Collider partCollider = part.GetComponent<Collider>();
+        if (partCollider != null)
+        {
+            Destroy(partCollider);
+        }
+
+        Renderer partRenderer = part.GetComponent<Renderer>();
+        if (partRenderer == null || partRenderer.material == null)
+        {
+            return;
+        }
+
+        Material material = partRenderer.material;
+        if (material.HasProperty("_BaseColor"))
+        {
+            material.SetColor("_BaseColor", markerColor);
+        }
+
+        if (material.HasProperty("_Color"))
+        {
+            material.SetColor("_Color", markerColor);
+        }
+
+        if (material.HasProperty("_EmissionColor"))
+        {
+            material.EnableKeyword("_EMISSION");
+            material.SetColor("_EmissionColor", markerColor * emissionMultiplier);
+        }
+    }
+
+    private void AnimatePickupLocationMarker(GameObject marker, float phaseOffset)
+    {
+        if (marker == null || !marker.activeSelf)
+        {
+            return;
+        }
+
+        Transform beacon = marker.transform.Find("Beacon");
+        if (beacon == null)
+        {
+            return;
+        }
+
+        float phase = Time.unscaledTime * 3.5f + phaseOffset;
+        float bob = Mathf.Sin(phase) * Mathf.Max(0f, pickupLocationMarkerBobHeight);
+        float pulse = 1f + Mathf.Sin(phase * 1.35f) * 0.1f;
+        beacon.localPosition =
+            Vector3.up * (Mathf.Max(0.8f, pickupLocationMarkerHeight) + bob);
+        beacon.localScale = Vector3.one * (0.34f * pulse);
+        beacon.Rotate(
+            Vector3.up,
+            pickupLocationMarkerSpinSpeed * Time.unscaledDeltaTime,
+            Space.World);
+    }
+
+    private void SetPickupLocationMarkersVisible(bool showWine, bool showFood)
+    {
+        if (winePickupLocationMarker != null)
+        {
+            winePickupLocationMarker.SetActive(showWine);
+        }
+
+        if (foodPickupLocationMarker != null)
+        {
+            foodPickupLocationMarker.SetActive(showFood);
+        }
+    }
+
+    private void DrawPickupLocationIndicators()
+    {
+        if (!ShouldShowPickupLocationGuidance()
+            || !IsFreeExplorationActive()
+            || policeSequenceStarted
+            || waitingForChoice
+            || physicalDeliveryAnimating
+            || carriedWeddingItem != WeddingCarryItem.None)
+        {
+            return;
+        }
+
+        Transform viewTransform = GetPlayerViewTransform();
+        Camera viewCamera = viewTransform != null
+            ? viewTransform.GetComponent<Camera>()
+            : null;
+
+        if (viewCamera == null)
+        {
+            viewCamera = Camera.main;
+        }
+
+        if (viewCamera == null)
+        {
+            return;
+        }
+
+        Rect firstIndicator = default(Rect);
+        bool drewFirstIndicator = false;
+
+        if (winePickupLocationMarker != null
+            && winePickupLocationMarker.activeSelf
+            && guidedWinePickupSource != null)
+        {
+            float distance = GetFlatDistance(
+                GetCurrentPlayerPosition(),
+                GetPhysicalPickupWorldPosition(guidedWinePickupSource));
+            firstIndicator = DrawPickupLocationIndicator(
+                viewCamera,
+                winePickupLocationMarker.transform.position
+                    + Vector3.up * pickupLocationMarkerHeight,
+                "酒",
+                distance,
+                winePickupIndicatorStyle,
+                false,
+                default(Rect));
+            drewFirstIndicator = true;
+        }
+
+        if (foodPickupLocationMarker != null
+            && foodPickupLocationMarker.activeSelf
+            && guidedFoodPickupSource != null)
+        {
+            float distance = GetFlatDistance(
+                GetCurrentPlayerPosition(),
+                GetPhysicalPickupWorldPosition(guidedFoodPickupSource));
+            DrawPickupLocationIndicator(
+                viewCamera,
+                foodPickupLocationMarker.transform.position
+                    + Vector3.up * pickupLocationMarkerHeight,
+                "食物",
+                distance,
+                foodPickupIndicatorStyle,
+                drewFirstIndicator,
+                firstIndicator);
+        }
+    }
+
+    private Rect DrawPickupLocationIndicator(
+        Camera viewCamera,
+        Vector3 worldPosition,
+        string itemName,
+        float distance,
+        GUIStyle indicatorStyle,
+        bool hasAvoidRect,
+        Rect avoidRect)
+    {
+        Vector3 screenPosition = viewCamera.WorldToScreenPoint(worldPosition);
+        bool behindCamera = screenPosition.z <= 0f;
+
+        if (behindCamera)
+        {
+            screenPosition.x = Screen.width - screenPosition.x;
+            screenPosition.y = Screen.height - screenPosition.y;
+        }
+
+        float guiX = screenPosition.x;
+        float guiY = Screen.height - screenPosition.y;
+        float width = Mathf.Clamp(Screen.width * 0.12f, 112f, 148f);
+        float height = 54f;
+        float horizontalMargin = 14f;
+        float topMargin = 108f;
+        float bottomMargin = 72f;
+
+        bool offScreen = behindCamera
+            || guiX < horizontalMargin + width * 0.5f
+            || guiX > Screen.width - horizontalMargin - width * 0.5f
+            || guiY < topMargin + height * 0.5f
+            || guiY > Screen.height - bottomMargin - height * 0.5f;
+
+        Vector2 fromCenter = new Vector2(
+            guiX - Screen.width * 0.5f,
+            guiY - Screen.height * 0.5f);
+
+        guiX = Mathf.Clamp(
+            guiX,
+            horizontalMargin + width * 0.5f,
+            Screen.width - horizontalMargin - width * 0.5f);
+        guiY = Mathf.Clamp(
+            guiY,
+            topMargin + height * 0.5f,
+            Screen.height - bottomMargin - height * 0.5f);
+
+        Rect indicatorRect = new Rect(
+            guiX - width * 0.5f,
+            guiY - height * 0.5f,
+            width,
+            height);
+
+        if (hasAvoidRect && indicatorRect.Overlaps(avoidRect))
+        {
+            float shiftedY = avoidRect.yMax + 6f;
+            if (shiftedY + height <= Screen.height - bottomMargin)
+            {
+                indicatorRect.y = shiftedY;
+            }
+            else
+            {
+                indicatorRect.y = Mathf.Max(topMargin, avoidRect.y - height - 6f);
+            }
+        }
+
+        string direction = offScreen ? GetPickupIndicatorDirection(fromCenter) + " " : "";
+        string label = direction + itemName + "  " + distance.ToString("0") + "m\nE / 手把A 拿取";
+        GUI.Box(indicatorRect, label, indicatorStyle ?? hudBoxStyle);
+        return indicatorRect;
+    }
+
+    private string GetPickupIndicatorDirection(Vector2 fromCenter)
+    {
+        if (Mathf.Abs(fromCenter.x) >= Mathf.Abs(fromCenter.y))
+        {
+            return fromCenter.x >= 0f ? "▶" : "◀";
+        }
+
+        return fromCenter.y >= 0f ? "▼" : "▲";
     }
 
     private Transform FindNearestPhysicalDeliveryTarget(bool isWine, float maxRange)
@@ -5497,6 +5884,26 @@ public class Chapter1PerformanceController : MonoBehaviour
         centerMenuStyle.alignment = TextAnchor.MiddleCenter;
         centerMenuStyle.padding = new RectOffset(16, 16, 8, 8);
         centerMenuStyle.wordWrap = false;
+
+        winePickupIndicatorStyle = new GUIStyle(GUI.skin.box);
+        winePickupIndicatorStyle.normal.background =
+            MakeTexture(new Color(0.5f, 0.1f, 0.025f, 0.88f));
+        winePickupIndicatorStyle.normal.textColor = Color.white;
+        winePickupIndicatorStyle.fontSize = Mathf.Clamp(Screen.height / 55, 14, 19);
+        winePickupIndicatorStyle.fontStyle = FontStyle.Bold;
+        winePickupIndicatorStyle.alignment = TextAnchor.MiddleCenter;
+        winePickupIndicatorStyle.padding = new RectOffset(8, 8, 5, 5);
+        winePickupIndicatorStyle.wordWrap = true;
+
+        foodPickupIndicatorStyle = new GUIStyle(GUI.skin.box);
+        foodPickupIndicatorStyle.normal.background =
+            MakeTexture(new Color(0.27f, 0.42f, 0.035f, 0.88f));
+        foodPickupIndicatorStyle.normal.textColor = Color.white;
+        foodPickupIndicatorStyle.fontSize = Mathf.Clamp(Screen.height / 55, 14, 19);
+        foodPickupIndicatorStyle.fontStyle = FontStyle.Bold;
+        foodPickupIndicatorStyle.alignment = TextAnchor.MiddleCenter;
+        foodPickupIndicatorStyle.padding = new RectOffset(8, 8, 5, 5);
+        foodPickupIndicatorStyle.wordWrap = true;
     }
 
     private Texture2D MakeTexture(Color color)
