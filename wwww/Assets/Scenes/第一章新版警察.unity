@@ -154,6 +154,7 @@ Transform:
   m_Children:
   - {fileID: 1205443031}
   - {fileID: 1913783449}
+  - {fileID: 2129238804}
   m_Father: {fileID: 2046250536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &24367170
@@ -6229,6 +6230,8 @@ MonoBehaviour:
   weddingAmbience: {fileID: 1634240005}
   tensionAmbience: {fileID: 145637399}
   heartbeatAudio: {fileID: 0}
+  weddingMusicVolume: 0.005
+  lockWeddingMusicVolumeUntilPolice: 1
   useStoryMusicCrossfade: 1
   storyMusicCrossfadeSeconds: 0.004
   tensionMusicTargetVolume: 0.22
@@ -18118,6 +18121,19 @@ MonoBehaviour:
   openDuration: 2.5
   extraOpenDistance: 60
   hideCanvasAfterOpen: 1
+  firstPeekOpenness: 0.24
+  firstPeekDuration: 0.52
+  firstPeekHold: 0.12
+  firstCloseDuration: 0.2
+  closedHold: 0.14
+  secondOpenOpenness: 0.7
+  secondOpenDuration: 0.68
+  secondOpenHold: 0.24
+  blinkClosedOpenness: 0.08
+  blinkCloseDuration: 0.14
+  blinkOpenDuration: 0.22
+  blinkHold: 0.1
+  finalOpenDuration: 0.62
 --- !u!114 &1913783454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18132,8 +18148,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterController: {fileID: 995566606}
   eyeOpenEffect: {fileID: 1913783453}
+  viewTransform: {fileID: 0}
   fallbackDelay: 4.35
   extraDelay: 0
+  useNaturalWakeUp: 1
+  pauseAfterEyesOpen: 0.2
+  playHandCheckAnimation: 1
+  introHandsRoot: {fileID: 0}
+  leftHand: {fileID: 0}
+  rightHand: {fileID: 0}
+  gameplayHandsRoot: {fileID: 0}
+  hideIntroHandsAfterSequence: 1
+  handRaiseDuration: 0.72
+  handRaiseStagger: 0.1
+  handInspectDuration: 1.45
+  handSettleDuration: 0.45
+  leftHiddenLocalOffset: {x: -0.06, y: -0.42, z: -0.16}
+  rightHiddenLocalOffset: {x: 0.06, y: -0.42, z: -0.16}
+  leftInspectEulerOffset: {x: -8, y: -24, z: 10}
+  rightInspectEulerOffset: {x: -8, y: 24, z: -10}
+  leftInspectPositionOffset: {x: 0.045, y: 0.035, z: 0.035}
+  rightInspectPositionOffset: {x: -0.045, y: 0.035, z: 0.035}
+  keepPlayerLockedDuringIntro: 1
 --- !u!1 &1918062739 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ce1a1bd23a0ebc04281d944c0d01c418, type: 3}
@@ -18956,6 +18992,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.98117065, y: 0.5720522, z: 0.32121292}
   m_Center: {x: -0.00001907349, y: -0.00016784674, z: -0.00006866456}
+--- !u!1 &2129238803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2129238804}
+  m_Layer: 0
+  m_Name: IntroHands
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2129238804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129238803}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 24367169}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2131566871
 PrefabInstance:
   m_ObjectHideFlags: 0
