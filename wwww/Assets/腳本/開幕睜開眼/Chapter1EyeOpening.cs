@@ -66,10 +66,10 @@ public class Chapter1EyeOpening : MonoBehaviour
     public float inspectMoveSeconds = 1.30f;
 
     [Tooltip("檢查手時，整組手往臉靠近多少。")]
-    public float inspectCloserDistance = 0.08f;
+    public float inspectCloserDistance = 0f;
 
     [Tooltip("檢查手時整組手的額外旋轉。")]
-    public Vector3 inspectEulerOffset = new Vector3(-9f, 0f, 0f);
+    public Vector3 inspectEulerOffset = Vector3.zero;
 
     [Header("觀察自己：快握拳再鬆開")]
     [Tooltip("看手時會做一次接近握拳、再放鬆的動作。")]
@@ -83,29 +83,29 @@ public class Chapter1EyeOpening : MonoBehaviour
 
     [Range(0f, 1f)]
     [Tooltip("0=完全不握，1=完整握拳。建議 0.68~0.78，像在觀察自己的手而不是用力握拳。")]
-    public float almostFistAmount = 0.62f;
+    public float almostFistAmount = 0.18f;
 
     [Tooltip("手指自然彎曲時間。不要太快，像是在確認自己的手。")]
-    public float fingerCloseSeconds = 0.62f;
+    public float fingerCloseSeconds = 0.85f;
 
     [Tooltip("接近握拳後短暫停一下。")]
-    public float fingerHoldSeconds = 0.10f;
+    public float fingerHoldSeconds = 0.08f;
 
     [Tooltip("放鬆張開時間，略慢於握起來會比較自然。")]
-    public float fingerOpenSeconds = 0.86f;
+    public float fingerOpenSeconds = 1.05f;
 
     [Tooltip("左右手不要完全同步；右手會稍微慢一點。")]
-    public float rightHandFingerDelay = 0.07f;
+    public float rightHandFingerDelay = 0.06f;
 
     [Range(0f, 0.3f)]
     [Tooltip("不同手指的彎曲量稍微不同，避免像機器手。")]
-    public float fingerCurlVariation = 0.12f;
+    public float fingerCurlVariation = 0.01f;
 
     [Tooltip("完全放鬆後停一下，再進下一段。")]
-    public float relaxedPauseSeconds = 0.24f;
+    public float relaxedPauseSeconds = 0.20f;
 
     [Tooltip("握放期間整雙手只有很輕微的手腕動作。")]
-    public Vector3 fingerGestureWristEuler = new Vector3(-2.5f, 0f, 1.5f);
+    public Vector3 fingerGestureWristEuler = Vector3.zero;
 
     public enum FingerCurlAxis
     {
@@ -118,10 +118,10 @@ public class Chapter1EyeOpening : MonoBehaviour
     public FingerCurlAxis fingerCurlAxis = FingerCurlAxis.X;
 
     [Tooltip("每節左手指骨最大彎曲角度。")]
-    public float leftFingerCurlDegrees = 48f;
+    public float leftFingerCurlDegrees = 8f;
 
     [Tooltip("每節右手指骨最大彎曲角度。若右手反方向，改成 +48。")]
-    public float rightFingerCurlDegrees = -48f;
+    public float rightFingerCurlDegrees = 8f;
 
     [Tooltip("跳過 Hand_Left / Hand_Right 底下第一層掌骨，只彎更深層的手指骨。")]
     [Range(1, 4)]
@@ -684,57 +684,83 @@ public class Chapter1EyeOpening : MonoBehaviour
             yield return PlayFingerObserveGesture();
         }
 
-        // 3. 稍微靠近、翻手
-        Vector3 inspectPosition =
-            shownRootWorldPosition
-            + playerCamera.transform.forward
-            * inspectCloserDistance;
-
-        Quaternion inspectRotation =
-            shownRootWorldRotation
-            * Quaternion.Euler(
-                inspectEulerOffset);
-
-        elapsed = 0f;
-
-        while (elapsed < inspectMoveSeconds)
-        {
-            elapsed +=
-                Time.unscaledDeltaTime;
-
-            float n =
-                Mathf.Clamp01(
-                    elapsed
-                    / Mathf.Max(
-                        0.1f,
-                        inspectMoveSeconds));
-
-            float amount =
-                Mathf.Sin(
-                    n * Mathf.PI);
-
-            handsRoot.position =
-                Vector3.Lerp(
-                    shownRootWorldPosition,
-                    inspectPosition,
-                    amount);
-
-            handsRoot.rotation =
-                Quaternion.Slerp(
-                    shownRootWorldRotation,
-                    inspectRotation,
-                    amount);
-
-            yield return null;
-        }
-
+        // 3. 手指放鬆後，不再讓整雙手靠近、翻轉或往外移。
+        // 保持手掌完全停在原本觀察位置。
         handsRoot.position =
             shownRootWorldPosition;
 
         handsRoot.rotation =
             shownRootWorldRotation;
 
-        // 4. 鏡頭回正
+        yield return WaitRealtime(0.18f);
+
+        // 4. 先收手，再讓鏡頭回正。
+        // 這樣玩家看到的是「手直接往下收」，
+        // 不會因鏡頭先轉回去而產生手往外飄的視覺。
+        if (retractHandsAfterInspect)
+        {
+            Transform cam =
+                playerCamera.transform;
+
+            Vector3 retractStart =
+                handsRoot.position;
+
+            // 只往畫面下方與身體方向收，不加任何左右位移。
+            Vector3 retractTarget =
+                retractStart
+                - cam.up * Mathf.Max(0.05f, retractDownDistance)
+                - cam.forward * Mathf.Max(0f, retractBackDistance);
+
+            Quaternion fixedRotation =
+                shownRootWorldRotation;
+
+            elapsed = 0f;
+
+            float retractDuration =
+                Mathf.Max(0.05f, retractHandsSeconds);
+
+            while (elapsed < retractDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+
+                float t =
+                    Smooth(
+                        elapsed / retractDuration);
+
+                handsRoot.position =
+                    Vector3.Lerp(
+                        retractStart,
+                        retractTarget,
+                        t);
+
+                // 整個收手過程鎖死原本方向，不再往外翻。
+                handsRoot.rotation =
+                    fixedRotation;
+
+                // 鏡頭保持低頭，不在這時候回正。
+                if (cameraLooksAtHands)
+                {
+                    cameraOffsetRoot.localRotation =
+                        lookDownRotation;
+                }
+
+                yield return null;
+            }
+
+            handsRoot.position =
+                retractTarget;
+
+            handsRoot.rotation =
+                fixedRotation;
+        }
+
+        // 手已經離開視野後直接隱藏，避免鏡頭回正時又看到手漂出去。
+        if (hideHandsAfterSequence && introHandsRoot != null)
+        {
+            introHandsRoot.SetActive(false);
+        }
+
+        // 5. 最後才讓鏡頭慢慢回正，此時手已經不在畫面裡。
         Quaternion cameraReturnStart =
             cameraOffsetRoot.localRotation;
 
@@ -766,95 +792,6 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         cameraOffsetRoot.localRotation =
             cameraOffsetStartRotation;
-
-        // 5. 看完後先稍微沉一下，避免直接突然收掉。
-        Vector3 settleTarget =
-            shownRootWorldPosition
-            - playerCamera.transform.up * 0.08f;
-
-        Vector3 settleStart =
-            handsRoot.position;
-
-        elapsed = 0f;
-
-        while (elapsed < settleSeconds)
-        {
-            elapsed +=
-                Time.unscaledDeltaTime;
-
-            float t =
-                Smooth(
-                    elapsed
-                    / Mathf.Max(
-                        0.05f,
-                        settleSeconds));
-
-            handsRoot.position =
-                Vector3.Lerp(
-                    settleStart,
-                    settleTarget,
-                    t);
-
-            yield return null;
-        }
-
-        handsRoot.position = settleTarget;
-
-        // 6. 雙手自然往下、往身體方向收回。
-        if (retractHandsAfterInspect)
-        {
-            Transform cam =
-                playerCamera.transform;
-
-            Vector3 retractStart =
-                handsRoot.position;
-
-            Vector3 retractTarget =
-                retractStart
-                - cam.up * Mathf.Max(0.05f, retractDownDistance)
-                - cam.forward * Mathf.Max(0f, retractBackDistance);
-
-            Quaternion retractStartRotation =
-                handsRoot.rotation;
-
-            Quaternion retractTargetRotation =
-                retractStartRotation
-                * Quaternion.Euler(12f, 0f, 0f);
-
-            elapsed = 0f;
-
-            float retractDuration =
-                Mathf.Max(0.05f, retractHandsSeconds);
-
-            while (elapsed < retractDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-
-                float t =
-                    Smooth(
-                        elapsed / retractDuration);
-
-                handsRoot.position =
-                    Vector3.Lerp(
-                        retractStart,
-                        retractTarget,
-                        t);
-
-                handsRoot.rotation =
-                    Quaternion.Slerp(
-                        retractStartRotation,
-                        retractTargetRotation,
-                        t);
-
-                yield return null;
-            }
-
-            handsRoot.position =
-                retractTarget;
-
-            handsRoot.rotation =
-                retractTargetRotation;
-        }
     }
 
     private void ResolveAndCacheFingerBones()
@@ -1029,18 +966,10 @@ public class Chapter1EyeOpening : MonoBehaviour
                 leftT * almostFistAmount,
                 rightT * almostFistAmount);
 
+            // 握拳時不要轉整隻手腕，避免一握完手掌往外翻。
             if (handsRoot != null)
             {
-                float wristAmount =
-                    Mathf.Sin(
-                        Mathf.Clamp01(elapsed / duration)
-                        * Mathf.PI);
-
-                handsRoot.rotation =
-                    Quaternion.Slerp(
-                        wristStartRotation,
-                        wristGestureRotation,
-                        wristAmount * 0.65f);
+                handsRoot.rotation = wristStartRotation;
             }
 
             yield return null;
@@ -1080,17 +1009,10 @@ public class Chapter1EyeOpening : MonoBehaviour
                 Mathf.Lerp(almostFistAmount, 0f, leftT),
                 Mathf.Lerp(almostFistAmount, 0f, rightT));
 
+            // 放鬆時保持原本手掌方向，不做往外翻的回彈。
             if (handsRoot != null)
             {
-                float t =
-                    Smooth(
-                        elapsed / duration);
-
-                handsRoot.rotation =
-                    Quaternion.Slerp(
-                        wristGestureRotation,
-                        wristStartRotation,
-                        t);
+                handsRoot.rotation = wristStartRotation;
             }
 
             yield return null;
@@ -1186,8 +1108,8 @@ public class Chapter1EyeOpening : MonoBehaviour
 
             // 同一根手指越末端，稍微多彎一點。
             float jointWeight =
-                0.86f
-                + (i % 3) * 0.07f;
+                0.42f
+                + (i % 3) * 0.03f;
 
             float finalAmount =
                 Mathf.Clamp01(
