@@ -5,8 +5,6 @@ using UnityEngine.Playables;
 
 public class Chapter1PerformanceController : MonoBehaviour
 {
-    public bool IsPoliceSequenceStarted => policeSequenceStarted;
-
     private static readonly string[] AddedWeddingDancerNames =
     {
         "1",
@@ -4223,19 +4221,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 neighborSpacing * 1.2f);
             dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
-            dancer.travelFacingBlend = 0f;
-            dancer.turnSmooth = Mathf.Max(12f, dancer.turnSmooth);
-
-            Chapter1FaceFire faceFire = animator.GetComponent<Chapter1FaceFire>();
-            if (faceFire == null)
-            {
-                faceFire = animator.gameObject.AddComponent<Chapter1FaceFire>();
-            }
-
-            faceFire.target = circleCenter;
-            faceFire.owner = this;
-            faceFire.turnSpeed = 14f;
-            faceFire.yawOffsetDegrees = 0f;
 
             if (isNamedAddedDancer && namedAddedRoot != null)
             {

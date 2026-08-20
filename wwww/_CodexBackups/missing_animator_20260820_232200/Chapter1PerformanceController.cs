@@ -5,8 +5,6 @@ using UnityEngine.Playables;
 
 public class Chapter1PerformanceController : MonoBehaviour
 {
-    public bool IsPoliceSequenceStarted => policeSequenceStarted;
-
     private static readonly string[] AddedWeddingDancerNames =
     {
         "1",
@@ -63,7 +61,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0.8f, 1.2f)] public float namedAddedDancerHeightRatio = 1f;
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
     public bool autoFitWeddingCircleToArmReach = true;
-    [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
+    [Range(1.8f, 2.8f)] public float weddingNeighborSpacingArmMultiplier = 2.35f;
     public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
     public float weddingCircleDegreesPerBeat = 1.65f;
@@ -4109,7 +4107,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             circleCenter = center;
         }
 
-        Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
         NormalizeNamedAddedWeddingDancers(animators, circleCenter);
 
         float neighborSpacing;
@@ -4215,27 +4213,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = true;
-            dancer.proceduralHandHoldWeight = 1f;
-            dancer.handHoldShoulderToHipRatio = 0.5f;
             dancer.maximumHandPairDistance = Mathf.Max(
                 dancer.maximumHandPairDistance,
                 neighborSpacing * 1.2f);
             dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
-            dancer.travelFacingBlend = 0f;
-            dancer.turnSmooth = Mathf.Max(12f, dancer.turnSmooth);
-
-            Chapter1FaceFire faceFire = animator.GetComponent<Chapter1FaceFire>();
-            if (faceFire == null)
-            {
-                faceFire = animator.gameObject.AddComponent<Chapter1FaceFire>();
-            }
-
-            faceFire.target = circleCenter;
-            faceFire.owner = this;
-            faceFire.turnSpeed = 14f;
-            faceFire.yawOffsetDegrees = 0f;
 
             if (isNamedAddedDancer && namedAddedRoot != null)
             {
@@ -4386,7 +4368,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield break;
         }
 
-        Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
         NormalizeNamedAddedWeddingDancers(animators, center);
 
         float neighborSpacing;
@@ -4512,7 +4494,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             float medianArmReach = GetMedian(armReaches);
             neighborSpacing = medianArmReach
-                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.55f, 1.75f);
+                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.8f, 2.8f);
             float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
             if (denominator > 0.001f)
             {
@@ -4599,40 +4581,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return false;
-    }
-
-    private Animator[] EnsureNamedAddedWeddingDancerAnimators()
-    {
-        Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
-        HashSet<int> processedRoots = new HashSet<int>();
-
-        for (int i = 0; i < transforms.Length; i++)
-        {
-            Transform candidate = transforms[i];
-            if (candidate == null
-                || !candidate.gameObject.scene.IsValid()
-                || !TryFindNamedAddedDancerRoot(candidate, out Transform actorRoot)
-                || actorRoot == null
-                || !processedRoots.Add(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            Animator actorAnimator = actorRoot.GetComponentInChildren<Animator>(true);
-            if (actorAnimator == null)
-            {
-                actorAnimator = actorRoot.gameObject.AddComponent<Animator>();
-                Debug.Log(
-                    "[Chapter1] Added missing Animator for wedding dancer: "
-                    + actorRoot.name);
-            }
-
-            actorAnimator.enabled = true;
-            actorAnimator.applyRootMotion = false;
-            actorAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        }
-
-        return Resources.FindObjectsOfTypeAll<Animator>();
     }
 
     private bool TryGetCharacterBounds(Transform root, out Bounds bounds)

@@ -2415,39 +2415,3 @@ public class Chapter1CircleDancer : MonoBehaviour
                 + 10f);
     }
 }
-
-[DefaultExecutionOrder(1250)]
-public class Chapter1FaceFire : MonoBehaviour
-{
-    public Transform target;
-    public Chapter1PerformanceController owner;
-    public float turnSpeed = 14f;
-    public float yawOffsetDegrees;
-
-    private void LateUpdate()
-    {
-        if (target == null
-            || (owner != null && owner.IsPoliceSequenceStarted))
-        {
-            return;
-        }
-
-        Vector3 towardTarget = target.position - transform.position;
-        towardTarget.y = 0f;
-        if (towardTarget.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Quaternion targetRotation = Quaternion.LookRotation(
-            towardTarget.normalized,
-            Vector3.up)
-            * Quaternion.Euler(0f, yawOffsetDegrees, 0f);
-        float blend = 1f - Mathf.Exp(
-            -Mathf.Max(0.1f, turnSpeed) * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            blend);
-    }
-}

@@ -267,7 +267,6 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     private float sharedGroundY;
     private bool sharedGroundReady;
-    private bool handHoldDiagnosticsLogged;
 
     public bool IsActivelyDancing =>
         enabled
@@ -404,54 +403,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     {
         ApplyProceduralStepping();
         ApplyProceduralHandHolding();
-        LogHandHoldDiagnosticsOnce();
-    }
-
-    private void LogHandHoldDiagnosticsOnce()
-    {
-        if (handHoldDiagnosticsLogged || !IsActivelyDancing)
-        {
-            return;
-        }
-
-        handHoldDiagnosticsLogged = true;
-        CacheHumanoidHands();
-
-        Chapter1CircleDancer previous = FindNeighbor(clockwise: false);
-        Chapter1CircleDancer next = FindNeighbor(clockwise: true);
-        float leftShoulderDistance = previous != null
-            && leftUpperArmBone != null
-            && previous.rightUpperArmBone != null
-                ? Vector3.Distance(leftUpperArmBone.position, previous.rightUpperArmBone.position)
-                : -1f;
-        float leftCombinedReach = previous != null
-            ? GetArmChainLength(leftUpperArmBone, leftLowerArmBone, leftHandBone)
-                + GetArmChainLength(
-                    previous.rightUpperArmBone,
-                    previous.rightLowerArmBone,
-                    previous.rightHandBone)
-            : -1f;
-
-        Debug.Log(
-            "[Chapter1 HandHold] actor=" + name
-            + ", human=" + (animator != null && animator.isHuman)
-            + ", leftRig=" + DescribeBoneChain(leftUpperArmBone, leftLowerArmBone, leftHandBone)
-            + ", rightRig=" + DescribeBoneChain(rightUpperArmBone, rightLowerArmBone, rightHandBone)
-            + ", previous=" + (previous != null ? previous.name : "null")
-            + ", next=" + (next != null ? next.name : "null")
-            + ", shoulderDistance=" + leftShoulderDistance.ToString("0.00")
-            + ", combinedReach=" + leftCombinedReach.ToString("0.00"),
-            this);
-    }
-
-    private static string DescribeBoneChain(
-        Transform upper,
-        Transform lower,
-        Transform hand)
-    {
-        return (upper != null ? upper.name : "null")
-            + "/" + (lower != null ? lower.name : "null")
-            + "/" + (hand != null ? hand.name : "null");
     }
 
     private void ApplyProceduralHandHolding()
@@ -459,7 +410,8 @@ public class Chapter1CircleDancer : MonoBehaviour
         if (!enableHandHolding
             || !enableProceduralHandHolding
             || !IsActivelyDancing
-            || animator == null)
+            || animator == null
+            || !animator.isHuman)
         {
             return;
         }
@@ -688,7 +640,8 @@ public class Chapter1CircleDancer : MonoBehaviour
         if (!enableProceduralStepping
             || !IsActivelyDancing
             || animator == null
-            || animator.runtimeAnimatorController == null)
+            || animator.runtimeAnimatorController == null
+            || !animator.isHuman)
         {
             return;
         }
@@ -1305,146 +1258,69 @@ public class Chapter1CircleDancer : MonoBehaviour
         rightUpperLegBone = null;
         rightLowerLegBone = null;
 
-        if (animator == null)
+        if (animator == null
+            || animator.avatar == null
+            || !animator.avatar.isValid
+            || !animator.isHuman)
         {
             return;
         }
 
-        if (animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            leftHandBone = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-            rightHandBone = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            leftFootBone = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-            rightFootBone = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            hipsBone = animator.GetBoneTransform(HumanBodyBones.Hips);
-            headBone = animator.GetBoneTransform(HumanBodyBones.Head);
-            leftUpperArmBone = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            leftLowerArmBone = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
-            rightUpperArmBone = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-            rightLowerArmBone = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
-            leftUpperLegBone = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            leftLowerLegBone = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
-            rightUpperLegBone = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            rightLowerLegBone = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
-        }
+        leftHandBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftHand);
 
-        // Several of the added wedding characters are imported as Generic rigs.
-        // Their Tripo skeletons still expose consistent named bones, so resolve
-        // those directly instead of excluding the character from hand-holding.
-        Transform[] rigTransforms = animator.GetComponentsInChildren<Transform>(true);
-        leftUpperArmBone = leftUpperArmBone != null
-            ? leftUpperArmBone
-            : FindRigBone(rigTransforms, "L_Upperarm", "LeftUpperArm", "LeftArm", "upper_arm.L", "upperarm_l", "J_Bip_L_UpperArm");
-        leftLowerArmBone = leftLowerArmBone != null
-            ? leftLowerArmBone
-            : FindRigBone(rigTransforms, "L_Forearm", "LeftForeArm", "LeftLowerArm", "forearm.L", "forearm_l", "J_Bip_L_ForeArm");
-        leftHandBone = leftHandBone != null
-            ? leftHandBone
-            : FindRigBone(rigTransforms, "L_Hand", "LeftHand", "Hand.L", "hand_l", "LeftWrist", "J_Bip_L_Hand");
-        rightUpperArmBone = rightUpperArmBone != null
-            ? rightUpperArmBone
-            : FindRigBone(rigTransforms, "R_Upperarm", "RightUpperArm", "RightArm", "upper_arm.R", "upperarm_r", "J_Bip_R_UpperArm");
-        rightLowerArmBone = rightLowerArmBone != null
-            ? rightLowerArmBone
-            : FindRigBone(rigTransforms, "R_Forearm", "RightForeArm", "RightLowerArm", "forearm.R", "forearm_r", "J_Bip_R_ForeArm");
-        rightHandBone = rightHandBone != null
-            ? rightHandBone
-            : FindRigBone(rigTransforms, "R_Hand", "RightHand", "Hand.R", "hand_r", "RightWrist", "J_Bip_R_Hand");
-        hipsBone = hipsBone != null
-            ? hipsBone
-            : FindRigBone(rigTransforms, "Pelvis", "Hips", "Hip", "J_Bip_C_Hips");
-        headBone = headBone != null
-            ? headBone
-            : FindRigBone(rigTransforms, "Head", "J_Bip_C_Head");
-        leftUpperLegBone = leftUpperLegBone != null
-            ? leftUpperLegBone
-            : FindRigBone(rigTransforms, "L_Thigh", "LeftUpLeg", "LeftUpperLeg", "thigh.L", "thigh_l", "J_Bip_L_UpperLeg");
-        leftLowerLegBone = leftLowerLegBone != null
-            ? leftLowerLegBone
-            : FindRigBone(rigTransforms, "L_Calf", "LeftLeg", "LeftLowerLeg", "shin.L", "calf_l", "J_Bip_L_LowerLeg");
-        rightUpperLegBone = rightUpperLegBone != null
-            ? rightUpperLegBone
-            : FindRigBone(rigTransforms, "R_Thigh", "RightUpLeg", "RightUpperLeg", "thigh.R", "thigh_r", "J_Bip_R_UpperLeg");
-        rightLowerLegBone = rightLowerLegBone != null
-            ? rightLowerLegBone
-            : FindRigBone(rigTransforms, "R_Calf", "RightLeg", "RightLowerLeg", "shin.R", "calf_r", "J_Bip_R_LowerLeg");
-        leftFootBone = leftFootBone != null
-            ? leftFootBone
-            : FindRigBone(rigTransforms, "L_Foot", "LeftFoot", "Foot.L", "foot_l", "J_Bip_L_Foot");
-        rightFootBone = rightFootBone != null
-            ? rightFootBone
-            : FindRigBone(rigTransforms, "R_Foot", "RightFoot", "Foot.R", "foot_r", "J_Bip_R_Foot");
-    }
+        rightHandBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightHand);
 
-    private static Transform FindRigBone(
-        Transform[] rigTransforms,
-        params string[] aliases)
-    {
-        if (rigTransforms == null || aliases == null)
-        {
-            return null;
-        }
+        leftFootBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftFoot);
 
-        string[] normalizedAliases = new string[aliases.Length];
-        for (int i = 0; i < aliases.Length; i++)
-        {
-            normalizedAliases[i] = NormalizeBoneName(aliases[i]);
-        }
+        rightFootBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightFoot);
 
-        for (int pass = 0; pass < 2; pass++)
-        {
-            for (int i = 0; i < rigTransforms.Length; i++)
-            {
-                Transform candidate = rigTransforms[i];
-                if (candidate == null)
-                {
-                    continue;
-                }
+        hipsBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.Hips);
 
-                string candidateName = NormalizeBoneName(candidate.name);
-                for (int j = 0; j < normalizedAliases.Length; j++)
-                {
-                    string alias = normalizedAliases[j];
-                    if (alias.Length == 0)
-                    {
-                        continue;
-                    }
+        headBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.Head);
 
-                    bool matches = pass == 0
-                        ? candidateName == alias
-                        : candidateName.EndsWith(alias, System.StringComparison.Ordinal);
-                    if (matches)
-                    {
-                        return candidate;
-                    }
-                }
-            }
-        }
+        leftUpperArmBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftUpperArm);
 
-        return null;
-    }
+        leftLowerArmBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftLowerArm);
 
-    private static string NormalizeBoneName(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
+        rightUpperArmBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightUpperArm);
 
-        char[] normalized = new char[value.Length];
-        int count = 0;
-        for (int i = 0; i < value.Length; i++)
-        {
-            char character = value[i];
-            if (char.IsLetterOrDigit(character))
-            {
-                normalized[count++] = char.ToLowerInvariant(character);
-            }
-        }
+        rightLowerArmBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightLowerArm);
 
-        return new string(normalized, 0, count);
+        leftUpperLegBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftUpperLeg);
+
+        leftLowerLegBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftLowerLeg);
+
+        rightUpperLegBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightUpperLeg);
+
+        rightLowerLegBone =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightLowerLeg);
     }
 
     private void EnsureHandHoldIKDriver()
@@ -1635,44 +1511,6 @@ public class Chapter1CircleDancer : MonoBehaviour
             : rightLowerArmBone;
 
         return GetArmChainLength(upperArm, lowerArm, hand);
-    }
-
-    public float GetAverageArmReach()
-    {
-        if (leftUpperArmBone == null
-            || leftLowerArmBone == null
-            || leftHandBone == null
-            || rightUpperArmBone == null
-            || rightLowerArmBone == null
-            || rightHandBone == null)
-        {
-            CacheHumanoidHands();
-        }
-
-        float total = 0f;
-        int count = 0;
-        float leftReach = GetArmChainLength(
-            leftUpperArmBone,
-            leftLowerArmBone,
-            leftHandBone);
-        float rightReach = GetArmChainLength(
-            rightUpperArmBone,
-            rightLowerArmBone,
-            rightHandBone);
-
-        if (leftReach > 0.01f)
-        {
-            total += leftReach;
-            count++;
-        }
-
-        if (rightReach > 0.01f)
-        {
-            total += rightReach;
-            count++;
-        }
-
-        return count > 0 ? total / count : 0f;
     }
 
     private void ClearHandIK(
@@ -2413,41 +2251,5 @@ public class Chapter1CircleDancer : MonoBehaviour
             * (t
                 * (6f * t - 15f)
                 + 10f);
-    }
-}
-
-[DefaultExecutionOrder(1250)]
-public class Chapter1FaceFire : MonoBehaviour
-{
-    public Transform target;
-    public Chapter1PerformanceController owner;
-    public float turnSpeed = 14f;
-    public float yawOffsetDegrees;
-
-    private void LateUpdate()
-    {
-        if (target == null
-            || (owner != null && owner.IsPoliceSequenceStarted))
-        {
-            return;
-        }
-
-        Vector3 towardTarget = target.position - transform.position;
-        towardTarget.y = 0f;
-        if (towardTarget.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Quaternion targetRotation = Quaternion.LookRotation(
-            towardTarget.normalized,
-            Vector3.up)
-            * Quaternion.Euler(0f, yawOffsetDegrees, 0f);
-        float blend = 1f - Mathf.Exp(
-            -Mathf.Max(0.1f, turnSpeed) * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            blend);
     }
 }

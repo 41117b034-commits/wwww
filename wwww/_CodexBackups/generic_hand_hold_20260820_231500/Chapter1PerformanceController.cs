@@ -5,8 +5,6 @@ using UnityEngine.Playables;
 
 public class Chapter1PerformanceController : MonoBehaviour
 {
-    public bool IsPoliceSequenceStarted => policeSequenceStarted;
-
     private static readonly string[] AddedWeddingDancerNames =
     {
         "1",
@@ -63,7 +61,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0.8f, 1.2f)] public float namedAddedDancerHeightRatio = 1f;
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
     public bool autoFitWeddingCircleToArmReach = true;
-    [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
+    [Range(1.8f, 2.8f)] public float weddingNeighborSpacingArmMultiplier = 2.35f;
     public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
     public float weddingCircleDegreesPerBeat = 1.65f;
@@ -4109,7 +4107,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             circleCenter = center;
         }
 
-        Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
         NormalizeNamedAddedWeddingDancers(animators, circleCenter);
 
         float neighborSpacing;
@@ -4151,7 +4149,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         int fallbackControllerIndex = 0;
-        HashSet<string> namedAddedDancersFound = new HashSet<string>();
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
@@ -4163,21 +4160,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
                 animator.transform,
                 out Transform namedAddedRoot);
-
-            if (isNamedAddedDancer && namedAddedRoot != null)
-            {
-                string rootName = namedAddedRoot.name.Trim();
-                for (int nameIndex = 0; nameIndex < AddedWeddingDancerNames.Length; nameIndex++)
-                {
-                    string expectedName = AddedWeddingDancerNames[nameIndex];
-                    if (rootName == expectedName
-                        || rootName.StartsWith(expectedName + " (", System.StringComparison.Ordinal))
-                    {
-                        namedAddedDancersFound.Add(expectedName);
-                        break;
-                    }
-                }
-            }
 
             if ((animator.runtimeAnimatorController == null || isNamedAddedDancer)
                 && animator.avatar != null
@@ -4215,27 +4197,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = true;
-            dancer.proceduralHandHoldWeight = 1f;
-            dancer.handHoldShoulderToHipRatio = 0.5f;
             dancer.maximumHandPairDistance = Mathf.Max(
                 dancer.maximumHandPairDistance,
                 neighborSpacing * 1.2f);
             dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
-            dancer.travelFacingBlend = 0f;
-            dancer.turnSmooth = Mathf.Max(12f, dancer.turnSmooth);
-
-            Chapter1FaceFire faceFire = animator.GetComponent<Chapter1FaceFire>();
-            if (faceFire == null)
-            {
-                faceFire = animator.gameObject.AddComponent<Chapter1FaceFire>();
-            }
-
-            faceFire.target = circleCenter;
-            faceFire.owner = this;
-            faceFire.turnSpeed = 14f;
-            faceFire.yawOffsetDegrees = 0f;
 
             if (isNamedAddedDancer && namedAddedRoot != null)
             {
@@ -4251,45 +4217,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        // All components now exist, including the Generic-rig dancers. Recalculate
-        // once more so their actual arm lengths determine a reachable hand-hold ring.
-        float finalizedNeighborSpacing;
-        weddingCircleRadius = CalculateWeddingCircleRadius(
-            animators,
-            circleCenter,
-            out finalizedNeighborSpacing);
-        danceRadius = weddingCircleRadius;
-        for (int i = 0; i < weddingCrowdDancers.Count; i++)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            if (dancer == null || !dancer.canCircleDance)
-            {
-                continue;
-            }
-
-            dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.maximumHandPairDistance = Mathf.Max(
-                dancer.maximumHandPairDistance,
-                finalizedNeighborSpacing * 1.2f);
-        }
-
         weddingCircleConfigured = weddingCrowdDancers.Count > 0;
         Debug.Log(
             "[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count
             + ", radius: " + weddingCircleRadius.ToString("0.00")
-            + ", reserved player slots: " + Mathf.Max(0, weddingReservedPlayerSlots)
-            + ", added dancers found: " + namedAddedDancersFound.Count + "/"
-            + AddedWeddingDancerNames.Length);
-
-        for (int i = 0; i < AddedWeddingDancerNames.Length; i++)
-        {
-            if (!namedAddedDancersFound.Contains(AddedWeddingDancerNames[i]))
-            {
-                Debug.LogWarning(
-                    "[Chapter1] Added wedding dancer was not included: "
-                    + AddedWeddingDancerNames[i]);
-            }
-        }
+            + ", reserved player slots: " + Mathf.Max(0, weddingReservedPlayerSlots));
     }
 
     private void NormalizeNamedAddedWeddingDancers(
@@ -4386,7 +4318,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield break;
         }
 
-        Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
         NormalizeNamedAddedWeddingDancers(animators, center);
 
         float neighborSpacing;
@@ -4512,7 +4444,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             float medianArmReach = GetMedian(armReaches);
             neighborSpacing = medianArmReach
-                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.55f, 1.75f);
+                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.8f, 2.8f);
             float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
             if (denominator > 0.001f)
             {
@@ -4528,42 +4460,34 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private float GetAnimatorArmReach(Animator animator)
     {
-        if (animator == null)
+        if (animator == null
+            || animator.avatar == null
+            || !animator.avatar.isValid
+            || !animator.isHuman)
         {
             return 0f;
         }
 
         float total = 0f;
         int count = 0;
-        if (animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
+        Transform leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        Transform leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+        Transform rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+
+        if (leftUpperArm != null && leftHand != null)
         {
-            Transform leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            Transform leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-            Transform rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-            Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-
-            if (leftUpperArm != null && leftHand != null)
-            {
-                total += Vector3.Distance(leftUpperArm.position, leftHand.position);
-                count++;
-            }
-
-            if (rightUpperArm != null && rightHand != null)
-            {
-                total += Vector3.Distance(rightUpperArm.position, rightHand.position);
-                count++;
-            }
+            total += Vector3.Distance(leftUpperArm.position, leftHand.position);
+            count++;
         }
 
-        if (count > 0)
+        if (rightUpperArm != null && rightHand != null)
         {
-            return total / count;
+            total += Vector3.Distance(rightUpperArm.position, rightHand.position);
+            count++;
         }
 
-        Chapter1CircleDancer dancer = animator.GetComponent<Chapter1CircleDancer>();
-        return dancer != null ? dancer.GetAverageArmReach() : 0f;
+        return count > 0 ? total / count : 0f;
     }
 
     private bool TryFindNamedAddedDancerRoot(
@@ -4599,40 +4523,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return false;
-    }
-
-    private Animator[] EnsureNamedAddedWeddingDancerAnimators()
-    {
-        Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
-        HashSet<int> processedRoots = new HashSet<int>();
-
-        for (int i = 0; i < transforms.Length; i++)
-        {
-            Transform candidate = transforms[i];
-            if (candidate == null
-                || !candidate.gameObject.scene.IsValid()
-                || !TryFindNamedAddedDancerRoot(candidate, out Transform actorRoot)
-                || actorRoot == null
-                || !processedRoots.Add(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            Animator actorAnimator = actorRoot.GetComponentInChildren<Animator>(true);
-            if (actorAnimator == null)
-            {
-                actorAnimator = actorRoot.gameObject.AddComponent<Animator>();
-                Debug.Log(
-                    "[Chapter1] Added missing Animator for wedding dancer: "
-                    + actorRoot.name);
-            }
-
-            actorAnimator.enabled = true;
-            actorAnimator.applyRootMotion = false;
-            actorAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        }
-
-        return Resources.FindObjectsOfTypeAll<Animator>();
     }
 
     private bool TryGetCharacterBounds(Transform root, out Bounds bounds)

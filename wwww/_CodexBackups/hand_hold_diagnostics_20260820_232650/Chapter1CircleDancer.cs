@@ -267,7 +267,6 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     private float sharedGroundY;
     private bool sharedGroundReady;
-    private bool handHoldDiagnosticsLogged;
 
     public bool IsActivelyDancing =>
         enabled
@@ -404,54 +403,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     {
         ApplyProceduralStepping();
         ApplyProceduralHandHolding();
-        LogHandHoldDiagnosticsOnce();
-    }
-
-    private void LogHandHoldDiagnosticsOnce()
-    {
-        if (handHoldDiagnosticsLogged || !IsActivelyDancing)
-        {
-            return;
-        }
-
-        handHoldDiagnosticsLogged = true;
-        CacheHumanoidHands();
-
-        Chapter1CircleDancer previous = FindNeighbor(clockwise: false);
-        Chapter1CircleDancer next = FindNeighbor(clockwise: true);
-        float leftShoulderDistance = previous != null
-            && leftUpperArmBone != null
-            && previous.rightUpperArmBone != null
-                ? Vector3.Distance(leftUpperArmBone.position, previous.rightUpperArmBone.position)
-                : -1f;
-        float leftCombinedReach = previous != null
-            ? GetArmChainLength(leftUpperArmBone, leftLowerArmBone, leftHandBone)
-                + GetArmChainLength(
-                    previous.rightUpperArmBone,
-                    previous.rightLowerArmBone,
-                    previous.rightHandBone)
-            : -1f;
-
-        Debug.Log(
-            "[Chapter1 HandHold] actor=" + name
-            + ", human=" + (animator != null && animator.isHuman)
-            + ", leftRig=" + DescribeBoneChain(leftUpperArmBone, leftLowerArmBone, leftHandBone)
-            + ", rightRig=" + DescribeBoneChain(rightUpperArmBone, rightLowerArmBone, rightHandBone)
-            + ", previous=" + (previous != null ? previous.name : "null")
-            + ", next=" + (next != null ? next.name : "null")
-            + ", shoulderDistance=" + leftShoulderDistance.ToString("0.00")
-            + ", combinedReach=" + leftCombinedReach.ToString("0.00"),
-            this);
-    }
-
-    private static string DescribeBoneChain(
-        Transform upper,
-        Transform lower,
-        Transform hand)
-    {
-        return (upper != null ? upper.name : "null")
-            + "/" + (lower != null ? lower.name : "null")
-            + "/" + (hand != null ? hand.name : "null");
     }
 
     private void ApplyProceduralHandHolding()
@@ -2413,41 +2364,5 @@ public class Chapter1CircleDancer : MonoBehaviour
             * (t
                 * (6f * t - 15f)
                 + 10f);
-    }
-}
-
-[DefaultExecutionOrder(1250)]
-public class Chapter1FaceFire : MonoBehaviour
-{
-    public Transform target;
-    public Chapter1PerformanceController owner;
-    public float turnSpeed = 14f;
-    public float yawOffsetDegrees;
-
-    private void LateUpdate()
-    {
-        if (target == null
-            || (owner != null && owner.IsPoliceSequenceStarted))
-        {
-            return;
-        }
-
-        Vector3 towardTarget = target.position - transform.position;
-        towardTarget.y = 0f;
-        if (towardTarget.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Quaternion targetRotation = Quaternion.LookRotation(
-            towardTarget.normalized,
-            Vector3.up)
-            * Quaternion.Euler(0f, yawOffsetDegrees, 0f);
-        float blend = 1f - Mathf.Exp(
-            -Mathf.Max(0.1f, turnSpeed) * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            blend);
     }
 }
