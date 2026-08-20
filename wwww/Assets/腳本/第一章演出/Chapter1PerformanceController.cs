@@ -346,6 +346,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private GameObject runtimeSecondPolice;
     private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
+    private readonly List<Chapter1NpcGrounding> weddingNpcGrounders = new List<Chapter1NpcGrounding>();
 
     private string fallbackSpeaker = "";
     private string fallbackLine = "";
@@ -419,6 +420,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         EnsureWeddingCrowdDancers();
         PrepareDeliveryTaskNPCs();
+        EnsureNewPoliceSceneNpcGrounding();
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
         {
@@ -670,6 +672,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         physicalDeliveryAnimating = false;
         physicalDeliveryInputConsumed = false;
         ClearDeliveryTargetMarker();
+        SetWeddingNpcGrounding(true);
 
         deliveredWineCount = 0;
         sharedFoodCount = 0;
@@ -3948,6 +3951,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         policeStartQueued = false;
         SetWeddingCrowdDancing(false);
+        SetWeddingNpcGrounding(false);
         policeSequenceStarted = true;
         freeExplorationUnlocked = false;
         explorationTimerRunning = false;
@@ -4101,6 +4105,67 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Debug.Log("[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count);
+    }
+
+    private void EnsureNewPoliceSceneNpcGrounding()
+    {
+        if (!IsNewPoliceScene())
+        {
+            return;
+        }
+
+        Transform center = danceCenter != null ? danceCenter : GetDanceCenter();
+        if (center == null)
+        {
+            return;
+        }
+
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
+        for (int i = 0; i < animators.Length; i++)
+        {
+            Animator animator = animators[i];
+            if (!IsWeddingCrowdActor(animator, center))
+            {
+                continue;
+            }
+
+            Chapter1NpcGrounding grounder =
+                animator.GetComponent<Chapter1NpcGrounding>();
+            if (grounder == null)
+            {
+                grounder = animator.gameObject.AddComponent<Chapter1NpcGrounding>();
+            }
+
+            grounder.Configure(animator, guidedGroundLayers);
+            grounder.enabled = true;
+            grounder.SnapImmediately();
+
+            if (!weddingNpcGrounders.Contains(grounder))
+            {
+                weddingNpcGrounders.Add(grounder);
+            }
+        }
+
+        Debug.Log("[Chapter1] Wedding NPC grounders enabled: " + weddingNpcGrounders.Count);
+    }
+
+    private void SetWeddingNpcGrounding(bool enabled)
+    {
+        for (int i = weddingNpcGrounders.Count - 1; i >= 0; i--)
+        {
+            Chapter1NpcGrounding grounder = weddingNpcGrounders[i];
+            if (grounder == null)
+            {
+                weddingNpcGrounders.RemoveAt(i);
+                continue;
+            }
+
+            grounder.enabled = enabled;
+            if (enabled)
+            {
+                grounder.SnapImmediately();
+            }
+        }
     }
 
     private bool IsWeddingCrowdActor(Animator animator, Transform center)
