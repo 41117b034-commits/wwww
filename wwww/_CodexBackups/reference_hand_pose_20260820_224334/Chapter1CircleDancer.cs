@@ -218,10 +218,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Range(0.05f, 0.5f)]
     public float handHoldShoulderDropRatio = 0.26f;
 
-    [Tooltip("0 = shoulder height, 1 = hip height. The reference pose keeps joined hands just above the waist.")]
-    [Range(0.25f, 0.8f)]
-    public float handHoldShoulderToHipRatio = 0.52f;
-
     [Header("¤â²o¤â°£¿ù")]
     public bool logHandHoldSetup = false;
 
@@ -501,46 +497,20 @@ public class Chapter1CircleDancer : MonoBehaviour
             return;
         }
 
+        float drop = Mathf.Min(ownArmLength, partnerArmLength)
+            * handHoldShoulderDropRatio;
         Vector3 target = Vector3.Lerp(
             upperArm.position,
             partnerUpperArm.position,
             0.5f);
-
-        if (hipsBone != null && partner.hipsBone != null)
-        {
-            float shoulderY = (upperArm.position.y + partnerUpperArm.position.y) * 0.5f;
-            float hipY = (hipsBone.position.y + partner.hipsBone.position.y) * 0.5f;
-            target.y = Mathf.Lerp(
-                shoulderY,
-                hipY,
-                Mathf.Clamp01(handHoldShoulderToHipRatio));
-        }
-        else
-        {
-            float drop = Mathf.Min(ownArmLength, partnerArmLength)
-                * handHoldShoulderDropRatio;
-            target += Vector3.down * drop;
-        }
-
+        target += Vector3.down * drop;
         target += Vector3.up * handHoldHeightOffset;
-
-        Vector3 towardCenter = center != null
-            ? center.position - Vector3.Lerp(transform.position, partner.transform.position, 0.5f)
-            : transform.forward;
-        towardCenter.y = 0f;
-        if (towardCenter.sqrMagnitude < 0.001f)
-        {
-            towardCenter = transform.forward;
-        }
-        towardCenter.Normalize();
-        Vector3 elbowPole = Vector3.down + towardCenter * 0.12f;
 
         SolveTwoBoneArm(
             upperArm,
             lowerArm,
             hand,
             target,
-            elbowPole,
             Mathf.Clamp01(proceduralHandHoldWeight));
     }
 
@@ -549,7 +519,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         Transform lowerArm,
         Transform hand,
         Vector3 requestedTarget,
-        Vector3 requestedPole,
         float weight)
     {
         if (weight <= 0f)
@@ -578,11 +547,13 @@ public class Chapter1CircleDancer : MonoBehaviour
         targetDistance = Mathf.Clamp(targetDistance, minimumReach, maximumReach);
         Vector3 target = shoulder + targetDirection * targetDistance;
 
-        Vector3 pole = Vector3.ProjectOnPlane(requestedPole, targetDirection);
+        Vector3 pole = Vector3.ProjectOnPlane(
+            lowerArm.position - shoulder,
+            targetDirection);
         if (pole.sqrMagnitude < 0.0001f)
         {
             pole = Vector3.ProjectOnPlane(
-                lowerArm.position - shoulder,
+                Vector3.down + transform.forward * 0.35f,
                 targetDirection);
         }
         pole.Normalize();
