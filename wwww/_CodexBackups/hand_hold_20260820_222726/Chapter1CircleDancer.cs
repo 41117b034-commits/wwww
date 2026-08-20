@@ -209,15 +209,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Tooltip("如果 Animator 是 Humanoid，會自動在 Animator 物件上加入 IK Driver。")]
     public bool autoCreateHandHoldIKDriver = true;
 
-    [Tooltip("Animator IK 沒有觸發時，仍在 LateUpdate 用 Humanoid 手臂骨架完成牽手。")]
-    public bool enableProceduralHandHolding = true;
-
-    [Range(0f, 1f)]
-    public float proceduralHandHoldWeight = 0.94f;
-
-    [Range(0.05f, 0.5f)]
-    public float handHoldShoulderDropRatio = 0.26f;
-
     [Header("手牽手除錯")]
     public bool logHandHoldSetup = false;
 
@@ -253,9 +244,7 @@ public class Chapter1CircleDancer : MonoBehaviour
     private Transform hipsBone;
     private Transform headBone;
     private Transform leftUpperArmBone;
-    private Transform leftLowerArmBone;
     private Transform rightUpperArmBone;
-    private Transform rightLowerArmBone;
     private Transform leftUpperLegBone;
     private Transform leftLowerLegBone;
     private Transform rightUpperLegBone;
@@ -398,212 +387,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     private void LateUpdate()
     {
         ApplyProceduralStepping();
-        ApplyProceduralHandHolding();
-    }
-
-    private void ApplyProceduralHandHolding()
-    {
-        if (!enableHandHolding
-            || !enableProceduralHandHolding
-            || !IsActivelyDancing
-            || animator == null
-            || !animator.isHuman)
-        {
-            return;
-        }
-
-        if (leftUpperArmBone == null
-            || leftLowerArmBone == null
-            || leftHandBone == null
-            || rightUpperArmBone == null
-            || rightLowerArmBone == null
-            || rightHandBone == null)
-        {
-            CacheHumanoidHands();
-        }
-
-        Chapter1CircleDancer previous = FindNeighbor(clockwise: false);
-        Chapter1CircleDancer next = FindNeighbor(clockwise: true);
-
-        ApplyProceduralArmIK(
-            leftUpperArmBone,
-            leftLowerArmBone,
-            leftHandBone,
-            previous,
-            false);
-        ApplyProceduralArmIK(
-            rightUpperArmBone,
-            rightLowerArmBone,
-            rightHandBone,
-            next,
-            true);
-    }
-
-    private void ApplyProceduralArmIK(
-        Transform upperArm,
-        Transform lowerArm,
-        Transform hand,
-        Chapter1CircleDancer partner,
-        bool usePartnerLeftArm)
-    {
-        if (upperArm == null || lowerArm == null || hand == null || partner == null)
-        {
-            return;
-        }
-
-        Transform partnerUpperArm = usePartnerLeftArm
-            ? partner.leftUpperArmBone
-            : partner.rightUpperArmBone;
-        Transform partnerLowerArm = usePartnerLeftArm
-            ? partner.leftLowerArmBone
-            : partner.rightLowerArmBone;
-        Transform partnerHand = usePartnerLeftArm
-            ? partner.GetLeftHandBone()
-            : partner.GetRightHandBone();
-
-        if (partnerUpperArm == null || partnerLowerArm == null || partnerHand == null)
-        {
-            partner.CacheHumanoidHands();
-            partnerUpperArm = usePartnerLeftArm
-                ? partner.leftUpperArmBone
-                : partner.rightUpperArmBone;
-            partnerLowerArm = usePartnerLeftArm
-                ? partner.leftLowerArmBone
-                : partner.rightLowerArmBone;
-            partnerHand = usePartnerLeftArm
-                ? partner.leftHandBone
-                : partner.rightHandBone;
-        }
-
-        if (partnerUpperArm == null || partnerLowerArm == null || partnerHand == null)
-        {
-            return;
-        }
-
-        float ownArmLength = GetArmChainLength(upperArm, lowerArm, hand);
-        float partnerArmLength = GetArmChainLength(
-            partnerUpperArm,
-            partnerLowerArm,
-            partnerHand);
-        float shoulderDistance = Vector3.Distance(
-            upperArm.position,
-            partnerUpperArm.position);
-
-        // The two dancers beside the reserved player slot are intentionally not joined.
-        if (ownArmLength <= 0.01f
-            || partnerArmLength <= 0.01f
-            || shoulderDistance > (ownArmLength + partnerArmLength) * 1.08f)
-        {
-            return;
-        }
-
-        float drop = Mathf.Min(ownArmLength, partnerArmLength)
-            * handHoldShoulderDropRatio;
-        Vector3 target = Vector3.Lerp(
-            upperArm.position,
-            partnerUpperArm.position,
-            0.5f);
-        target += Vector3.down * drop;
-        target += Vector3.up * handHoldHeightOffset;
-
-        SolveTwoBoneArm(
-            upperArm,
-            lowerArm,
-            hand,
-            target,
-            Mathf.Clamp01(proceduralHandHoldWeight));
-    }
-
-    private void SolveTwoBoneArm(
-        Transform upperArm,
-        Transform lowerArm,
-        Transform hand,
-        Vector3 requestedTarget,
-        float weight)
-    {
-        if (weight <= 0f)
-        {
-            return;
-        }
-
-        Vector3 shoulder = upperArm.position;
-        float upperLength = Vector3.Distance(shoulder, lowerArm.position);
-        float lowerLength = Vector3.Distance(lowerArm.position, hand.position);
-        if (upperLength <= 0.001f || lowerLength <= 0.001f)
-        {
-            return;
-        }
-
-        Vector3 targetDirection = requestedTarget - shoulder;
-        float targetDistance = targetDirection.magnitude;
-        if (targetDistance <= 0.001f)
-        {
-            return;
-        }
-
-        targetDirection /= targetDistance;
-        float minimumReach = Mathf.Abs(upperLength - lowerLength) + 0.002f;
-        float maximumReach = upperLength + lowerLength - 0.002f;
-        targetDistance = Mathf.Clamp(targetDistance, minimumReach, maximumReach);
-        Vector3 target = shoulder + targetDirection * targetDistance;
-
-        Vector3 pole = Vector3.ProjectOnPlane(
-            lowerArm.position - shoulder,
-            targetDirection);
-        if (pole.sqrMagnitude < 0.0001f)
-        {
-            pole = Vector3.ProjectOnPlane(
-                Vector3.down + transform.forward * 0.35f,
-                targetDirection);
-        }
-        pole.Normalize();
-
-        float along = (
-            upperLength * upperLength
-            + targetDistance * targetDistance
-            - lowerLength * lowerLength)
-            / (2f * targetDistance);
-        float perpendicular = Mathf.Sqrt(Mathf.Max(
-            0f,
-            upperLength * upperLength - along * along));
-        Vector3 elbowTarget = shoulder
-            + targetDirection * along
-            + pole * perpendicular;
-
-        Quaternion originalUpperRotation = upperArm.rotation;
-        Quaternion desiredUpperRotation = Quaternion.FromToRotation(
-            lowerArm.position - shoulder,
-            elbowTarget - shoulder) * upperArm.rotation;
-        upperArm.rotation = Quaternion.Slerp(
-            originalUpperRotation,
-            desiredUpperRotation,
-            weight);
-
-        Quaternion originalLowerRotation = lowerArm.rotation;
-        Vector3 currentForearm = hand.position - lowerArm.position;
-        Vector3 desiredForearm = target - lowerArm.position;
-        if (currentForearm.sqrMagnitude > 0.0001f
-            && desiredForearm.sqrMagnitude > 0.0001f)
-        {
-            Quaternion desiredLowerRotation = Quaternion.FromToRotation(
-                currentForearm,
-                desiredForearm) * lowerArm.rotation;
-            lowerArm.rotation = Quaternion.Slerp(
-                originalLowerRotation,
-                desiredLowerRotation,
-                weight);
-        }
-    }
-
-    private float GetArmChainLength(
-        Transform upperArm,
-        Transform lowerArm,
-        Transform hand)
-    {
-        return upperArm != null && lowerArm != null && hand != null
-            ? Vector3.Distance(upperArm.position, lowerArm.position)
-                + Vector3.Distance(lowerArm.position, hand.position)
-            : 0f;
     }
 
     private void ApplyProceduralStepping()
@@ -1221,9 +1004,7 @@ public class Chapter1CircleDancer : MonoBehaviour
         hipsBone = null;
         headBone = null;
         leftUpperArmBone = null;
-        leftLowerArmBone = null;
         rightUpperArmBone = null;
-        rightLowerArmBone = null;
         leftUpperLegBone = null;
         leftLowerLegBone = null;
         rightUpperLegBone = null;
@@ -1265,17 +1046,9 @@ public class Chapter1CircleDancer : MonoBehaviour
             animator.GetBoneTransform(
                 HumanBodyBones.LeftUpperArm);
 
-        leftLowerArmBone =
-            animator.GetBoneTransform(
-                HumanBodyBones.LeftLowerArm);
-
         rightUpperArmBone =
             animator.GetBoneTransform(
                 HumanBodyBones.RightUpperArm);
-
-        rightLowerArmBone =
-            animator.GetBoneTransform(
-                HumanBodyBones.RightLowerArm);
 
         leftUpperLegBone =
             animator.GetBoneTransform(
@@ -1477,11 +1250,10 @@ public class Chapter1CircleDancer : MonoBehaviour
         Transform upperArm = hand == leftHandBone
             ? leftUpperArmBone
             : rightUpperArmBone;
-        Transform lowerArm = hand == leftHandBone
-            ? leftLowerArmBone
-            : rightLowerArmBone;
 
-        return GetArmChainLength(upperArm, lowerArm, hand);
+        return upperArm != null
+            ? Vector3.Distance(upperArm.position, hand.position)
+            : 0f;
     }
 
     private void ClearHandIK(

@@ -5,16 +5,6 @@ using UnityEngine.Playables;
 
 public class Chapter1PerformanceController : MonoBehaviour
 {
-    private static readonly string[] AddedWeddingDancerNames =
-    {
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "賽德克新娘"
-    };
-
     public enum ConflictChoice
     {
         Intervene,
@@ -57,14 +47,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float weddingCrowdStepFrequency = 2.2f;
     public float weddingCrowdRadialStepDistance = 0.12f;
     public float weddingCrowdSwayDegrees = 5f;
-    public bool normalizeNamedAddedDancerHeight = true;
-    [Range(0.8f, 1.2f)] public float namedAddedDancerHeightRatio = 1f;
-    [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
-    public bool autoFitWeddingCircleToArmReach = true;
-    [Range(1.8f, 2.8f)] public float weddingNeighborSpacingArmMultiplier = 2.35f;
-    public float weddingCircleRadius = 22f;
-    public float weddingCircleTempoBpm = 88f;
-    public float weddingCircleDegreesPerBeat = 1.65f;
 
     [Header("UI")]
     public Chapter1DialogueUI dialogueUI;
@@ -374,8 +356,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
     private readonly List<Chapter1NpcGrounding> weddingNpcGrounders = new List<Chapter1NpcGrounding>();
-    private bool weddingCircleConfigured;
-    private float weddingPlayerGapAngleRadians;
 
     private string fallbackSpeaker = "";
     private string fallbackLine = "";
@@ -450,7 +430,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         EnsureWeddingCrowdDancers();
         PrepareDeliveryTaskNPCs();
         EnsureNewPoliceSceneNpcGrounding();
-        StartCoroutine(RefreshWeddingDancerSizingAfterAnimatorUpdate());
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
         {
@@ -3864,15 +3843,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Transform root = playerOverride != null ? playerOverride : GetDancePlayerRoot();
         Transform center = centerOverride != null ? centerOverride : GetDanceCenter();
-        if (weddingCircleConfigured)
-        {
-            Transform circleCenter = FindTransformByName("烤乳豬舞圈中心");
-            if (circleCenter != null)
-            {
-                center = circleCenter;
-            }
-        }
-
         if (center != null && GetFlatDistance(center.position, GetFireCenterPosition()) > Mathf.Max(1f, maxDanceCenterOffsetForFireCenter))
         {
             center = GetDanceCenter();
@@ -3937,9 +3907,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        float radius = weddingCircleConfigured
-            ? Mathf.Max(0.1f, weddingCircleRadius)
-            : (danceRadius > 0.1f ? danceRadius : flatOffset.magnitude);
+        float radius = danceRadius > 0.1f ? danceRadius : flatOffset.magnitude;
         float startAngle = Mathf.Atan2(flatOffset.x, flatOffset.z);
         float totalRadians = danceOrbitDegrees * Mathf.Deg2Rad;
 
@@ -3948,26 +3916,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             elapsed += Time.deltaTime;
             float progress = Mathf.Clamp01(elapsed / duration);
             float easedProgress = Mathf.SmoothStep(0f, 1f, progress);
-            float angle;
-            float stepBob;
-
-            if (weddingCircleConfigured)
-            {
-                float beatsPerSecond = Mathf.Max(1f, weddingCircleTempoBpm) / 60f;
-                angle = weddingPlayerGapAngleRadians
-                    + Time.time
-                    * beatsPerSecond
-                    * weddingCircleDegreesPerBeat
-                    * Mathf.Deg2Rad;
-                stepBob = Mathf.Abs(Mathf.Sin(Time.time * beatsPerSecond * Mathf.PI))
-                    * danceStepHeight;
-            }
-            else
-            {
-                angle = startAngle + (totalRadians * easedProgress);
-                stepBob = Mathf.Abs(Mathf.Sin(elapsed * Mathf.PI * 2f * danceStepFrequency))
-                    * danceStepHeight;
-            }
+            float angle = startAngle + (totalRadians * easedProgress);
+            float stepBob = Mathf.Abs(Mathf.Sin(elapsed * Mathf.PI * 2f * danceStepFrequency)) * danceStepHeight;
 
             Vector3 centerPosition = center.position;
             Vector3 targetPosition = centerPosition + new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle)) * radius;
@@ -4101,40 +4051,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        Transform circleCenter = FindTransformByName("烤乳豬舞圈中心");
-        if (circleCenter == null)
-        {
-            circleCenter = center;
-        }
-
         Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        NormalizeNamedAddedWeddingDancers(animators, circleCenter);
-
-        float neighborSpacing;
-        weddingCircleRadius = CalculateWeddingCircleRadius(
-            animators,
-            circleCenter,
-            out neighborSpacing);
-        danceRadius = weddingCircleRadius;
-
-        Vector3 playerOffset = playerRoot != null
-            ? playerRoot.position - circleCenter.position
-            : -circleCenter.forward;
-        playerOffset.y = 0f;
-        if (playerOffset.sqrMagnitude < 0.01f)
-        {
-            playerOffset = Vector3.back;
-        }
-
-        weddingPlayerGapAngleRadians = Mathf.Atan2(playerOffset.x, playerOffset.z);
-        float playerGapAngleDegrees = weddingPlayerGapAngleRadians * Mathf.Rad2Deg;
-
         List<RuntimeAnimatorController> crowdControllers = new List<RuntimeAnimatorController>();
 
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
-            if (!IsWeddingCrowdActor(animator, circleCenter))
+            if (!IsWeddingCrowdActor(animator, center))
             {
                 continue;
             }
@@ -4152,16 +4075,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
-            if (!IsWeddingCrowdActor(animator, circleCenter))
+            if (!IsWeddingCrowdActor(animator, center))
             {
                 continue;
             }
 
-            bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
-                animator.transform,
-                out Transform namedAddedRoot);
-
-            if ((animator.runtimeAnimatorController == null || isNamedAddedDancer)
+            if (animator.runtimeAnimatorController == null
                 && animator.avatar != null
                 && animator.avatar.isHuman
                 && crowdControllers.Count > 0)
@@ -4178,37 +4097,14 @@ public class Chapter1PerformanceController : MonoBehaviour
                 dancer = animator.gameObject.AddComponent<Chapter1CircleDancer>();
             }
 
-            dancer.animator = animator;
-            dancer.center = circleCenter;
-            dancer.roastedPigCenter = circleCenter;
-            dancer.useRoastedPigAsCenter = true;
+            dancer.center = center;
             dancer.playOnAwake = true;
             dancer.orbitSpeedDegrees = weddingCrowdOrbitSpeedDegrees;
             dancer.stepHeight = weddingCrowdStepHeight;
             dancer.stepFrequency = weddingCrowdStepFrequency;
             dancer.radialStepDistance = weddingCrowdRadialStepDistance;
             dancer.swayDegrees = weddingCrowdSwayDegrees;
-            dancer.autoArrangeEvenlyAroundCenter = true;
-            dancer.reservedPlayerSlots = Mathf.Max(0, weddingReservedPlayerSlots);
-            dancer.groupStartAngleDegrees = playerGapAngleDegrees;
-            dancer.useFixedCircleRadius = true;
-            dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.preventHandHoldAutoShrink = true;
-            dancer.tempoBpm = weddingCircleTempoBpm;
-            dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
-            dancer.enableHandHolding = true;
-            dancer.maximumHandPairDistance = Mathf.Max(
-                dancer.maximumHandPairDistance,
-                neighborSpacing * 1.2f);
-            dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
-
-            if (isNamedAddedDancer && namedAddedRoot != null)
-            {
-                dancer.enabled = true;
-                dancer.SetCanCircleDance(true);
-            }
-
             dancer.SetDancing(true);
 
             if (!weddingCrowdDancers.Contains(dancer))
@@ -4217,353 +4113,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        weddingCircleConfigured = weddingCrowdDancers.Count > 0;
-        Debug.Log(
-            "[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count
-            + ", radius: " + weddingCircleRadius.ToString("0.00")
-            + ", reserved player slots: " + Mathf.Max(0, weddingReservedPlayerSlots));
-    }
-
-    private void NormalizeNamedAddedWeddingDancers(
-        Animator[] animators,
-        Transform center)
-    {
-        if (!normalizeNamedAddedDancerHeight || animators == null || center == null)
-        {
-            return;
-        }
-
-        List<float> referenceHeights = new List<float>();
-        for (int i = 0; i < animators.Length; i++)
-        {
-            Animator animator = animators[i];
-            if (!IsWeddingCrowdActor(animator, center)
-                || IsDeliveryTaskNPC(animator.transform)
-                || TryFindNamedAddedDancerRoot(animator.transform, out _))
-            {
-                continue;
-            }
-
-            if (TryGetAnimatorRigHeight(animator, out float rigHeight))
-            {
-                referenceHeights.Add(rigHeight);
-            }
-        }
-
-        if (referenceHeights.Count == 0)
-        {
-            Debug.LogWarning("[Chapter1] No existing dancer rig height was available for crowd normalization.");
-            return;
-        }
-
-        float targetHeight = GetMedian(referenceHeights)
-            * Mathf.Clamp(namedAddedDancerHeightRatio, 0.8f, 1.2f);
-        HashSet<int> adjustedRoots = new HashSet<int>();
-
-        for (int i = 0; i < animators.Length; i++)
-        {
-            Animator animator = animators[i];
-            if (animator == null
-                || !IsWeddingCrowdActor(animator, center)
-                || IsDeliveryTaskNPC(animator.transform))
-            {
-                continue;
-            }
-
-            Chapter1CircleDancer existing = animator.GetComponent<Chapter1CircleDancer>();
-            bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
-                animator.transform,
-                out Transform namedRoot);
-            if (existing != null && !existing.canCircleDance && !isNamedAddedDancer)
-            {
-                continue;
-            }
-
-            Transform actorRoot = isNamedAddedDancer && namedRoot != null
-                ? namedRoot
-                : animator.transform;
-
-            if (actorRoot == null
-                || !adjustedRoots.Add(actorRoot.GetInstanceID())
-                || !TryGetAnimatorRigHeight(animator, out float currentHeight))
-            {
-                continue;
-            }
-
-            float scaleFactor = Mathf.Clamp(targetHeight / currentHeight, 0.25f, 4f);
-            if (Mathf.Abs(scaleFactor - 1f) > 0.01f)
-            {
-                actorRoot.localScale *= scaleFactor;
-            }
-
-            Debug.Log(
-                "[Chapter1] Dancer " + actorRoot.name
-                + " rig height normalized to " + targetHeight.ToString("0.00") + ".");
-        }
-    }
-
-    private IEnumerator RefreshWeddingDancerSizingAfterAnimatorUpdate()
-    {
-        yield return null;
-        yield return new WaitForEndOfFrame();
-
-        Transform center = FindTransformByName("烤乳豬舞圈中心");
-        if (center == null)
-        {
-            center = danceCenter != null ? danceCenter : GetDanceCenter();
-        }
-
-        if (center == null)
-        {
-            yield break;
-        }
-
-        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        NormalizeNamedAddedWeddingDancers(animators, center);
-
-        float neighborSpacing;
-        weddingCircleRadius = CalculateWeddingCircleRadius(
-            animators,
-            center,
-            out neighborSpacing);
-        danceRadius = weddingCircleRadius;
-
-        for (int i = 0; i < weddingCrowdDancers.Count; i++)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            if (dancer == null
-                || !dancer.canCircleDance
-                || IsDeliveryTaskNPC(dancer.transform))
-            {
-                continue;
-            }
-
-            dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.maximumHandPairDistance = Mathf.Max(
-                dancer.maximumHandPairDistance,
-                neighborSpacing * 1.2f);
-        }
-    }
-
-    private bool TryGetAnimatorRigHeight(Animator animator, out float height)
-    {
-        height = 0f;
-        if (animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
-            Transform hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            Transform leftUpperLeg = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            Transform leftLowerLeg = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
-            Transform leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-            Transform rightUpperLeg = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            Transform rightLowerLeg = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
-            Transform rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-
-            if (head != null && hips != null)
-            {
-                float legLengthTotal = 0f;
-                int legCount = 0;
-                if (leftUpperLeg != null && leftLowerLeg != null && leftFoot != null)
-                {
-                    legLengthTotal += Vector3.Distance(hips.position, leftUpperLeg.position)
-                        + Vector3.Distance(leftUpperLeg.position, leftLowerLeg.position)
-                        + Vector3.Distance(leftLowerLeg.position, leftFoot.position);
-                    legCount++;
-                }
-
-                if (rightUpperLeg != null && rightLowerLeg != null && rightFoot != null)
-                {
-                    legLengthTotal += Vector3.Distance(hips.position, rightUpperLeg.position)
-                        + Vector3.Distance(rightUpperLeg.position, rightLowerLeg.position)
-                        + Vector3.Distance(rightLowerLeg.position, rightFoot.position);
-                    legCount++;
-                }
-
-                if (legCount > 0)
-                {
-                    height = Vector3.Distance(head.position, hips.position)
-                        + legLengthTotal / legCount;
-                }
-            }
-        }
-
-        if (height <= 0.05f
-            && animator != null
-            && TryGetCharacterBounds(animator.transform, out Bounds bounds))
-        {
-            height = bounds.size.y;
-        }
-
-        return height > 0.05f;
-    }
-
-    private float CalculateWeddingCircleRadius(
-        Animator[] animators,
-        Transform center,
-        out float neighborSpacing)
-    {
-        List<float> armReaches = new List<float>();
-        int activeDancerCount = 0;
-
-        if (animators != null)
-        {
-            for (int i = 0; i < animators.Length; i++)
-            {
-                Animator animator = animators[i];
-                if (!IsWeddingCrowdActor(animator, center)
-                    || IsDeliveryTaskNPC(animator.transform))
-                {
-                    continue;
-                }
-
-                Chapter1CircleDancer existing = animator.GetComponent<Chapter1CircleDancer>();
-                if (existing != null && !existing.canCircleDance
-                    && !TryFindNamedAddedDancerRoot(animator.transform, out _))
-                {
-                    continue;
-                }
-
-                activeDancerCount++;
-                float reach = GetAnimatorArmReach(animator);
-                if (reach > 0.05f)
-                {
-                    armReaches.Add(reach);
-                }
-            }
-        }
-
-        int slotCount = Mathf.Max(
-            3,
-            activeDancerCount + Mathf.Max(0, weddingReservedPlayerSlots));
-        float radius = Mathf.Max(2.2f, weddingCircleRadius);
-
-        if (autoFitWeddingCircleToArmReach && armReaches.Count > 0)
-        {
-            float medianArmReach = GetMedian(armReaches);
-            neighborSpacing = medianArmReach
-                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.8f, 2.8f);
-            float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
-            if (denominator > 0.001f)
-            {
-                radius = neighborSpacing / denominator;
-            }
-
-            radius = Mathf.Clamp(radius, 2.2f, Mathf.Max(30f, weddingCircleRadius * 2f));
-        }
-
-        neighborSpacing = 2f * radius * Mathf.Sin(Mathf.PI / slotCount);
-        return radius;
-    }
-
-    private float GetAnimatorArmReach(Animator animator)
-    {
-        if (animator == null
-            || animator.avatar == null
-            || !animator.avatar.isValid
-            || !animator.isHuman)
-        {
-            return 0f;
-        }
-
-        float total = 0f;
-        int count = 0;
-        Transform leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-        Transform leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-        Transform rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-        Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-
-        if (leftUpperArm != null && leftHand != null)
-        {
-            total += Vector3.Distance(leftUpperArm.position, leftHand.position);
-            count++;
-        }
-
-        if (rightUpperArm != null && rightHand != null)
-        {
-            total += Vector3.Distance(rightUpperArm.position, rightHand.position);
-            count++;
-        }
-
-        return count > 0 ? total / count : 0f;
-    }
-
-    private bool TryFindNamedAddedDancerRoot(
-        Transform candidate,
-        out Transform actorRoot)
-    {
-        actorRoot = null;
-        Transform current = candidate;
-
-        while (current != null && current.gameObject.scene.IsValid())
-        {
-            string currentName = current.name.Trim();
-            for (int i = 0; i < AddedWeddingDancerNames.Length; i++)
-            {
-                string expectedName = AddedWeddingDancerNames[i];
-                bool exactMatch = string.Equals(
-                    currentName,
-                    expectedName,
-                    System.StringComparison.Ordinal);
-                bool unityDuplicateName = currentName.StartsWith(
-                    expectedName + " (",
-                    System.StringComparison.Ordinal)
-                    && currentName.EndsWith(")", System.StringComparison.Ordinal);
-
-                if (exactMatch || unityDuplicateName)
-                {
-                    actorRoot = current;
-                    return true;
-                }
-            }
-
-            current = current.parent;
-        }
-
-        return false;
-    }
-
-    private bool TryGetCharacterBounds(Transform root, out Bounds bounds)
-    {
-        bounds = new Bounds(root != null ? root.position : Vector3.zero, Vector3.zero);
-        if (root == null)
-        {
-            return false;
-        }
-
-        SkinnedMeshRenderer[] renderers = root.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        bool found = false;
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            SkinnedMeshRenderer renderer = renderers[i];
-            if (renderer == null || renderer.sharedMesh == null)
-            {
-                continue;
-            }
-
-            if (!found)
-            {
-                bounds = renderer.bounds;
-                found = true;
-            }
-            else
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-        }
-
-        return found;
-    }
-
-    private float GetMedian(List<float> values)
-    {
-        values.Sort();
-        int middle = values.Count / 2;
-        return values.Count % 2 == 0
-            ? (values[middle - 1] + values[middle]) * 0.5f
-            : values[middle];
+        Debug.Log("[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count);
     }
 
     private void EnsureNewPoliceSceneNpcGrounding()
@@ -4665,11 +4215,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             || actorName.Contains("controller"))
         {
             return false;
-        }
-
-        if (TryFindNamedAddedDancerRoot(actor, out _))
-        {
-            return true;
         }
 
         return GetFlatDistance(actor.position, center.position) <= Mathf.Max(1f, weddingCrowdDanceRange);
