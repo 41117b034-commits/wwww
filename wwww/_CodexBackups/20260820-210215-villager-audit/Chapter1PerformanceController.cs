@@ -4188,11 +4188,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform actor = animator.transform;
-        if (actor.parent != null && actor.parent.GetComponentInParent<Animator>() != null)
-        {
-            return false;
-        }
-
         if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
         {
             return false;

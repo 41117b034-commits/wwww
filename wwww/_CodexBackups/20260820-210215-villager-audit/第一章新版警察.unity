@@ -1119,7 +1119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5824.191
+      value: -5823.49
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1127,19 +1127,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.21540065
+      value: 0.21540071
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.9765258
+      value: -0.9765258
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 12978432ad85b574aaff1d27b32dc372, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1198,7 +1198,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5814.234
+      value: -5814.05
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1206,19 +1206,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.8032707
+      value: 0.8032707
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.59561414
+      value: -0.59561425
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1234,7 +1234,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_Name
-      value: "\u539F\u4F4F\u6C11\u5C0F\u5B69(2)"
+      value: "\u65CF\u4EBA1"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3192,31 +3192,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3666.53
+      value: 3702.8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5816.43
+      value: -5820.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -165.95
+      value: -112.7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.34374958
+      value: 0.1850318
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.2782796
+      value: -0.23561722
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.6319694
+      value: -0.69520736
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.6364051
+      value: -0.6534023
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3224,7 +3224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -120
+      value: -33.10498
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 141b679349b32d04a9eeaf249763e6f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -3920,8 +3920,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 1366661694}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -3932,13 +3930,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.12
   swayDegrees: 5
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -3957,7 +3948,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -3967,13 +3957,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -4277,7 +4260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5813.6587
+      value: -5813.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4285,19 +4268,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8761918
+      value: -0.87619084
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.0006054245
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.48196262
+      value: -0.48196277
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.0010315387
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4571,7 +4554,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5819.9336
+      value: -5819.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4579,19 +4562,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6971927
+      value: 0.6971923
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.0008338994
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7168838
+      value: -0.7168831
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.0008574513
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4611,7 +4594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_Name
-      value: "\u8CFD\u5FB7\u514B\u4E2D\u5E74"
+      value: tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6 (1)
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_Controller
@@ -4984,8 +4967,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 1366661694}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -4996,13 +4977,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.12
   swayDegrees: 5
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -5021,7 +4995,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -5031,13 +5004,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -5074,7 +5040,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5818.5874
+      value: -5818.63
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5082,19 +5048,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.9695034
+      value: 0.9695034
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.24507785
+      value: -0.2450779
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5110,7 +5076,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_Name
-      value: "\u8CFD\u5FB7\u514B\u4E2D\u5E74\u55CE"
+      value: tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6 (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5144,8 +5110,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 1366661694}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -5156,13 +5120,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.12
   swayDegrees: 5
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -5181,7 +5138,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -5191,13 +5147,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -5401,7 +5350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5822.53
+      value: -5822.66
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5409,19 +5358,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8727257
+      value: 0.8726804
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.0057369154
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.4882108
+      value: 0.4881773
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.008881977
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5736,7 +5685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5817.7085
+      value: -5817.4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5748,7 +5697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.y
@@ -5756,7 +5705,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5772,7 +5721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
       propertyPath: m_Name
-      value: "\u8CFD\u5FB7\u514B\u5E25\u54E5"
+      value: tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6255,8 +6204,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 1366661694}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -6267,13 +6214,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.12
   swayDegrees: 5
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -6292,7 +6232,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -6302,13 +6241,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -6696,13 +6628,6 @@ MonoBehaviour:
   policeEntranceDistance: 12
   policeEntranceDuration: 4
   rotatePoliceTowardPath: 1
-  animatePoliceRunBones: 1
-  newPoliceSceneRunDuration: 2.8
-  policeRunCadence: 2.45
-  policeRunLegSwing: 0.62
-  policeRunKneeBend: 0.55
-  policeRunArmSwing: 0.58
-  policeRunForwardLeanDegrees: 9
   primaryPoliceObjectName: "\u8B66\u5BDF"
   primaryPoliceActor: {fileID: 332245954}
   secondaryPoliceActor: {fileID: 1450100903}
@@ -7931,31 +7856,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3727.2
+      value: 3697.9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5811.6763
+      value: -5820
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -173
+      value: -115.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8191521
+      value: 0.23812228
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.57357645
+      value: -0.9712352
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7963,7 +7888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 70
+      value: -152.449
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -11994,8 +11919,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 0}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -12006,13 +11929,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.08
   swayDegrees: 4
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -12031,7 +11947,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -12041,13 +11956,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -12084,7 +11992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5811.726
+      value: -5811.52
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12092,19 +12000,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.86535513
+      value: 0.86535513
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5011592
+      value: -0.50115913
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -12645,8 +12553,6 @@ MonoBehaviour:
   idleStateName: Idle
   playDanceAnimatorState: 1
   animatorDanceSpeed: 1
-  keepDanceAnimationPlaying: 1
-  danceStateCheckInterval: 0.35
   roastedPigCenter: {fileID: 1366661694}
   useRoastedPigAsCenter: 1
   center: {fileID: 0}
@@ -12657,13 +12563,6 @@ MonoBehaviour:
   stepFrequency: 2.2
   radialStepDistance: 0.12
   swayDegrees: 5
-  autoArrangeEvenlyAroundCenter: 1
-  circleArrangeSpeed: 9.5
-  groupStartAngleDegrees: 0
-  synchronizeRootMovement: 1
-  useFixedCircleRadius: 1
-  fixedCircleRadius: 22
-  preventHandHoldAutoShrink: 1
   tempoBpm: 88
   degreesPerBeat: 1.65
   inOutDistance: 0.18
@@ -12682,7 +12581,6 @@ MonoBehaviour:
   groundProbeUp: 2.5
   groundProbeDown: 6
   groundFollowSpeed: 14
-  maxGroundHeightJump: 1.25
   minimumGroundNormalY: 0.45
   groundLayers:
     serializedVersion: 2
@@ -12692,13 +12590,6 @@ MonoBehaviour:
   maximumGroundRiseFromStart: 0.45
   maximumGroundDropFromStart: 0.7
   ignoreRoastedPigCollidersForGround: 1
-  lockAllDancersToSharedGround: 0
-  useHumanoidFeetForGrounding: 0
-  footGroundClearance: 0.025
-  preventFeetSinkingOnSlopes: 0
-  maxFootPenetrationCorrection: 0.22
-  sharedGroundProbeUp: 8
-  sharedGroundProbeDown: 20
   enableHandHolding: 1
   handHoldIKWeight: 0.88
   handHoldRotationWeight: 0.12
@@ -13176,7 +13067,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5824.793
+      value: -5824
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -13184,19 +13075,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6971927
+      value: 0.6971923
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.0008338994
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7168838
+      value: -0.7168831
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.0008574513
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -13212,7 +13103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       propertyPath: m_Name
-      value: "\u8CFD\u5FB7\u514B\u4E2D\u5E74(2)"
+      value: tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19688,8 +19579,6 @@ SceneRoots:
   - {fileID: 909616990}
   - {fileID: 356146872}
   - {fileID: 81536983}
-  - {fileID: 778112066}
-  - {fileID: 730135987}
   - {fileID: 1594810058}
   - {fileID: 1198240285}
   - {fileID: 240615883}
@@ -19774,4 +19663,6 @@ SceneRoots:
   - {fileID: 174978203}
   - {fileID: 1300920463}
   - {fileID: 391088607}
+  - {fileID: 778112066}
   - {fileID: 2131566871}
+  - {fileID: 730135987}

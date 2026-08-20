@@ -233,15 +233,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float policeEntranceDuration = 4f;
     public bool rotatePoliceTowardPath = true;
 
-    [Header("Police Rigged Run")]
-    public bool animatePoliceRunBones = true;
-    public float newPoliceSceneRunDuration = 2.8f;
-    public float policeRunCadence = 2.45f;
-    [Range(0f, 1f)] public float policeRunLegSwing = 0.62f;
-    [Range(0f, 1f)] public float policeRunKneeBend = 0.55f;
-    [Range(0f, 1f)] public float policeRunArmSwing = 0.58f;
-    public float policeRunForwardLeanDegrees = 9f;
-
     [Header("Police Intrusion Staging")]
     public string primaryPoliceObjectName = "警察";
     public Transform primaryPoliceActor;
@@ -4188,11 +4179,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform actor = animator.transform;
-        if (actor.parent != null && actor.parent.GetComponentInParent<Animator>() != null)
-        {
-            return false;
-        }
-
         if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
         {
             return false;
@@ -4804,13 +4790,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        Chapter1PoliceRunAnimator firstRun = BeginPoliceRiggedRun(firstPolice, 0f);
-        Chapter1PoliceRunAnimator secondRun = BeginPoliceRiggedRun(secondPolice, Mathf.PI);
-
-        float requestedDuration = IsNewPoliceScene()
-            ? newPoliceSceneRunDuration
-            : policeEntranceDuration;
-        float duration = Mathf.Max(0.5f, requestedDuration);
+        float duration = Mathf.Max(0.5f, policeEntranceDuration);
         float stagger = secondPolice != null ? Mathf.Max(0f, policeEntranceStaggerSeconds) : 0f;
         float totalDuration = duration + stagger;
         float elapsed = 0f;
@@ -4834,58 +4814,13 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         firstPolice.position = firstEnd;
         firstPolice.rotation = endRotation;
-        EndPoliceRiggedRun(firstRun);
         PlayAnimatorStateIfAvailable(firstPolice, policeIdleStateName);
 
         if (secondPolice != null)
         {
             secondPolice.position = secondEnd;
             secondPolice.rotation = endRotation;
-            EndPoliceRiggedRun(secondRun);
             PlayAnimatorStateIfAvailable(secondPolice, policeIdleStateName);
-        }
-    }
-
-    private Chapter1PoliceRunAnimator BeginPoliceRiggedRun(Transform actor, float phaseOffset)
-    {
-        if (!animatePoliceRunBones || actor == null)
-        {
-            return null;
-        }
-
-        Animator animator = actor.GetComponentInChildren<Animator>(true);
-        if (animator == null)
-        {
-            return null;
-        }
-
-        Chapter1PoliceRunAnimator runAnimator = animator.GetComponent<Chapter1PoliceRunAnimator>();
-        if (runAnimator == null)
-        {
-            runAnimator = animator.gameObject.AddComponent<Chapter1PoliceRunAnimator>();
-        }
-
-        bool configured = runAnimator.Configure(
-            animator,
-            policeRunCadence,
-            policeRunLegSwing,
-            policeRunKneeBend,
-            policeRunArmSwing,
-            policeRunForwardLeanDegrees);
-
-        if (!configured || !runAnimator.BeginRun(phaseOffset))
-        {
-            return null;
-        }
-
-        return runAnimator;
-    }
-
-    private static void EndPoliceRiggedRun(Chapter1PoliceRunAnimator runAnimator)
-    {
-        if (runAnimator != null)
-        {
-            runAnimator.EndRun();
         }
     }
 
@@ -5395,7 +5330,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (actor == null || string.IsNullOrWhiteSpace(stateName)) return;
         Animator animator = actor.GetComponentInChildren<Animator>();
-        if (animator == null || animator.runtimeAnimatorController == null) return;
+        if (animator == null) return;
         int hash = Animator.StringToHash(stateName);
         if (animator.HasState(0, hash)) animator.Play(hash, 0, 0f);
     }
