@@ -4049,6 +4049,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1 &466568411
 GameObject:
@@ -4694,6 +4695,135 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 861656505}
   m_SourcePrefab: {fileID: 100100000, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
+--- !u!1 &566374881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 566374883}
+  - component: {fileID: 566374882}
+  m_Layer: 0
+  m_Name: WeddingVocals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!82 &566374882
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566374881}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 19d390e07cd5a854b9e67811227c5b45, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.2
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &566374883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566374881}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3735.93, y: -5809.87, z: -121.81}
+  m_LocalScale: {x: 0.13015, y: 0.13015, z: 0.13015}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &581879774 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e53621f0a4ea0ba44a9f081e4b76941a, type: 3}
@@ -5122,6 +5252,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1001 &730135987
 PrefabInstance:
@@ -5291,6 +5422,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1 &736412481 stripped
 GameObject:
@@ -6468,6 +6600,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1 &866544333 stripped
 GameObject:
@@ -12281,6 +12414,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1001 &1619009257
 PrefabInstance:
@@ -12941,6 +13075,7 @@ MonoBehaviour:
   enableProceduralHandHolding: 1
   proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
+  handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
 --- !u!1001 &1719070022
 PrefabInstance:
@@ -20174,6 +20309,7 @@ SceneRoots:
   - {fileID: 1160666538}
   - {fileID: 995566607}
   - {fileID: 466568416}
+  - {fileID: 566374883}
   - {fileID: 1634240006}
   - {fileID: 1991399224}
   - {fileID: 1108419086}
