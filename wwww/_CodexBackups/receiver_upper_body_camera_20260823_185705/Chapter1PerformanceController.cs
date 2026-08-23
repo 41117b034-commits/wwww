@@ -162,11 +162,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float receiverDialogueHoldSeconds = 3f;
     public float receiverDialogueReturnSeconds = 0.3f;
     public float receiverFallbackFaceHeight = 1.55f;
-    public float receiverDialogueCameraDistance = 2.4f;
-    [Range(0.2f, 0.6f)]
-    public float receiverDialogueUpperBodyBottomRatio = 0.4f;
-    public float receiverDialogueFramePadding = 1.3f;
-    public float receiverDialogueMaxCameraDistance = 8f;
 
     [Header("Physical Wedding Delivery - Recommended")]
     [Tooltip("最佳版：玩家先走到酒/食物旁拿取，再自己走到 NPC 旁交付。完全不移動 XR Origin。")]
@@ -3231,10 +3226,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             receiverRoot = receiverTarget;
         }
 
-        Vector3 originalViewPosition = playerView.position;
-        Quaternion originalViewRotation = playerView.rotation;
-        Vector3 originalViewLocalPosition = playerView.localPosition;
-        Quaternion originalViewLocalRotation = playerView.localRotation;
+        Quaternion originalPlayerRotation = playerRootTransform.rotation;
         Quaternion originalReceiverRotation = receiverRoot.rotation;
         Chapter1FaceFire faceFire = receiverRoot.GetComponentInChildren<Chapter1FaceFire>(true);
         bool faceFireWasEnabled = faceFire != null && faceFire.enabled;
@@ -3245,15 +3237,14 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         SetPlayerControl(false);
 
-        List<Behaviour> trackedPoseDrivers = DisableCameraTrackedPoseDrivers(playerView);
-        GetReceiverDialogueCameraPose(
-            receiverRoot,
+        Vector3 facePosition = GetReceiverFacePosition(receiverRoot);
+        Quaternion focusedPlayerRotation = GetPlayerRootLookRotation(
+            playerRootTransform,
             playerView,
-            out Vector3 dialogueCameraPosition,
-            out Quaternion dialogueCameraRotation);
+            facePosition);
         Quaternion focusedReceiverRotation = GetHorizontalLookRotation(
             receiverRoot.position,
-            dialogueCameraPosition,
+            playerView.position,
             originalReceiverRotation);
 
         float panDuration = Mathf.Max(0.05f, receiverDialoguePanSeconds);
@@ -3262,9 +3253,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / panDuration));
-            playerView.SetPositionAndRotation(
-                Vector3.Lerp(originalViewPosition, dialogueCameraPosition, t),
-                Quaternion.Slerp(originalViewRotation, dialogueCameraRotation, t));
+            playerRootTransform.rotation = Quaternion.Slerp(
+                originalPlayerRotation,
+                focusedPlayerRotation,
+                t);
             receiverRoot.rotation = Quaternion.Slerp(
                 originalReceiverRotation,
                 focusedReceiverRotation,
@@ -3272,7 +3264,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return null;
         }
 
-        playerView.SetPositionAndRotation(dialogueCameraPosition, dialogueCameraRotation);
+        playerRootTransform.rotation = focusedPlayerRotation;
         receiverRoot.rotation = focusedReceiverRotation;
         ShowLine(receiverName, receiverLine, holdSeconds);
 
@@ -3280,7 +3272,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         while (elapsed < holdSeconds)
         {
             elapsed += Time.deltaTime;
-            playerView.SetPositionAndRotation(dialogueCameraPosition, dialogueCameraRotation);
+            playerRootTransform.rotation = focusedPlayerRotation;
             receiverRoot.rotation = focusedReceiverRotation;
             yield return null;
         }
@@ -3291,9 +3283,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / returnDuration));
-            playerView.SetPositionAndRotation(
-                Vector3.Lerp(dialogueCameraPosition, originalViewPosition, t),
-                Quaternion.Slerp(dialogueCameraRotation, originalViewRotation, t));
+            playerRootTransform.rotation = Quaternion.Slerp(
+                focusedPlayerRotation,
+                originalPlayerRotation,
+                t);
             receiverRoot.rotation = Quaternion.Slerp(
                 focusedReceiverRotation,
                 originalReceiverRotation,
@@ -3301,10 +3294,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return null;
         }
 
-        playerView.localPosition = originalViewLocalPosition;
-        playerView.localRotation = originalViewLocalRotation;
+        playerRootTransform.rotation = originalPlayerRotation;
         receiverRoot.rotation = originalReceiverRotation;
-        RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
         if (faceFire != null)
         {
             faceFire.enabled = faceFireWasEnabled;
@@ -3314,173 +3305,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             SetPlayerControl(true);
         }
-    }
-
-    private List<Behaviour> DisableCameraTrackedPoseDrivers(Transform playerView)
-    {
-        List<Behaviour> disabledDrivers = new List<Behaviour>();
-        if (playerView == null)
-        {
-            return disabledDrivers;
-        }
-
-        Behaviour[] behaviours = playerView.GetComponents<Behaviour>();
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            Behaviour behaviour = behaviours[i];
-            if (behaviour == null || !behaviour.enabled)
-            {
-                continue;
-            }
-
-            string typeName = behaviour.GetType().Name;
-            if (typeName.IndexOf("TrackedPoseDriver", System.StringComparison.OrdinalIgnoreCase) < 0)
-            {
-                continue;
-            }
-
-            behaviour.enabled = false;
-            disabledDrivers.Add(behaviour);
-        }
-
-        return disabledDrivers;
-    }
-
-    private void RestoreCameraTrackedPoseDrivers(List<Behaviour> trackedPoseDrivers)
-    {
-        if (trackedPoseDrivers == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < trackedPoseDrivers.Count; i++)
-        {
-            if (trackedPoseDrivers[i] != null)
-            {
-                trackedPoseDrivers[i].enabled = true;
-            }
-        }
-    }
-
-    private void GetReceiverDialogueCameraPose(
-        Transform receiverRoot,
-        Transform playerView,
-        out Vector3 cameraPosition,
-        out Quaternion cameraRotation)
-    {
-        Vector3 facePosition = GetReceiverFacePosition(receiverRoot);
-        Vector3 framingCenter = facePosition - Vector3.up * 0.28f;
-        float framingHeight = Mathf.Max(0.8f, receiverFallbackFaceHeight * 0.72f);
-        float framingWidth = framingHeight * 0.75f;
-
-        if (TryGetReceiverVisualBounds(receiverRoot, out Bounds actorBounds))
-        {
-            float bodyHeight = Mathf.Max(0.2f, actorBounds.size.y);
-            float upperBodyBottom = Mathf.Lerp(
-                actorBounds.min.y,
-                actorBounds.max.y,
-                Mathf.Clamp(receiverDialogueUpperBodyBottomRatio, 0.2f, 0.6f));
-            float top = actorBounds.max.y;
-
-            framingCenter = new Vector3(
-                actorBounds.center.x,
-                (upperBodyBottom + top) * 0.5f,
-                actorBounds.center.z);
-            framingHeight = Mathf.Max(0.4f, top - upperBodyBottom);
-            framingWidth = Mathf.Max(
-                actorBounds.size.x,
-                actorBounds.size.z) * 0.9f;
-
-            // Keep the head as the source of truth if clothing bounds stop below it.
-            if (facePosition.y > top - bodyHeight * 0.18f)
-            {
-                float headTop = facePosition.y + bodyHeight * 0.1f;
-                framingCenter.y = (upperBodyBottom + headTop) * 0.5f;
-                framingHeight = Mathf.Max(framingHeight, headTop - upperBodyBottom);
-            }
-        }
-
-        float verticalFov = 60f;
-        float aspect = 16f / 9f;
-        Camera viewCamera = playerView != null ? playerView.GetComponent<Camera>() : null;
-        if (viewCamera != null)
-        {
-            verticalFov = Mathf.Clamp(viewCamera.fieldOfView, 30f, 100f);
-            aspect = Mathf.Max(0.5f, viewCamera.aspect);
-        }
-
-        float padding = Mathf.Max(1.05f, receiverDialogueFramePadding);
-        float verticalTangent = Mathf.Tan(verticalFov * Mathf.Deg2Rad * 0.5f);
-        float horizontalTangent = verticalTangent * aspect;
-        float heightDistance = framingHeight * 0.5f * padding / Mathf.Max(0.1f, verticalTangent);
-        float widthDistance = framingWidth * 0.5f * padding / Mathf.Max(0.1f, horizontalTangent);
-        float distance = Mathf.Max(
-            Mathf.Max(1f, receiverDialogueCameraDistance),
-            Mathf.Max(heightDistance, widthDistance));
-        distance = Mathf.Min(distance, Mathf.Max(1f, receiverDialogueMaxCameraDistance));
-
-        Vector3 cameraSide = playerView != null
-            ? playerView.position - framingCenter
-            : -receiverRoot.forward;
-        cameraSide.y = 0f;
-        if (cameraSide.sqrMagnitude < 0.01f)
-        {
-            cameraSide = -receiverRoot.forward;
-            cameraSide.y = 0f;
-        }
-        if (cameraSide.sqrMagnitude < 0.01f)
-        {
-            cameraSide = Vector3.back;
-        }
-
-        cameraPosition = framingCenter + cameraSide.normalized * distance;
-        Vector3 lookDirection = framingCenter - cameraPosition;
-        cameraRotation = lookDirection.sqrMagnitude > 0.001f
-            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
-            : (playerView != null ? playerView.rotation : Quaternion.identity);
-    }
-
-    private bool TryGetReceiverVisualBounds(Transform receiverRoot, out Bounds combinedBounds)
-    {
-        combinedBounds = default(Bounds);
-        if (receiverRoot == null)
-        {
-            return false;
-        }
-
-        Renderer[] renderers = receiverRoot.GetComponentsInChildren<Renderer>(true);
-        bool hasBounds = false;
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Renderer renderer = renderers[i];
-            if (renderer == null
-                || !renderer.enabled
-                || !renderer.gameObject.activeInHierarchy
-                || renderer is ParticleSystemRenderer
-                || renderer is TrailRenderer
-                || renderer is LineRenderer)
-            {
-                continue;
-            }
-
-            string rendererName = renderer.name.ToLowerInvariant();
-            if (rendererName.Contains("marker") || rendererName.Contains("arrow"))
-            {
-                continue;
-            }
-
-            if (!hasBounds)
-            {
-                combinedBounds = renderer.bounds;
-                hasBounds = true;
-            }
-            else
-            {
-                combinedBounds.Encapsulate(renderer.bounds);
-            }
-        }
-
-        return hasBounds;
     }
 
     private Vector3 GetReceiverFacePosition(Transform receiverRoot)
@@ -3545,6 +3369,34 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return receiverRoot.position + Vector3.up * Mathf.Max(0.5f, receiverFallbackFaceHeight);
+    }
+
+    private Quaternion GetPlayerRootLookRotation(
+        Transform playerRootTransform,
+        Transform playerView,
+        Vector3 focusPosition)
+    {
+        Vector3 currentViewDirection = Vector3.ProjectOnPlane(
+            playerView.forward,
+            Vector3.up);
+        Vector3 desiredViewDirection = Vector3.ProjectOnPlane(
+            focusPosition - playerView.position,
+            Vector3.up);
+
+        if (currentViewDirection.sqrMagnitude < 0.001f
+            || desiredViewDirection.sqrMagnitude < 0.001f)
+        {
+            return playerRootTransform.rotation;
+        }
+
+        Quaternion currentViewYaw = Quaternion.LookRotation(
+            currentViewDirection.normalized,
+            Vector3.up);
+        Quaternion desiredViewYaw = Quaternion.LookRotation(
+            desiredViewDirection.normalized,
+            Vector3.up);
+        Quaternion yawDelta = desiredViewYaw * Quaternion.Inverse(currentViewYaw);
+        return yawDelta * playerRootTransform.rotation;
     }
 
     private Quaternion GetHorizontalLookRotation(
