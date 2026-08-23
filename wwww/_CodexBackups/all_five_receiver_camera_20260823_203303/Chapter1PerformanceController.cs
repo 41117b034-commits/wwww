@@ -3252,7 +3252,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             out Vector3 dialogueCameraPosition,
             out Quaternion dialogueCameraRotation);
         Quaternion focusedReceiverRotation = GetHorizontalLookRotation(
-            receiverRoot,
+            receiverRoot.position,
             dialogueCameraPosition,
             originalReceiverRotation);
 
@@ -3373,20 +3373,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         float framingHeight = Mathf.Max(0.8f, receiverFallbackFaceHeight * 0.72f);
         float framingWidth = framingHeight * 0.75f;
 
-        bool hasVisualBounds = TryGetReceiverVisualBounds(receiverRoot, out Bounds actorBounds);
-        if (TryGetReceiverSkeletonFrame(
-            receiverRoot,
-            hasVisualBounds ? actorBounds : default(Bounds),
-            hasVisualBounds,
-            out Vector3 skeletonCenter,
-            out float skeletonHeight,
-            out float skeletonWidth))
-        {
-            framingCenter = skeletonCenter;
-            framingHeight = skeletonHeight;
-            framingWidth = skeletonWidth;
-        }
-        else if (hasVisualBounds)
+        if (TryGetReceiverVisualBounds(receiverRoot, out Bounds actorBounds))
         {
             float bodyHeight = Mathf.Max(0.2f, actorBounds.size.y);
             float upperBodyBottom = Mathf.Lerp(
@@ -3412,12 +3399,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 framingHeight = Mathf.Max(framingHeight, headTop - upperBodyBottom);
             }
         }
-
-        Debug.Log(
-            "[Chapter1 ReceiverCamera] target=" + receiverRoot.name
-            + ", center=" + framingCenter.ToString("F2")
-            + ", frame=" + framingWidth.ToString("0.00")
-            + "x" + framingHeight.ToString("0.00"));
 
         float verticalFov = 60f;
         float aspect = 16f / 9f;
@@ -3457,229 +3438,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         cameraRotation = lookDirection.sqrMagnitude > 0.001f
             ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
             : (playerView != null ? playerView.rotation : Quaternion.identity);
-    }
-
-    private bool TryGetReceiverSkeletonFrame(
-        Transform receiverRoot,
-        Bounds actorBounds,
-        bool hasVisualBounds,
-        out Vector3 framingCenter,
-        out float framingHeight,
-        out float framingWidth)
-    {
-        framingCenter = Vector3.zero;
-        framingHeight = 0f;
-        framingWidth = 0f;
-
-        if (!TryGetReceiverHeadBonePosition(receiverRoot, out Vector3 headPosition))
-        {
-            return false;
-        }
-
-        bool hasHips = TryGetReceiverHipsBonePosition(receiverRoot, out Vector3 hipsPosition);
-        bool hasFeet = TryGetReceiverFeetY(receiverRoot, out float feetY);
-
-        float estimatedBodyHeight;
-        if (hasFeet && headPosition.y > feetY + 0.2f)
-        {
-            estimatedBodyHeight = (headPosition.y - feetY) / 0.9f;
-        }
-        else if (hasHips && headPosition.y > hipsPosition.y + 0.15f)
-        {
-            estimatedBodyHeight = (headPosition.y - hipsPosition.y) * 2.15f;
-        }
-        else if (hasVisualBounds)
-        {
-            estimatedBodyHeight = Mathf.Max(0.5f, actorBounds.size.y);
-        }
-        else
-        {
-            estimatedBodyHeight = Mathf.Max(0.5f, receiverFallbackFaceHeight);
-        }
-
-        float headTopY = headPosition.y + estimatedBodyHeight * 0.09f;
-        Vector3 upperBodyBottom;
-        if (hasHips)
-        {
-            upperBodyBottom = hipsPosition;
-        }
-        else
-        {
-            float lowerY = hasFeet
-                ? Mathf.Lerp(feetY, headTopY, 0.46f)
-                : headPosition.y - estimatedBodyHeight * 0.48f;
-            upperBodyBottom = new Vector3(headPosition.x, lowerY, headPosition.z);
-        }
-
-        Vector3 headTop = new Vector3(headPosition.x, headTopY, headPosition.z);
-        framingCenter = Vector3.Lerp(upperBodyBottom, headTop, 0.5f);
-        framingHeight = Mathf.Max(0.45f, headTopY - upperBodyBottom.y);
-
-        float estimatedWidth = estimatedBodyHeight * 0.42f;
-        if (hasVisualBounds)
-        {
-            float rendererWidth = Mathf.Max(actorBounds.size.x, actorBounds.size.z);
-            estimatedWidth = Mathf.Clamp(
-                rendererWidth,
-                estimatedBodyHeight * 0.28f,
-                estimatedBodyHeight * 0.72f);
-        }
-
-        framingWidth = Mathf.Max(0.3f, estimatedWidth);
-        return true;
-    }
-
-    private bool TryGetReceiverHeadBonePosition(Transform receiverRoot, out Vector3 headPosition)
-    {
-        headPosition = Vector3.zero;
-        if (receiverRoot == null)
-        {
-            return false;
-        }
-
-        Animator animator = receiverRoot.GetComponentInChildren<Animator>(true);
-        if (animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            Transform humanoidHead = animator.GetBoneTransform(HumanBodyBones.Head);
-            if (humanoidHead != null)
-            {
-                headPosition = humanoidHead.position;
-                return true;
-            }
-        }
-
-        Transform[] descendants = receiverRoot.GetComponentsInChildren<Transform>(true);
-        Transform best = null;
-        for (int i = 0; i < descendants.Length; i++)
-        {
-            Transform candidate = descendants[i];
-            if (candidate == null)
-            {
-                continue;
-            }
-
-            string boneName = candidate.name.ToLowerInvariant();
-            if (!boneName.Contains("head") && !boneName.Contains("頭"))
-            {
-                continue;
-            }
-
-            if (best == null || candidate.position.y > best.position.y)
-            {
-                best = candidate;
-            }
-        }
-
-        if (best == null)
-        {
-            return false;
-        }
-
-        headPosition = best.position;
-        return true;
-    }
-
-    private bool TryGetReceiverHipsBonePosition(Transform receiverRoot, out Vector3 hipsPosition)
-    {
-        hipsPosition = Vector3.zero;
-        if (receiverRoot == null)
-        {
-            return false;
-        }
-
-        Animator animator = receiverRoot.GetComponentInChildren<Animator>(true);
-        if (animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            Transform humanoidHips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            if (humanoidHips != null)
-            {
-                hipsPosition = humanoidHips.position;
-                return true;
-            }
-        }
-
-        Transform[] descendants = receiverRoot.GetComponentsInChildren<Transform>(true);
-        for (int i = 0; i < descendants.Length; i++)
-        {
-            Transform candidate = descendants[i];
-            if (candidate == null)
-            {
-                continue;
-            }
-
-            string boneName = candidate.name.ToLowerInvariant();
-            if (boneName.Contains("hips")
-                || boneName.Contains("pelvis")
-                || boneName.Contains("骨盆"))
-            {
-                hipsPosition = candidate.position;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool TryGetReceiverFeetY(Transform receiverRoot, out float feetY)
-    {
-        feetY = float.MaxValue;
-        if (receiverRoot == null)
-        {
-            return false;
-        }
-
-        bool found = false;
-        Animator animator = receiverRoot.GetComponentInChildren<Animator>(true);
-        if (animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            Transform leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-            Transform rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            if (leftFoot != null)
-            {
-                feetY = Mathf.Min(feetY, leftFoot.position.y);
-                found = true;
-            }
-            if (rightFoot != null)
-            {
-                feetY = Mathf.Min(feetY, rightFoot.position.y);
-                found = true;
-            }
-        }
-
-        if (!found)
-        {
-            Transform[] descendants = receiverRoot.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < descendants.Length; i++)
-            {
-                Transform candidate = descendants[i];
-                if (candidate == null)
-                {
-                    continue;
-                }
-
-                string boneName = candidate.name.ToLowerInvariant();
-                if (!boneName.Contains("foot")
-                    && !boneName.Contains("ankle")
-                    && !boneName.Contains("腳"))
-                {
-                    continue;
-                }
-
-                feetY = Mathf.Min(feetY, candidate.position.y);
-                found = true;
-            }
-        }
-
-        return found;
     }
 
     private bool TryGetReceiverVisualBounds(Transform receiverRoot, out Bounds combinedBounds)
@@ -3732,9 +3490,28 @@ public class Chapter1PerformanceController : MonoBehaviour
             return transform.position + Vector3.up * receiverFallbackFaceHeight;
         }
 
-        if (TryGetReceiverHeadBonePosition(receiverRoot, out Vector3 headPosition))
+        Animator receiverAnimator = receiverRoot.GetComponentInChildren<Animator>(true);
+        if (receiverAnimator != null
+            && receiverAnimator.avatar != null
+            && receiverAnimator.avatar.isValid
+            && receiverAnimator.isHuman)
         {
-            return headPosition + Vector3.up * 0.08f;
+            Transform head = receiverAnimator.GetBoneTransform(HumanBodyBones.Head);
+            if (head != null)
+            {
+                return head.position + Vector3.up * 0.08f;
+            }
+        }
+
+        Transform[] descendants = receiverRoot.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < descendants.Length; i++)
+        {
+            Transform candidate = descendants[i];
+            if (candidate != null
+                && candidate.name.IndexOf("head", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return candidate.position + Vector3.up * 0.08f;
+            }
         }
 
         Renderer[] renderers = receiverRoot.GetComponentsInChildren<Renderer>(true);
@@ -3771,39 +3548,16 @@ public class Chapter1PerformanceController : MonoBehaviour
     }
 
     private Quaternion GetHorizontalLookRotation(
-        Transform actor,
+        Vector3 fromPosition,
         Vector3 toPosition,
         Quaternion fallback)
     {
-        if (actor == null)
-        {
-            return fallback;
-        }
-
         Vector3 direction = Vector3.ProjectOnPlane(
-            toPosition - actor.position,
+            toPosition - fromPosition,
             Vector3.up);
-        if (direction.sqrMagnitude < 0.001f)
-        {
-            return fallback;
-        }
-
-        Vector3 currentFacing = Vector3.ProjectOnPlane(actor.forward, Vector3.up);
-        if (currentFacing.sqrMagnitude < 0.1f)
-        {
-            // Some imported FBX characters use Z as their vertical axis.
-            currentFacing = Vector3.ProjectOnPlane(actor.up, Vector3.up);
-        }
-        if (currentFacing.sqrMagnitude < 0.1f)
-        {
-            return fallback;
-        }
-
-        float yaw = Vector3.SignedAngle(
-            currentFacing.normalized,
-            direction.normalized,
-            Vector3.up);
-        return Quaternion.AngleAxis(yaw, Vector3.up) * fallback;
+        return direction.sqrMagnitude > 0.001f
+            ? Quaternion.LookRotation(direction.normalized, Vector3.up)
+            : fallback;
     }
 
     private IEnumerator MovePropToPosition(GameObject prop, Vector3 startPosition, Vector3 endPosition, float seconds, float arcHeight)
