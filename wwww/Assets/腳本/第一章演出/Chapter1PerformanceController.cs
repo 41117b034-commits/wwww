@@ -172,6 +172,28 @@ public class Chapter1PerformanceController : MonoBehaviour
     public bool lockPlayerDuringPoliceEntrance = false;
     public float defaultDialogueSeconds = 3f;
 
+    [Header("Auto Cinematic Story - Vindictus Style")]
+    [Tooltip("婚禮任務全部完成後，自動進入劇情過場，不需要玩家再按任何按鍵。")]
+    public bool autoPlayCinematicStoryAfterWeddingTasks = true;
+
+    [Tooltip("劇情過場時上下加入黑邊，畫面更像遊戲 Cutscene。")]
+    public bool showCinematicLetterbox = true;
+
+    [Range(0.06f, 0.20f)]
+    public float cinematicLetterboxHeightRatio = 0.11f;
+
+    [Tooltip("任務完成後，正式切入劇情前停一下。")]
+    public float cinematicPreRollSeconds = 0.65f;
+
+    [Tooltip("婚禮聲音突然停掉後保留短暫安靜。")]
+    public float cinematicSilenceBeatSeconds = 0.55f;
+
+    [Tooltip("鏡頭切到角色後多停一下。")]
+    public float cinematicExtraShotHoldSeconds = 0.18f;
+
+    [Tooltip("劇情時隱藏任務、倒數與互動提示，只留下字幕。")]
+    public bool hideGameplayHudDuringCinematic = true;
+
     [Header("Free Exploration Timer")]
     public bool useExplorationTimer = true;
     public float explorationDurationSeconds = 180f;
@@ -363,9 +385,128 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Header("Police Cinematic Camera")]
     public bool usePoliceCinematicCamera = true;
-    public float policeCameraPanSeconds = 1.05f;
-    public float policeCameraHoldSeconds = 0.15f;
+    public float policeCameraPanSeconds = 0.85f;
+    public float policeCameraHoldSeconds = 0.2f;
     public float policeCameraLookHeight = 1.35f;
+
+    [Header("Police Entrance Tracking Shot")]
+    [Tooltip("警察進場時，先用天空俯視鏡頭慢慢看著他們走進來。")]
+    public bool usePoliceEntranceAerialIntro = true;
+
+    [Tooltip("如果關掉天空鏡頭，才改用原本的側後方跟拍。")]
+    public bool usePoliceEntranceTrackingCamera = false;
+
+    [Tooltip("天空鏡頭高度。")]
+    public float policeAerialHeight = 9.5f;
+
+    [Tooltip("天空鏡頭略偏向山路入口的距離。")]
+    public float policeAerialBackOffset = 4.2f;
+
+    [Tooltip("天空鏡頭略偏側邊，畫面不會太正。")]
+    public float policeAerialSideOffset = 1.8f;
+
+    [Tooltip("天空鏡頭看向警察隊伍時的仰角修正。數值越大越往下看。")]
+    public float policeAerialLookHeight = 1.2f;
+
+    [Tooltip("切到天空鏡頭的速度。")]
+    public float policeAerialBlendSeconds = 0.9f;
+
+    [Tooltip("天空鏡頭會很慢地往前跟，數值越大跟得越明顯。")]
+    [Range(0f, 1f)] public float policeAerialFollowStrength = 0.38f;
+
+    [Tooltip("警察走近時，天空鏡頭會慢慢往下降並推近。")]
+    public bool usePoliceAerialDescent = true;
+
+    [Tooltip("天空鏡頭最後下降到的高度。")]
+    public float policeAerialEndHeight = 4.8f;
+
+    [Tooltip("天空鏡頭最後推近到警察後方的距離。")]
+    public float policeAerialEndBackOffset = 2.6f;
+
+    [Range(0f, 0.9f)]
+    [Tooltip("警察走到整段路徑的幾成後，天空鏡頭開始明顯下降。")]
+    public float policeAerialDescentStartNormalized = 0.28f;
+
+    [Header("Police Front Reveal")]
+    [Tooltip("警察走到會場後，鏡頭切到正面近景讓第一句台詞更有壓迫感。")]
+    public bool usePoliceFrontReveal = true;
+
+    public float policeFrontRevealDistance = 2.15f;
+    public float policeFrontRevealHeight = 1.55f;
+    public float policeFrontRevealSideOffset = 0.35f;
+    public float policeFrontRevealMoveSeconds = 0.72f;
+    public float policeFrontRevealHoldSeconds = 0.22f;
+    public float policeFrontRevealReturnSeconds = 0.42f;
+
+    [Tooltip("跟拍鏡頭在警察側邊的距離。")]
+    public float policeTrackingSideOffset = 3.6f;
+
+    [Tooltip("跟拍鏡頭落後警察的距離。")]
+    public float policeTrackingBackOffset = 4.6f;
+
+    [Tooltip("跟拍鏡頭高度。")]
+    public float policeTrackingHeight = 1.75f;
+
+    [Tooltip("跟拍開始時，從目前鏡頭滑到跟拍位置的速度。")]
+    public float policeTrackingBlendSeconds = 0.45f;
+
+    [Tooltip("警察進場結束後，鏡頭滑回玩家原本的劇情觀看位置。")]
+    public bool returnCameraAfterPoliceEntrance = true;
+
+    public float policeTrackingReturnSeconds = 0.7f;
+
+    [Header("Police Natural Walk")]
+    [Tooltip("優先使用角色原本 Animator 裡的 Walk 動畫，讓警察走步更自然。")]
+    public bool preferAnimatorWalkForPoliceEntrance = true;
+
+    [Tooltip("如果沒有真正的 Walk 動畫，才用程序骨架補步態。")]
+    public bool useProceduralPoliceWalkFallback = true;
+
+    [Tooltip("兩名警察不要完全同步，第二位會自然慢一點。")]
+    public float policeSecondarySpeedScale = 0.94f;
+
+    [Tooltip("走路時左右微幅開闔，畫面不會像兩個貼著滑行。")]
+    public float policeNaturalLateralDrift = 0.08f;
+
+    [Tooltip("走步節奏。若沒有真正 Walk 動畫，程序步態會依這個節奏走。")]
+    public float policeWalkCadence = 1.75f;
+
+    [Range(0f, 1f)] public float policeWalkLegSwing = 0.33f;
+    [Range(0f, 1f)] public float policeWalkKneeBend = 0.26f;
+    [Range(0f, 1f)] public float policeWalkArmSwing = 0.28f;
+    public float policeWalkForwardLeanDegrees = 3.5f;
+
+    [Range(0f, 1f)]
+    [Tooltip("第二名警察的走路動畫從不同時間點開始，避免兩人同手同腳。")]
+    public float policeSecondWalkAnimationPhase = 0.43f;
+
+    [Tooltip("第一名警察 Walk 動畫速度。")]
+    public float policeFirstWalkAnimatorSpeed = 1f;
+
+    [Tooltip("第二名警察 Walk 動畫稍慢一點。")]
+    public float policeSecondWalkAnimatorSpeed = 0.96f;
+
+    [Header("Ceremony Cup Close Up")]
+    [Tooltip("日警掃落酒杯時切到酒杯近距離特寫。")]
+    public bool useCeremonyCupCloseUp = true;
+
+    [Tooltip("酒杯特寫鏡頭與酒杯的距離。")]
+    public float cupCloseUpDistance = 0.72f;
+
+    [Tooltip("酒杯特寫鏡頭略高於酒杯的高度。")]
+    public float cupCloseUpHeight = 0.24f;
+
+    [Tooltip("切進酒杯特寫需要的時間。")]
+    public float cupCloseUpMoveSeconds = 0.38f;
+
+    [Tooltip("酒杯被打掉前先停一拍。")]
+    public float cupCloseUpBeforeImpactSeconds = 0.18f;
+
+    [Tooltip("酒杯被打掉後特寫停留時間。")]
+    public float cupCloseUpAfterImpactSeconds = 0.85f;
+
+    [Tooltip("特寫結束後回到原鏡頭的時間。")]
+    public float cupCloseUpReturnSeconds = 0.42f;
 
     [Header("Police Incident Scene References")]
     public Transform groomActor;
@@ -479,6 +620,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Vector3 temporaryMissionStartPlayerPosition;
     private bool interactionAnimationRunning;
     private bool openingStoryPlaying;
+    private bool cinematicStoryPlaying;
 
     private GUIStyle hudBoxStyle;
     private GUIStyle hudTitleStyle;
@@ -666,6 +808,19 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        // 自動劇情過場：隱藏一般遊戲 HUD，只留黑邊與字幕。
+        if (cinematicStoryPlaying && hideGameplayHudDuringCinematic)
+        {
+            DrawCinematicLetterbox();
+
+            if (dialogueUI == null)
+            {
+                DrawFallbackDialogue();
+            }
+
+            return;
+        }
+
         if (showExplorationTimer && explorationTimerRunning)
         {
             DrawExplorationTimer();
@@ -751,6 +906,38 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private void DrawCinematicLetterbox()
+    {
+        if (!showCinematicLetterbox)
+        {
+            return;
+        }
+
+        float barHeight =
+            Screen.height
+            * Mathf.Clamp(
+                cinematicLetterboxHeightRatio,
+                0.04f,
+                0.25f);
+
+        Color previousColor = GUI.color;
+        GUI.color = Color.black;
+
+        GUI.DrawTexture(
+            new Rect(0f, 0f, Screen.width, barHeight),
+            Texture2D.whiteTexture);
+
+        GUI.DrawTexture(
+            new Rect(
+                0f,
+                Screen.height - barHeight,
+                Screen.width,
+                barHeight),
+            Texture2D.whiteTexture);
+
+        GUI.color = previousColor;
+    }
+
     private string GetCleanMissionDisplayText()
     {
         if (!IsFreeExplorationActive())
@@ -816,6 +1003,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         storyStarted = true;
         openingStoryPlaying = true;
+        cinematicStoryPlaying = false;
 
         if (physicalCarriedProp != null)
         {
@@ -5296,14 +5484,28 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator StartPoliceAfterWeddingTasksDelay()
     {
-        SetMission("婚禮任務完成。鼓聲正熱烈時，山路上忽然傳來急促的皮靴聲……");
-        yield return new WaitForSeconds(Mathf.Max(0f, policeStartDelayAfterWeddingTasks));
-
-        // Let the final receiver finish speaking before the police sequence takes the camera.
+        // 先讓最後一個收禮 / 舞蹈動作完整結束。
         while (interactionAnimationRunning)
         {
             yield return null;
         }
+
+        if (autoPlayCinematicStoryAfterWeddingTasks)
+        {
+            cinematicStoryPlaying = true;
+            SetPlayerControl(false);
+            SetWorldInteractionPromptVisible(false);
+            ClearDeliveryTargetMarker();
+            missionText = "";
+
+            yield return new WaitForSeconds(
+                Mathf.Max(0f, cinematicPreRollSeconds));
+        }
+
+        SetMission("婚禮任務完成。遠處忽然傳來急促的皮靴聲……");
+
+        yield return new WaitForSeconds(
+            Mathf.Max(0f, policeStartDelayAfterWeddingTasks));
 
         if (!policeSequenceStarted)
         {
@@ -6375,6 +6577,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (hardCutWeddingAudioOnPolice)
         {
+            // 婚禮最歡樂的聲音全部切掉，留一拍安靜。
             if (weddingAmbience != null)
             {
                 weddingAmbience.Stop();
@@ -6383,6 +6586,17 @@ public class Chapter1PerformanceController : MonoBehaviour
             if (weddingVocals != null)
             {
                 weddingVocals.Stop();
+            }
+
+            if (cinematicStoryPlaying)
+            {
+                ShowLine(
+                    "旁白",
+                    "歡笑聲戛然而止。遠處，只剩皮靴踩過山路的聲音。",
+                    Mathf.Max(1.2f, cinematicSilenceBeatSeconds + 0.8f));
+
+                yield return new WaitForSeconds(
+                    Mathf.Max(0f, cinematicSilenceBeatSeconds));
             }
 
             if (tensionAmbience != null)
@@ -6448,16 +6662,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return new WaitForSeconds(3f);
         }
 
-        // 像過場動畫一樣：警察進場後，鏡頭自動轉向說話者。
-        yield return CinematicPanTo(primaryPoliceActor, policeCameraPanSeconds);
-
-        yield return PlayPoliceVoicedLine(
-            "日警",
-            "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
-            policeInsultVoice,
-            4f);
+        // 天空俯視慢慢壓低後，切到第一名日警正面近景說第一句台詞。
+        yield return CinematicPoliceFrontRevealAndFirstLine();
 
         yield return CinematicPanTo(groomActor, policeCameraPanSeconds);
+        yield return CinematicExtraHold();
 
         yield return PlayPoliceVoicedLine(
             "新郎",
@@ -6468,8 +6677,18 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (useFallbackIncidentAnimation)
         {
-            yield return CinematicPanTo(ceremonyCup != null ? ceremonyCup : shovedVillagerActor, policeCameraPanSeconds * 0.8f);
-            yield return KnockCupAndShoveVillagerFallback();
+            if (useCeremonyCupCloseUp && ceremonyCup != null)
+            {
+                yield return CinematicCupCloseUpAndShoveVillagerFallback();
+            }
+            else
+            {
+                yield return CinematicPanTo(
+                    ceremonyCup != null ? ceremonyCup : shovedVillagerActor,
+                    policeCameraPanSeconds * 0.8f);
+
+                yield return KnockCupAndShoveVillagerFallback();
+            }
         }
         else
         {
@@ -6482,6 +6701,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (femaleVillagerActor != null && harassingPolice != null)
         {
             yield return CinematicPanTo(femaleVillagerActor, policeCameraPanSeconds);
+            yield return CinematicExtraHold();
 
             ShowLine("旁白", "另一名警察把目光轉向一名女性族人，伸手逼近她。周圍的族人立刻騷動起來。", 4f);
             yield return MoveActorNearTarget(harassingPolice, femaleVillagerActor.position, 1.0f, policeApproachWomanSeconds);
@@ -6505,6 +6725,184 @@ public class Chapter1PerformanceController : MonoBehaviour
         yield return CinematicPanTo(choiceTarget, policeCameraPanSeconds * 0.85f);
 
         ShowConflictChoice();
+    }
+
+    private IEnumerator CinematicPoliceFrontRevealAndFirstLine()
+    {
+        if (!usePoliceFrontReveal
+            || !usePoliceCinematicCamera
+            || primaryPoliceActor == null)
+        {
+            yield return CinematicPanTo(
+                primaryPoliceActor,
+                policeCameraPanSeconds);
+
+            yield return CinematicExtraHold();
+
+            yield return PlayPoliceVoicedLine(
+                "日警",
+                "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
+                policeInsultVoice,
+                4f);
+
+            yield break;
+        }
+
+        Transform playerView = GetPlayerViewTransform();
+        if (playerView == null)
+        {
+            yield return PlayPoliceVoicedLine(
+                "日警",
+                "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
+                policeInsultVoice,
+                4f);
+
+            yield break;
+        }
+
+        Vector3 originalPosition = playerView.position;
+        Quaternion originalRotation = playerView.rotation;
+        Vector3 originalLocalPosition = playerView.localPosition;
+        Quaternion originalLocalRotation = playerView.localRotation;
+
+        List<Behaviour> trackedPoseDrivers =
+            DisableCameraTrackedPoseDrivers(playerView);
+
+        Vector3 policeForward =
+            Vector3.ProjectOnPlane(
+                primaryPoliceActor.forward,
+                Vector3.up);
+
+        if (policeForward.sqrMagnitude < 0.01f)
+        {
+            policeForward =
+                Vector3.ProjectOnPlane(
+                    GetFireCenterPosition() - primaryPoliceActor.position,
+                    Vector3.up);
+        }
+
+        if (policeForward.sqrMagnitude < 0.01f)
+        {
+            policeForward = Vector3.forward;
+        }
+
+        policeForward.Normalize();
+
+        Vector3 policeRight =
+            Vector3.Cross(Vector3.up, policeForward).normalized;
+
+        Vector3 focusPoint =
+            primaryPoliceActor.position
+            + Vector3.up * Mathf.Max(0.8f, policeFrontRevealHeight);
+
+        Vector3 desiredPosition =
+            primaryPoliceActor.position
+            + policeForward * Mathf.Max(0.8f, policeFrontRevealDistance)
+            + policeRight * policeFrontRevealSideOffset
+            + Vector3.up * Mathf.Max(0.8f, policeFrontRevealHeight);
+
+        Vector3 lookDirection =
+            focusPoint - desiredPosition;
+
+        Quaternion desiredRotation =
+            lookDirection.sqrMagnitude > 0.001f
+                ? Quaternion.LookRotation(
+                    lookDirection.normalized,
+                    Vector3.up)
+                : originalRotation;
+
+        float moveDuration =
+            Mathf.Max(0.05f, policeFrontRevealMoveSeconds);
+
+        float elapsed = 0f;
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(elapsed / moveDuration));
+
+            playerView.SetPositionAndRotation(
+                Vector3.Lerp(
+                    originalPosition,
+                    desiredPosition,
+                    t),
+                Quaternion.Slerp(
+                    originalRotation,
+                    desiredRotation,
+                    t));
+
+            yield return null;
+        }
+
+        playerView.SetPositionAndRotation(
+            desiredPosition,
+            desiredRotation);
+
+        if (policeFrontRevealHoldSeconds > 0f)
+        {
+            yield return new WaitForSeconds(
+                policeFrontRevealHoldSeconds);
+        }
+
+        // 第一名日警的第一句話就在正面近景中說完。
+        yield return PlayPoliceVoicedLine(
+            "日警",
+            "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
+            policeInsultVoice,
+            4f);
+
+        Vector3 closePosition = playerView.position;
+        Quaternion closeRotation = playerView.rotation;
+
+        float returnDuration =
+            Mathf.Max(0.05f, policeFrontRevealReturnSeconds);
+
+        elapsed = 0f;
+        while (elapsed < returnDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(elapsed / returnDuration));
+
+            playerView.SetPositionAndRotation(
+                Vector3.Lerp(
+                    closePosition,
+                    originalPosition,
+                    t),
+                Quaternion.Slerp(
+                    closeRotation,
+                    originalRotation,
+                    t));
+
+            yield return null;
+        }
+
+        playerView.localPosition = originalLocalPosition;
+        playerView.localRotation = originalLocalRotation;
+
+        RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
+    }
+
+    private IEnumerator CinematicExtraHold()
+    {
+        if (!cinematicStoryPlaying)
+        {
+            yield break;
+        }
+
+        float seconds = Mathf.Max(0f, cinematicExtraShotHoldSeconds);
+        if (seconds > 0f)
+        {
+            yield return new WaitForSeconds(seconds);
+        }
     }
 
     private IEnumerator CinematicPanTo(Transform target, float seconds)
@@ -6559,11 +6957,86 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private bool HasAnimatorState(Transform actor, string stateName)
+    {
+        if (actor == null || string.IsNullOrWhiteSpace(stateName))
+        {
+            return false;
+        }
+
+        Animator animator = actor.GetComponentInChildren<Animator>(true);
+        if (animator == null || animator.runtimeAnimatorController == null)
+        {
+            return false;
+        }
+
+        return animator.HasState(0, Animator.StringToHash(stateName));
+    }
+
+    private void PlayPoliceWalkAnimation(
+        Transform actor,
+        float normalizedTime,
+        float animatorSpeed)
+    {
+        if (actor == null || string.IsNullOrWhiteSpace(policeWalkStateName))
+        {
+            return;
+        }
+
+        Animator animator = actor.GetComponentInChildren<Animator>(true);
+        if (animator == null || animator.runtimeAnimatorController == null)
+        {
+            return;
+        }
+
+        int stateHash = Animator.StringToHash(policeWalkStateName);
+        if (!animator.HasState(0, stateHash))
+        {
+            return;
+        }
+
+        animator.applyRootMotion = false;
+        animator.speed = Mathf.Max(0.25f, animatorSpeed);
+        animator.Play(stateHash, 0, Mathf.Repeat(normalizedTime, 1f));
+        animator.Update(0f);
+    }
+
+    private void ResetPoliceAnimatorSpeed(Transform actor)
+    {
+        if (actor == null)
+        {
+            return;
+        }
+
+        Animator animator = actor.GetComponentInChildren<Animator>(true);
+        if (animator != null)
+        {
+            animator.speed = 1f;
+        }
+    }
+
+    private Vector3 GetPoliceAerialCameraPosition(
+        Vector3 policeCenter,
+        Vector3 pathDirection,
+        Vector3 sideDirection)
+    {
+        return policeCenter
+            - pathDirection * Mathf.Max(0.5f, policeAerialBackOffset)
+            + sideDirection * policeAerialSideOffset
+            + Vector3.up * Mathf.Max(2f, policeAerialHeight);
+    }
+
     private IEnumerator AnimatePoliceEntranceFallback()
     {
         EnsurePoliceActorsForIntrusion();
 
-        Transform firstPolice = primaryPoliceActor != null ? primaryPoliceActor : (policeGroup != null ? policeGroup.transform : null);
+        Transform firstPolice =
+            primaryPoliceActor != null
+                ? primaryPoliceActor
+                : (policeGroup != null
+                    ? policeGroup.transform
+                    : null);
+
         if (firstPolice == null)
         {
             yield return new WaitForSeconds(3f);
@@ -6571,10 +7044,25 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform secondPolice = secondaryPoliceActor;
-        Vector3 endPosition = policeEntranceTarget != null ? policeEntranceTarget.position : (hasPoliceOriginalTransform ? policeOriginalPosition : firstPolice.position);
-        Quaternion endRotation = hasPoliceOriginalTransform ? policeOriginalRotation : firstPolice.rotation;
-        Vector3 focusPosition = GetEntranceFocusPosition(endPosition);
-        Vector3 awayFromFocus = endPosition - focusPosition;
+
+        Vector3 endPosition =
+            policeEntranceTarget != null
+                ? policeEntranceTarget.position
+                : (hasPoliceOriginalTransform
+                    ? policeOriginalPosition
+                    : firstPolice.position);
+
+        Quaternion endRotation =
+            hasPoliceOriginalTransform
+                ? policeOriginalRotation
+                : firstPolice.rotation;
+
+        Vector3 focusPosition =
+            GetEntranceFocusPosition(endPosition);
+
+        Vector3 awayFromFocus =
+            endPosition - focusPosition;
+
         awayFromFocus.y = 0f;
 
         if (awayFromFocus.sqrMagnitude < 0.01f)
@@ -6588,68 +7076,397 @@ public class Chapter1PerformanceController : MonoBehaviour
             awayFromFocus = Vector3.back;
         }
 
-        Vector3 startPosition = endPosition + awayFromFocus.normalized * Mathf.Max(1f, policeEntranceDistance);
-        Vector3 pathDirection = endPosition - startPosition;
+        Vector3 startPosition =
+            endPosition
+            + awayFromFocus.normalized
+                * Mathf.Max(1f, policeEntranceDistance);
+
+        Vector3 pathDirection =
+            endPosition - startPosition;
+
         pathDirection.y = 0f;
 
-        Vector3 sideDirection = Vector3.Cross(Vector3.up, pathDirection.sqrMagnitude > 0.01f ? pathDirection.normalized : Vector3.forward);
+        Vector3 normalizedPath =
+            pathDirection.sqrMagnitude > 0.01f
+                ? pathDirection.normalized
+                : Vector3.forward;
+
+        Vector3 sideDirection =
+            Vector3.Cross(
+                Vector3.up,
+                normalizedPath);
+
         if (sideDirection.sqrMagnitude < 0.01f)
         {
             sideDirection = Vector3.right;
         }
 
         sideDirection.Normalize();
-        float halfSpacing = Mathf.Max(0.15f, policePairSpacing) * 0.5f;
-        Vector3 firstStart = startPosition - sideDirection * halfSpacing;
-        Vector3 firstEnd = endPosition - sideDirection * halfSpacing;
-        Vector3 secondStart = startPosition + sideDirection * halfSpacing;
-        Vector3 secondEnd = endPosition + sideDirection * halfSpacing;
+
+        float halfSpacing =
+            Mathf.Max(0.15f, policePairSpacing)
+                * 0.5f;
+
+        Vector3 firstStart =
+            startPosition
+            - sideDirection * halfSpacing;
+
+        Vector3 firstEnd =
+            endPosition
+            - sideDirection * halfSpacing;
+
+        Vector3 secondStart =
+            startPosition
+            + sideDirection * halfSpacing;
+
+        Vector3 secondEnd =
+            endPosition
+            + sideDirection * halfSpacing;
 
         SetActiveIncludingParents(firstPolice);
         firstPolice.position = firstStart;
-        PlayAnimatorStateIfAvailable(firstPolice, policeWalkStateName);
 
         if (secondPolice != null)
         {
             SetActiveIncludingParents(secondPolice);
             secondPolice.position = secondStart;
-            PlayAnimatorStateIfAvailable(secondPolice, policeWalkStateName);
         }
 
         Quaternion walkingRotation = endRotation;
-        if (rotatePoliceTowardPath && pathDirection.sqrMagnitude > 0.01f)
+
+        if (rotatePoliceTowardPath
+            && pathDirection.sqrMagnitude > 0.01f)
         {
-            walkingRotation = Quaternion.LookRotation(pathDirection.normalized, Vector3.up);
+            walkingRotation =
+                Quaternion.LookRotation(
+                    normalizedPath,
+                    Vector3.up);
+
             firstPolice.rotation = walkingRotation;
+
             if (secondPolice != null)
             {
                 secondPolice.rotation = walkingRotation;
             }
         }
 
-        Chapter1PoliceRunAnimator firstRun = BeginPoliceRiggedRun(firstPolice, 0f);
-        Chapter1PoliceRunAnimator secondRun = BeginPoliceRiggedRun(secondPolice, Mathf.PI);
+        bool firstHasWalk =
+            HasAnimatorState(firstPolice, policeWalkStateName);
 
-        float requestedDuration = IsNewPoliceScene()
-            ? newPoliceSceneRunDuration
-            : policeEntranceDuration;
-        float duration = Mathf.Max(0.5f, requestedDuration);
-        float stagger = secondPolice != null ? Mathf.Max(0f, policeEntranceStaggerSeconds) : 0f;
+        bool secondHasWalk =
+            secondPolice == null
+                || HasAnimatorState(secondPolice, policeWalkStateName);
+
+        bool useAnimatorWalk =
+            preferAnimatorWalkForPoliceEntrance
+            && firstHasWalk
+            && secondHasWalk;
+
+        if (useAnimatorWalk)
+        {
+            // 兩名警察故意用不同的動畫相位與速度，避免完全同步。
+            PlayPoliceWalkAnimation(
+                firstPolice,
+                0f,
+                policeFirstWalkAnimatorSpeed);
+
+            if (secondPolice != null)
+            {
+                PlayPoliceWalkAnimation(
+                    secondPolice,
+                    policeSecondWalkAnimationPhase,
+                    policeSecondWalkAnimatorSpeed);
+            }
+        }
+        else
+        {
+            // 沒有真正 Walk 動畫時才用程序步態，避免角色只是平移。
+            PlayAnimatorStateIfAvailable(firstPolice, policeWalkStateName);
+
+            if (secondPolice != null)
+            {
+                PlayAnimatorStateIfAvailable(secondPolice, policeWalkStateName);
+            }
+        }
+
+        Chapter1PoliceRunAnimator firstRun = null;
+        Chapter1PoliceRunAnimator secondRun = null;
+
+        if (!useAnimatorWalk
+            && useProceduralPoliceWalkFallback)
+        {
+            float cachedCadence = policeRunCadence;
+            float cachedLegSwing = policeRunLegSwing;
+            float cachedKneeBend = policeRunKneeBend;
+            float cachedArmSwing = policeRunArmSwing;
+            float cachedLean = policeRunForwardLeanDegrees;
+
+            policeRunCadence = policeWalkCadence;
+            policeRunLegSwing = policeWalkLegSwing;
+            policeRunKneeBend = policeWalkKneeBend;
+            policeRunArmSwing = policeWalkArmSwing;
+            policeRunForwardLeanDegrees = policeWalkForwardLeanDegrees;
+
+            firstRun = BeginPoliceRiggedRun(firstPolice, 0f);
+            secondRun = BeginPoliceRiggedRun(secondPolice, Mathf.PI * 0.65f);
+
+            policeRunCadence = cachedCadence;
+            policeRunLegSwing = cachedLegSwing;
+            policeRunKneeBend = cachedKneeBend;
+            policeRunArmSwing = cachedArmSwing;
+            policeRunForwardLeanDegrees = cachedLean;
+        }
+
+        float requestedDuration =
+            IsNewPoliceScene()
+                ? newPoliceSceneRunDuration
+                : policeEntranceDuration;
+
+        // 走步比跑步要更穩、更慢。
+        float duration =
+            Mathf.Max(1.8f, requestedDuration + 0.55f);
+
+        float stagger =
+            secondPolice != null
+                ? Mathf.Max(0.12f, policeEntranceStaggerSeconds)
+                : 0f;
+
         float totalDuration = duration + stagger;
         float elapsed = 0f;
 
-        ShowLine("旁白", "兩名日警突然從山路闖入婚禮會場，族人的歌聲瞬間停下。", totalDuration);
+        Transform playerView = GetPlayerViewTransform();
+
+        bool aerialCamera =
+            usePoliceCinematicCamera
+            && usePoliceEntranceAerialIntro
+            && playerView != null;
+
+        bool trackingCamera =
+            usePoliceCinematicCamera
+            && !usePoliceEntranceAerialIntro
+            && usePoliceEntranceTrackingCamera
+            && playerView != null;
+
+        Vector3 originalViewPosition =
+            playerView != null ? playerView.position : Vector3.zero;
+
+        Quaternion originalViewRotation =
+            playerView != null ? playerView.rotation : Quaternion.identity;
+
+        Vector3 originalViewLocalPosition =
+            playerView != null ? playerView.localPosition : Vector3.zero;
+
+        Quaternion originalViewLocalRotation =
+            playerView != null ? playerView.localRotation : Quaternion.identity;
+
+        List<Behaviour> trackedPoseDrivers = null;
+
+        if ((aerialCamera || trackingCamera)
+            && playerView != null)
+        {
+            trackedPoseDrivers =
+                DisableCameraTrackedPoseDrivers(playerView);
+        }
+
+        ShowLine(
+            "旁白",
+            "遠處的山路上，兩名日警正朝著婚禮會場緩步逼近。",
+            totalDuration);
+
+        Vector3 aerialAnchorCenter =
+            secondPolice != null
+                ? (firstStart + secondStart) * 0.5f
+                : firstStart;
+
+        Vector3 aerialStartPosition =
+            GetPoliceAerialCameraPosition(
+                aerialAnchorCenter,
+                normalizedPath,
+                sideDirection);
+
+        Vector3 aerialStartLookPoint =
+            aerialAnchorCenter
+            + Vector3.up * Mathf.Max(0.5f, policeAerialLookHeight);
+
+        Quaternion aerialStartRotation =
+            Quaternion.LookRotation(
+                (aerialStartLookPoint - aerialStartPosition).normalized,
+                Vector3.up);
 
         while (elapsed < totalDuration)
         {
             elapsed += Time.deltaTime;
-            float firstProgress = Mathf.Clamp01(elapsed / duration);
-            firstPolice.position = Vector3.Lerp(firstStart, firstEnd, Mathf.SmoothStep(0f, 1f, firstProgress));
+
+            float firstProgress =
+                Mathf.Clamp01(elapsed / duration);
+
+            float secondProgress =
+                secondPolice != null
+                    ? Mathf.Clamp01(
+                        (elapsed - stagger)
+                        / (duration / Mathf.Max(0.6f, policeSecondarySpeedScale)))
+                    : 0f;
+
+            // 走步不要完全一模一樣：加非常小的左右開闔與相位差。
+            float firstDrift =
+                Mathf.Sin(
+                    elapsed * Mathf.PI * Mathf.Max(0.6f, policeWalkCadence))
+                * policeNaturalLateralDrift;
+
+            float secondDrift =
+                Mathf.Sin(
+                    elapsed * Mathf.PI * Mathf.Max(0.6f, policeWalkCadence)
+                    + Mathf.PI * 0.65f)
+                * policeNaturalLateralDrift;
+
+            Vector3 firstBase =
+                Vector3.Lerp(
+                    firstStart,
+                    firstEnd,
+                    Mathf.SmoothStep(0f, 1f, firstProgress));
+
+            firstPolice.position =
+                firstBase + sideDirection * firstDrift;
 
             if (secondPolice != null)
             {
-                float secondProgress = Mathf.Clamp01((elapsed - stagger) / duration);
-                secondPolice.position = Vector3.Lerp(secondStart, secondEnd, Mathf.SmoothStep(0f, 1f, secondProgress));
+                Vector3 secondBase =
+                    Vector3.Lerp(
+                        secondStart,
+                        secondEnd,
+                        Mathf.SmoothStep(0f, 1f, secondProgress));
+
+                secondPolice.position =
+                    secondBase - sideDirection * secondDrift;
+            }
+
+            if (firstPolice != null)
+            {
+                firstPolice.rotation =
+                    Quaternion.Slerp(
+                        firstPolice.rotation,
+                        walkingRotation,
+                        Time.deltaTime * 8f);
+            }
+
+            if (secondPolice != null)
+            {
+                secondPolice.rotation =
+                    Quaternion.Slerp(
+                        secondPolice.rotation,
+                        walkingRotation,
+                        Time.deltaTime * 8f);
+            }
+
+            if ((aerialCamera || trackingCamera)
+                && playerView != null)
+            {
+                Vector3 policeCenter =
+                    secondPolice != null
+                        ? (firstPolice.position + secondPolice.position) * 0.5f
+                        : firstPolice.position;
+
+                Vector3 desiredCameraPosition;
+                Vector3 lookPoint;
+
+                if (aerialCamera)
+                {
+                    // 從天空慢慢看著警察進場，鏡頭只微微跟隨，不要太晃。
+                    Vector3 followOffset =
+                        (policeCenter - aerialAnchorCenter)
+                        * Mathf.Clamp01(policeAerialFollowStrength);
+
+                    float descentT = 0f;
+                    if (usePoliceAerialDescent)
+                    {
+                        float startT =
+                            Mathf.Clamp(
+                                policeAerialDescentStartNormalized,
+                                0f,
+                                0.9f);
+
+                        descentT =
+                            Mathf.SmoothStep(
+                                0f,
+                                1f,
+                                Mathf.Clamp01(
+                                    (firstProgress - startT)
+                                    / Mathf.Max(0.01f, 1f - startT)));
+                    }
+
+                    float currentAerialHeight =
+                        Mathf.Lerp(
+                            policeAerialHeight,
+                            Mathf.Max(2f, policeAerialEndHeight),
+                            descentT);
+
+                    float currentAerialBackOffset =
+                        Mathf.Lerp(
+                            policeAerialBackOffset,
+                            Mathf.Max(0.5f, policeAerialEndBackOffset),
+                            descentT);
+
+                    desiredCameraPosition =
+                        aerialAnchorCenter
+                        + followOffset
+                        - normalizedPath * currentAerialBackOffset
+                        + sideDirection * policeAerialSideOffset
+                        + Vector3.up * currentAerialHeight;
+
+                    lookPoint =
+                        policeCenter
+                        + Vector3.up * Mathf.Max(0.5f, policeAerialLookHeight);
+
+                    float blend =
+                        Mathf.SmoothStep(
+                            0f,
+                            1f,
+                            Mathf.Clamp01(
+                                elapsed / Mathf.Max(0.05f, policeAerialBlendSeconds)));
+
+                    Quaternion desiredRotation =
+                        Quaternion.LookRotation(
+                            (lookPoint - desiredCameraPosition).normalized,
+                            Vector3.up);
+
+                    playerView.SetPositionAndRotation(
+                        Vector3.Lerp(
+                            originalViewPosition,
+                            desiredCameraPosition,
+                            blend),
+                        Quaternion.Slerp(
+                            originalViewRotation,
+                            desiredRotation,
+                            blend));
+                }
+                else
+                {
+                    desiredCameraPosition =
+                        policeCenter
+                        - normalizedPath * Mathf.Max(0.5f, policeTrackingBackOffset)
+                        + sideDirection * policeTrackingSideOffset
+                        + Vector3.up * policeTrackingHeight;
+
+                    lookPoint = policeCenter + Vector3.up * 1.25f;
+
+                    Vector3 lookDirection = lookPoint - desiredCameraPosition;
+
+                    Quaternion desiredCameraRotation =
+                        lookDirection.sqrMagnitude > 0.001f
+                            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
+                            : playerView.rotation;
+
+                    float blend =
+                        Mathf.SmoothStep(
+                            0f,
+                            1f,
+                            Mathf.Clamp01(
+                                elapsed / Mathf.Max(0.05f, policeTrackingBlendSeconds)));
+
+                    playerView.SetPositionAndRotation(
+                        Vector3.Lerp(originalViewPosition, desiredCameraPosition, blend),
+                        Quaternion.Slerp(originalViewRotation, desiredCameraRotation, blend));
+                }
             }
 
             yield return null;
@@ -6657,15 +7474,56 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         firstPolice.position = firstEnd;
         firstPolice.rotation = endRotation;
+
         EndPoliceRiggedRun(firstRun);
+        ResetPoliceAnimatorSpeed(firstPolice);
         PlayAnimatorStateIfAvailable(firstPolice, policeIdleStateName);
 
         if (secondPolice != null)
         {
             secondPolice.position = secondEnd;
             secondPolice.rotation = endRotation;
+
             EndPoliceRiggedRun(secondRun);
+            ResetPoliceAnimatorSpeed(secondPolice);
             PlayAnimatorStateIfAvailable(secondPolice, policeIdleStateName);
+        }
+
+        if ((aerialCamera || trackingCamera)
+            && playerView != null)
+        {
+            if (returnCameraAfterPoliceEntrance)
+            {
+                Vector3 endTrackedPosition = playerView.position;
+                Quaternion endTrackedRotation = playerView.rotation;
+
+                float returnDuration =
+                    Mathf.Max(0.05f, policeTrackingReturnSeconds);
+
+                float returnElapsed = 0f;
+
+                while (returnElapsed < returnDuration)
+                {
+                    returnElapsed += Time.deltaTime;
+
+                    float t =
+                        Mathf.SmoothStep(
+                            0f,
+                            1f,
+                            Mathf.Clamp01(returnElapsed / returnDuration));
+
+                    playerView.SetPositionAndRotation(
+                        Vector3.Lerp(endTrackedPosition, originalViewPosition, t),
+                        Quaternion.Slerp(endTrackedRotation, originalViewRotation, t));
+
+                    yield return null;
+                }
+            }
+
+            playerView.localPosition = originalViewLocalPosition;
+            playerView.localRotation = originalViewLocalRotation;
+
+            RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
         }
     }
 
@@ -6861,6 +7719,8 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void ShowConflictChoice()
     {
+        // 劇情自動播到這裡才停下，讓玩家做一次真正的選擇。
+        cinematicStoryPlaying = false;
         SetPlayerControl(false);
         waitingForChoice = true;
         choiceQuestion = "你要怎麼做？";
@@ -6901,6 +7761,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         choiceResolved = true;
         waitingForChoice = false;
         lastChoice = choice;
+
+        // 玩家選完後，後續分支與結尾繼續自動播放。
+        if (autoPlayCinematicStoryAfterWeddingTasks)
+        {
+            cinematicStoryPlaying = true;
+        }
 
         if (choiceUI != null)
         {
@@ -6973,6 +7839,299 @@ public class Chapter1PerformanceController : MonoBehaviour
         chapterCompleted = true;
         yield return new WaitForSeconds(3f);
         yield return Fade(0f, 1f, 1.5f);
+        cinematicStoryPlaying = false;
+    }
+
+    private IEnumerator CinematicCupCloseUpAndShoveVillagerFallback()
+    {
+        if (ceremonyCup == null)
+        {
+            yield return KnockCupAndShoveVillagerFallback();
+            yield break;
+        }
+
+        Transform playerView =
+            GetPlayerViewTransform();
+
+        if (playerView == null
+            || !usePoliceCinematicCamera)
+        {
+            yield return KnockCupAndShoveVillagerFallback();
+            yield break;
+        }
+
+        Vector3 originalViewPosition =
+            playerView.position;
+
+        Quaternion originalViewRotation =
+            playerView.rotation;
+
+        Vector3 originalViewLocalPosition =
+            playerView.localPosition;
+
+        Quaternion originalViewLocalRotation =
+            playerView.localRotation;
+
+        List<Behaviour> trackedPoseDrivers =
+            DisableCameraTrackedPoseDrivers(
+                playerView);
+
+        Vector3 cupPosition =
+            ceremonyCup.position;
+
+        // 優先從玩家原本所在方向看酒杯，
+        // 避免突然跳到桌子另一側。
+        Vector3 cameraSide =
+            originalViewPosition
+            - cupPosition;
+
+        cameraSide.y = 0f;
+
+        if (cameraSide.sqrMagnitude < 0.01f
+            && primaryPoliceActor != null)
+        {
+            cameraSide =
+                -primaryPoliceActor.forward;
+
+            cameraSide.y = 0f;
+        }
+
+        if (cameraSide.sqrMagnitude < 0.01f)
+        {
+            cameraSide =
+                Vector3.back;
+        }
+
+        cameraSide.Normalize();
+
+        Vector3 closeUpPosition =
+            cupPosition
+            + cameraSide
+                * Mathf.Max(
+                    0.25f,
+                    cupCloseUpDistance)
+            + Vector3.up
+                * cupCloseUpHeight;
+
+        Vector3 lookPoint =
+            cupPosition
+            + Vector3.up * 0.04f;
+
+        Vector3 lookDirection =
+            lookPoint
+            - closeUpPosition;
+
+        Quaternion closeUpRotation =
+            lookDirection.sqrMagnitude > 0.001f
+                ? Quaternion.LookRotation(
+                    lookDirection.normalized,
+                    Vector3.up)
+                : originalViewRotation;
+
+        // 切進酒杯特寫。
+        float moveDuration =
+            Mathf.Max(
+                0.05f,
+                cupCloseUpMoveSeconds);
+
+        float elapsed = 0f;
+
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(
+                        elapsed / moveDuration));
+
+            playerView.SetPositionAndRotation(
+                Vector3.Lerp(
+                    originalViewPosition,
+                    closeUpPosition,
+                    t),
+                Quaternion.Slerp(
+                    originalViewRotation,
+                    closeUpRotation,
+                    t));
+
+            yield return null;
+        }
+
+        playerView.SetPositionAndRotation(
+            closeUpPosition,
+            closeUpRotation);
+
+        ShowLine(
+            "旁白",
+            "日警的手掃向桌邊。",
+            Mathf.Max(
+                0.8f,
+                cupCloseUpBeforeImpactSeconds
+                + 0.55f));
+
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0f,
+                cupCloseUpBeforeImpactSeconds));
+
+        // 酒杯就在鏡頭前被掃落。
+        PlayPoliceEventClip(cupCrashClip);
+
+        if (ceremonyCupRigidbody != null)
+        {
+            ceremonyCupRigidbody.isKinematic =
+                false;
+
+            ceremonyCupRigidbody.useGravity =
+                true;
+
+            Vector3 forceDirection =
+                primaryPoliceActor != null
+                    ? primaryPoliceActor.forward
+                    : Vector3.forward;
+
+            ceremonyCupRigidbody.AddForce(
+                forceDirection * 1.6f
+                + Vector3.up * 0.55f,
+                ForceMode.Impulse);
+        }
+        else
+        {
+            ceremonyCup.Rotate(
+                Vector3.forward,
+                78f,
+                Space.Self);
+        }
+
+        // 酒杯落下後繼續維持特寫一小段時間。
+        float impactHold =
+            Mathf.Max(
+                0.1f,
+                cupCloseUpAfterImpactSeconds);
+
+        elapsed = 0f;
+
+        while (elapsed < impactHold)
+        {
+            elapsed += Time.deltaTime;
+
+            Vector3 dynamicLookPoint =
+                ceremonyCup != null
+                    ? ceremonyCup.position
+                    : lookPoint;
+
+            Vector3 dynamicDirection =
+                dynamicLookPoint
+                - playerView.position;
+
+            if (dynamicDirection.sqrMagnitude
+                > 0.001f)
+            {
+                playerView.rotation =
+                    Quaternion.LookRotation(
+                        dynamicDirection.normalized,
+                        Vector3.up);
+            }
+
+            yield return null;
+        }
+
+        // 回到原鏡頭。
+        Vector3 closeEndPosition =
+            playerView.position;
+
+        Quaternion closeEndRotation =
+            playerView.rotation;
+
+        float returnDuration =
+            Mathf.Max(
+                0.05f,
+                cupCloseUpReturnSeconds);
+
+        elapsed = 0f;
+
+        while (elapsed < returnDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(
+                        elapsed / returnDuration));
+
+            playerView.SetPositionAndRotation(
+                Vector3.Lerp(
+                    closeEndPosition,
+                    originalViewPosition,
+                    t),
+                Quaternion.Slerp(
+                    closeEndRotation,
+                    originalViewRotation,
+                    t));
+
+            yield return null;
+        }
+
+        playerView.localPosition =
+            originalViewLocalPosition;
+
+        playerView.localRotation =
+            originalViewLocalRotation;
+
+        RestoreCameraTrackedPoseDrivers(
+            trackedPoseDrivers);
+
+        // 酒杯特寫結束，立刻帶到被推開的族人。
+        if (shovedVillagerActor != null)
+        {
+            yield return CinematicPanTo(
+                shovedVillagerActor,
+                policeCameraPanSeconds * 0.65f);
+        }
+
+        ShowLine(
+            "旁白",
+            "一名族人上前質問，立刻被粗暴地推開。",
+            2.8f);
+
+        if (shovedVillagerActor != null)
+        {
+            Vector3 away =
+                shovedVillagerActor.position
+                - (primaryPoliceActor != null
+                    ? primaryPoliceActor.position
+                    : GetFireCenterPosition());
+
+            away.y = 0f;
+
+            if (away.sqrMagnitude < 0.01f)
+            {
+                away =
+                    -shovedVillagerActor.forward;
+            }
+
+            Vector3 destination =
+                shovedVillagerActor.position
+                + away.normalized
+                    * Mathf.Max(
+                        0.3f,
+                        shoveDistance);
+
+            yield return MoveTransform(
+                shovedVillagerActor,
+                destination,
+                0.45f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(
+                0.7f);
+        }
     }
 
     private IEnumerator KnockCupAndShoveVillagerFallback()
