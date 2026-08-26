@@ -4612,6 +4612,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8151244, y: 0.97970605, z: 0.8400576}
   m_Center: {x: -0.00040054315, y: 0.00007629396, z: -0.00007629395}
+--- !u!4 &524445187 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
+  m_PrefabInstance: {fileID: 778112066}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &542459750
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6837,7 +6842,7 @@ MonoBehaviour:
   namedAddedDancerHeightRatio: 1
   weddingReservedPlayerSlots: 1
   autoFitWeddingCircleToArmReach: 1
-  weddingNeighborSpacingArmMultiplier: 2.35
+  weddingNeighborSpacingArmMultiplier: 1.9
   weddingCircleRadius: 22
   weddingCircleTempoBpm: 88
   weddingCircleDegreesPerBeat: 1.65
@@ -6845,10 +6850,26 @@ MonoBehaviour:
   choiceUI: {fileID: 0}
   fadeCanvas: {fileID: 0}
   weddingAmbience: {fileID: 1634240005}
+  weddingVocals: {fileID: 0}
   tensionAmbience: {fileID: 145637399}
   heartbeatAudio: {fileID: 0}
   weddingMusicVolume: 0.005
+  weddingVocalsVolume: 0.22
   lockWeddingMusicVolumeUntilPolice: 1
+  lockWeddingVocalsVolumeUntilPolice: 1
+  hardCutWeddingAudioOnPolice: 1
+  receiverThanksVoice: {fileID: 0}
+  maleReceiverThanksVoice: {fileID: 8300000, guid: b62d479a9186a104eb4c4b42e54e2ffd, type: 3}
+  femaleReceiverThanksVoice: {fileID: 8300000, guid: bc0135b71249a3245aea6f84a6b7e854, type: 3}
+  wineReceiverThanksVoice: {fileID: 0}
+  foodReceiverThanksVoice: {fileID: 0}
+  receiverThanksVoiceVolume: 0.85
+  receiverThanksSpatialBlend: 0.35
+  receiverThanksMinDistance: 4
+  receiverThanksMaxDistance: 28
+  femaleThankYouTargets: []
+  maleThankYouTargets: []
+  autoDetectReceiverGenderByName: 1
   useStoryMusicCrossfade: 1
   storyMusicCrossfadeSeconds: 0.004
   tensionMusicTargetVolume: 0.22
@@ -6904,6 +6925,22 @@ MonoBehaviour:
   heldPropScale: 0.28
   lockPlayerDuringInteractionAnimation: 0
   manualWalkForItemTasks: 1
+  focusCameraOnReceiverDialogue: 1
+  receiverDialoguePanSeconds: 0.38
+  receiverDialogueHoldSeconds: 3
+  receiverDialogueReturnSeconds: 0.3
+  receiverFallbackFaceHeight: 1.55
+  receiverDialogueCameraDistance: 2.4
+  receiverDialogueUpperBodyBottomRatio: 0.4
+  receiverDialogueFramePadding: 1.3
+  receiverDialogueMaxCameraDistance: 8
+  playReceiverThankYouMotion: 1
+  preferAnimatorThankYouMotion: 1
+  receiverThankYouMotionSeconds: 1.05
+  receiverThankYouNodDegrees: 12
+  receiverThankYouHandLiftDegrees: 18
+  receiverThankYouNodCount: 1
+  receiverThankYouReturnStateName: Idle
   usePhysicalWeddingDelivery: 1
   physicalInteractKey: 101
   physicalInteractGamepadKey: 330
@@ -6919,7 +6956,7 @@ MonoBehaviour:
   wineDeliveryTargets:
   - {fileID: 1604896042}
   - {fileID: 657781937}
-  - {fileID: 1292406834}
+  - {fileID: 524445187}
   foodDeliveryTargets:
   - {fileID: 1196363490}
   - {fileID: 1558329872}
@@ -10110,11 +10147,6 @@ MonoBehaviour:
   minIntensity: 2.2
   maxIntensity: 3.8
   flickerSpeed: 6
---- !u!4 &1292406834 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
-  m_PrefabInstance: {fileID: 1028442460}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1300920460
 GameObject:
   m_ObjectHideFlags: 0
@@ -12568,7 +12600,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 7dd8e68e346da1343bd45d790d0245ae, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.005
+  m_Volume: 0.0005
   m_Pitch: 1
   Loop: 1
   Mute: 0

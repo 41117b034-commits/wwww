@@ -75,14 +75,67 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource weddingAmbience;
+
+    [Tooltip("族人唱歌的背景 Audio Source。可直接拖 Hierarchy 裡的 WeddingVocals；留空時會自動尋找。")]
+    public AudioSource weddingVocals;
+
     public AudioSource tensionAmbience;
     public AudioSource heartbeatAudio;
 
     [Header("Wedding Music Volume")]
-    [Tooltip("婚禮背景音樂固定音量。0.005 = 很小聲。")]
-    [Range(0f, 1f)] public float weddingMusicVolume = 0.005f;
-    [Tooltip("警察事件開始前，每幀把 Wedding Ambience 音量鎖在 Wedding Music Volume，避免進 Play 後被其他設定改回 1。")]
+    [Tooltip("婚禮鼓聲固定音量。這版預設 0.002，比原本 0.005 更小聲。")]
+    [Range(0f, 1f)] public float weddingMusicVolume = 0.002f;
+
+    [Tooltip("族人歌聲固定音量。")]
+    [Range(0f, 1f)] public float weddingVocalsVolume = 0.22f;
+
+    [Tooltip("警察事件開始前，每幀把鼓聲音量鎖住，避免 Play 後被其他設定改回 1。")]
     public bool lockWeddingMusicVolumeUntilPolice = true;
+
+    [Tooltip("警察事件開始前，每幀把族人歌聲音量鎖住。")]
+    public bool lockWeddingVocalsVolumeUntilPolice = true;
+
+    [Tooltip("警察進場時，鼓聲與歌聲立刻一起停掉，再播放緊張音樂。")]
+    public bool hardCutWeddingAudioOnPolice = true;
+
+    [Header("Receiver Thank You Voice")]
+    [Tooltip("保底『謝謝』語音。男女專用語音沒指定時才使用。")]
+    public AudioClip receiverThanksVoice;
+
+    [Tooltip("男性 NPC 收到物品時的『謝謝』語音。")]
+    public AudioClip maleReceiverThanksVoice;
+
+    [Tooltip("女性 NPC 收到物品時的『謝謝』語音。")]
+    public AudioClip femaleReceiverThanksVoice;
+
+    [Tooltip("送酒專用語音。男女專用語音都沒指定時才使用。")]
+    public AudioClip wineReceiverThanksVoice;
+
+    [Tooltip("收到食物專用語音。男女專用語音都沒指定時才使用。")]
+    public AudioClip foodReceiverThanksVoice;
+
+    [Range(0f, 1f)]
+    [Tooltip("謝謝語音音量。這版預設 1，會比上一版明顯大聲。")]
+    public float receiverThanksVoiceVolume = 1f;
+
+    [Range(0f, 1f)]
+    [Tooltip("0=完全2D，1=完全3D。預設0.35，仍有方向感但不會因距離衰減得太小聲。")]
+    public float receiverThanksSpatialBlend = 0.35f;
+
+    [Tooltip("3D 語音在這個距離內維持最大音量。")]
+    public float receiverThanksMinDistance = 4f;
+
+    [Tooltip("3D 語音最大可聽距離。")]
+    public float receiverThanksMaxDistance = 28f;
+
+    [Tooltip("手動指定女性 NPC。拖進來後一定使用 Female Receiver Thanks Voice。")]
+    public Transform[] femaleThankYouTargets;
+
+    [Tooltip("手動指定男性 NPC。拖進來後一定使用 Male Receiver Thanks Voice。")]
+    public Transform[] maleThankYouTargets;
+
+    [Tooltip("沒有手動指定性別時，依 NPC 名稱自動判斷『女、新娘、female、woman、girl』等關鍵字。")]
+    public bool autoDetectReceiverGenderByName = true;
 
     [Header("Story Music Transition")]
     public bool useStoryMusicCrossfade = true;
@@ -167,6 +220,28 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float receiverDialogueUpperBodyBottomRatio = 0.4f;
     public float receiverDialogueFramePadding = 1.3f;
     public float receiverDialogueMaxCameraDistance = 8f;
+
+    [Header("Receiver Thank You Motion")]
+    [Tooltip("NPC 收到酒或食物後，自動做感謝動作。")]
+    public bool playReceiverThankYouMotion = true;
+
+    [Tooltip("如果 Animator 裡有 Thank / Thanks / ThankYou / Bow / Wave / Talk，優先使用現成動畫。")]
+    public bool preferAnimatorThankYouMotion = true;
+
+    [Tooltip("感謝動作長度。")]
+    public float receiverThankYouMotionSeconds = 1.05f;
+
+    [Tooltip("沒有現成動畫時的點頭角度。")]
+    public float receiverThankYouNodDegrees = 11f;
+
+    [Tooltip("沒有現成動畫時，右手會微微抬起，像收到東西後致意。")]
+    public float receiverThankYouHandLiftDegrees = 18f;
+
+    [Range(1, 2)]
+    public int receiverThankYouNodCount = 1;
+
+    [Tooltip("感謝動畫完成後回到哪個 Animator State。")]
+    public string receiverThankYouReturnStateName = "Idle";
 
     [Header("Physical Wedding Delivery - Recommended")]
     [Tooltip("最佳版：玩家先走到酒/食物旁拿取，再自己走到 NPC 旁交付。完全不移動 XR Origin。")]
@@ -437,7 +512,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         RepairInteractionHudRuntimeDefaults();
         EnsureNarrationAudioSource();
+        EnsureWeddingVocalsReference();
         ApplyWeddingMusicVolume();
+        ApplyWeddingVocalsVolume();
 
         if (choiceUI != null)
         {
@@ -518,11 +595,32 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void LateUpdate()
     {
-        // 婚禮階段固定背景音量，防止 Play 後被其他腳本、
-        // Animator / Timeline 或序列化舊值改回 1。
-        if (lockWeddingMusicVolumeUntilPolice && !policeSequenceStarted)
+        // 婚禮階段固定背景音量，避免序列化舊值或其他腳本把音量改回去。
+        if (!policeSequenceStarted)
         {
-            ApplyWeddingMusicVolume();
+            if (lockWeddingMusicVolumeUntilPolice)
+            {
+                ApplyWeddingMusicVolume();
+            }
+
+            if (lockWeddingVocalsVolumeUntilPolice)
+            {
+                ApplyWeddingVocalsVolume();
+            }
+        }
+    }
+
+    private void EnsureWeddingVocalsReference()
+    {
+        if (weddingVocals != null)
+        {
+            return;
+        }
+
+        GameObject vocalsObject = GameObject.Find("WeddingVocals");
+        if (vocalsObject != null)
+        {
+            weddingVocals = vocalsObject.GetComponent<AudioSource>();
         }
     }
 
@@ -534,6 +632,18 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         weddingAmbience.volume = Mathf.Clamp01(weddingMusicVolume);
+    }
+
+    private void ApplyWeddingVocalsVolume()
+    {
+        if (weddingVocals == null)
+        {
+            return;
+        }
+
+        weddingVocals.volume = Mathf.Clamp01(weddingVocalsVolume);
+        weddingVocals.loop = true;
+        weddingVocals.spatialBlend = 0f;
     }
 
     private void OnGUI()
@@ -796,7 +906,20 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (weddingAmbience != null && !weddingAmbience.isPlaying)
         {
             ApplyWeddingMusicVolume();
+            weddingAmbience.loop = true;
             weddingAmbience.Play();
+        }
+
+        EnsureWeddingVocalsReference();
+        if (weddingVocals != null)
+        {
+            ApplyWeddingVocalsVolume();
+            weddingVocals.playOnAwake = false;
+
+            if (!weddingVocals.isPlaying)
+            {
+                weddingVocals.Play();
+            }
         }
 
         openingStoryPlaying = false;
@@ -2850,11 +2973,15 @@ public class Chapter1PerformanceController : MonoBehaviour
         morale++;
 
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "賓客" : npcName;
+
+        // NPC 收到酒後：先出聲 + 做感謝動作。
+        PlayReceiverThankYouFeedback(receiverTarget, true);
+
         PlayGiveItemAnimation(
             true,
             "你拿起酒杯，走向賓客。",
             speaker,
-            "哈哈，這杯我收下了。願祖靈庇佑新人。",
+            "謝謝你，這杯我收下了。願祖靈庇佑新人。",
             receiverTarget);
 
         int shownCount = Mathf.Min(deliveredWineCount, target);
@@ -2904,6 +3031,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         morale++;
 
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "族人" : npcName;
+
+        // NPC 收到食物後：先出聲 + 做感謝動作。
+        PlayReceiverThankYouFeedback(receiverTarget, false);
+
         PlayGiveItemAnimation(
             false,
             "你從火堆旁拿起食物，走向族人。",
@@ -3059,6 +3190,458 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return fallbackPrompt;
+    }
+
+    private void PlayReceiverThankYouFeedback(Transform receiverTarget, bool isWine)
+    {
+        if (receiverTarget == null)
+        {
+            return;
+        }
+
+        bool isFemale =
+            IsFemaleThankYouReceiver(receiverTarget);
+
+        AudioClip selectedClip = null;
+
+        // 優先：男女專屬語音。
+        if (isFemale && femaleReceiverThanksVoice != null)
+        {
+            selectedClip = femaleReceiverThanksVoice;
+        }
+        else if (!isFemale && maleReceiverThanksVoice != null)
+        {
+            selectedClip = maleReceiverThanksVoice;
+        }
+
+        // 第二順位：送酒 / 食物專用語音。
+        if (selectedClip == null)
+        {
+            selectedClip =
+                isWine
+                    ? wineReceiverThanksVoice
+                    : foodReceiverThanksVoice;
+        }
+
+        // 最後保底：共用謝謝語音。
+        if (selectedClip == null)
+        {
+            selectedClip = receiverThanksVoice;
+        }
+
+        if (selectedClip != null)
+        {
+            Transform receiverRoot =
+                GetDeliveryActorRoot(receiverTarget);
+
+            if (receiverRoot == null)
+            {
+                receiverRoot = receiverTarget;
+            }
+
+            Vector3 voicePosition =
+                GetReceiverFacePosition(receiverRoot);
+
+            StartCoroutine(
+                PlayReceiverThanksVoiceAtPosition(
+                    selectedClip,
+                    voicePosition));
+        }
+
+        if (playReceiverThankYouMotion)
+        {
+            StartCoroutine(
+                PlayReceiverThankYouMotionRoutine(
+                    receiverTarget));
+        }
+    }
+
+    private bool IsFemaleThankYouReceiver(Transform receiverTarget)
+    {
+        if (receiverTarget == null)
+        {
+            return false;
+        }
+
+        Transform receiverRoot =
+            GetDeliveryActorRoot(receiverTarget);
+
+        if (receiverRoot == null)
+        {
+            receiverRoot = receiverTarget;
+        }
+
+        // 手動指定優先。
+        if (IsTransformInReceiverList(receiverRoot, femaleThankYouTargets)
+            || IsTransformInReceiverList(receiverTarget, femaleThankYouTargets))
+        {
+            return true;
+        }
+
+        if (IsTransformInReceiverList(receiverRoot, maleThankYouTargets)
+            || IsTransformInReceiverList(receiverTarget, maleThankYouTargets))
+        {
+            return false;
+        }
+
+        if (!autoDetectReceiverGenderByName)
+        {
+            return false;
+        }
+
+        string combinedName =
+            (receiverRoot.name + " " + receiverTarget.name)
+            .ToLowerInvariant();
+
+        string[] femaleKeywords =
+        {
+            "女",
+            "新娘",
+            "female",
+            "woman",
+            "girl",
+            "bride",
+            "mother",
+            "sister",
+            "mom",
+            "woman"
+        };
+
+        for (int i = 0; i < femaleKeywords.Length; i++)
+        {
+            if (combinedName.Contains(femaleKeywords[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsTransformInReceiverList(
+        Transform candidate,
+        Transform[] list)
+    {
+        if (candidate == null
+            || list == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < list.Length; i++)
+        {
+            Transform assigned = list[i];
+
+            if (assigned == null)
+            {
+                continue;
+            }
+
+            if (candidate == assigned
+                || candidate.IsChildOf(assigned)
+                || assigned.IsChildOf(candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private IEnumerator PlayReceiverThanksVoiceAtPosition(
+        AudioClip clip,
+        Vector3 position)
+    {
+        if (clip == null)
+        {
+            yield break;
+        }
+
+        GameObject temp =
+            new GameObject("Chapter1_ReceiverThanksVoice");
+
+        temp.transform.position = position;
+
+        AudioSource source =
+            temp.AddComponent<AudioSource>();
+
+        source.clip = clip;
+        source.volume =
+            Mathf.Clamp01(
+                receiverThanksVoiceVolume);
+
+        source.spatialBlend =
+            Mathf.Clamp01(
+                receiverThanksSpatialBlend);
+
+        source.minDistance =
+            Mathf.Max(
+                0.1f,
+                receiverThanksMinDistance);
+
+        source.maxDistance =
+            Mathf.Max(
+                source.minDistance + 0.1f,
+                receiverThanksMaxDistance);
+
+        source.rolloffMode =
+            AudioRolloffMode.Logarithmic;
+
+        source.loop = false;
+        source.playOnAwake = false;
+        source.dopplerLevel = 0f;
+        source.priority = 64;
+
+        source.Play();
+
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0.1f,
+                clip.length + 0.15f));
+
+        if (temp != null)
+        {
+            Destroy(temp);
+        }
+    }
+
+    private IEnumerator PlayReceiverThanks2D(AudioClip clip, float volume)
+    {
+        if (clip == null)
+        {
+            yield break;
+        }
+
+        GameObject temp =
+            new GameObject("Chapter1_ReceiverThanksAudio");
+
+        AudioSource source =
+            temp.AddComponent<AudioSource>();
+
+        source.clip = clip;
+        source.volume = volume;
+        source.spatialBlend = 0f;
+        source.loop = false;
+        source.Play();
+
+        yield return new WaitForSeconds(
+            Mathf.Max(
+                0.1f,
+                clip.length + 0.1f));
+
+        if (temp != null)
+        {
+            Destroy(temp);
+        }
+    }
+
+    private IEnumerator PlayReceiverThankYouMotionRoutine(Transform receiverTarget)
+    {
+        if (receiverTarget == null)
+        {
+            yield break;
+        }
+
+        Transform receiverRoot =
+            GetDeliveryActorRoot(receiverTarget);
+
+        if (receiverRoot == null)
+        {
+            receiverRoot = receiverTarget;
+        }
+
+        Animator animator =
+            receiverRoot.GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator =
+                receiverRoot.GetComponentInParent<Animator>();
+        }
+
+        float duration =
+            Mathf.Max(
+                0.4f,
+                receiverThankYouMotionSeconds);
+
+        // 1. 優先播放角色本來就有的感謝 / 鞠躬 / 揮手動作。
+        if (preferAnimatorThankYouMotion
+            && animator != null
+            && animator.runtimeAnimatorController != null)
+        {
+            string[] candidates =
+            {
+                "Thank",
+                "Thanks",
+                "ThankYou",
+                "Bow",
+                "Wave",
+                "Talk"
+            };
+
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                int stateHash =
+                    Animator.StringToHash(
+                        candidates[i]);
+
+                if (!animator.HasState(0, stateHash))
+                {
+                    continue;
+                }
+
+                animator.applyRootMotion = false;
+                animator.CrossFade(stateHash, 0.12f, 0);
+
+                yield return new WaitForSeconds(duration);
+
+                string returnState =
+                    string.IsNullOrWhiteSpace(receiverThankYouReturnStateName)
+                        ? deliveryTargetIdleStateName
+                        : receiverThankYouReturnStateName.Trim();
+
+                if (!string.IsNullOrWhiteSpace(returnState))
+                {
+                    int returnHash =
+                        Animator.StringToHash(
+                            returnState);
+
+                    if (animator.HasState(0, returnHash))
+                    {
+                        animator.CrossFade(
+                            returnHash,
+                            0.18f,
+                            0);
+                    }
+                }
+
+                yield break;
+            }
+        }
+
+        // 2. 沒有現成動畫：Humanoid 自動做「點頭 + 右手微抬」。
+        if (animator != null
+            && animator.avatar != null
+            && animator.avatar.isValid
+            && animator.isHuman)
+        {
+            Transform head =
+                animator.GetBoneTransform(
+                    HumanBodyBones.Head);
+
+            Transform rightUpperArm =
+                animator.GetBoneTransform(
+                    HumanBodyBones.RightUpperArm);
+
+            Transform rightForearm =
+                animator.GetBoneTransform(
+                    HumanBodyBones.RightLowerArm);
+
+            if (head != null
+                || rightUpperArm != null
+                || rightForearm != null)
+            {
+                float elapsed = 0f;
+                int nodCount =
+                    Mathf.Clamp(
+                        receiverThankYouNodCount,
+                        1,
+                        2);
+
+                while (elapsed < duration)
+                {
+                    // Animator 先更新，再疊加很小的致意動作。
+                    yield return new WaitForEndOfFrame();
+
+                    elapsed += Time.deltaTime;
+
+                    float t =
+                        Mathf.Clamp01(
+                            elapsed / duration);
+
+                    // 0 -> 動作最大 -> 0，最後自然回到原動畫。
+                    float envelope =
+                        Mathf.Sin(
+                            t * Mathf.PI);
+
+                    float nodWave =
+                        Mathf.Max(
+                            0f,
+                            Mathf.Sin(
+                                t
+                                * Mathf.PI
+                                * nodCount));
+
+                    if (head != null)
+                    {
+                        head.localRotation =
+                            head.localRotation
+                            * Quaternion.Euler(
+                                receiverThankYouNodDegrees
+                                * nodWave,
+                                0f,
+                                0f);
+                    }
+
+                    if (rightUpperArm != null)
+                    {
+                        rightUpperArm.localRotation =
+                            rightUpperArm.localRotation
+                            * Quaternion.Euler(
+                                0f,
+                                0f,
+                                -receiverThankYouHandLiftDegrees
+                                * 0.45f
+                                * envelope);
+                    }
+
+                    if (rightForearm != null)
+                    {
+                        rightForearm.localRotation =
+                            rightForearm.localRotation
+                            * Quaternion.Euler(
+                                -receiverThankYouHandLiftDegrees
+                                * envelope,
+                                0f,
+                                0f);
+                    }
+                }
+
+                yield break;
+            }
+        }
+
+        // 3. 非 Humanoid：至少做很小的上下致意，不讓 NPC 完全沒反應。
+        Vector3 originalPosition =
+            receiverRoot.position;
+
+        float fallbackElapsed = 0f;
+        while (fallbackElapsed < duration
+            && receiverRoot != null)
+        {
+            fallbackElapsed += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    fallbackElapsed / duration);
+
+            float dip =
+                Mathf.Sin(
+                    t * Mathf.PI)
+                * 0.025f;
+
+            receiverRoot.position =
+                originalPosition
+                - Vector3.up * dip;
+
+            yield return null;
+        }
+
+        if (receiverRoot != null)
+        {
+            receiverRoot.position =
+                originalPosition;
+        }
     }
 
     private void PlayGiveItemAnimation(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget = null)
@@ -5790,8 +6373,37 @@ public class Chapter1PerformanceController : MonoBehaviour
         EnsurePoliceActorsForIntrusion();
         SetMission("婚禮中斷：兩名日本警察闖入會場。");
 
-        if (useStoryMusicCrossfade)
+        if (hardCutWeddingAudioOnPolice)
         {
+            if (weddingAmbience != null)
+            {
+                weddingAmbience.Stop();
+            }
+
+            if (weddingVocals != null)
+            {
+                weddingVocals.Stop();
+            }
+
+            if (tensionAmbience != null)
+            {
+                tensionAmbience.loop = true;
+                tensionAmbience.playOnAwake = false;
+                tensionAmbience.volume = Mathf.Clamp01(tensionMusicTargetVolume);
+
+                if (!tensionAmbience.isPlaying)
+                {
+                    tensionAmbience.Play();
+                }
+            }
+        }
+        else if (useStoryMusicCrossfade)
+        {
+            if (weddingVocals != null)
+            {
+                weddingVocals.Stop();
+            }
+
             StartCoroutine(CrossfadeStoryMusic(
                 weddingAmbience,
                 tensionAmbience,
@@ -5803,6 +6415,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             if (weddingAmbience != null)
             {
                 weddingAmbience.Stop();
+            }
+
+            if (weddingVocals != null)
+            {
+                weddingVocals.Stop();
             }
 
             if (tensionAmbience != null)
