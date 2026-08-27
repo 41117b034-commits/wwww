@@ -265,6 +265,85 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Tooltip("感謝動畫完成後回到哪個 Animator State。")]
     public string receiverThankYouReturnStateName = "Idle";
 
+    [Header("Food Receiver Celebration Motion")]
+    [Tooltip("送食物時，NPC 會優先做比較開心、像慶祝的動作；沒有的話才回退到謝謝動作。")]
+    public bool foodReceiverPreferCelebrateMotion = true;
+
+    [Tooltip("診斷保底：送食物時無視 Inspector 舊值，強制播放可見慶祝動作。先保持勾選。")]
+    public bool forceFoodReceiverCelebration = true;
+
+    [Tooltip("診斷時在 Console 印出實際收到食物的 NPC 名稱與動作 Root。")]
+    public bool debugFoodReceiverCelebration = true;
+
+    [Tooltip("送食物時的動作長度。")]
+    public float foodReceiverCelebrateMotionSeconds = 1.25f;
+
+    [Tooltip("如果 Animator 有 Celebrate / Cheer / Happy / Clap / Dance，就優先播。")]
+    public bool preferAnimatorCelebrateMotionForFood = true;
+
+    [Tooltip("沒有現成動畫時，送食物時雙手抬起的角度。")]
+    public float foodReceiverCelebrateHandLiftDegrees = 28f;
+
+    [Tooltip("沒有現成動畫時，送食物時身體起伏高度。這版預設更明顯。")]
+    public float foodReceiverCelebrateBounceHeight = 0.08f;
+
+    [Tooltip("沒有現成動畫時，整個角色左右小幅擺動角度。")]
+    public float foodReceiverCelebrateBodySwayDegrees = 7f;
+
+    [Tooltip("沒有現成動畫時，角色會短暫放大一點，讓慶祝動作一定看得見。")]
+    public float foodReceiverCelebrateScalePulse = 0.035f;
+
+    [Range(1, 3)]
+    [Tooltip("送食物時點頭 / 開心節奏次數。")]
+    public int foodReceiverCelebrateNodCount = 2;
+
+    [Header("Receiver Face Player On Delivery")]
+    [Tooltip("玩家交付酒或食物時，NPC 會先自然轉身面向玩家。")]
+    public bool faceReceiverTowardPlayerOnDelivery = true;
+
+    [Tooltip("NPC 轉向玩家需要的時間。")]
+    public float receiverTurnToPlayerSeconds = 0.32f;
+
+    [Tooltip("交付後維持面向玩家多久，會涵蓋謝謝聲音、慶祝動作與對話。")]
+    public float receiverFacePlayerHoldSeconds = 4.2f;
+
+    [Tooltip("互動對話鏡頭期間不要再把 NPC 轉去其他方向。")]
+    public bool keepReceiverFacingPlayerDuringDialogue = true;
+
+    [Tooltip("動作結束後是否仍保持面向玩家。")]
+    public bool keepReceiverFacingPlayerAfterDelivery = true;
+
+    [Tooltip("只有模型本身正面軸仍然相反時才調整。正常保持 0。")]
+    public float receiverVisualForwardYawOffset = 0f;
+
+    [Tooltip("優先用左右肩膀位置判斷 Humanoid 的真正正面，比模型 Root.forward 更穩。")]
+    public bool autoDetectReceiverForwardFromShoulders = true;
+
+    [Tooltip("少數模型如果正面軸剛好相反，把那些 NPC 拖進來，會自動再補 180 度。")]
+    public Transform[] receiverReverseFacingTargets;
+
+    [Header("Natural Receiver Gesture")]
+    [Tooltip("不要再用跳躍/縮放假裝慶祝，改成上半身、頭部與手臂的自然動作。")]
+    public bool useNaturalReceiverGesture = true;
+
+    [Tooltip("如果 Animator 有真正的慶祝 State，可在這裡填名稱；留空就自動找 Celebrate/Cheer/Happy/Clap。")]
+    public string foodReceiverCustomAnimationState = "";
+
+    [Tooltip("自然感謝動作長度。")]
+    public float naturalReceiverGestureSeconds = 1.7f;
+
+    [Tooltip("收到食物時輕微鞠躬/前傾角度。")]
+    public float naturalReceiverChestBowDegrees = 6f;
+
+    [Tooltip("收到食物時點頭角度。")]
+    public float naturalReceiverHeadNodDegrees = 10f;
+
+    [Tooltip("收到食物時雙手往前抬的角度。")]
+    public float naturalReceiverArmForwardDegrees = 18f;
+
+    [Tooltip("收到食物時手肘再微微彎起。")]
+    public float naturalReceiverForearmDegrees = 14f;
+
     [Header("Physical Wedding Delivery - Recommended")]
     [Tooltip("最佳版：玩家先走到酒/食物旁拿取，再自己走到 NPC 旁交付。完全不移動 XR Origin。")]
     public bool usePhysicalWeddingDelivery = true;
@@ -1605,6 +1684,18 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         physicalDeliveryAnimating = true;
 
+        // 一交付就讓真正收到物品的 NPC 自然轉過來面向玩家，
+        // 並在謝謝 / 慶祝 / 對話期間持續保持這個方向。
+        if (faceReceiverTowardPlayerOnDelivery)
+        {
+            StartCoroutine(
+                HoldReceiverFacingPlayerRoutine(
+                    receiver,
+                    Mathf.Max(
+                        receiverFacePlayerHoldSeconds,
+                        receiverDialogueHoldSeconds + 1.1f)));
+        }
+
         GameObject prop = physicalCarriedProp;
         Vector3 start = prop.transform.position;
         Vector3 end = receiver.position + Vector3.up * 1.05f;
@@ -1641,6 +1732,15 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         else
         {
+            // 物理交付模式最保險的觸發點：
+            // 這裡的 receiver 就是玩家眼前真正收到食物的 NPC。
+            if (forceFoodReceiverCelebration)
+            {
+                StartCoroutine(
+                    ForceVisibleFoodCelebrationRoutine(
+                        receiver));
+            }
+
             ShareFood(receiver.name, receiver);
         }
 
@@ -3380,6 +3480,534 @@ public class Chapter1PerformanceController : MonoBehaviour
         return fallbackPrompt;
     }
 
+    private Vector3 GetReceiverVisualForward(Transform actorRoot)
+    {
+        if (actorRoot == null)
+        {
+            return Vector3.forward;
+        }
+
+        Animator animator =
+            actorRoot.GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator =
+                actorRoot.GetComponentInParent<Animator>();
+        }
+
+        Vector3 detectedForward = Vector3.zero;
+
+        if (animator != null
+            && animator.avatar != null
+            && animator.avatar.isValid
+            && animator.isHuman)
+        {
+            // 最穩：用左右肩膀位置推算真正正面。
+            if (autoDetectReceiverForwardFromShoulders)
+            {
+                Transform leftShoulder =
+                    animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+
+                Transform rightShoulder =
+                    animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+
+                if (leftShoulder != null && rightShoulder != null)
+                {
+                    Vector3 rightAxis =
+                        Vector3.ProjectOnPlane(
+                            rightShoulder.position - leftShoulder.position,
+                            Vector3.up);
+
+                    if (rightAxis.sqrMagnitude > 0.0001f)
+                    {
+                        // right × up = forward
+                        detectedForward =
+                            Vector3.Cross(
+                                rightAxis.normalized,
+                                Vector3.up).normalized;
+                    }
+                }
+            }
+
+            // 第二順位：腳掌 -> 腳趾。
+            if (detectedForward.sqrMagnitude < 0.001f)
+            {
+                Vector3 footForward = Vector3.zero;
+                int samples = 0;
+
+                Transform leftFoot =
+                    animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+                Transform leftToes =
+                    animator.GetBoneTransform(HumanBodyBones.LeftToes);
+                Transform rightFoot =
+                    animator.GetBoneTransform(HumanBodyBones.RightFoot);
+                Transform rightToes =
+                    animator.GetBoneTransform(HumanBodyBones.RightToes);
+
+                if (leftFoot != null && leftToes != null)
+                {
+                    Vector3 f =
+                        Vector3.ProjectOnPlane(
+                            leftToes.position - leftFoot.position,
+                            Vector3.up);
+
+                    if (f.sqrMagnitude > 0.0001f)
+                    {
+                        footForward += f.normalized;
+                        samples++;
+                    }
+                }
+
+                if (rightFoot != null && rightToes != null)
+                {
+                    Vector3 f =
+                        Vector3.ProjectOnPlane(
+                            rightToes.position - rightFoot.position,
+                            Vector3.up);
+
+                    if (f.sqrMagnitude > 0.0001f)
+                    {
+                        footForward += f.normalized;
+                        samples++;
+                    }
+                }
+
+                if (samples > 0 && footForward.sqrMagnitude > 0.001f)
+                {
+                    detectedForward = footForward.normalized;
+                }
+            }
+
+            // 最後才用 Animator.forward。
+            if (detectedForward.sqrMagnitude < 0.001f)
+            {
+                detectedForward =
+                    Vector3.ProjectOnPlane(
+                        animator.transform.forward,
+                        Vector3.up);
+            }
+        }
+
+        if (detectedForward.sqrMagnitude < 0.001f)
+        {
+            detectedForward =
+                Vector3.ProjectOnPlane(
+                    actorRoot.forward,
+                    Vector3.up);
+        }
+
+        if (detectedForward.sqrMagnitude < 0.001f)
+        {
+            detectedForward = Vector3.forward;
+        }
+
+        float extraYaw = receiverVisualForwardYawOffset;
+
+        if (IsTransformInReceiverList(
+            actorRoot,
+            receiverReverseFacingTargets))
+        {
+            extraYaw += 180f;
+        }
+
+        return Quaternion.AngleAxis(
+            extraYaw,
+            Vector3.up)
+            * detectedForward.normalized;
+    }
+
+    private Quaternion GetReceiverRotationFacingPosition(
+        Transform actorRoot,
+        Vector3 targetPosition)
+    {
+        if (actorRoot == null)
+        {
+            return Quaternion.identity;
+        }
+
+        Vector3 toPlayer =
+            Vector3.ProjectOnPlane(
+                targetPosition - actorRoot.position,
+                Vector3.up);
+
+        if (toPlayer.sqrMagnitude < 0.001f)
+        {
+            return actorRoot.rotation;
+        }
+
+        Vector3 visualForward =
+            GetReceiverVisualForward(actorRoot);
+
+        if (visualForward.sqrMagnitude < 0.001f)
+        {
+            return actorRoot.rotation;
+        }
+
+        float yaw =
+            Vector3.SignedAngle(
+                visualForward.normalized,
+                toPlayer.normalized,
+                Vector3.up);
+
+        return Quaternion.AngleAxis(
+            yaw,
+            Vector3.up)
+            * actorRoot.rotation;
+    }
+
+    private IEnumerator HoldReceiverFacingPlayerRoutine(
+        Transform receiverTarget,
+        float holdSeconds)
+    {
+        if (receiverTarget == null)
+        {
+            yield break;
+        }
+
+        Transform actorRoot =
+            GetDeliveryActorRoot(receiverTarget);
+
+        if (actorRoot == null)
+        {
+            actorRoot = receiverTarget;
+        }
+
+        Transform playerView =
+            GetPlayerViewTransform();
+
+        Vector3 playerPosition =
+            playerView != null
+                ? playerView.position
+                : GetCurrentPlayerPosition();
+
+        Quaternion startRotation =
+            actorRoot.rotation;
+
+        Quaternion facingRotation =
+            GetReceiverRotationFacingPosition(
+                actorRoot,
+                playerPosition);
+
+        Chapter1FaceFire[] faceFireComponents =
+            actorRoot.GetComponentsInChildren<Chapter1FaceFire>(true);
+
+        bool[] faceFireWasEnabled =
+            new bool[faceFireComponents.Length];
+
+        for (int i = 0; i < faceFireComponents.Length; i++)
+        {
+            Chapter1FaceFire faceFire = faceFireComponents[i];
+            if (faceFire == null)
+            {
+                continue;
+            }
+
+            faceFireWasEnabled[i] = faceFire.enabled;
+            faceFire.enabled = false;
+        }
+
+        float turnDuration =
+            Mathf.Max(
+                0.05f,
+                receiverTurnToPlayerSeconds);
+
+        float elapsed = 0f;
+
+        while (elapsed < turnDuration
+            && actorRoot != null)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(
+                        elapsed / turnDuration));
+
+            actorRoot.rotation =
+                Quaternion.Slerp(
+                    startRotation,
+                    facingRotation,
+                    t);
+
+            yield return null;
+        }
+
+        if (actorRoot == null)
+        {
+            yield break;
+        }
+
+        actorRoot.rotation = facingRotation;
+
+        Chapter1ReceiverFacingLock facingLock =
+            actorRoot.GetComponent<Chapter1ReceiverFacingLock>();
+
+        if (facingLock == null)
+        {
+            facingLock =
+                actorRoot.gameObject.AddComponent<Chapter1ReceiverFacingLock>();
+        }
+
+        facingLock.LockFacing(
+            facingRotation,
+            Mathf.Max(
+                0.5f,
+                holdSeconds));
+
+        float remaining =
+            Mathf.Max(
+                0f,
+                holdSeconds - turnDuration);
+
+        elapsed = 0f;
+
+        while (elapsed < remaining
+            && actorRoot != null)
+        {
+            elapsed += Time.deltaTime;
+
+            // 玩家在交付期間通常不會移很遠，但仍重新取玩家位置，
+            // 讓 NPC 保持自然地看著玩家，而不是看著舊位置。
+            playerView = GetPlayerViewTransform();
+
+            playerPosition =
+                playerView != null
+                    ? playerView.position
+                    : GetCurrentPlayerPosition();
+
+            facingRotation =
+                GetReceiverRotationFacingPosition(
+                    actorRoot,
+                    playerPosition);
+
+            actorRoot.rotation =
+                Quaternion.Slerp(
+                    actorRoot.rotation,
+                    facingRotation,
+                    Time.deltaTime * 9f);
+
+            if (facingLock != null)
+            {
+                facingLock.UpdateTargetRotation(
+                    facingRotation);
+            }
+
+            yield return null;
+        }
+
+        if (actorRoot != null)
+        {
+            if (keepReceiverFacingPlayerAfterDelivery)
+            {
+                actorRoot.rotation = facingRotation;
+            }
+            else
+            {
+                actorRoot.rotation = startRotation;
+            }
+        }
+
+        for (int i = 0; i < faceFireComponents.Length; i++)
+        {
+            Chapter1FaceFire faceFire = faceFireComponents[i];
+            if (faceFire != null)
+            {
+                faceFire.enabled = faceFireWasEnabled[i];
+            }
+        }
+    }
+
+    private IEnumerator ForceVisibleFoodCelebrationRoutine(Transform receiverTarget)
+    {
+        if (receiverTarget == null)
+        {
+            yield break;
+        }
+
+        Transform actorRoot =
+            GetDeliveryActorRoot(receiverTarget);
+
+        if (actorRoot == null)
+        {
+            actorRoot = receiverTarget;
+        }
+
+        Animator animator =
+            actorRoot.GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator =
+                actorRoot.GetComponentInParent<Animator>();
+        }
+
+        if (debugFoodReceiverCelebration)
+        {
+            Debug.Log(
+                "[Chapter1 FoodCelebrate] receiver="
+                + receiverTarget.name
+                + " actorRoot="
+                + actorRoot.name
+                + " animator="
+                + (animator != null ? animator.name : "None"));
+        }
+
+        float duration =
+            Mathf.Max(
+                0.8f,
+                naturalReceiverGestureSeconds);
+
+        // 1. 只有「真的存在」的動畫 State 才播放。
+        // 不再把 Talk 當慶祝動畫，避免找到一個幾乎不動的 Talk 後直接結束。
+        if (animator != null
+            && animator.runtimeAnimatorController != null)
+        {
+            List<string> candidates = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(foodReceiverCustomAnimationState))
+            {
+                candidates.Add(foodReceiverCustomAnimationState.Trim());
+            }
+
+            candidates.Add("Celebrate");
+            candidates.Add("Cheer");
+            candidates.Add("Happy");
+            candidates.Add("Clap");
+            candidates.Add("Wave");
+            candidates.Add("Thank");
+            candidates.Add("ThankYou");
+            candidates.Add("Bow");
+
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                string stateName = candidates[i];
+
+                if (string.IsNullOrWhiteSpace(stateName))
+                {
+                    continue;
+                }
+
+                int stateHash =
+                    Animator.StringToHash(stateName);
+
+                if (!animator.HasState(0, stateHash))
+                {
+                    continue;
+                }
+
+                animator.applyRootMotion = false;
+                animator.CrossFade(stateHash, 0.12f, 0);
+
+                if (debugFoodReceiverCelebration)
+                {
+                    Debug.Log(
+                        "[Chapter1 FoodCelebrate] 使用 Animator State："
+                        + stateName
+                        + " / NPC="
+                        + receiverTarget.name);
+                }
+
+                yield return new WaitForSeconds(duration);
+
+                string returnState =
+                    string.IsNullOrWhiteSpace(receiverThankYouReturnStateName)
+                        ? deliveryTargetIdleStateName
+                        : receiverThankYouReturnStateName.Trim();
+
+                if (!string.IsNullOrWhiteSpace(returnState))
+                {
+                    int returnHash =
+                        Animator.StringToHash(returnState);
+
+                    if (animator.HasState(0, returnHash))
+                    {
+                        animator.CrossFade(returnHash, 0.18f, 0);
+                    }
+                }
+
+                yield break;
+            }
+        }
+
+        // 2. 沒有真正動畫時，交給 LateUpdate Driver。
+        // LateUpdate 發生在 Animator 更新之後、畫面 Render 之前，
+        // 所以這次骨頭動作真的會出現在畫面上，不會再被 Animator 吃掉。
+        GameObject driverObject =
+            animator != null
+                ? animator.gameObject
+                : actorRoot.gameObject;
+
+        Chapter1ReceiverNaturalGestureDriver driver =
+            driverObject.GetComponent<Chapter1ReceiverNaturalGestureDriver>();
+
+        if (driver == null)
+        {
+            driver =
+                driverObject.AddComponent<Chapter1ReceiverNaturalGestureDriver>();
+        }
+
+        bool started =
+            driver.PlayGesture(
+                animator,
+                actorRoot,
+                duration,
+                naturalReceiverChestBowDegrees,
+                naturalReceiverHeadNodDegrees,
+                naturalReceiverArmForwardDegrees,
+                naturalReceiverForearmDegrees);
+
+        if (debugFoodReceiverCelebration)
+        {
+            Debug.Log(
+                "[Chapter1 FoodCelebrate] LateUpdate自然動作="
+                + started
+                + " / NPC="
+                + receiverTarget.name);
+        }
+
+        if (started)
+        {
+            yield return new WaitForSeconds(duration);
+            yield break;
+        }
+
+        // 3. 最後保底：如果模型不是 Humanoid，也至少做非常小的自然鞠躬。
+        Quaternion originalRotation = actorRoot.rotation;
+        float elapsed = 0f;
+
+        while (elapsed < duration
+            && actorRoot != null)
+        {
+            elapsed += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    elapsed / duration);
+
+            float envelope =
+                Mathf.Sin(t * Mathf.PI);
+
+            actorRoot.rotation =
+                originalRotation
+                * Quaternion.Euler(
+                    naturalReceiverChestBowDegrees
+                    * 0.55f
+                    * envelope,
+                    0f,
+                    0f);
+
+            yield return null;
+        }
+
+        if (actorRoot != null)
+        {
+            actorRoot.rotation = originalRotation;
+        }
+    }
+
     private void PlayReceiverThankYouFeedback(Transform receiverTarget, bool isWine)
     {
         if (receiverTarget == null)
@@ -3436,11 +4064,21 @@ public class Chapter1PerformanceController : MonoBehaviour
                     voicePosition));
         }
 
-        if (playReceiverThankYouMotion)
+        // 食物：直接強制可見慶祝，不再依賴 Inspector 舊的 Play Receiver Thank You Motion 值。
+        if (!isWine
+            && forceFoodReceiverCelebration
+            && !physicalDeliveryAnimating)
+        {
+            StartCoroutine(
+                ForceVisibleFoodCelebrationRoutine(
+                    receiverTarget));
+        }
+        else if (playReceiverThankYouMotion && isWine)
         {
             StartCoroutine(
                 PlayReceiverThankYouMotionRoutine(
-                    receiverTarget));
+                    receiverTarget,
+                    isWine));
         }
     }
 
@@ -3623,12 +4261,16 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayReceiverThankYouMotionRoutine(Transform receiverTarget)
+    private IEnumerator PlayReceiverThankYouMotionRoutine(
+        Transform receiverTarget,
+        bool isWine)
     {
         if (receiverTarget == null)
         {
             yield break;
         }
+
+        bool isFood = !isWine;
 
         Transform receiverRoot =
             GetDeliveryActorRoot(receiverTarget);
@@ -3650,185 +4292,251 @@ public class Chapter1PerformanceController : MonoBehaviour
         float duration =
             Mathf.Max(
                 0.4f,
-                receiverThankYouMotionSeconds);
+                isFood
+                    ? foodReceiverCelebrateMotionSeconds
+                    : receiverThankYouMotionSeconds);
 
-        // 1. 優先播放角色本來就有的感謝 / 鞠躬 / 揮手動作。
-        if (preferAnimatorThankYouMotion
-            && animator != null
+        // 1. 優先播放角色本來就有的動作。
+        if (animator != null
             && animator.runtimeAnimatorController != null)
         {
             string[] candidates =
-            {
-                "Thank",
-                "Thanks",
-                "ThankYou",
-                "Bow",
-                "Wave",
-                "Talk"
-            };
-
-            for (int i = 0; i < candidates.Length; i++)
-            {
-                int stateHash =
-                    Animator.StringToHash(
-                        candidates[i]);
-
-                if (!animator.HasState(0, stateHash))
-                {
-                    continue;
-                }
-
-                animator.applyRootMotion = false;
-                animator.CrossFade(stateHash, 0.12f, 0);
-
-                yield return new WaitForSeconds(duration);
-
-                string returnState =
-                    string.IsNullOrWhiteSpace(receiverThankYouReturnStateName)
-                        ? deliveryTargetIdleStateName
-                        : receiverThankYouReturnStateName.Trim();
-
-                if (!string.IsNullOrWhiteSpace(returnState))
-                {
-                    int returnHash =
-                        Animator.StringToHash(
-                            returnState);
-
-                    if (animator.HasState(0, returnHash))
+                isFood
+                    ? new string[]
                     {
-                        animator.CrossFade(
-                            returnHash,
-                            0.18f,
-                            0);
+                        "Celebrate",
+                        "Cheer",
+                        "Happy",
+                        "Clap",
+                        "Dance",
+                        "Wave",
+                        "Thank",
+                        "Thanks",
+                        "ThankYou",
+                        "Bow",
+                        "Talk"
                     }
-                }
+                    : new string[]
+                    {
+                        "Thank",
+                        "Thanks",
+                        "ThankYou",
+                        "Bow",
+                        "Wave",
+                        "Talk"
+                    };
 
-                yield break;
+            bool shouldPreferAnimator =
+                isFood
+                    ? preferAnimatorCelebrateMotionForFood
+                    : preferAnimatorThankYouMotion;
+
+            if (shouldPreferAnimator)
+            {
+                for (int i = 0; i < candidates.Length; i++)
+                {
+                    int stateHash =
+                        Animator.StringToHash(candidates[i]);
+
+                    if (!animator.HasState(0, stateHash))
+                    {
+                        continue;
+                    }
+
+                    animator.applyRootMotion = false;
+                    animator.CrossFade(stateHash, 0.12f, 0);
+
+                    yield return new WaitForSeconds(duration);
+
+                    string returnState =
+                        string.IsNullOrWhiteSpace(receiverThankYouReturnStateName)
+                            ? deliveryTargetIdleStateName
+                            : receiverThankYouReturnStateName.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(returnState))
+                    {
+                        int returnHash =
+                            Animator.StringToHash(returnState);
+
+                        if (animator.HasState(0, returnHash))
+                        {
+                            animator.CrossFade(
+                                returnHash,
+                                0.18f,
+                                0);
+                        }
+                    }
+
+                    yield break;
+                }
             }
         }
 
-        // 2. 沒有現成動畫：Humanoid 自動做「點頭 + 右手微抬」。
+        // 2. 沒有現成動畫時，直接做「一定看得到」的程式動作。
+        // 之前只改骨頭，有些匯入模型會被 Animator 每幀蓋掉，所以這版同時動角色 Visual Root。
+        Transform visualRoot = animator != null ? animator.transform : receiverRoot;
+
+        Vector3 originalVisualLocalPosition =
+            visualRoot != null ? visualRoot.localPosition : Vector3.zero;
+
+        Quaternion originalVisualLocalRotation =
+            visualRoot != null ? visualRoot.localRotation : Quaternion.identity;
+
+        Vector3 originalVisualLocalScale =
+            visualRoot != null ? visualRoot.localScale : Vector3.one;
+
+        Transform head = null;
+        Transform rightUpperArm = null;
+        Transform rightForearm = null;
+        Transform leftUpperArm = null;
+        Transform leftForearm = null;
+
         if (animator != null
             && animator.avatar != null
             && animator.avatar.isValid
             && animator.isHuman)
         {
-            Transform head =
-                animator.GetBoneTransform(
-                    HumanBodyBones.Head);
+            head = animator.GetBoneTransform(HumanBodyBones.Head);
+            rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            rightForearm = animator.GetBoneTransform(HumanBodyBones.RightLowerArm);
+            leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+            leftForearm = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+        }
 
-            Transform rightUpperArm =
-                animator.GetBoneTransform(
-                    HumanBodyBones.RightUpperArm);
+        float elapsed = 0f;
+        int beatCount =
+            Mathf.Clamp(
+                isFood ? foodReceiverCelebrateNodCount : receiverThankYouNodCount,
+                1,
+                3);
 
-            Transform rightForearm =
-                animator.GetBoneTransform(
-                    HumanBodyBones.RightLowerArm);
+        while (elapsed < duration)
+        {
+            // 等 Animator 寫完，再疊我們自己的動作。
+            yield return new WaitForEndOfFrame();
 
-            if (head != null
-                || rightUpperArm != null
-                || rightForearm != null)
+            if (visualRoot == null)
             {
-                float elapsed = 0f;
-                int nodCount =
-                    Mathf.Clamp(
-                        receiverThankYouNodCount,
-                        1,
-                        2);
+                yield break;
+            }
 
-                while (elapsed < duration)
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float envelope = Mathf.Sin(t * Mathf.PI);
+            float beat = Mathf.Sin(t * Mathf.PI * beatCount);
+
+            if (isFood)
+            {
+                // 整個模型做明顯的小慶祝：上下彈、左右擺、輕微縮放。
+                float bounce =
+                    Mathf.Max(0f, beat)
+                    * Mathf.Max(0.02f, foodReceiverCelebrateBounceHeight);
+
+                float sway =
+                    Mathf.Sin(t * Mathf.PI * 2f)
+                    * foodReceiverCelebrateBodySwayDegrees
+                    * envelope;
+
+                float scalePulse =
+                    1f
+                    + Mathf.Max(0f, beat)
+                    * Mathf.Max(0f, foodReceiverCelebrateScalePulse);
+
+                visualRoot.localPosition =
+                    originalVisualLocalPosition
+                    + Vector3.up * bounce;
+
+                visualRoot.localRotation =
+                    originalVisualLocalRotation
+                    * Quaternion.Euler(0f, 0f, sway);
+
+                visualRoot.localScale =
+                    Vector3.Scale(
+                        originalVisualLocalScale,
+                        new Vector3(1f, scalePulse, 1f));
+
+                // Humanoid 的話再疊雙手抬起，看起來更像開心收到食物。
+                float armEnvelope = Mathf.Max(0f, envelope);
+                float handLift = Mathf.Max(8f, foodReceiverCelebrateHandLiftDegrees);
+
+                if (rightUpperArm != null)
                 {
-                    // Animator 先更新，再疊加很小的致意動作。
-                    yield return new WaitForEndOfFrame();
-
-                    elapsed += Time.deltaTime;
-
-                    float t =
-                        Mathf.Clamp01(
-                            elapsed / duration);
-
-                    // 0 -> 動作最大 -> 0，最後自然回到原動畫。
-                    float envelope =
-                        Mathf.Sin(
-                            t * Mathf.PI);
-
-                    float nodWave =
-                        Mathf.Max(
-                            0f,
-                            Mathf.Sin(
-                                t
-                                * Mathf.PI
-                                * nodCount));
-
-                    if (head != null)
-                    {
-                        head.localRotation =
-                            head.localRotation
-                            * Quaternion.Euler(
-                                receiverThankYouNodDegrees
-                                * nodWave,
-                                0f,
-                                0f);
-                    }
-
-                    if (rightUpperArm != null)
-                    {
-                        rightUpperArm.localRotation =
-                            rightUpperArm.localRotation
-                            * Quaternion.Euler(
-                                0f,
-                                0f,
-                                -receiverThankYouHandLiftDegrees
-                                * 0.45f
-                                * envelope);
-                    }
-
-                    if (rightForearm != null)
-                    {
-                        rightForearm.localRotation =
-                            rightForearm.localRotation
-                            * Quaternion.Euler(
-                                -receiverThankYouHandLiftDegrees
-                                * envelope,
-                                0f,
-                                0f);
-                    }
+                    rightUpperArm.localRotation =
+                        rightUpperArm.localRotation
+                        * Quaternion.Euler(0f, 0f, -handLift * 0.55f * armEnvelope);
                 }
 
-                yield break;
+                if (rightForearm != null)
+                {
+                    rightForearm.localRotation =
+                        rightForearm.localRotation
+                        * Quaternion.Euler(-handLift * 0.85f * armEnvelope, 0f, 0f);
+                }
+
+                if (leftUpperArm != null)
+                {
+                    leftUpperArm.localRotation =
+                        leftUpperArm.localRotation
+                        * Quaternion.Euler(0f, 0f, handLift * 0.55f * armEnvelope);
+                }
+
+                if (leftForearm != null)
+                {
+                    leftForearm.localRotation =
+                        leftForearm.localRotation
+                        * Quaternion.Euler(-handLift * 0.75f * armEnvelope, 0f, 0f);
+                }
+
+                if (head != null)
+                {
+                    head.localRotation =
+                        head.localRotation
+                        * Quaternion.Euler(
+                            receiverThankYouNodDegrees
+                            * 0.7f
+                            * Mathf.Max(0f, beat),
+                            0f,
+                            0f);
+                }
+            }
+            else
+            {
+                // 送酒維持比較克制的謝謝動作。
+                visualRoot.localRotation =
+                    originalVisualLocalRotation
+                    * Quaternion.Euler(
+                        receiverThankYouNodDegrees * 0.18f * envelope,
+                        0f,
+                        0f);
+
+                if (rightUpperArm != null)
+                {
+                    rightUpperArm.localRotation =
+                        rightUpperArm.localRotation
+                        * Quaternion.Euler(
+                            0f,
+                            0f,
+                            -receiverThankYouHandLiftDegrees * 0.45f * envelope);
+                }
+
+                if (rightForearm != null)
+                {
+                    rightForearm.localRotation =
+                        rightForearm.localRotation
+                        * Quaternion.Euler(
+                            -receiverThankYouHandLiftDegrees * envelope,
+                            0f,
+                            0f);
+                }
             }
         }
 
-        // 3. 非 Humanoid：至少做很小的上下致意，不讓 NPC 完全沒反應。
-        Vector3 originalPosition =
-            receiverRoot.position;
-
-        float fallbackElapsed = 0f;
-        while (fallbackElapsed < duration
-            && receiverRoot != null)
+        // 一定恢復原本模型 Transform，避免角色永久歪掉或變大。
+        if (visualRoot != null)
         {
-            fallbackElapsed += Time.deltaTime;
-
-            float t =
-                Mathf.Clamp01(
-                    fallbackElapsed / duration);
-
-            float dip =
-                Mathf.Sin(
-                    t * Mathf.PI)
-                * 0.025f;
-
-            receiverRoot.position =
-                originalPosition
-                - Vector3.up * dip;
-
-            yield return null;
-        }
-
-        if (receiverRoot != null)
-        {
-            receiverRoot.position =
-                originalPosition;
+            visualRoot.localPosition = originalVisualLocalPosition;
+            visualRoot.localRotation = originalVisualLocalRotation;
+            visualRoot.localScale = originalVisualLocalScale;
         }
     }
 
@@ -4022,10 +4730,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             playerView,
             out Vector3 dialogueCameraPosition,
             out Quaternion dialogueCameraRotation);
-        Quaternion focusedReceiverRotation = GetHorizontalLookRotation(
-            receiverRoot,
-            dialogueCameraPosition,
-            originalReceiverRotation);
+        Quaternion focusedReceiverRotation =
+            keepReceiverFacingPlayerDuringDialogue
+                ? originalReceiverRotation
+                : GetHorizontalLookRotation(
+                    receiverRoot,
+                    dialogueCameraPosition,
+                    originalReceiverRotation);
 
         float panDuration = Mathf.Max(0.05f, receiverDialoguePanSeconds);
         float elapsed = 0f;
@@ -4065,16 +4776,25 @@ public class Chapter1PerformanceController : MonoBehaviour
             playerView.SetPositionAndRotation(
                 Vector3.Lerp(dialogueCameraPosition, originalViewPosition, t),
                 Quaternion.Slerp(dialogueCameraRotation, originalViewRotation, t));
-            receiverRoot.rotation = Quaternion.Slerp(
-                focusedReceiverRotation,
-                originalReceiverRotation,
-                t);
+
+            if (!keepReceiverFacingPlayerDuringDialogue)
+            {
+                receiverRoot.rotation = Quaternion.Slerp(
+                    focusedReceiverRotation,
+                    originalReceiverRotation,
+                    t);
+            }
+
             yield return null;
         }
 
         playerView.localPosition = originalViewLocalPosition;
         playerView.localRotation = originalViewLocalRotation;
-        receiverRoot.rotation = originalReceiverRotation;
+
+        if (!keepReceiverFacingPlayerDuringDialogue)
+        {
+            receiverRoot.rotation = originalReceiverRotation;
+        }
         RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
         if (faceFire != null)
         {
@@ -4559,13 +5279,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             return fallback;
         }
 
-        Vector3 currentFacing = Vector3.ProjectOnPlane(actor.forward, Vector3.up);
-        if (currentFacing.sqrMagnitude < 0.1f)
-        {
-            // Some imported FBX characters use Z as their vertical axis.
-            currentFacing = Vector3.ProjectOnPlane(actor.up, Vector3.up);
-        }
-        if (currentFacing.sqrMagnitude < 0.1f)
+        Vector3 currentFacing =
+            GetReceiverVisualForward(actor);
+
+        if (currentFacing.sqrMagnitude < 0.001f)
         {
             return fallback;
         }
@@ -9027,8 +9744,289 @@ public class Chapter1PerformanceController : MonoBehaviour
     }
 }
 
+/// <summary>
+/// 在 Animator 完成當幀骨架更新後，再疊加自然感謝姿勢。
+/// 重點：用 LateUpdate，而不是 WaitForEndOfFrame。
+/// </summary>
+public class Chapter1ReceiverNaturalGestureDriver : MonoBehaviour
+{
+    private Animator animator;
+    private Transform actorRoot;
 
+    private Transform chest;
+    private Transform head;
+    private Transform leftUpperArm;
+    private Transform rightUpperArm;
+    private Transform leftForearm;
+    private Transform rightForearm;
 
+    private float duration;
+    private float elapsed;
+    private float chestBowDegrees;
+    private float headNodDegrees;
+    private float armForwardDegrees;
+    private float forearmDegrees;
 
+    private bool playing;
 
+    public bool PlayGesture(
+        Animator sourceAnimator,
+        Transform sourceActorRoot,
+        float seconds,
+        float chestBow,
+        float headNod,
+        float armForward,
+        float forearmBend)
+    {
+        animator = sourceAnimator;
+        actorRoot = sourceActorRoot;
+
+        if (animator == null
+            || animator.avatar == null
+            || !animator.avatar.isValid
+            || !animator.isHuman)
+        {
+            playing = false;
+            return false;
+        }
+
+        chest =
+            animator.GetBoneTransform(
+                HumanBodyBones.UpperChest);
+
+        if (chest == null)
+        {
+            chest =
+                animator.GetBoneTransform(
+                    HumanBodyBones.Chest);
+        }
+
+        head =
+            animator.GetBoneTransform(
+                HumanBodyBones.Head);
+
+        leftUpperArm =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftUpperArm);
+
+        rightUpperArm =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightUpperArm);
+
+        leftForearm =
+            animator.GetBoneTransform(
+                HumanBodyBones.LeftLowerArm);
+
+        rightForearm =
+            animator.GetBoneTransform(
+                HumanBodyBones.RightLowerArm);
+
+        if (chest == null
+            && head == null
+            && leftUpperArm == null
+            && rightUpperArm == null
+            && leftForearm == null
+            && rightForearm == null)
+        {
+            playing = false;
+            return false;
+        }
+
+        duration = Mathf.Max(0.5f, seconds);
+        elapsed = 0f;
+
+        chestBowDegrees = chestBow;
+        headNodDegrees = headNod;
+        armForwardDegrees = armForward;
+        forearmDegrees = forearmBend;
+
+        playing = true;
+        enabled = true;
+
+        return true;
+    }
+
+    private void LateUpdate()
+    {
+        if (!playing)
+        {
+            return;
+        }
+
+        elapsed += Time.deltaTime;
+
+        float t =
+            Mathf.Clamp01(
+                elapsed / duration);
+
+        // 一個自然的「收到 → 致意 → 回到放鬆」包絡。
+        float envelope =
+            Mathf.Sin(t * Mathf.PI);
+
+        // 一次主要點頭，加一個很小的二次回應。
+        float nod =
+            Mathf.Max(
+                0f,
+                Mathf.Sin(t * Mathf.PI * 1.8f))
+            * envelope;
+
+        Vector3 rightAxis =
+            actorRoot != null
+                ? Vector3.ProjectOnPlane(
+                    actorRoot.right,
+                    Vector3.up)
+                : Vector3.right;
+
+        Vector3 forwardAxis =
+            actorRoot != null
+                ? Vector3.ProjectOnPlane(
+                    actorRoot.forward,
+                    Vector3.up)
+                : Vector3.forward;
+
+        if (rightAxis.sqrMagnitude < 0.001f)
+        {
+            rightAxis = Vector3.right;
+        }
+        else
+        {
+            rightAxis.Normalize();
+        }
+
+        if (forwardAxis.sqrMagnitude < 0.001f)
+        {
+            forwardAxis = Vector3.forward;
+        }
+        else
+        {
+            forwardAxis.Normalize();
+        }
+
+        // 胸口只前傾一點，不整個人跳。
+        if (chest != null)
+        {
+            chest.rotation =
+                Quaternion.AngleAxis(
+                    chestBowDegrees * envelope,
+                    rightAxis)
+                * chest.rotation;
+        }
+
+        // 頭部自然點一下。
+        if (head != null)
+        {
+            head.rotation =
+                Quaternion.AngleAxis(
+                    headNodDegrees * nod,
+                    rightAxis)
+                * head.rotation;
+        }
+
+        // 雙臂稍微往前，像收到食物後自然回應。
+        float armAmount =
+            armForwardDegrees * envelope;
+
+        if (leftUpperArm != null)
+        {
+            leftUpperArm.rotation =
+                Quaternion.AngleAxis(
+                    -armAmount,
+                    rightAxis)
+                * leftUpperArm.rotation;
+
+            leftUpperArm.rotation =
+                Quaternion.AngleAxis(
+                    -3f * envelope,
+                    forwardAxis)
+                * leftUpperArm.rotation;
+        }
+
+        if (rightUpperArm != null)
+        {
+            rightUpperArm.rotation =
+                Quaternion.AngleAxis(
+                    -armAmount,
+                    rightAxis)
+                * rightUpperArm.rotation;
+
+            rightUpperArm.rotation =
+                Quaternion.AngleAxis(
+                    3f * envelope,
+                    forwardAxis)
+                * rightUpperArm.rotation;
+        }
+
+        float forearmAmount =
+            forearmDegrees * envelope;
+
+        if (leftForearm != null)
+        {
+            leftForearm.rotation =
+                Quaternion.AngleAxis(
+                    -forearmAmount,
+                    rightAxis)
+                * leftForearm.rotation;
+        }
+
+        if (rightForearm != null)
+        {
+            rightForearm.rotation =
+                Quaternion.AngleAxis(
+                    -forearmAmount,
+                    rightAxis)
+                * rightForearm.rotation;
+        }
+
+        if (elapsed >= duration)
+        {
+            playing = false;
+        }
+    }
+}
+
+/// <summary>
+/// 避免 NPC 已經轉向玩家後，又被其他 Update / LateUpdate 腳本轉回火堆或原方向。
+/// </summary>
+public class Chapter1ReceiverFacingLock : MonoBehaviour
+{
+    private Quaternion targetRotation;
+    private float untilTime;
+    private bool locked;
+
+    public void LockFacing(
+        Quaternion rotation,
+        float seconds)
+    {
+        targetRotation = rotation;
+        untilTime = Time.time + Mathf.Max(0.1f, seconds);
+        locked = true;
+        enabled = true;
+    }
+
+    public void UpdateTargetRotation(
+        Quaternion rotation)
+    {
+        targetRotation = rotation;
+    }
+
+    private void LateUpdate()
+    {
+        if (!locked)
+        {
+            return;
+        }
+
+        if (Time.time >= untilTime)
+        {
+            locked = false;
+            return;
+        }
+
+        transform.rotation =
+            Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                Time.deltaTime * 18f);
+    }
+}
 

@@ -6895,6 +6895,13 @@ MonoBehaviour:
   showFallbackHud: 1
   lockPlayerDuringPoliceEntrance: 0
   defaultDialogueSeconds: 3
+  autoPlayCinematicStoryAfterWeddingTasks: 1
+  showCinematicLetterbox: 1
+  cinematicLetterboxHeightRatio: 0.11
+  cinematicPreRollSeconds: 0.65
+  cinematicSilenceBeatSeconds: 0.55
+  cinematicExtraShotHoldSeconds: 0.18
+  hideGameplayHudDuringCinematic: 1
   useExplorationTimer: 1
   explorationDurationSeconds: 180
   showExplorationTimer: 1
@@ -6941,6 +6948,31 @@ MonoBehaviour:
   receiverThankYouHandLiftDegrees: 18
   receiverThankYouNodCount: 1
   receiverThankYouReturnStateName: Idle
+  foodReceiverPreferCelebrateMotion: 1
+  forceFoodReceiverCelebration: 1
+  debugFoodReceiverCelebration: 1
+  foodReceiverCelebrateMotionSeconds: 1.25
+  preferAnimatorCelebrateMotionForFood: 0
+  foodReceiverCelebrateHandLiftDegrees: 28
+  foodReceiverCelebrateBounceHeight: 0.03
+  foodReceiverCelebrateBodySwayDegrees: 7
+  foodReceiverCelebrateScalePulse: 0.035
+  foodReceiverCelebrateNodCount: 2
+  faceReceiverTowardPlayerOnDelivery: 1
+  receiverTurnToPlayerSeconds: 0.32
+  receiverFacePlayerHoldSeconds: 4.2
+  keepReceiverFacingPlayerDuringDialogue: 1
+  keepReceiverFacingPlayerAfterDelivery: 1
+  receiverVisualForwardYawOffset: 0
+  autoDetectReceiverForwardFromShoulders: 1
+  receiverReverseFacingTargets: []
+  useNaturalReceiverGesture: 1
+  foodReceiverCustomAnimationState: "\u8B1D"
+  naturalReceiverGestureSeconds: 1.55
+  naturalReceiverChestBowDegrees: 4.5
+  naturalReceiverHeadNodDegrees: 8
+  naturalReceiverArmForwardDegrees: 12
+  naturalReceiverForearmDegrees: 9
   usePhysicalWeddingDelivery: 1
   physicalInteractKey: 101
   physicalInteractGamepadKey: 330
@@ -7045,6 +7077,50 @@ MonoBehaviour:
   policeCameraPanSeconds: 1.05
   policeCameraHoldSeconds: 0.15
   policeCameraLookHeight: 1.35
+  usePoliceEntranceAerialIntro: 1
+  usePoliceEntranceTrackingCamera: 0
+  policeAerialHeight: 9.5
+  policeAerialBackOffset: 4.2
+  policeAerialSideOffset: 1.8
+  policeAerialLookHeight: 1.2
+  policeAerialBlendSeconds: 0.9
+  policeAerialFollowStrength: 0.38
+  usePoliceAerialDescent: 1
+  policeAerialEndHeight: 4.8
+  policeAerialEndBackOffset: 2.6
+  policeAerialDescentStartNormalized: 0.28
+  usePoliceFrontReveal: 1
+  policeFrontRevealDistance: 2.15
+  policeFrontRevealHeight: 1.55
+  policeFrontRevealSideOffset: 0.35
+  policeFrontRevealMoveSeconds: 0.72
+  policeFrontRevealHoldSeconds: 0.22
+  policeFrontRevealReturnSeconds: 0.42
+  policeTrackingSideOffset: 3.6
+  policeTrackingBackOffset: 4.6
+  policeTrackingHeight: 1.75
+  policeTrackingBlendSeconds: 0.45
+  returnCameraAfterPoliceEntrance: 1
+  policeTrackingReturnSeconds: 0.7
+  preferAnimatorWalkForPoliceEntrance: 1
+  useProceduralPoliceWalkFallback: 1
+  policeSecondarySpeedScale: 0.94
+  policeNaturalLateralDrift: 0.08
+  policeWalkCadence: 1.75
+  policeWalkLegSwing: 0.33
+  policeWalkKneeBend: 0.26
+  policeWalkArmSwing: 0.28
+  policeWalkForwardLeanDegrees: 3.5
+  policeSecondWalkAnimationPhase: 0.43
+  policeFirstWalkAnimatorSpeed: 1
+  policeSecondWalkAnimatorSpeed: 0.96
+  useCeremonyCupCloseUp: 1
+  cupCloseUpDistance: 0.72
+  cupCloseUpHeight: 0.24
+  cupCloseUpMoveSeconds: 0.38
+  cupCloseUpBeforeImpactSeconds: 0.18
+  cupCloseUpAfterImpactSeconds: 0.85
+  cupCloseUpReturnSeconds: 0.42
   groomActor: {fileID: 455722982}
   shovedVillagerActor: {fileID: 1604896042}
   femaleVillagerActor: {fileID: 1196363490}
