@@ -268,7 +268,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     private float sharedGroundY;
     private bool sharedGroundReady;
     private bool handHoldDiagnosticsLogged;
-    private Chapter1FaceFire faceFireController;
 
     public bool IsActivelyDancing =>
         enabled
@@ -971,20 +970,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         float inOutWave)
     {
         if (!faceCenter)
-        {
-            return;
-        }
-
-        // Chapter1FaceFire runs after Animator/LateUpdate and understands each
-        // model's real forward axis. Let it own the root rotation when present.
-        if (faceFireController == null)
-        {
-            faceFireController = GetComponent<Chapter1FaceFire>();
-        }
-
-        if (faceFireController != null
-            && faceFireController.enabled
-            && faceFireController.target != null)
         {
             return;
         }
@@ -2438,23 +2423,6 @@ public class Chapter1FaceFire : MonoBehaviour
     public Chapter1PerformanceController owner;
     public float turnSpeed = 14f;
     public float yawOffsetDegrees;
-    public bool useSkeletonFacing = true;
-
-    private Animator animator;
-    private Transform leftShoulder;
-    private Transform rightShoulder;
-    private Transform head;
-    private Transform hips;
-
-    private void Awake()
-    {
-        CacheFacingBones();
-    }
-
-    private void OnEnable()
-    {
-        CacheFacingBones();
-    }
 
     private void LateUpdate()
     {
@@ -2471,184 +2439,15 @@ public class Chapter1FaceFire : MonoBehaviour
             return;
         }
 
-        Vector3 visualForward;
-        if (!TryGetVisualForward(out visualForward))
-        {
-            visualForward = transform.rotation
-                * (Quaternion.Euler(0f, yawOffsetDegrees, 0f) * Vector3.forward);
-            visualForward.y = 0f;
-        }
-
-        if (visualForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        float yawDelta = Vector3.SignedAngle(
-            visualForward.normalized,
+        Quaternion targetRotation = Quaternion.LookRotation(
             towardTarget.normalized,
-            Vector3.up);
-        Quaternion targetRotation = Quaternion.AngleAxis(
-            yawDelta,
             Vector3.up)
-            * transform.rotation;
+            * Quaternion.Euler(0f, yawOffsetDegrees, 0f);
         float blend = 1f - Mathf.Exp(
             -Mathf.Max(0.1f, turnSpeed) * Time.deltaTime);
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             targetRotation,
             blend);
-    }
-
-    private bool TryGetVisualForward(out Vector3 visualForward)
-    {
-        visualForward = Vector3.zero;
-        if (!useSkeletonFacing)
-        {
-            return false;
-        }
-
-        if (leftShoulder == null || rightShoulder == null)
-        {
-            CacheFacingBones();
-        }
-
-        if (leftShoulder == null || rightShoulder == null)
-        {
-            return false;
-        }
-
-        Vector3 bodyRight = rightShoulder.position - leftShoulder.position;
-        Vector3 bodyUp = head != null && hips != null
-            ? head.position - hips.position
-            : Vector3.up;
-
-        if (bodyRight.sqrMagnitude < 0.0001f
-            || bodyUp.sqrMagnitude < 0.0001f)
-        {
-            return false;
-        }
-
-        visualForward = Vector3.Cross(
-            bodyRight.normalized,
-            bodyUp.normalized);
-        visualForward.y = 0f;
-        return visualForward.sqrMagnitude > 0.001f;
-    }
-
-    private void CacheFacingBones()
-    {
-        if (animator == null)
-        {
-            animator = GetComponent<Animator>();
-            if (animator == null)
-            {
-                animator = GetComponentInChildren<Animator>(true);
-            }
-        }
-
-        if (animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            leftShoulder = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            rightShoulder = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-            head = animator.GetBoneTransform(HumanBodyBones.Head);
-            hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            return;
-        }
-
-        Transform searchRoot = animator != null ? animator.transform : transform;
-        Transform[] bones = searchRoot.GetComponentsInChildren<Transform>(true);
-        leftShoulder = FindGenericUpperBodyBone(bones, true);
-        rightShoulder = FindGenericUpperBodyBone(bones, false);
-        head = FindGenericBone(bones, "head", "ÀY");
-        hips = FindGenericBone(bones, "hips", "pelvis", "°©¬Ö");
-    }
-
-    private Transform FindGenericUpperBodyBone(Transform[] bones, bool left)
-    {
-        if (bones == null)
-        {
-            return null;
-        }
-
-        string sideWord = left ? "left" : "right";
-        string shortUpperArm = left ? "lupperarm" : "rupperarm";
-        string shortShoulder = left ? "lshoulder" : "rshoulder";
-
-        for (int i = 0; i < bones.Length; i++)
-        {
-            Transform bone = bones[i];
-            if (bone == null)
-            {
-                continue;
-            }
-
-            string normalized = NormalizeBoneName(bone.name);
-            bool isUpperBody = normalized.Contains("upperarm")
-                || normalized.Contains("shoulder")
-                || normalized.Contains("clavicle");
-            bool isCorrectSide = normalized.Contains(sideWord)
-                || normalized.Contains(shortUpperArm)
-                || normalized.Contains(shortShoulder);
-
-            if (isUpperBody && isCorrectSide)
-            {
-                return bone;
-            }
-        }
-
-        return null;
-    }
-
-    private Transform FindGenericBone(Transform[] bones, params string[] terms)
-    {
-        if (bones == null || terms == null)
-        {
-            return null;
-        }
-
-        for (int i = 0; i < bones.Length; i++)
-        {
-            Transform bone = bones[i];
-            if (bone == null)
-            {
-                continue;
-            }
-
-            string normalized = NormalizeBoneName(bone.name);
-            for (int termIndex = 0; termIndex < terms.Length; termIndex++)
-            {
-                string term = NormalizeBoneName(terms[termIndex]);
-                if (!string.IsNullOrEmpty(term) && normalized.Contains(term))
-                {
-                    return bone;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private string NormalizeBoneName(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        System.Text.StringBuilder builder = new System.Text.StringBuilder(value.Length);
-        for (int i = 0; i < value.Length; i++)
-        {
-            char c = char.ToLowerInvariant(value[i]);
-            if (char.IsLetterOrDigit(c))
-            {
-                builder.Append(c);
-            }
-        }
-
-        return builder.ToString();
     }
 }
