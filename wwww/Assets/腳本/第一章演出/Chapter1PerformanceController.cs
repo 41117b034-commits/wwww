@@ -3430,7 +3430,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         Renderer markerRenderer = marker.GetComponent<Renderer>();
         if (markerRenderer != null)
         {
-            markerRenderer.material.color = markerColor;
+            markerRenderer.enabled = false;
         }
 
         Chapter1Interactable interactable = marker.AddComponent<Chapter1Interactable>();
