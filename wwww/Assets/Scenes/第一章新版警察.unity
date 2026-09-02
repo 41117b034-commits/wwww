@@ -6973,7 +6973,7 @@ MonoBehaviour:
   autoDetectReceiverForwardFromShoulders: 1
   receiverReverseFacingTargets: []
   useNaturalReceiverGesture: 1
-  foodReceiverCustomAnimationState: "\u8B1D"
+  foodReceiverCustomAnimationState: "\u6253\u62DB\u547C"
   naturalReceiverGestureSeconds: 1.55
   naturalReceiverChestBowDegrees: 4.5
   naturalReceiverHeadNodDegrees: 8
