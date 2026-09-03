@@ -243,6 +243,19 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float receiverDialogueFramePadding = 1.3f;
     public float receiverDialogueMaxCameraDistance = 8f;
 
+    [Header("Hide Player Hands During Receiver Dialogue")]
+    [Tooltip("NPC 收到酒 / 食物後進入對話鏡頭時，暫時隱藏玩家手模型，避免手跑到 NPC 頭上。")]
+    public bool hidePlayerHandsDuringReceiverDialogue = true;
+
+    [Tooltip("玩家手模型 Root。留空會自動尋找名稱 Hands_Rigged。")]
+    public Transform playerHandsRoot;
+
+    [Tooltip("自動尋找玩家手模型時使用的物件名稱。")]
+    public string playerHandsObjectName = "Hands_Rigged";
+
+    [Tooltip("只關閉 Renderer，不停用 Hands_Rigged GameObject，避免影響 XR / 手部腳本。")]
+    public bool hidePlayerHandsByRendererOnly = true;
+
     [Header("Receiver Thank You Motion")]
     [Tooltip("NPC 收到酒或食物後，自動做感謝動作。")]
     public bool playReceiverThankYouMotion = true;
@@ -328,6 +341,34 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Tooltip("如果 Animator 有真正的慶祝 State，可在這裡填名稱；留空就自動找 Celebrate/Cheer/Happy/Clap。")]
     public string foodReceiverCustomAnimationState = "";
+
+    [Header("Receiver NPC Animation By Gender")]
+    [Tooltip("勾選後，男 NPC 與女 NPC 會播放不同 Animator State。")]
+    public bool useGenderSpecificReceiverAnimation = true;
+
+    [Tooltip("男 NPC 收到酒 / 食物後播放的 Animator State 名稱。")]
+    public string maleReceiverCustomAnimationState = "男生動作";
+
+    [Tooltip("女 NPC 收到酒 / 食物後播放的 Animator State 名稱。")]
+    public string femaleReceiverCustomAnimationState = "女生動作";
+
+    [Tooltip("如果關閉男女分開，所有收到酒/食物的 NPC 使用同一個 Animator State。")]
+    public bool useSameReceiverAnimationForAllNPCs = false;
+
+    [Tooltip("男女不分開時共用的 State 名稱。")]
+    public string allReceiverCustomAnimationState = "打招呼";
+
+    [Tooltip("如果男女不分開且不共用，送酒 NPC 使用這個 State。")]
+    public string wineReceiverCustomAnimationState = "";
+
+    [Tooltip("如果男女不分開且不共用，送食物 NPC 使用 Food Receiver Custom Animation State。")]
+    public bool useFoodReceiverCustomAnimationStateWhenSeparated = true;
+
+    [Tooltip("Animator 動作播放多久後回 Idle。")]
+    public float receiverCustomAnimationSeconds = 1.8f;
+
+    [Tooltip("找不到指定 State 時，自動改用自然上半身感謝動作，不會完全沒反應。")]
+    public bool fallbackToNaturalReceiverGesture = true;
 
     [Tooltip("自然感謝動作長度。")]
     public float naturalReceiverGestureSeconds = 1.7f;
@@ -1726,21 +1767,19 @@ public class Chapter1PerformanceController : MonoBehaviour
         bool oldPlayInteractionAnimations = playInteractionAnimations;
         playInteractionAnimations = false;
 
+        // 物理交付模式最保險的觸發點：
+        // 這裡的 receiver 就是玩家眼前真正收到物品的 NPC。
+        StartCoroutine(
+            PlayReceiverUniversalAnimationRoutine(
+                receiver,
+                isWine));
+
         if (isWine)
         {
             DeliverWine(receiver.name, receiver);
         }
         else
         {
-            // 物理交付模式最保險的觸發點：
-            // 這裡的 receiver 就是玩家眼前真正收到食物的 NPC。
-            if (forceFoodReceiverCelebration)
-            {
-                StartCoroutine(
-                    ForceVisibleFoodCelebrationRoutine(
-                        receiver));
-            }
-
             ShareFood(receiver.name, receiver);
         }
 
@@ -3430,7 +3469,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         Renderer markerRenderer = marker.GetComponent<Renderer>();
         if (markerRenderer != null)
         {
-            markerRenderer.enabled = false;
+            markerRenderer.material.color = markerColor;
         }
 
         Chapter1Interactable interactable = marker.AddComponent<Chapter1Interactable>();
@@ -3820,6 +3859,216 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private string GetReceiverCustomAnimationState(
+        Transform receiverTarget,
+        bool isWine)
+    {
+        // 第一順位：男女不同動作。
+        if (useGenderSpecificReceiverAnimation
+            && receiverTarget != null)
+        {
+            bool isFemale =
+                IsFemaleThankYouReceiver(
+                    receiverTarget);
+
+            string genderState =
+                isFemale
+                    ? femaleReceiverCustomAnimationState
+                    : maleReceiverCustomAnimationState;
+
+            if (!string.IsNullOrWhiteSpace(genderState))
+            {
+                return genderState.Trim();
+            }
+        }
+
+        // 第二順位：全部共用同一個動作。
+        if (useSameReceiverAnimationForAllNPCs
+            && !string.IsNullOrWhiteSpace(allReceiverCustomAnimationState))
+        {
+            return allReceiverCustomAnimationState.Trim();
+        }
+
+        // 第三順位：酒 / 食物分開。
+        if (isWine)
+        {
+            return string.IsNullOrWhiteSpace(wineReceiverCustomAnimationState)
+                ? ""
+                : wineReceiverCustomAnimationState.Trim();
+        }
+
+        if (useFoodReceiverCustomAnimationStateWhenSeparated
+            && !string.IsNullOrWhiteSpace(foodReceiverCustomAnimationState))
+        {
+            return foodReceiverCustomAnimationState.Trim();
+        }
+
+        return "";
+    }
+
+    private IEnumerator PlayReceiverUniversalAnimationRoutine(
+        Transform receiverTarget,
+        bool isWine)
+    {
+        if (receiverTarget == null)
+        {
+            yield break;
+        }
+
+        Transform actorRoot =
+            GetDeliveryActorRoot(receiverTarget);
+
+        if (actorRoot == null)
+        {
+            actorRoot = receiverTarget;
+        }
+
+        Animator animator =
+            actorRoot.GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator =
+                actorRoot.GetComponentInParent<Animator>();
+        }
+
+        float duration =
+            Mathf.Max(
+                0.6f,
+                receiverCustomAnimationSeconds);
+
+        string requestedState =
+            GetReceiverCustomAnimationState(
+                receiverTarget,
+                isWine);
+
+        if (animator != null
+            && animator.runtimeAnimatorController != null)
+        {
+            List<string> candidates = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(requestedState))
+            {
+                candidates.Add(requestedState);
+            }
+
+            // 指定 State 找不到時再找常見名稱。
+            candidates.Add("Thank");
+            candidates.Add("ThankYou");
+            candidates.Add("Thanks");
+            candidates.Add("Wave");
+            candidates.Add("Bow");
+            candidates.Add("Celebrate");
+            candidates.Add("Cheer");
+            candidates.Add("Happy");
+            candidates.Add("Clap");
+
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                string stateName = candidates[i];
+
+                if (string.IsNullOrWhiteSpace(stateName))
+                {
+                    continue;
+                }
+
+                int stateHash =
+                    Animator.StringToHash(stateName);
+
+                if (!animator.HasState(0, stateHash))
+                {
+                    continue;
+                }
+
+                animator.applyRootMotion = false;
+                animator.CrossFade(stateHash, 0.12f, 0);
+
+                bool debugIsFemale =
+                    IsFemaleThankYouReceiver(
+                        receiverTarget);
+
+                Debug.Log(
+                    "[Chapter1 ReceiverAnimation] NPC="
+                    + receiverTarget.name
+                    + " Gender="
+                    + (debugIsFemale ? "Female" : "Male")
+                    + " State="
+                    + stateName);
+
+                yield return new WaitForSeconds(duration);
+
+                string returnState =
+                    string.IsNullOrWhiteSpace(receiverThankYouReturnStateName)
+                        ? deliveryTargetIdleStateName
+                        : receiverThankYouReturnStateName.Trim();
+
+                if (!string.IsNullOrWhiteSpace(returnState))
+                {
+                    int returnHash =
+                        Animator.StringToHash(returnState);
+
+                    if (animator.HasState(0, returnHash))
+                    {
+                        animator.CrossFade(
+                            returnHash,
+                            0.18f,
+                            0);
+                    }
+                }
+
+                yield break;
+            }
+        }
+
+        // 沒有同名 State 或 Controller 時，Humanoid 仍做自然感謝姿勢。
+        if (fallbackToNaturalReceiverGesture)
+        {
+            GameObject driverObject =
+                animator != null
+                    ? animator.gameObject
+                    : actorRoot.gameObject;
+
+            Chapter1ReceiverNaturalGestureDriver driver =
+                driverObject.GetComponent<Chapter1ReceiverNaturalGestureDriver>();
+
+            if (driver == null)
+            {
+                driver =
+                    driverObject.AddComponent<Chapter1ReceiverNaturalGestureDriver>();
+            }
+
+            bool started =
+                driver.PlayGesture(
+                    animator,
+                    actorRoot,
+                    Mathf.Max(0.8f, naturalReceiverGestureSeconds),
+                    naturalReceiverChestBowDegrees,
+                    naturalReceiverHeadNodDegrees,
+                    naturalReceiverArmForwardDegrees,
+                    naturalReceiverForearmDegrees);
+
+            if (started)
+            {
+                Debug.Log(
+                    "[Chapter1 ReceiverAnimation] NPC="
+                    + receiverTarget.name
+                    + " 使用自然感謝動作");
+
+                yield return new WaitForSeconds(
+                    Mathf.Max(
+                        0.8f,
+                        naturalReceiverGestureSeconds));
+
+                yield break;
+            }
+        }
+
+        Debug.LogWarning(
+            "[Chapter1 ReceiverAnimation] NPC="
+            + receiverTarget.name
+            + " 找不到可播放動畫。請確認 Animator Controller / Avatar / State 名稱。");
+    }
+
     private IEnumerator ForceVisibleFoodCelebrationRoutine(Transform receiverTarget)
     {
         if (receiverTarget == null)
@@ -4064,19 +4313,12 @@ public class Chapter1PerformanceController : MonoBehaviour
                     voicePosition));
         }
 
-        // 食物：直接強制可見慶祝，不再依賴 Inspector 舊的 Play Receiver Thank You Motion 值。
-        if (!isWine
-            && forceFoodReceiverCelebration
-            && !physicalDeliveryAnimating)
+        // 實體交付時已經在 CompletePhysicalWeddingDelivery 精準觸發一次。
+        // 非實體流程才在這裡補觸發，避免同一 NPC 動作播兩次。
+        if (!physicalDeliveryAnimating)
         {
             StartCoroutine(
-                ForceVisibleFoodCelebrationRoutine(
-                    receiverTarget));
-        }
-        else if (playReceiverThankYouMotion && isWine)
-        {
-            StartCoroutine(
-                PlayReceiverThankYouMotionRoutine(
+                PlayReceiverUniversalAnimationRoutine(
                     receiverTarget,
                     isWine));
         }
@@ -4682,16 +4924,123 @@ public class Chapter1PerformanceController : MonoBehaviour
         interactionAnimationRunning = false;
     }
 
+    private Transform GetPlayerHandsRoot()
+    {
+        if (playerHandsRoot != null)
+        {
+            return playerHandsRoot;
+        }
+
+        if (!string.IsNullOrWhiteSpace(playerHandsObjectName))
+        {
+            Transform found =
+                FindTransformByName(
+                    playerHandsObjectName.Trim());
+
+            if (found != null)
+            {
+                playerHandsRoot = found;
+                return playerHandsRoot;
+            }
+        }
+
+        return null;
+    }
+
+    private Renderer[] HidePlayerHandRenderers(
+        out bool[] originalStates)
+    {
+        originalStates = null;
+
+        if (!hidePlayerHandsDuringReceiverDialogue)
+        {
+            return null;
+        }
+
+        Transform handsRoot =
+            GetPlayerHandsRoot();
+
+        if (handsRoot == null)
+        {
+            return null;
+        }
+
+        Renderer[] renderers =
+            handsRoot.GetComponentsInChildren<Renderer>(true);
+
+        originalStates =
+            new bool[renderers.Length];
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+
+            if (renderer == null)
+            {
+                continue;
+            }
+
+            originalStates[i] =
+                renderer.enabled;
+
+            renderer.enabled = false;
+        }
+
+        return renderers;
+    }
+
+    private void RestorePlayerHandRenderers(
+        Renderer[] renderers,
+        bool[] originalStates)
+    {
+        if (renderers == null
+            || originalStates == null)
+        {
+            return;
+        }
+
+        int count =
+            Mathf.Min(
+                renderers.Length,
+                originalStates.Length);
+
+        for (int i = 0; i < count; i++)
+        {
+            Renderer renderer = renderers[i];
+
+            if (renderer != null)
+            {
+                renderer.enabled =
+                    originalStates[i];
+            }
+        }
+    }
+
     private IEnumerator FocusOnReceiverDuringDialogue(
         string receiverName,
         string receiverLine,
         Transform receiverTarget)
     {
+        Renderer[] hiddenHandRenderers = null;
+        bool[] hiddenHandRendererStates = null;
+
+        if (hidePlayerHandsDuringReceiverDialogue)
+        {
+            hiddenHandRenderers =
+                HidePlayerHandRenderers(
+                    out hiddenHandRendererStates);
+        }
+
         float holdSeconds = Mathf.Max(0.5f, receiverDialogueHoldSeconds);
         if (!focusCameraOnReceiverDialogue || receiverTarget == null)
         {
             ShowLine(receiverName, receiverLine, holdSeconds);
             yield return new WaitForSeconds(holdSeconds);
+
+            RestorePlayerHandRenderers(
+                hiddenHandRenderers,
+                hiddenHandRendererStates);
+
             yield break;
         }
 
@@ -4701,6 +5050,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             ShowLine(receiverName, receiverLine, holdSeconds);
             yield return new WaitForSeconds(holdSeconds);
+
+            RestorePlayerHandRenderers(
+                hiddenHandRenderers,
+                hiddenHandRendererStates);
+
             yield break;
         }
 
@@ -4800,6 +5154,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             faceFire.enabled = faceFireWasEnabled;
         }
+
+        RestorePlayerHandRenderers(
+            hiddenHandRenderers,
+            hiddenHandRendererStates);
 
         if (!policeSequenceStarted && !waitingForChoice && !chapterCompleted)
         {

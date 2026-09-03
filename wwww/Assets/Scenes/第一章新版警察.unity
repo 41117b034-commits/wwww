@@ -4168,6 +4168,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hands_Rigged
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5d0a4a90b6d311f4f94bdbbb221bf1b0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1235302481550244708, guid: 5d0a4a90b6d311f4f94bdbbb221bf1b0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -6001,6 +6005,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u8CFD\u5FB7\u514B\u5E25\u54E5"
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 51cad91811c682e4fad526c78309cfe0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6947,6 +6955,10 @@ MonoBehaviour:
   receiverDialogueUpperBodyBottomRatio: 0.4
   receiverDialogueFramePadding: 1.3
   receiverDialogueMaxCameraDistance: 8
+  hidePlayerHandsDuringReceiverDialogue: 1
+  playerHandsRoot: {fileID: 0}
+  playerHandsObjectName: Hands_Rigged
+  hidePlayerHandsByRendererOnly: 1
   playReceiverThankYouMotion: 1
   preferAnimatorThankYouMotion: 1
   receiverThankYouMotionSeconds: 1.05
@@ -6974,6 +6986,15 @@ MonoBehaviour:
   receiverReverseFacingTargets: []
   useNaturalReceiverGesture: 1
   foodReceiverCustomAnimationState: "\u6253\u62DB\u547C"
+  useGenderSpecificReceiverAnimation: 1
+  maleReceiverCustomAnimationState: "\u7537\u751F\u52D5\u4F5C"
+  femaleReceiverCustomAnimationState: "\u5973\u751F\u52D5\u4F5C"
+  useSameReceiverAnimationForAllNPCs: 0
+  allReceiverCustomAnimationState: "\u6253\u62DB\u547C"
+  wineReceiverCustomAnimationState: 
+  useFoodReceiverCustomAnimationStateWhenSeparated: 1
+  receiverCustomAnimationSeconds: 1.8
+  fallbackToNaturalReceiverGesture: 1
   naturalReceiverGestureSeconds: 1.55
   naturalReceiverChestBowDegrees: 4.5
   naturalReceiverHeadNodDegrees: 8
@@ -12024,7 +12045,7 @@ Animator:
   m_GameObject: {fileID: 1558329864}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
-  m_Controller: {fileID: 9100000, guid: b7860b21e3acf7347b75f5350b5b05b9, type: 2}
+  m_Controller: {fileID: 9100000, guid: 51cad91811c682e4fad526c78309cfe0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -13662,6 +13683,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u8CFD\u5FB7\u514B\u4E2D\u5E74(2)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 51cad91811c682e4fad526c78309cfe0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
