@@ -3469,7 +3469,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         Renderer markerRenderer = marker.GetComponent<Renderer>();
         if (markerRenderer != null)
         {
-            markerRenderer.material.color = markerColor;
+            // 保留互動 Collider / E 鍵功能，但不要顯示紅色、橘色圓柱。
+            markerRenderer.enabled = false;
         }
 
         Chapter1Interactable interactable = marker.AddComponent<Chapter1Interactable>();
