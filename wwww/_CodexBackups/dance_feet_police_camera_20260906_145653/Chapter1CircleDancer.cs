@@ -97,15 +97,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Range(0f, 0.04f)] public float pelvisBobHeightRatio = 0.012f;
     [Range(0f, 0.03f)] public float pelvisWeightShiftRatio = 0.007f;
 
-    [Tooltip("Use the rig's left/right hip axis so imported models bend their knees forward instead of sideways.")]
-    public bool useSkeletonLegBendAxis = true;
-
-    [Tooltip("Keep animated toes aligned with the dancer's body direction after the procedural step is applied.")]
-    public bool stabilizeFootFacing = true;
-
-    [Range(0f, 1f)] public float footFacingWeight = 1f;
-    [Range(0f, 180f)] public float maxFootYawCorrection = 120f;
-
     [Header("´Â¦V")]
     public bool faceCenter = true;
 
@@ -263,8 +254,6 @@ public class Chapter1CircleDancer : MonoBehaviour
     private Transform rightHandBone;
     private Transform leftFootBone;
     private Transform rightFootBone;
-    private Transform leftToesBone;
-    private Transform rightToesBone;
     private Transform hipsBone;
     private Transform headBone;
     private Transform leftUpperArmBone;
@@ -726,7 +715,7 @@ public class Chapter1CircleDancer : MonoBehaviour
         float alternatingStep = Mathf.Sin(Time.time * beatsPerSecond * Mathf.PI);
         float leftLift = Mathf.SmoothStep(0f, 1f, Mathf.Max(0f, alternatingStep));
         float rightLift = Mathf.SmoothStep(0f, 1f, Mathf.Max(0f, -alternatingStep));
-        Vector3 bendAxis = GetProceduralLegBendAxis();
+        Vector3 bendAxis = transform.right.normalized;
 
         ApplyLegStep(leftUpperLegBone, leftLowerLegBone, bendAxis, leftLift);
         ApplyLegStep(rightUpperLegBone, rightLowerLegBone, bendAxis, rightLift);
@@ -745,106 +734,6 @@ public class Chapter1CircleDancer : MonoBehaviour
                 * pelvisWeightShiftRatio
                 * sideShift;
         }
-
-        StabilizeAnimatedFootFacing();
-    }
-
-    private Vector3 GetProceduralLegBendAxis()
-    {
-        Vector3 bodyRight = Vector3.zero;
-
-        if (useSkeletonLegBendAxis
-            && leftUpperLegBone != null
-            && rightUpperLegBone != null)
-        {
-            bodyRight = rightUpperLegBone.position - leftUpperLegBone.position;
-            bodyRight = Vector3.ProjectOnPlane(bodyRight, Vector3.up);
-        }
-
-        if (bodyRight.sqrMagnitude < 0.0001f
-            && leftUpperArmBone != null
-            && rightUpperArmBone != null)
-        {
-            bodyRight = rightUpperArmBone.position - leftUpperArmBone.position;
-            bodyRight = Vector3.ProjectOnPlane(bodyRight, Vector3.up);
-        }
-
-        if (bodyRight.sqrMagnitude < 0.0001f)
-        {
-            bodyRight = Vector3.ProjectOnPlane(transform.right, Vector3.up);
-        }
-
-        return bodyRight.sqrMagnitude > 0.0001f
-            ? bodyRight.normalized
-            : Vector3.right;
-    }
-
-    private void StabilizeAnimatedFootFacing()
-    {
-        if (!stabilizeFootFacing
-            || footFacingWeight <= 0f
-            || (leftToesBone == null && rightToesBone == null))
-        {
-            return;
-        }
-
-        Vector3 bodyRight = GetProceduralLegBendAxis();
-        Vector3 bodyUp = headBone != null && hipsBone != null
-            ? headBone.position - hipsBone.position
-            : Vector3.up;
-        Vector3 bodyForward = Vector3.Cross(bodyRight, bodyUp);
-        bodyForward = Vector3.ProjectOnPlane(bodyForward, Vector3.up);
-
-        if (center != null)
-        {
-            Vector3 towardCenter = Vector3.ProjectOnPlane(
-                center.position - transform.position,
-                Vector3.up);
-            if (towardCenter.sqrMagnitude > 0.001f
-                && Vector3.Dot(bodyForward, towardCenter) < 0f)
-            {
-                bodyForward = -bodyForward;
-            }
-        }
-
-        if (bodyForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        bodyForward.Normalize();
-        StabilizeSingleFootFacing(leftFootBone, leftToesBone, bodyForward);
-        StabilizeSingleFootFacing(rightFootBone, rightToesBone, bodyForward);
-    }
-
-    private void StabilizeSingleFootFacing(
-        Transform foot,
-        Transform toes,
-        Vector3 bodyForward)
-    {
-        if (foot == null || toes == null)
-        {
-            return;
-        }
-
-        Vector3 currentForward = Vector3.ProjectOnPlane(
-            toes.position - foot.position,
-            Vector3.up);
-        if (currentForward.sqrMagnitude < 0.0001f)
-        {
-            return;
-        }
-
-        float yawError = Vector3.SignedAngle(
-            currentForward.normalized,
-            bodyForward,
-            Vector3.up);
-        float correction = Mathf.Clamp(
-            yawError * Mathf.Clamp01(footFacingWeight),
-            -Mathf.Max(0f, maxFootYawCorrection),
-            Mathf.Max(0f, maxFootYawCorrection));
-
-        foot.rotation = Quaternion.AngleAxis(correction, Vector3.up) * foot.rotation;
     }
 
     private void ApplyLegStep(
@@ -1420,8 +1309,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         rightHandBone = null;
         leftFootBone = null;
         rightFootBone = null;
-        leftToesBone = null;
-        rightToesBone = null;
         hipsBone = null;
         headBone = null;
         leftUpperArmBone = null;
@@ -1446,8 +1333,6 @@ public class Chapter1CircleDancer : MonoBehaviour
             rightHandBone = animator.GetBoneTransform(HumanBodyBones.RightHand);
             leftFootBone = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
             rightFootBone = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            leftToesBone = animator.GetBoneTransform(HumanBodyBones.LeftToes);
-            rightToesBone = animator.GetBoneTransform(HumanBodyBones.RightToes);
             hipsBone = animator.GetBoneTransform(HumanBodyBones.Hips);
             headBone = animator.GetBoneTransform(HumanBodyBones.Head);
             leftUpperArmBone = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
@@ -1506,12 +1391,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         rightFootBone = rightFootBone != null
             ? rightFootBone
             : FindRigBone(rigTransforms, "R_Foot", "RightFoot", "Foot.R", "foot_r", "J_Bip_R_Foot");
-        leftToesBone = leftToesBone != null
-            ? leftToesBone
-            : FindRigBone(rigTransforms, "L_Toe", "LeftToe", "LeftToes", "Toe.L", "toe_l", "J_Bip_L_ToeBase");
-        rightToesBone = rightToesBone != null
-            ? rightToesBone
-            : FindRigBone(rigTransforms, "R_Toe", "RightToe", "RightToes", "Toe.R", "toe_r", "J_Bip_R_ToeBase");
     }
 
     private static Transform FindRigBone(

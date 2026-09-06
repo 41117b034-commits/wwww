@@ -509,16 +509,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float policeCameraHoldSeconds = 0.2f;
     public float policeCameraLookHeight = 1.35f;
 
-    [Header("New Police Scene Entrance Framing")]
-    [Tooltip("Use a close front-side tracking shot so both officers stay visible while entering the wedding.")]
-    public bool forceVisiblePoliceEntranceShot = true;
-    public float policeVisibleShotLeadDistance = 4.8f;
-    public float policeVisibleShotSideOffset = 3f;
-    public float policeVisibleShotHeight = 2.65f;
-    public float policeVisibleShotLookHeight = 1.25f;
-    public float policeVisibleShotBlendSeconds = 0.42f;
-    public float policeVisibleShotEndHoldSeconds = 0.9f;
-
     [Header("Police Entrance Tracking Shot")]
     [Tooltip("警察進場時，先用天空俯視鏡頭慢慢看著他們走進來。")]
     public bool usePoliceEntranceAerialIntro = true;
@@ -5184,88 +5174,26 @@ public class Chapter1PerformanceController : MonoBehaviour
             return disabledDrivers;
         }
 
-        Transform current = playerView;
-        while (current != null)
+        Behaviour[] behaviours = playerView.GetComponents<Behaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
         {
-            Behaviour[] behaviours = current.GetComponents<Behaviour>();
-            for (int i = 0; i < behaviours.Length; i++)
+            Behaviour behaviour = behaviours[i];
+            if (behaviour == null || !behaviour.enabled)
             {
-                Behaviour behaviour = behaviours[i];
-                if (behaviour == null || !behaviour.enabled)
-                {
-                    continue;
-                }
-
-                string typeName = behaviour.GetType().Name;
-                if (typeName.IndexOf("TrackedPoseDriver", System.StringComparison.OrdinalIgnoreCase) < 0)
-                {
-                    continue;
-                }
-
-                behaviour.enabled = false;
-                disabledDrivers.Add(behaviour);
+                continue;
             }
 
-            current = current.parent;
+            string typeName = behaviour.GetType().Name;
+            if (typeName.IndexOf("TrackedPoseDriver", System.StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                continue;
+            }
+
+            behaviour.enabled = false;
+            disabledDrivers.Add(behaviour);
         }
 
         return disabledDrivers;
-    }
-
-    private Chapter1CinematicCameraPoseLock BeginCinematicCameraPoseLock(
-        Transform playerView)
-    {
-        if (playerView == null)
-        {
-            return null;
-        }
-
-        Chapter1CinematicCameraPoseLock poseLock =
-            playerView.GetComponent<Chapter1CinematicCameraPoseLock>();
-        if (poseLock == null)
-        {
-            poseLock =
-                playerView.gameObject.AddComponent<Chapter1CinematicCameraPoseLock>();
-        }
-
-        Transform rigRoot = GetDancePlayerRoot();
-        if (rigRoot == playerView || !playerView.IsChildOf(rigRoot))
-        {
-            rigRoot = null;
-        }
-
-        poseLock.Configure(playerView, rigRoot);
-        poseLock.LockPose(playerView.position, playerView.rotation);
-        return poseLock;
-    }
-
-    private static void SetCinematicCameraPose(
-        Transform playerView,
-        Chapter1CinematicCameraPoseLock poseLock,
-        Vector3 position,
-        Quaternion rotation)
-    {
-        if (playerView == null)
-        {
-            return;
-        }
-
-        if (poseLock != null)
-        {
-            poseLock.LockPose(position, rotation);
-            return;
-        }
-
-        playerView.SetPositionAndRotation(position, rotation);
-    }
-
-    private static void EndCinematicCameraPoseLock(
-        Chapter1CinematicCameraPoseLock poseLock)
-    {
-        if (poseLock != null)
-        {
-            poseLock.Release();
-        }
     }
 
     private void RestoreCameraTrackedPoseDrivers(List<Behaviour> trackedPoseDrivers)
@@ -7915,8 +7843,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         List<Behaviour> trackedPoseDrivers =
             DisableCameraTrackedPoseDrivers(playerView);
-        Chapter1CinematicCameraPoseLock poseLock =
-            BeginCinematicCameraPoseLock(playerView);
 
         Vector3 policeForward =
             Vector3.ProjectOnPlane(
@@ -7941,36 +7867,15 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 policeRight =
             Vector3.Cross(Vector3.up, policeForward).normalized;
 
-        Vector3 focusPoint = GetPoliceVisualFocusPoint(
-            primaryPoliceActor,
-            null,
-            Mathf.Max(0.8f, policeFrontRevealHeight));
-
-        Bounds primaryPoliceBounds;
-        bool hasPrimaryPoliceBounds =
-            TryGetPoliceVisualBounds(
-                primaryPoliceActor,
-                null,
-                out primaryPoliceBounds);
-
-        float revealDistance =
-            hasPrimaryPoliceBounds
-                ? GetPoliceFramingDistance(
-                    playerView,
-                    primaryPoliceBounds,
-                    Mathf.Max(0.8f, policeFrontRevealDistance),
-                    1.08f)
-                : Mathf.Max(0.8f, policeFrontRevealDistance);
+        Vector3 focusPoint =
+            primaryPoliceActor.position
+            + Vector3.up * Mathf.Max(0.8f, policeFrontRevealHeight);
 
         Vector3 desiredPosition =
-            focusPoint
-            + policeForward * revealDistance
-            + policeRight * policeFrontRevealSideOffset;
-
-        desiredPosition.y = hasPrimaryPoliceBounds
-            ? focusPoint.y + primaryPoliceBounds.extents.y * 0.08f
-            : primaryPoliceActor.position.y
-                + Mathf.Max(0.8f, policeFrontRevealHeight);
+            primaryPoliceActor.position
+            + policeForward * Mathf.Max(0.8f, policeFrontRevealDistance)
+            + policeRight * policeFrontRevealSideOffset
+            + Vector3.up * Mathf.Max(0.8f, policeFrontRevealHeight);
 
         Vector3 lookDirection =
             focusPoint - desiredPosition;
@@ -7996,9 +7901,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                     1f,
                     Mathf.Clamp01(elapsed / moveDuration));
 
-            SetCinematicCameraPose(
-                playerView,
-                poseLock,
+            playerView.SetPositionAndRotation(
                 Vector3.Lerp(
                     originalPosition,
                     desiredPosition,
@@ -8011,9 +7914,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return null;
         }
 
-        SetCinematicCameraPose(
-            playerView,
-            poseLock,
+        playerView.SetPositionAndRotation(
             desiredPosition,
             desiredRotation);
 
@@ -8047,9 +7948,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                     1f,
                     Mathf.Clamp01(elapsed / returnDuration));
 
-            SetCinematicCameraPose(
-                playerView,
-                poseLock,
+            playerView.SetPositionAndRotation(
                 Vector3.Lerp(
                     closePosition,
                     originalPosition,
@@ -8062,12 +7961,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return null;
         }
 
-        SetCinematicCameraPose(
-            playerView,
-            poseLock,
-            originalPosition,
-            originalRotation);
-        EndCinematicCameraPoseLock(poseLock);
         playerView.localPosition = originalLocalPosition;
         playerView.localRotation = originalLocalRotation;
 
@@ -8207,188 +8100,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             - pathDirection * Mathf.Max(0.5f, policeAerialBackOffset)
             + sideDirection * policeAerialSideOffset
             + Vector3.up * Mathf.Max(2f, policeAerialHeight);
-    }
-
-    private bool TryGetPoliceVisualBounds(
-        Transform firstPolice,
-        Transform secondPolice,
-        out Bounds combinedBounds)
-    {
-        combinedBounds = new Bounds();
-        Transform[] actors = { firstPolice, secondPolice };
-
-        // SkinnedMeshRenderer.bounds can remain at the prefab's previous pose for
-        // an off-screen rig. The bones themselves always carry the live pose, so
-        // build the cinematic frame from those first.
-        bool hasBoneBounds = false;
-        for (int actorIndex = 0; actorIndex < actors.Length; actorIndex++)
-        {
-            Transform actor = actors[actorIndex];
-            if (actor == null)
-            {
-                continue;
-            }
-
-            SkinnedMeshRenderer[] skinnedRenderers =
-                actor.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            for (int rendererIndex = 0;
-                rendererIndex < skinnedRenderers.Length;
-                rendererIndex++)
-            {
-                SkinnedMeshRenderer skinnedRenderer =
-                    skinnedRenderers[rendererIndex];
-                if (skinnedRenderer == null
-                    || !skinnedRenderer.enabled
-                    || !skinnedRenderer.gameObject.activeInHierarchy)
-                {
-                    continue;
-                }
-
-                Transform[] bones = skinnedRenderer.bones;
-                for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
-                {
-                    Transform bone = bones[boneIndex];
-                    if (bone == null)
-                    {
-                        continue;
-                    }
-
-                    Vector3 bonePosition = bone.position;
-                    if (float.IsNaN(bonePosition.x)
-                        || float.IsNaN(bonePosition.y)
-                        || float.IsNaN(bonePosition.z)
-                        || float.IsInfinity(bonePosition.x)
-                        || float.IsInfinity(bonePosition.y)
-                        || float.IsInfinity(bonePosition.z))
-                    {
-                        continue;
-                    }
-
-                    if (!hasBoneBounds)
-                    {
-                        combinedBounds =
-                            new Bounds(bonePosition, Vector3.zero);
-                        hasBoneBounds = true;
-                    }
-                    else
-                    {
-                        combinedBounds.Encapsulate(bonePosition);
-                    }
-                }
-            }
-        }
-
-        if (hasBoneBounds && combinedBounds.size.y > 0.1f)
-        {
-            Vector3 skeletonSize = combinedBounds.size;
-            skeletonSize.x = Mathf.Max(skeletonSize.x, skeletonSize.y * 0.24f);
-            skeletonSize.z = Mathf.Max(skeletonSize.z, skeletonSize.y * 0.20f);
-            combinedBounds.size = skeletonSize;
-            return true;
-        }
-
-        bool hasBounds = false;
-
-        for (int actorIndex = 0; actorIndex < actors.Length; actorIndex++)
-        {
-            Transform actor = actors[actorIndex];
-            if (actor == null)
-            {
-                continue;
-            }
-
-            Renderer[] renderers = actor.GetComponentsInChildren<Renderer>(true);
-            for (int rendererIndex = 0; rendererIndex < renderers.Length; rendererIndex++)
-            {
-                Renderer actorRenderer = renderers[rendererIndex];
-                if (actorRenderer == null
-                    || !actorRenderer.enabled
-                    || !actorRenderer.gameObject.activeInHierarchy
-                    || actorRenderer.bounds.size.sqrMagnitude < 0.0001f)
-                {
-                    continue;
-                }
-
-                if (!hasBounds)
-                {
-                    combinedBounds = actorRenderer.bounds;
-                    hasBounds = true;
-                }
-                else
-                {
-                    combinedBounds.Encapsulate(actorRenderer.bounds);
-                }
-            }
-        }
-
-        return hasBounds;
-    }
-
-    private Vector3 GetPoliceVisualFocusPoint(
-        Transform firstPolice,
-        Transform secondPolice,
-        float fallbackHeight)
-    {
-        Bounds combinedBounds;
-        if (TryGetPoliceVisualBounds(
-            firstPolice,
-            secondPolice,
-            out combinedBounds))
-        {
-            return combinedBounds.center;
-        }
-
-        Vector3 rootCenter =
-            firstPolice != null && secondPolice != null
-                ? (firstPolice.position + secondPolice.position) * 0.5f
-                : (firstPolice != null
-                    ? firstPolice.position
-                    : (secondPolice != null
-                        ? secondPolice.position
-                        : Vector3.zero));
-        return rootCenter + Vector3.up * Mathf.Max(0.5f, fallbackHeight);
-    }
-
-    private float GetPoliceFramingDistance(
-        Transform playerView,
-        Bounds visualBounds,
-        float minimumDistance,
-        float padding)
-    {
-        Camera viewCamera =
-            playerView != null
-                ? playerView.GetComponent<Camera>()
-                : null;
-
-        float verticalFov = viewCamera != null
-            ? Mathf.Clamp(viewCamera.fieldOfView, 25f, 100f)
-            : 60f;
-        float aspect = viewCamera != null && viewCamera.aspect > 0.1f
-            ? viewCamera.aspect
-            : (16f / 9f);
-
-        float halfVerticalRadians = verticalFov * 0.5f * Mathf.Deg2Rad;
-        float halfHorizontalRadians =
-            Mathf.Atan(Mathf.Tan(halfVerticalRadians) * aspect);
-        float paddedVerticalExtent =
-            visualBounds.extents.y * Mathf.Max(1f, padding);
-        float paddedHorizontalExtent =
-            Mathf.Sqrt(
-                visualBounds.extents.x * visualBounds.extents.x
-                + visualBounds.extents.z * visualBounds.extents.z)
-            * Mathf.Max(1f, padding);
-
-        float verticalDistance =
-            paddedVerticalExtent
-            / Mathf.Max(0.15f, Mathf.Tan(halfVerticalRadians));
-        float horizontalDistance =
-            paddedHorizontalExtent
-            / Mathf.Max(0.15f, Mathf.Tan(halfHorizontalRadians));
-
-        return Mathf.Max(
-            minimumDistance,
-            Mathf.Max(verticalDistance, horizontalDistance)
-                + visualBounds.extents.magnitude * 0.12f);
     }
 
     private IEnumerator AnimatePoliceEntranceFallback()
@@ -8601,24 +8312,16 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Transform playerView = GetPlayerViewTransform();
 
-        bool visiblePoliceCamera =
-            usePoliceCinematicCamera
-            && forceVisiblePoliceEntranceShot
-            && IsNewPoliceScene()
-            && playerView != null;
-
         bool aerialCamera =
             usePoliceCinematicCamera
-            && !visiblePoliceCamera
             && usePoliceEntranceAerialIntro
             && playerView != null;
 
         bool trackingCamera =
-            visiblePoliceCamera
-            || (usePoliceCinematicCamera
-                && !usePoliceEntranceAerialIntro
-                && usePoliceEntranceTrackingCamera
-                && playerView != null);
+            usePoliceCinematicCamera
+            && !usePoliceEntranceAerialIntro
+            && usePoliceEntranceTrackingCamera
+            && playerView != null;
 
         Vector3 originalViewPosition =
             playerView != null ? playerView.position : Vector3.zero;
@@ -8633,27 +8336,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             playerView != null ? playerView.localRotation : Quaternion.identity;
 
         List<Behaviour> trackedPoseDrivers = null;
-        Chapter1CinematicCameraPoseLock poseLock = null;
 
         if ((aerialCamera || trackingCamera)
             && playerView != null)
         {
             trackedPoseDrivers =
                 DisableCameraTrackedPoseDrivers(playerView);
-            poseLock = BeginCinematicCameraPoseLock(playerView);
         }
-
-        Debug.Log(
-            "[Chapter1 Police Camera] scene=" + gameObject.scene.name
-            + ", visibleShot=" + visiblePoliceCamera
-            + ", view=" + (playerView != null ? playerView.name : "null")
-            + ", rigRoot=" + (GetDancePlayerRoot() != null ? GetDancePlayerRoot().name : "null")
-            + ", disabledTrackedDrivers="
-            + (trackedPoseDrivers != null ? trackedPoseDrivers.Count : 0)
-            + ", first=" + firstPolice.position.ToString("F2")
-            + ", second="
-            + (secondPolice != null ? secondPolice.position.ToString("F2") : "null"),
-            this);
 
         ShowLine(
             "旁白",
@@ -8679,8 +8368,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             Quaternion.LookRotation(
                 (aerialStartLookPoint - aerialStartPosition).normalized,
                 Vector3.up);
-
-        bool policeCameraDiagnosticsLogged = false;
 
         while (elapsed < totalDuration)
         {
@@ -8758,97 +8445,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 Vector3 desiredCameraPosition;
                 Vector3 lookPoint;
 
-                if (visiblePoliceCamera)
-                {
-                    // Stay in front of the officers and look back along their path.
-                    // This keeps both full bodies visible instead of leaving the
-                    // player's HMD pointed at the fire while the entrance happens.
-                    Bounds policeVisualBounds;
-                    bool hasPoliceVisualBounds =
-                        TryGetPoliceVisualBounds(
-                            firstPolice,
-                            secondPolice,
-                            out policeVisualBounds);
-
-                    lookPoint = hasPoliceVisualBounds
-                        ? policeVisualBounds.center
-                        : GetPoliceVisualFocusPoint(
-                            firstPolice,
-                            secondPolice,
-                            Mathf.Max(0.7f, policeVisibleShotLookHeight));
-
-                    float framingDistance =
-                        hasPoliceVisualBounds
-                            ? GetPoliceFramingDistance(
-                                playerView,
-                                policeVisualBounds,
-                                Mathf.Max(1.5f, policeVisibleShotLeadDistance),
-                                1.18f)
-                            : Mathf.Max(1.5f, policeVisibleShotLeadDistance);
-
-                    desiredCameraPosition =
-                        lookPoint
-                        + normalizedPath * framingDistance
-                        + sideDirection * policeVisibleShotSideOffset;
-
-                    desiredCameraPosition.y = hasPoliceVisualBounds
-                        ? lookPoint.y + policeVisualBounds.extents.y * 0.08f
-                        : policeCenter.y
-                            + Mathf.Max(1.1f, policeVisibleShotHeight);
-
-                    Vector3 lookDirection = lookPoint - desiredCameraPosition;
-                    Quaternion desiredCameraRotation =
-                        lookDirection.sqrMagnitude > 0.001f
-                            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
-                            : playerView.rotation;
-
-                    float blend =
-                        Mathf.SmoothStep(
-                            0f,
-                            1f,
-                            Mathf.Clamp01(
-                                elapsed / Mathf.Max(0.05f, policeVisibleShotBlendSeconds)));
-
-                    SetCinematicCameraPose(
-                        playerView,
-                        poseLock,
-                        Vector3.Lerp(originalViewPosition, desiredCameraPosition, blend),
-                        Quaternion.Slerp(originalViewRotation, desiredCameraRotation, blend));
-
-                    if (!policeCameraDiagnosticsLogged && blend >= 0.98f)
-                    {
-                        Camera diagnosticCamera =
-                            playerView.GetComponent<Camera>();
-                        Vector3 focusViewport =
-                            diagnosticCamera != null
-                                ? diagnosticCamera.WorldToViewportPoint(lookPoint)
-                                : Vector3.zero;
-
-                        Debug.Log(
-                            "[Chapter1 Police Camera] boundsCenter="
-                            + lookPoint.ToString("F2")
-                            + ", boundsSize="
-                            + (hasPoliceVisualBounds
-                                ? policeVisualBounds.size.ToString("F2")
-                                : "unavailable")
-                            + ", framingDistance=" + framingDistance.ToString("F2")
-                            + ", desiredView=" + desiredCameraPosition.ToString("F2")
-                            + ", actualView=" + playerView.position.ToString("F2")
-                            + ", desiredForward="
-                            + desiredCameraRotation
-                                * Vector3.forward
-                            + ", actualForward=" + playerView.forward.ToString("F2")
-                            + ", focusViewport=" + focusViewport.ToString("F2")
-                            + ", firstNow=" + firstPolice.position.ToString("F2")
-                            + ", secondNow="
-                            + (secondPolice != null
-                                ? secondPolice.position.ToString("F2")
-                                : "null"),
-                            this);
-                        policeCameraDiagnosticsLogged = true;
-                    }
-                }
-                else if (aerialCamera)
+                if (aerialCamera)
                 {
                     // 從天空慢慢看著警察進場，鏡頭只微微跟隨，不要太晃。
                     Vector3 followOffset =
@@ -8908,9 +8505,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                             (lookPoint - desiredCameraPosition).normalized,
                             Vector3.up);
 
-                    SetCinematicCameraPose(
-                        playerView,
-                        poseLock,
+                    playerView.SetPositionAndRotation(
                         Vector3.Lerp(
                             originalViewPosition,
                             desiredCameraPosition,
@@ -8944,9 +8539,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                             Mathf.Clamp01(
                                 elapsed / Mathf.Max(0.05f, policeTrackingBlendSeconds)));
 
-                    SetCinematicCameraPose(
-                        playerView,
-                        poseLock,
+                    playerView.SetPositionAndRotation(
                         Vector3.Lerp(originalViewPosition, desiredCameraPosition, blend),
                         Quaternion.Slerp(originalViewRotation, desiredCameraRotation, blend));
                 }
@@ -8972,11 +8565,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             PlayAnimatorStateIfAvailable(secondPolice, policeIdleStateName);
         }
 
-        if (visiblePoliceCamera && policeVisibleShotEndHoldSeconds > 0f)
-        {
-            yield return new WaitForSeconds(policeVisibleShotEndHoldSeconds);
-        }
-
         if ((aerialCamera || trackingCamera)
             && playerView != null)
         {
@@ -9000,9 +8588,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                             1f,
                             Mathf.Clamp01(returnElapsed / returnDuration));
 
-                    SetCinematicCameraPose(
-                        playerView,
-                        poseLock,
+                    playerView.SetPositionAndRotation(
                         Vector3.Lerp(endTrackedPosition, originalViewPosition, t),
                         Quaternion.Slerp(endTrackedRotation, originalViewRotation, t));
 
@@ -9010,12 +8596,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 }
             }
 
-            SetCinematicCameraPose(
-                playerView,
-                poseLock,
-                originalViewPosition,
-                originalViewRotation);
-            EndCinematicCameraPoseLock(poseLock);
             playerView.localPosition = originalViewLocalPosition;
             playerView.localRotation = originalViewLocalRotation;
 
@@ -10273,14 +9853,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         heldPropScale = Mathf.Max(heldPropScale, 0.42f);
         carriedPropViewDistance = Mathf.Max(carriedPropViewDistance, 0.95f);
         firstPersonHoldSeconds = Mathf.Max(firstPersonHoldSeconds, 0.85f);
-
-        if (IsNewPoliceScene())
-        {
-            forceVisiblePoliceEntranceShot = true;
-            policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
-            policeVisibleShotHeight = Mathf.Max(policeVisibleShotHeight, 2.65f);
-            policeVisibleShotEndHoldSeconds = Mathf.Max(policeVisibleShotEndHoldSeconds, 0.9f);
-        }
     }
 
     private bool IsNewPoliceScene()
@@ -10814,76 +10386,6 @@ public class Chapter1ReceiverFacingLock : MonoBehaviour
                 transform.rotation,
                 targetRotation,
                 Time.deltaTime * 18f);
-    }
-}
-
-/// <summary>
-/// Keeps an XR camera on the scripted cutscene pose through LateUpdate and
-/// the camera pre-cull callback, after tracked-pose systems have updated.
-/// </summary>
-[DefaultExecutionOrder(30000)]
-public sealed class Chapter1CinematicCameraPoseLock : MonoBehaviour
-{
-    private Vector3 worldPosition;
-    private Quaternion worldRotation;
-    private bool locked;
-    private Transform targetView;
-    private Transform rigRoot;
-
-    public void Configure(Transform view, Transform root)
-    {
-        targetView = view;
-        rigRoot = root;
-    }
-
-    public void LockPose(Vector3 position, Quaternion rotation)
-    {
-        worldPosition = position;
-        worldRotation = rotation;
-        locked = true;
-        enabled = true;
-        ApplyPose();
-    }
-
-    public void Release()
-    {
-        locked = false;
-        enabled = false;
-    }
-
-    private void LateUpdate()
-    {
-        ApplyPose();
-    }
-
-    private void OnPreCull()
-    {
-        ApplyPose();
-    }
-
-    private void ApplyPose()
-    {
-        if (!locked)
-        {
-            return;
-        }
-
-        Transform view = targetView != null ? targetView : transform;
-        if (rigRoot != null
-            && rigRoot != view
-            && view.IsChildOf(rigRoot))
-        {
-            // XR providers can rewrite the camera's local tracked pose immediately
-            // before rendering. Moving the complete XR Origin instead keeps that
-            // local head pose intact while placing the rendered eye at the shot.
-            Quaternion rotationDelta =
-                worldRotation * Quaternion.Inverse(view.rotation);
-            rigRoot.rotation = rotationDelta * rigRoot.rotation;
-            rigRoot.position += worldPosition - view.position;
-            return;
-        }
-
-        view.SetPositionAndRotation(worldPosition, worldRotation);
     }
 }
 
