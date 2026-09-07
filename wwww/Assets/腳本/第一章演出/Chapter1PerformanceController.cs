@@ -751,6 +751,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private bool interactionAnimationRunning;
     private bool openingStoryPlaying;
     private bool cinematicStoryPlaying;
+    private bool tensionAudioHasStarted;
+    private readonly HashSet<AudioSource> capturedWeddingAudioSources = new HashSet<AudioSource>();
 
     private GUIStyle hudBoxStyle;
     private GUIStyle hudTitleStyle;
@@ -863,11 +865,24 @@ public class Chapter1PerformanceController : MonoBehaviour
         UpdateExplorationTimer();
         UpdateTemporaryMissionMovementClear();
         UpdateWorldInteractionPrompt();
+
+        if (!tensionAudioHasStarted
+            && tensionAmbience != null
+            && tensionAmbience.isPlaying)
+        {
+            // Timeline / 其他腳本先啟動恐怖音效時，也立刻抓當下其他正在播放的 AudioSource。
+            StartTensionAudioAndStopDrums();
+        }
     }
 
     private void LateUpdate()
     {
-        // 婚禮階段固定背景音量，避免序列化舊值或其他腳本把音量改回去。
+        if (tensionAudioHasStarted)
+        {
+            StopWeddingVocalsHard();
+            return;
+        }
+
         if (!policeSequenceStarted)
         {
             if (lockWeddingMusicVolumeUntilPolice)
@@ -916,6 +931,143 @@ public class Chapter1PerformanceController : MonoBehaviour
         weddingVocals.volume = Mathf.Clamp01(weddingVocalsVolume);
         weddingVocals.loop = true;
         weddingVocals.spatialBlend = 0f;
+    }
+
+    private bool IsPoliceAudioAllowed(AudioSource source)
+    {
+        if (source == null)
+        {
+            return false;
+        }
+
+        return source == tensionAmbience
+            || source == heartbeatAudio
+            || source == policeEventAudio
+            || source == policeDialogueAudio
+            || source == narrationAudio;
+    }
+
+    private void CaptureCurrentlyPlayingWeddingAudio()
+    {
+        capturedWeddingAudioSources.Clear();
+
+        AudioSource[] allSources =
+            FindObjectsOfType<AudioSource>(true);
+
+        for (int i = 0; i < allSources.Length; i++)
+        {
+            AudioSource source = allSources[i];
+
+            if (source == null
+                || IsPoliceAudioAllowed(source)
+                || !source.isPlaying)
+            {
+                continue;
+            }
+
+            capturedWeddingAudioSources.Add(source);
+
+            string clipName =
+                source.clip != null
+                    ? source.clip.name
+                    : "(PlayOneShot / no main clip)";
+
+            Debug.Log(
+                "[Chapter1 AudioCapture] 捕捉並鎖定："
+                + source.gameObject.name
+                + " / Clip="
+                + clipName);
+        }
+
+        // 保底：你場景中已知的 WeddingVocals 也一定加入。
+        GameObject knownWeddingVocals =
+            GameObject.Find("WeddingVocals");
+
+        if (knownWeddingVocals != null)
+        {
+            AudioSource knownSource =
+                knownWeddingVocals.GetComponent<AudioSource>();
+
+            if (knownSource != null
+                && !IsPoliceAudioAllowed(knownSource))
+            {
+                capturedWeddingAudioSources.Add(knownSource);
+            }
+        }
+
+        if (weddingVocals != null
+            && !IsPoliceAudioAllowed(weddingVocals))
+        {
+            capturedWeddingAudioSources.Add(weddingVocals);
+        }
+
+        if (weddingAmbience != null
+            && !IsPoliceAudioAllowed(weddingAmbience))
+        {
+            capturedWeddingAudioSources.Add(weddingAmbience);
+        }
+
+        Debug.Log(
+            "[Chapter1 AudioCapture] 總共鎖定 "
+            + capturedWeddingAudioSources.Count
+            + " 個恐怖音效開始前正在播放的 AudioSource。");
+    }
+
+    private void StopCapturedWeddingAudioHard()
+    {
+        foreach (AudioSource source in capturedWeddingAudioSources)
+        {
+            if (source == null)
+            {
+                continue;
+            }
+
+            source.Stop();
+            source.mute = true;
+            source.volume = 0f;
+            source.loop = false;
+            source.playOnAwake = false;
+        }
+    }
+
+    private void StopWeddingVocalsHard()
+    {
+        // 保留舊方法名稱，讓其他程式碼不用改。
+        // 現在實際上會停止「恐怖音效開始前所有正在播放的婚禮 AudioSource」。
+        StopCapturedWeddingAudioHard();
+    }
+
+    private void StartTensionAudioAndStopDrums()
+    {
+        if (!tensionAudioHasStarted)
+        {
+            // 關鍵：先抓「這一刻所有正在播放的聲音」。
+            // 不管真正鼓聲物件叫什麼，只要恐怖音效開始前它正在播，就會被抓到。
+            CaptureCurrentlyPlayingWeddingAudio();
+        }
+
+        tensionAudioHasStarted = true;
+
+        // 同一幀全部 Stop + Mute。
+        StopCapturedWeddingAudioHard();
+
+        if (tensionAmbience != null)
+        {
+            tensionAmbience.mute = false;
+            tensionAmbience.loop = true;
+            tensionAmbience.playOnAwake = false;
+            tensionAmbience.volume = Mathf.Clamp01(tensionMusicTargetVolume);
+
+            if (!tensionAmbience.isPlaying)
+            {
+                tensionAmbience.Play();
+            }
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[Chapter1 AudioCapture] Tension Ambience 沒有指定。");
+        }
     }
 
     private void OnGUI()
@@ -1134,6 +1286,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         storyStarted = true;
         openingStoryPlaying = true;
         cinematicStoryPlaying = false;
+        tensionAudioHasStarted = false;
+        capturedWeddingAudioSources.Clear();
 
         if (physicalCarriedProp != null)
         {
@@ -7747,49 +7901,15 @@ public class Chapter1PerformanceController : MonoBehaviour
                     Mathf.Max(0f, cinematicSilenceBeatSeconds));
             }
 
-            if (tensionAmbience != null)
-            {
-                tensionAmbience.loop = true;
-                tensionAmbience.playOnAwake = false;
-                tensionAmbience.volume = Mathf.Clamp01(tensionMusicTargetVolume);
-
-                if (!tensionAmbience.isPlaying)
-                {
-                    tensionAmbience.Play();
-                }
-            }
+            StartTensionAudioAndStopDrums();
         }
         else if (useStoryMusicCrossfade)
         {
-            if (weddingVocals != null)
-            {
-                weddingVocals.Stop();
-            }
-
-            StartCoroutine(CrossfadeStoryMusic(
-                weddingAmbience,
-                tensionAmbience,
-                storyMusicCrossfadeSeconds,
-                tensionMusicTargetVolume));
+            StartTensionAudioAndStopDrums();
         }
         else
         {
-            if (weddingAmbience != null)
-            {
-                weddingAmbience.Stop();
-            }
-
-            if (weddingVocals != null)
-            {
-                weddingVocals.Stop();
-            }
-
-            if (tensionAmbience != null)
-            {
-                tensionAmbience.loop = true;
-                tensionAmbience.volume = tensionMusicTargetVolume;
-                tensionAmbience.Play();
-            }
+            StartTensionAudioAndStopDrums();
         }
 
         ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
