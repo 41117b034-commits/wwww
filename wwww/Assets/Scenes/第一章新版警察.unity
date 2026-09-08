@@ -19400,7 +19400,7 @@ MonoBehaviour:
   bottomEyelid: {fileID: 1758984674}
   openDuration: 2.5
   extraOpenDistance: 60
-  hideCanvasAfterOpen: 0
+  hideCanvasAfterOpen: 1
   firstPeekOpenness: 0.24
   firstPeekDuration: 0.52
   firstPeekHold: 0.12

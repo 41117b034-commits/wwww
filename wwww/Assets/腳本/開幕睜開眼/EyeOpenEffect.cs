@@ -187,6 +187,18 @@ public class EyeOpenEffect : MonoBehaviour
         }
     }
 
+    public void FinishOpenAndHide()
+    {
+        if (openRoutine != null)
+        {
+            StopCoroutine(openRoutine);
+            openRoutine = null;
+        }
+
+        SetEyeOpennessImmediate(1f);
+        gameObject.SetActive(false);
+    }
+
     private IEnumerator OpenEyesRoutine()
     {
         yield return AnimateEyeOpenness(1f, openDuration);

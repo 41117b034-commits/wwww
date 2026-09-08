@@ -180,6 +180,12 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         if (!ValidateReferences())
         {
+            // 看手模型缺少引用時不能讓眼皮永久擋住遊戲畫面。
+            if (eyeOpenEffect != null)
+            {
+                eyeOpenEffect.FinishOpenAndHide();
+            }
+
             yield break;
         }
 
@@ -223,6 +229,9 @@ public class Chapter1EyeOpening : MonoBehaviour
                 yield return WaitRealtime(
                     Mathf.Max(0.1f, eyeOpenEffect.openDuration));
             }
+
+            // 遊戲控制權交還玩家前一定要移除眼皮；場景欄位誤設時也不會留下黑邊。
+            eyeOpenEffect.FinishOpenAndHide();
         }
 
         yield return WaitRealtime(pauseAfterEyesOpen);
@@ -333,6 +342,25 @@ public class Chapter1EyeOpening : MonoBehaviour
         if (cameraOffsetRoot == null && playerCamera != null)
         {
             cameraOffsetRoot = playerCamera.transform.parent;
+        }
+
+        if (introHandsRoot == null)
+        {
+            Transform[] allTransforms =
+                FindObjectsByType<Transform>(
+                    FindObjectsInactive.Include,
+                    FindObjectsSortMode.None);
+
+            for (int i = 0; i < allTransforms.Length; i++)
+            {
+                string objectName = allTransforms[i].name;
+                if (objectName == "Hands_Rigged"
+                    || objectName.StartsWith("Hands_Rigged ("))
+                {
+                    introHandsRoot = allTransforms[i].gameObject;
+                    break;
+                }
+            }
         }
     }
 

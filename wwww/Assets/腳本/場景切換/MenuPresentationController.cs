@@ -12,6 +12,8 @@ public sealed class MenuPresentationController : MonoBehaviour
     private readonly HashSet<int> boundLanguageButtons = new HashSet<int>();
     private readonly HashSet<int> boundVolumeButtons = new HashSet<int>();
     private TextMeshProUGUI volumeLabel;
+    private AudioSource volumePreviewSource;
+    private AudioClip volumePreviewClip;
     private bool returningToSettings;
 
     private static readonly string[] ChapterPrefixes =
@@ -187,6 +189,8 @@ public sealed class MenuPresentationController : MonoBehaviour
     private void BindVolumeControls()
     {
         volumeLabel = FindTextStartingWith("音量");
+        ConfigureVolumeLayout();
+        EnsureVolumePreviewAudio();
 
         Button[] buttons = FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         for (int i = 0; i < buttons.Length; i++)
@@ -212,10 +216,12 @@ public sealed class MenuPresentationController : MonoBehaviour
 
             if (compact == "+")
             {
+                ConfigureVolumeStepButton(button, 1f);
                 button.onClick.AddListener(IncreaseVolume);
             }
             else
             {
+                ConfigureVolumeStepButton(button, -1f);
                 button.onClick.AddListener(DecreaseVolume);
             }
         }
@@ -227,20 +233,121 @@ public sealed class MenuPresentationController : MonoBehaviour
     {
         GameAudioSettings.Increase();
         UpdateVolumeLabel();
+        PlayVolumePreview();
     }
 
     private void DecreaseVolume()
     {
         GameAudioSettings.Decrease();
         UpdateVolumeLabel();
+        PlayVolumePreview();
     }
 
     private void UpdateVolumeLabel()
     {
         if (volumeLabel != null)
         {
-            volumeLabel.text = "音量　" + GameAudioSettings.Level + " / 10";
+            volumeLabel.text = "音量 " + GameAudioSettings.Level + " / 10";
         }
+    }
+
+    private void ConfigureVolumeLayout()
+    {
+        if (volumeLabel == null)
+        {
+            return;
+        }
+
+        RectTransform rowRect = volumeLabel.GetComponentInParent<Button>()?.transform as RectTransform;
+        if (rowRect != null)
+        {
+            rowRect.sizeDelta = new Vector2(Mathf.Max(190f, rowRect.sizeDelta.x), rowRect.sizeDelta.y);
+        }
+
+        RectTransform labelRect = volumeLabel.rectTransform;
+        labelRect.anchorMin = Vector2.zero;
+        labelRect.anchorMax = Vector2.one;
+        labelRect.pivot = new Vector2(0.5f, 0.5f);
+        labelRect.anchoredPosition = Vector2.zero;
+        labelRect.offsetMin = new Vector2(27f, 1f);
+        labelRect.offsetMax = new Vector2(-27f, -1f);
+
+        volumeLabel.alignment = TextAlignmentOptions.Center;
+        volumeLabel.enableAutoSizing = true;
+        volumeLabel.fontSizeMin = 13f;
+        volumeLabel.fontSizeMax = 21f;
+        volumeLabel.textWrappingMode = TextWrappingModes.NoWrap;
+        volumeLabel.raycastTarget = false;
+    }
+
+    private static void ConfigureVolumeStepButton(Button button, float direction)
+    {
+        RectTransform buttonRect = button.transform as RectTransform;
+        if (buttonRect == null)
+        {
+            return;
+        }
+
+        buttonRect.anchorMin = new Vector2(0.5f, 0.5f);
+        buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
+        buttonRect.pivot = new Vector2(0.5f, 0.5f);
+        buttonRect.anchoredPosition = new Vector2(78f * direction, 0f);
+        buttonRect.sizeDelta = new Vector2(14f, 14f);
+
+        TextMeshProUGUI symbol = button.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (symbol != null)
+        {
+            RectTransform symbolRect = symbol.rectTransform;
+            symbolRect.anchorMin = Vector2.zero;
+            symbolRect.anchorMax = Vector2.one;
+            symbolRect.pivot = new Vector2(0.5f, 0.5f);
+            symbolRect.anchoredPosition = Vector2.zero;
+            symbolRect.offsetMin = Vector2.zero;
+            symbolRect.offsetMax = Vector2.zero;
+
+            symbol.alignment = TextAlignmentOptions.Center;
+            symbol.enableAutoSizing = true;
+            symbol.fontSizeMin = 8f;
+            symbol.fontSizeMax = 14f;
+            symbol.textWrappingMode = TextWrappingModes.NoWrap;
+            symbol.raycastTarget = false;
+        }
+    }
+
+    private void EnsureVolumePreviewAudio()
+    {
+        if (volumePreviewClip == null)
+        {
+            volumePreviewClip = Resources.Load<AudioClip>("VolumePreview");
+        }
+
+        if (volumePreviewSource == null)
+        {
+            volumePreviewSource = gameObject.GetComponent<AudioSource>();
+            if (volumePreviewSource == null)
+            {
+                volumePreviewSource = gameObject.AddComponent<AudioSource>();
+            }
+
+            volumePreviewSource.playOnAwake = false;
+            volumePreviewSource.loop = false;
+            volumePreviewSource.spatialBlend = 0f;
+            volumePreviewSource.ignoreListenerPause = true;
+        }
+    }
+
+    private void PlayVolumePreview()
+    {
+        EnsureVolumePreviewAudio();
+        if (volumePreviewSource == null || volumePreviewClip == null)
+        {
+            return;
+        }
+
+        volumePreviewSource.Stop();
+        volumePreviewSource.clip = volumePreviewClip;
+        volumePreviewSource.volume = 1f;
+        volumePreviewSource.Play();
     }
 
     private void SelectLanguage(GameSubtitleLanguage language)

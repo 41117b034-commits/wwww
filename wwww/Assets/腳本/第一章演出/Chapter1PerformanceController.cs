@@ -10131,6 +10131,19 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void ShowLine(string speaker, string line, float seconds)
     {
+        if (!GameLanguageSettings.SubtitlesEnabled)
+        {
+            if (dialogueUI != null)
+            {
+                dialogueUI.HideInstant();
+            }
+
+            fallbackSpeaker = "";
+            fallbackLine = "";
+            fallbackLineUntil = 0f;
+            return;
+        }
+
         if (dialogueUI != null)
         {
             // 有正式字幕 UI 時，只使用它，避免 OnGUI 又畫一次造成重疊。
@@ -10142,8 +10155,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         else
         {
             // 沒有綁 DialogueUI 才使用舊版 fallback HUD。
-            fallbackSpeaker = speaker;
-            fallbackLine = line;
+            fallbackSpeaker = GameLanguageSettings.LocalizeSpeaker(speaker);
+            fallbackLine = GameLanguageSettings.LocalizeSubtitle(line);
             fallbackLineUntil = Time.time + Mathf.Max(0.5f, seconds);
         }
 
