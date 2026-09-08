@@ -22,20 +22,14 @@ public class Chapter1DialogueUI : MonoBehaviour
             StopCoroutine(hideRoutine);
         }
 
-        if (!GameLanguageSettings.SubtitlesEnabled)
-        {
-            HideInstant();
-            return;
-        }
-
         if (speakerText != null)
         {
-            speakerText.text = GameLanguageSettings.LocalizeSpeaker(speaker);
+            speakerText.text = speaker;
         }
 
         if (bodyText != null)
         {
-            bodyText.text = GameLanguageSettings.LocalizeSubtitle(line);
+            bodyText.text = line;
         }
 
         ShowInstant();
