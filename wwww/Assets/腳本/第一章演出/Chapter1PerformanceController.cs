@@ -8385,10 +8385,18 @@ public class Chapter1PerformanceController : MonoBehaviour
             paddedHorizontalExtent
             / Mathf.Max(0.15f, Mathf.Tan(halfHorizontalRadians));
 
+        float smallestHalfFov =
+            Mathf.Min(halfVerticalRadians, halfHorizontalRadians);
+        float sphereDistance =
+            visualBounds.extents.magnitude
+            * Mathf.Max(1f, padding)
+            / Mathf.Max(0.15f, Mathf.Tan(smallestHalfFov));
+
         return Mathf.Max(
             minimumDistance,
-            Mathf.Max(verticalDistance, horizontalDistance)
-                + visualBounds.extents.magnitude * 0.12f);
+            Mathf.Max(
+                sphereDistance,
+                Mathf.Max(verticalDistance, horizontalDistance)));
     }
 
     private IEnumerator AnimatePoliceEntranceFallback()
@@ -8643,18 +8651,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             poseLock = BeginCinematicCameraPoseLock(playerView);
         }
 
-        Debug.Log(
-            "[Chapter1 Police Camera] scene=" + gameObject.scene.name
-            + ", visibleShot=" + visiblePoliceCamera
-            + ", view=" + (playerView != null ? playerView.name : "null")
-            + ", rigRoot=" + (GetDancePlayerRoot() != null ? GetDancePlayerRoot().name : "null")
-            + ", disabledTrackedDrivers="
-            + (trackedPoseDrivers != null ? trackedPoseDrivers.Count : 0)
-            + ", first=" + firstPolice.position.ToString("F2")
-            + ", second="
-            + (secondPolice != null ? secondPolice.position.ToString("F2") : "null"),
-            this);
-
         ShowLine(
             "旁白",
             "遠處的山路上，兩名日警正朝著婚禮會場緩步逼近。",
@@ -8679,8 +8675,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             Quaternion.LookRotation(
                 (aerialStartLookPoint - aerialStartPosition).normalized,
                 Vector3.up);
-
-        bool policeCameraDiagnosticsLogged = false;
 
         while (elapsed < totalDuration)
         {
@@ -8760,9 +8754,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
                 if (visiblePoliceCamera)
                 {
-                    // Stay in front of the officers and look back along their path.
-                    // This keeps both full bodies visible instead of leaving the
-                    // player's HMD pointed at the fire while the entrance happens.
+                    // Stay on the open mountain-road side behind the officers.
+                    // The police remain in the foreground while the wedding
+                    // crowd sits beyond them instead of blocking the lens.
                     Bounds policeVisualBounds;
                     bool hasPoliceVisualBounds =
                         TryGetPoliceVisualBounds(
@@ -8770,31 +8764,62 @@ public class Chapter1PerformanceController : MonoBehaviour
                             secondPolice,
                             out policeVisualBounds);
 
-                    lookPoint = hasPoliceVisualBounds
-                        ? policeVisualBounds.center
-                        : GetPoliceVisualFocusPoint(
-                            firstPolice,
-                            secondPolice,
-                            Mathf.Max(0.7f, policeVisibleShotLookHeight));
-
-                    float framingDistance =
+                    // The imported rig reports useful vertical dimensions but
+                    // its horizontal bone centre is offset from the rendered
+                    // model. Combine the real actor roots with the rig height.
+                    float policeVisualHeight =
                         hasPoliceVisualBounds
-                            ? GetPoliceFramingDistance(
+                            ? Mathf.Max(2.5f, policeVisualBounds.size.y)
+                            : 3f;
+                    float pairFrameWidth =
+                        Mathf.Max(
+                            policePairSpacing + policeVisualHeight * 0.35f,
+                            policeVisualHeight * 0.55f);
+                    Vector3 horizontalVisualCenter =
+                        hasPoliceVisualBounds
+                            ? Vector3.Lerp(
+                                policeCenter,
+                                policeVisualBounds.center,
+                                0.5f)
+                            : policeCenter;
+                    lookPoint = new Vector3(
+                        horizontalVisualCenter.x,
+                        hasPoliceVisualBounds
+                            ? policeVisualBounds.center.y
+                                + policeVisualHeight * 0.08f
+                            : policeCenter.y
+                                + Mathf.Max(1.25f, policeVisibleShotLookHeight),
+                        horizontalVisualCenter.z);
+                    Bounds actorFramingBounds = new Bounds(
+                        lookPoint,
+                        new Vector3(
+                            pairFrameWidth,
+                            policeVisualHeight,
+                            pairFrameWidth * 0.62f));
+                    float framingDistance =
+                        Mathf.Max(
+                            18f,
+                            GetPoliceFramingDistance(
                                 playerView,
-                                policeVisualBounds,
-                                Mathf.Max(1.5f, policeVisibleShotLeadDistance),
-                                1.18f)
-                            : Mathf.Max(1.5f, policeVisibleShotLeadDistance);
+                                actorFramingBounds,
+                                Mathf.Max(7.8f, policeVisibleShotLeadDistance),
+                                1.2f));
+
+                    Vector3 outsideShotDirection =
+                        -normalizedPath + sideDirection * 0.28f;
+                    if (outsideShotDirection.sqrMagnitude < 0.001f)
+                    {
+                        outsideShotDirection = -normalizedPath;
+                    }
+                    outsideShotDirection.Normalize();
 
                     desiredCameraPosition =
                         lookPoint
-                        + normalizedPath * framingDistance
-                        + sideDirection * policeVisibleShotSideOffset;
+                        + outsideShotDirection * framingDistance
+                        + sideDirection * policeVisibleShotSideOffset * 0.65f;
 
-                    desiredCameraPosition.y = hasPoliceVisualBounds
-                        ? lookPoint.y + policeVisualBounds.extents.y * 0.08f
-                        : policeCenter.y
-                            + Mathf.Max(1.1f, policeVisibleShotHeight);
+                    desiredCameraPosition.y =
+                        lookPoint.y + policeVisualHeight * 0.25f;
 
                     Vector3 lookDirection = lookPoint - desiredCameraPosition;
                     Quaternion desiredCameraRotation =
@@ -8815,38 +8840,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                         Vector3.Lerp(originalViewPosition, desiredCameraPosition, blend),
                         Quaternion.Slerp(originalViewRotation, desiredCameraRotation, blend));
 
-                    if (!policeCameraDiagnosticsLogged && blend >= 0.98f)
-                    {
-                        Camera diagnosticCamera =
-                            playerView.GetComponent<Camera>();
-                        Vector3 focusViewport =
-                            diagnosticCamera != null
-                                ? diagnosticCamera.WorldToViewportPoint(lookPoint)
-                                : Vector3.zero;
-
-                        Debug.Log(
-                            "[Chapter1 Police Camera] boundsCenter="
-                            + lookPoint.ToString("F2")
-                            + ", boundsSize="
-                            + (hasPoliceVisualBounds
-                                ? policeVisualBounds.size.ToString("F2")
-                                : "unavailable")
-                            + ", framingDistance=" + framingDistance.ToString("F2")
-                            + ", desiredView=" + desiredCameraPosition.ToString("F2")
-                            + ", actualView=" + playerView.position.ToString("F2")
-                            + ", desiredForward="
-                            + desiredCameraRotation
-                                * Vector3.forward
-                            + ", actualForward=" + playerView.forward.ToString("F2")
-                            + ", focusViewport=" + focusViewport.ToString("F2")
-                            + ", firstNow=" + firstPolice.position.ToString("F2")
-                            + ", secondNow="
-                            + (secondPolice != null
-                                ? secondPolice.position.ToString("F2")
-                                : "null"),
-                            this);
-                        policeCameraDiagnosticsLogged = true;
-                    }
                 }
                 else if (aerialCamera)
                 {
@@ -10277,6 +10270,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (IsNewPoliceScene())
         {
             forceVisiblePoliceEntranceShot = true;
+            policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
             policeVisibleShotHeight = Mathf.Max(policeVisibleShotHeight, 2.65f);
             policeVisibleShotEndHoldSeconds = Mathf.Max(policeVisibleShotEndHoldSeconds, 0.9f);
