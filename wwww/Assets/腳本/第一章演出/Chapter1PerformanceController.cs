@@ -10402,6 +10402,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (IsNewPoliceScene())
         {
+            showPickupLocationGuidance = true;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
@@ -10412,8 +10413,34 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private bool IsNewPoliceScene()
     {
-        return gameObject.scene.IsValid()
-            && string.Equals(gameObject.scene.name, "第一章新版警察", System.StringComparison.Ordinal);
+        if (!gameObject.scene.IsValid())
+        {
+            return false;
+        }
+
+        if (string.Equals(
+                gameObject.scene.name,
+                "第一章新版警察",
+                System.StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        string scenePath = gameObject.scene.path.Replace('\\', '/');
+        if (scenePath.EndsWith(
+                "/第一章新版警察.unity",
+                System.StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Unity 在場景尚未儲存時會從 Temp/__Backupscenes/0.backup
+        // 進入 Play，這時名稱與路徑都不再是原場景。用新版場景的
+        // 取物與警察演出配置作為保底辨識，避免導引標記整組消失。
+        return usePhysicalWeddingDelivery
+            && winePickupPoint != null
+            && foodPickupPoint != null
+            && animatePoliceEntranceWithoutTimeline;
     }
 
     private Transform GetPlayerViewTransform()
