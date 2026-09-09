@@ -814,7 +814,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         EnsureWeddingCrowdDancers();
         PrepareDeliveryTaskNPCs();
-        EnsureNewPoliceSceneNpcGrounding();
         StartCoroutine(RefreshWeddingDancerSizingAfterAnimatorUpdate());
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
@@ -1508,10 +1507,14 @@ public class Chapter1PerformanceController : MonoBehaviour
         explorationTimerFinished = true;
         explorationTimerRunning = false;
 
-        // 正式流程改成「完成婚禮任務」才觸發警察劇情，倒數不再強制開始事件。
+        // 倒數只結束自由探索，不會跳過婚禮任務。之後用地面箭頭
+        // 依序帶玩家取得物品、完成交付，最後前往舞圈。
         if (requireAllWeddingTasksBeforePolice)
         {
+            showPickupLocationGuidance = true;
+            showDeliveryGroundArrows = true;
             UpdateWeddingQuestMission();
+            ShowLine("系統", "自由探索時間結束，請跟著地面箭頭完成婚禮任務。", 4f);
             TryStartPoliceAfterWeddingTasks();
             return;
         }
@@ -2305,12 +2308,38 @@ public class Chapter1PerformanceController : MonoBehaviour
     private void UpdateDeliveryTargetGuidance()
     {
         bool showGroundArrows = ShouldShowDeliveryGroundArrows();
-        if ((!showDeliveryTargetMarker && !showGroundArrows)
-            || carriedWeddingItem == WeddingCarryItem.None
+        bool showTimedTaskArrows = ShouldShowTimedTaskGroundGuidance();
+        if ((!showDeliveryTargetMarker && !showGroundArrows && !showTimedTaskArrows)
             || policeSequenceStarted
             || !IsFreeExplorationActive())
         {
             ClearDeliveryTargetMarker();
+            return;
+        }
+
+        if (carriedWeddingItem == WeddingCarryItem.None)
+        {
+            if (!showTimedTaskArrows)
+            {
+                ClearDeliveryTargetMarker();
+                return;
+            }
+
+            Transform timedTarget = GetTimedTaskGuidanceTarget();
+            if (timedTarget == null)
+            {
+                ClearDeliveryTargetMarker();
+                return;
+            }
+
+            if (activeDeliveryTargetMarker != null)
+            {
+                Destroy(activeDeliveryTargetMarker);
+                activeDeliveryTargetMarker = null;
+            }
+
+            activeDeliveryTarget = timedTarget;
+            RefreshDeliveryGroundArrows(false);
             return;
         }
 
@@ -2371,11 +2400,39 @@ public class Chapter1PerformanceController : MonoBehaviour
         return showDeliveryGroundArrows || IsNewPoliceScene();
     }
 
+    private bool ShouldShowTimedTaskGroundGuidance()
+    {
+        return explorationTimerFinished
+            && IsFreeExplorationActive()
+            && !AreWeddingTasksComplete();
+    }
+
+    private Transform GetTimedTaskGuidanceTarget()
+    {
+        if (deliveredWineCount < Mathf.Max(1, wineTargetCount))
+        {
+            return ResolvePhysicalPickupPoint(true);
+        }
+
+        if (sharedFoodCount < Mathf.Max(1, foodTargetCount))
+        {
+            return ResolvePhysicalPickupPoint(false);
+        }
+
+        if (!danceFinished)
+        {
+            return danceCenter != null ? danceCenter : GetDanceCenter();
+        }
+
+        return null;
+    }
+
     private void RefreshDeliveryGroundArrows(bool force)
     {
-        if (!ShouldShowDeliveryGroundArrows()
+        bool timedTaskGuidance = ShouldShowTimedTaskGroundGuidance();
+        if ((!ShouldShowDeliveryGroundArrows() && !timedTaskGuidance)
             || activeDeliveryTarget == null
-            || carriedWeddingItem == WeddingCarryItem.None)
+            || (carriedWeddingItem == WeddingCarryItem.None && !timedTaskGuidance))
         {
             ClearDeliveryGroundArrows();
             return;
@@ -7070,14 +7127,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
                 animator.transform,
                 out Transform namedRoot);
-            if (existing != null && !existing.canCircleDance && !isNamedAddedDancer)
+            if (!isNamedAddedDancer || namedRoot == null)
             {
                 continue;
             }
 
-            Transform actorRoot = isNamedAddedDancer && namedRoot != null
-                ? namedRoot
-                : animator.transform;
+            Transform actorRoot = namedRoot;
 
             if (actorRoot == null
                 || !adjustedRoots.Add(actorRoot.GetInstanceID())
@@ -10402,7 +10457,12 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (IsNewPoliceScene())
         {
+            useExplorationTimer = true;
+            explorationDurationSeconds = 180f;
+            showExplorationTimer = true;
             showPickupLocationGuidance = true;
+            normalizeNamedAddedDancerHeight = false;
+            weddingCrowdDanceRange = 60f;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);

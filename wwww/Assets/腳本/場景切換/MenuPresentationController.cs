@@ -188,6 +188,7 @@ public sealed class MenuPresentationController : MonoBehaviour
 
     private void BindVolumeControls()
     {
+        ConfigureSettingsOptionFrames();
         volumeLabel = FindTextStartingWith("音量");
         ConfigureVolumeLayout();
         EnsureVolumePreviewAudio();
@@ -229,6 +230,54 @@ public sealed class MenuPresentationController : MonoBehaviour
         UpdateVolumeLabel();
     }
 
+    private static void ConfigureSettingsOptionFrames()
+    {
+        Button[] buttons = FindObjectsByType<Button>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None);
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label == null)
+            {
+                continue;
+            }
+
+            string compact = Compact(label.text);
+            bool isMainSettingsOption = compact == "語言"
+                || compact == "返回"
+                || compact.StartsWith("音量", System.StringComparison.Ordinal);
+            if (!isMainSettingsOption)
+            {
+                continue;
+            }
+
+            RectTransform buttonRect = button.transform as RectTransform;
+            if (buttonRect != null)
+            {
+                buttonRect.sizeDelta = new Vector2(
+                    Mathf.Max(200f, buttonRect.sizeDelta.x),
+                    Mathf.Max(38f, buttonRect.sizeDelta.y));
+            }
+
+            RectTransform labelRect = label.rectTransform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.anchoredPosition = Vector2.zero;
+            labelRect.offsetMin = new Vector2(12f, 4f);
+            labelRect.offsetMax = new Vector2(-12f, -4f);
+
+            label.alignment = TextAlignmentOptions.Center;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 12f;
+            label.fontSizeMax = 21f;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+        }
+    }
+
     private void IncreaseVolume()
     {
         GameAudioSettings.Increase();
@@ -261,7 +310,9 @@ public sealed class MenuPresentationController : MonoBehaviour
         RectTransform rowRect = volumeLabel.GetComponentInParent<Button>()?.transform as RectTransform;
         if (rowRect != null)
         {
-            rowRect.sizeDelta = new Vector2(Mathf.Max(190f, rowRect.sizeDelta.x), rowRect.sizeDelta.y);
+            rowRect.sizeDelta = new Vector2(
+                Mathf.Max(200f, rowRect.sizeDelta.x),
+                Mathf.Max(38f, rowRect.sizeDelta.y));
         }
 
         RectTransform labelRect = volumeLabel.rectTransform;

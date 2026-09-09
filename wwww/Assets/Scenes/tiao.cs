@@ -5,34 +5,34 @@ using UnityEngine.SceneManagement;
 
 public class tiao : MonoBehaviour
 {
-    // ­ì¦³¥\¯à¡G¸õ¨ì Build Profiles ¤¤½s¸¹ 1 ªº³õ´º
+    // åŸæœ‰åŠŸèƒ½ï¼šè·³åˆ° Build Profiles ä¸­ç·¨è™Ÿ 1 çš„å ´æ™¯
     public void Jump()
     {
         SceneManager.LoadScene(1);
     }
 
-    // ·s¼W¡G¸õ¨ì²Ä¤@³¹³õ´º
+    // æ–°å¢ï¼šè·³åˆ°ç¬¬ä¸€ç« å ´æ™¯
     public void JumpToScene5()
     {
-        SceneManager.LoadScene(5);
+        SceneManager.LoadScene("ç¬¬ä¸€ç« æ–°ç‰ˆè­¦å¯Ÿ");
     }
 
-    // ­ì¦³¥\¯à¡G¸õ¨ì³õ´º½s¸¹ 4
+    // åŸæœ‰åŠŸèƒ½ï¼šè·³åˆ°å ´æ™¯ç·¨è™Ÿ 4
     public void JumpToScene4()
     {
         SceneManager.LoadScene(4);
     }
 
-    // ¶Ç¤J³õ´º½s¸¹¶i¦æ¤Á´«
+    // å‚³å…¥å ´æ™¯ç·¨è™Ÿé€²è¡Œåˆ‡æ›
     public void JumpToAnyScene(int sceneIndex)
     {
         SceneManager.LoadScene(sceneIndex);
     }
 
-    // Â÷¶}¹CÀ¸
+    // é›¢é–‹éŠæˆ²
     public void QuitGame()
     {
-        Debug.Log("ÂIÀ»¤F°h¥X«ö¶s");
+        Debug.Log("é»æ“Šäº†é€€å‡ºæŒ‰éˆ•");
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
