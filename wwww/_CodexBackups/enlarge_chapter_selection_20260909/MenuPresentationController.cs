@@ -40,11 +40,11 @@ public sealed class MenuPresentationController : MonoBehaviour
 
     private static readonly Vector2[] ChapterPositions =
     {
-        new Vector2(-50f, 7f),
-        new Vector2(0f, 7f),
-        new Vector2(50f, 7f),
-        new Vector2(-25f, -29f),
-        new Vector2(25f, -29f)
+        new Vector2(-44f, 6f),
+        new Vector2(0f, 6f),
+        new Vector2(44f, 6f),
+        new Vector2(-22f, -25f),
+        new Vector2(22f, -25f)
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -869,9 +869,8 @@ public sealed class MenuPresentationController : MonoBehaviour
         }
 
         canvasRect.sizeDelta = new Vector2(
-            Mathf.Max(150f, canvasRect.sizeDelta.x),
-            Mathf.Max(112f, canvasRect.sizeDelta.y));
-        EnlargeChapterSelectionPanel(canvas);
+            Mathf.Max(132f, canvasRect.sizeDelta.x),
+            Mathf.Max(100f, canvasRect.sizeDelta.y));
 
         Button[] allButtons = canvas.GetComponentsInChildren<Button>(true);
         Button[] chapterButtons = new Button[ChapterPrefixes.Length];
@@ -941,106 +940,29 @@ public sealed class MenuPresentationController : MonoBehaviour
             buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
             buttonRect.pivot = new Vector2(0.5f, 0.5f);
             buttonRect.localScale = Vector3.one;
-            buttonRect.sizeDelta = new Vector2(48f, 31.5f);
+            buttonRect.sizeDelta = new Vector2(42f, 27.5f);
             buttonRect.anchoredPosition = ChapterPositions[i];
             buttonRect.SetSiblingIndex(canvasRect.childCount - 1);
 
             labelRect.SetParent(buttonRect, false);
-            labelRect.anchorMin = new Vector2(0f, 0.48f);
+            labelRect.anchorMin = Vector2.zero;
             labelRect.anchorMax = Vector2.one;
             labelRect.pivot = new Vector2(0.5f, 0.5f);
             labelRect.localScale = Vector3.one;
-            labelRect.offsetMin = new Vector2(2.5f, 0f);
-            labelRect.offsetMax = new Vector2(-2.5f, -1.2f);
+            labelRect.offsetMin = new Vector2(2.2f, 2.2f);
+            labelRect.offsetMax = new Vector2(-2.2f, -2.2f);
 
-            label.text = ChapterPrefixes[i];
-            label.fontStyle = FontStyles.Bold;
+            label.text = ChapterTitles[i];
             label.alignment = TextAlignmentOptions.Center;
-            label.enableAutoSizing = false;
-            label.fontSize = 7.4f;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 3.2f;
+            label.fontSizeMax = 6f;
             label.textWrappingMode = TextWrappingModes.NoWrap;
-            label.margin = Vector4.zero;
             label.raycastTarget = false;
-
-            ConfigureChapterSubtitle(buttonRect, label, ChapterTitles[i]);
         }
 
         CenterCanvasVertically(canvas);
         Canvas.ForceUpdateCanvases();
-    }
-
-    private static void EnlargeChapterSelectionPanel(Canvas canvas)
-    {
-        Image[] images = canvas.GetComponentsInChildren<Image>(true);
-        for (int i = 0; i < images.Length; i++)
-        {
-            Image image = images[i];
-            if (image == null
-                || image.gameObject.name != "Panel"
-                || !IsBrownMenuPanel(image.color))
-            {
-                continue;
-            }
-
-            RectTransform panelRect = image.rectTransform;
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.anchoredPosition = Vector2.zero;
-            panelRect.offsetMin = new Vector2(-12f, -9f);
-            panelRect.offsetMax = new Vector2(12f, 9f);
-            return;
-        }
-    }
-
-    private static void ConfigureChapterSubtitle(
-        RectTransform buttonRect,
-        TextMeshProUGUI heading,
-        string fullTitle)
-    {
-        Transform existing = buttonRect.Find("Chapter Subtitle");
-        TextMeshProUGUI subtitle = existing != null
-            ? existing.GetComponent<TextMeshProUGUI>()
-            : null;
-
-        if (subtitle == null)
-        {
-            GameObject subtitleObject = new GameObject(
-                "Chapter Subtitle",
-                typeof(RectTransform),
-                typeof(CanvasRenderer),
-                typeof(TextMeshProUGUI));
-            subtitleObject.layer = buttonRect.gameObject.layer;
-            RectTransform subtitleRect = subtitleObject.GetComponent<RectTransform>();
-            subtitleRect.SetParent(buttonRect, false);
-            subtitle = subtitleObject.GetComponent<TextMeshProUGUI>();
-        }
-
-        int lineBreak = fullTitle.IndexOf('\n');
-        subtitle.text = lineBreak >= 0 && lineBreak + 1 < fullTitle.Length
-            ? fullTitle.Substring(lineBreak + 1)
-            : fullTitle;
-        subtitle.font = heading.font;
-        subtitle.fontSharedMaterial = heading.fontSharedMaterial;
-        subtitle.color = heading.color;
-        subtitle.fontStyle = FontStyles.Bold;
-        subtitle.alignment = TextAlignmentOptions.Center;
-        subtitle.enableAutoSizing = true;
-        subtitle.fontSizeMin = 4.6f;
-        subtitle.fontSizeMax = 5.8f;
-        subtitle.textWrappingMode = TextWrappingModes.NoWrap;
-        subtitle.margin = Vector4.zero;
-        subtitle.raycastTarget = false;
-
-        RectTransform rect = subtitle.rectTransform;
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = new Vector2(1f, 0.56f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = Vector2.zero;
-        rect.offsetMin = new Vector2(2.2f, 1.5f);
-        rect.offsetMax = new Vector2(-2.2f, 0.4f);
-        rect.localScale = Vector3.one;
-        rect.SetAsLastSibling();
     }
 
     private static void CenterCanvasVertically(Canvas canvas)
