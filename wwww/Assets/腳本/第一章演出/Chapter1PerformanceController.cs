@@ -813,6 +813,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private void Start()
     {
         EnsureWeddingCrowdDancers();
+        EnsureNewPoliceSceneNpcGrounding();
         PrepareDeliveryTaskNPCs();
         StartCoroutine(RefreshWeddingDancerSizingAfterAnimatorUpdate());
 
