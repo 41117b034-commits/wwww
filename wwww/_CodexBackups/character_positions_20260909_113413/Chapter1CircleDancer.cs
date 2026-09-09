@@ -322,7 +322,7 @@ public class Chapter1CircleDancer : MonoBehaviour
     {
         // 穩定貼地版：強制使用「起始 Root 到地面的偏移」。
         // 不再用 Humanoid 腳骨高度推算 Root，避免不同角色骨架比例造成整群飄高。
-        followGround = !ShouldKeepSceneAuthoredHeight();
+        followGround = true;
         lockAllDancersToSharedGround = false;
         useHumanoidFeetForGrounding = false;
         preventFeetSinkingOnSlopes = false;
@@ -386,11 +386,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         }
     }
 
-    private bool ShouldKeepSceneAuthoredHeight()
-    {
-        return gameObject.scene.IsValid()
-            && gameObject.scene.name == "\u7b2c\u4e00\u7ae0\u65b0\u7248\u8b66\u5bdf";
-    }
     private void Update()
     {
         if (!canCircleDance)
