@@ -7140,38 +7140,12 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             faceFire.target = circleCenter;
             faceFire.owner = this;
-            faceFire.turnSpeed = 1000f;
+            faceFire.turnSpeed = 14f;
             faceFire.yawOffsetDegrees = GetWeddingVisualYawOffset(
                 actorRoot,
                 animator);
             faceFire.useSkeletonFacing = false;
             faceFire.enabled = true;
-
-            Chapter1WeddingFaceCenter[] exactFacingControllers =
-                actorRoot.GetComponentsInChildren<Chapter1WeddingFaceCenter>(true);
-            Chapter1WeddingFaceCenter exactFacing =
-                actorRoot.GetComponent<Chapter1WeddingFaceCenter>();
-            if (exactFacing == null)
-            {
-                exactFacing = actorRoot.gameObject.AddComponent<Chapter1WeddingFaceCenter>();
-            }
-
-            for (int facingIndex = 0;
-                facingIndex < exactFacingControllers.Length;
-                facingIndex++)
-            {
-                if (exactFacingControllers[facingIndex] != exactFacing)
-                {
-                    exactFacingControllers[facingIndex].enabled = false;
-                }
-            }
-
-            exactFacing.Configure(
-                animator,
-                circleCenter,
-                faceFire,
-                this,
-                faceFire.yawOffsetDegrees);
 
             dancer.enabled = true;
             dancer.SetCanCircleDance(true);
@@ -7412,14 +7386,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (actorRoot == null || circleCenter == null)
         {
-            return;
-        }
-
-        Chapter1WeddingFaceCenter exactFacing =
-            actorRoot.GetComponent<Chapter1WeddingFaceCenter>();
-        if (exactFacing != null)
-        {
-            exactFacing.FaceCenterNow();
             return;
         }
 
@@ -11735,88 +11701,6 @@ public class Chapter1ReceiverNaturalGestureDriver : MonoBehaviour
         {
             playing = false;
         }
-    }
-}
-
-/// <summary>
-/// Applies the final wedding-dancer yaw after animation and grounding updates.
-/// </summary>
-[DefaultExecutionOrder(3000)]
-public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
-{
-    public Animator animator;
-    public Transform target;
-    public Chapter1FaceFire faceFire;
-    public Chapter1PerformanceController owner;
-    public float visualYawOffsetDegrees;
-
-    private Chapter1CircleDancer dancer;
-
-    public void Configure(
-        Animator sourceAnimator,
-        Transform centerTarget,
-        Chapter1FaceFire sourceFaceFire,
-        Chapter1PerformanceController chapterOwner,
-        float yawOffsetDegrees)
-    {
-        animator = sourceAnimator;
-        target = centerTarget;
-        faceFire = sourceFaceFire;
-        owner = chapterOwner;
-        visualYawOffsetDegrees = yawOffsetDegrees;
-        dancer = GetComponent<Chapter1CircleDancer>();
-        enabled = true;
-        FaceCenterNow();
-    }
-
-    private void Awake()
-    {
-        dancer = GetComponent<Chapter1CircleDancer>();
-    }
-
-    private void LateUpdate()
-    {
-        if (target == null
-            || faceFire == null
-            || !faceFire.enabled
-            || (owner != null && owner.IsPoliceSequenceStarted)
-            || (dancer != null && !dancer.IsActivelyDancing))
-        {
-            return;
-        }
-
-        FaceCenterNow();
-    }
-
-    public void FaceCenterNow()
-    {
-        if (target == null)
-        {
-            return;
-        }
-
-        Vector3 towardCenter = target.position - transform.position;
-        towardCenter.y = 0f;
-        if (towardCenter.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Vector3 visualForward = transform.rotation
-            * (Quaternion.Euler(0f, visualYawOffsetDegrees, 0f)
-                * Vector3.forward);
-        visualForward.y = 0f;
-        if (visualForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        float yawDelta = Vector3.SignedAngle(
-            visualForward.normalized,
-            towardCenter.normalized,
-            Vector3.up);
-        transform.rotation = Quaternion.AngleAxis(yawDelta, Vector3.up)
-            * transform.rotation;
     }
 }
 

@@ -72,7 +72,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
     public bool autoFitWeddingCircleToArmReach = true;
     [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
-    [Range(3.5f, 30f)] public float minimumWeddingCircleRadius = 22f;
+    [Range(3.5f, 10f)] public float minimumWeddingCircleRadius = 5.2f;
     [Range(1f, 3f)] public float minimumWeddingNeighborSpacing = 1.55f;
     public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
@@ -7001,15 +7001,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
                 animator.transform,
                 out Transform namedAddedRoot);
-            Transform actorRoot = GetWeddingDancerActorRoot(animator);
+            Transform actorRoot = isNamedAddedDancer && namedAddedRoot != null
+                ? namedAddedRoot
+                : animator.transform;
 
             if (actorRoot == null || !configuredActorRoots.Add(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            animator = GetBestWeddingAnimator(actorRoot, animator);
-            if (animator == null)
             {
                 continue;
             }
@@ -7040,22 +7036,20 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             PrepareWeddingDancerVisuals(animator);
             Chapter1CircleDancer[] actorDancers =
-                actorRoot.GetComponentsInChildren<Chapter1CircleDancer>(true);
-            Chapter1CircleDancer dancer =
-                actorRoot.GetComponent<Chapter1CircleDancer>();
+                animator.GetComponents<Chapter1CircleDancer>();
+            Chapter1CircleDancer dancer = actorDancers.Length > 0
+                ? actorDancers[0]
+                : null;
             if (dancer == null)
             {
-                dancer = actorRoot.gameObject.AddComponent<Chapter1CircleDancer>();
+                dancer = animator.gameObject.AddComponent<Chapter1CircleDancer>();
             }
 
-            // The controller must live on the complete actor root. Moving a nested
-            // Animator can leave clothes, limbs, or sibling renderers behind.
-            for (int dancerIndex = 0; dancerIndex < actorDancers.Length; dancerIndex++)
+            // Old scene revisions can leave more than one circle controller on the
+            // same actor. Keep one authoritative component so one body gets one slot.
+            for (int dancerIndex = 1; dancerIndex < actorDancers.Length; dancerIndex++)
             {
-                if (actorDancers[dancerIndex] != dancer)
-                {
-                    DisableDuplicateWeddingDancer(actorDancers[dancerIndex]);
-                }
+                DisableDuplicateWeddingDancer(actorDancers[dancerIndex]);
             }
 
             dancer.animator = animator;
@@ -7074,7 +7068,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.circleArrangeSpeed = 12f;
             dancer.reservedPlayerSlots = 0;
             dancer.groupStartAngleDegrees = playerGapAngleDegrees;
-            dancer.useFixedCircleRadius = true;
+            dancer.useFixedCircleRadius = false;
             dancer.fixedCircleRadius = weddingCircleRadius;
             dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
             dancer.preventHandHoldAutoShrink = true;
@@ -7122,56 +7116,17 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.travelFacingBlend = 0f;
             dancer.turnSmooth = Mathf.Max(12f, dancer.turnSmooth);
 
-            Chapter1FaceFire[] actorFaceControllers =
-                actorRoot.GetComponentsInChildren<Chapter1FaceFire>(true);
-            Chapter1FaceFire faceFire = actorRoot.GetComponent<Chapter1FaceFire>();
+            Chapter1FaceFire faceFire = animator.GetComponent<Chapter1FaceFire>();
             if (faceFire == null)
             {
-                faceFire = actorRoot.gameObject.AddComponent<Chapter1FaceFire>();
-            }
-
-            for (int faceIndex = 0; faceIndex < actorFaceControllers.Length; faceIndex++)
-            {
-                if (actorFaceControllers[faceIndex] != faceFire)
-                {
-                    actorFaceControllers[faceIndex].enabled = false;
-                }
+                faceFire = animator.gameObject.AddComponent<Chapter1FaceFire>();
             }
 
             faceFire.target = circleCenter;
             faceFire.owner = this;
-            faceFire.turnSpeed = 1000f;
-            faceFire.yawOffsetDegrees = GetWeddingVisualYawOffset(
-                actorRoot,
-                animator);
-            faceFire.useSkeletonFacing = false;
-            faceFire.enabled = true;
-
-            Chapter1WeddingFaceCenter[] exactFacingControllers =
-                actorRoot.GetComponentsInChildren<Chapter1WeddingFaceCenter>(true);
-            Chapter1WeddingFaceCenter exactFacing =
-                actorRoot.GetComponent<Chapter1WeddingFaceCenter>();
-            if (exactFacing == null)
-            {
-                exactFacing = actorRoot.gameObject.AddComponent<Chapter1WeddingFaceCenter>();
-            }
-
-            for (int facingIndex = 0;
-                facingIndex < exactFacingControllers.Length;
-                facingIndex++)
-            {
-                if (exactFacingControllers[facingIndex] != exactFacing)
-                {
-                    exactFacingControllers[facingIndex].enabled = false;
-                }
-            }
-
-            exactFacing.Configure(
-                animator,
-                circleCenter,
-                faceFire,
-                this,
-                faceFire.yawOffsetDegrees);
+            faceFire.turnSpeed = 14f;
+            faceFire.yawOffsetDegrees = 0f;
+            faceFire.useSkeletonFacing = true;
 
             dancer.enabled = true;
             dancer.SetCanCircleDance(true);
@@ -7258,19 +7213,16 @@ public class Chapter1PerformanceController : MonoBehaviour
     private void SanitizeWeddingCircleDancers(Transform circleCenter)
     {
         HashSet<int> trackedDancerIds = new HashSet<int>();
-        HashSet<int> trackedActorRootIds = new HashSet<int>();
+        HashSet<int> trackedAnimatorIds = new HashSet<int>();
 
         for (int i = weddingCrowdDancers.Count - 1; i >= 0; i--)
         {
             Chapter1CircleDancer dancer = weddingCrowdDancers[i];
             Animator dancerAnimator = dancer != null ? dancer.animator : null;
-            Transform actorRoot = GetWeddingDancerActorRoot(dancerAnimator);
             if (dancer == null
                 || dancerAnimator == null
-                || actorRoot == null
-                || dancer.transform != actorRoot
                 || !trackedDancerIds.Add(dancer.GetInstanceID())
-                || !trackedActorRootIds.Add(actorRoot.GetInstanceID()))
+                || !trackedAnimatorIds.Add(dancerAnimator.GetInstanceID()))
             {
                 DisableDuplicateWeddingDancer(dancer);
                 weddingCrowdDancers.RemoveAt(i);
@@ -7292,12 +7244,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             Animator candidateAnimator = candidate.animator != null
                 ? candidate.animator
                 : candidate.GetComponentInChildren<Animator>(true);
-            bool isCurrentSceneDancer = candidate.gameObject.scene == gameObject.scene;
-            bool belongsToWeddingCircle = candidate.center == circleCenter
-                || candidate.roastedPigCenter == circleCenter
-                || IsWeddingCrowdActor(candidateAnimator, circleCenter);
-            if (isCurrentSceneDancer
-                && (IsNewPoliceScene() || belongsToWeddingCircle))
+            if (IsWeddingCrowdActor(candidateAnimator, circleCenter))
             {
                 DisableDuplicateWeddingDancer(candidate);
             }
@@ -7307,16 +7254,13 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Animator[] GetConfiguredWeddingAnimatorArray()
     {
         List<Animator> animators = new List<Animator>();
-        HashSet<int> actorRootIds = new HashSet<int>();
+        HashSet<int> animatorIds = new HashSet<int>();
 
         for (int i = 0; i < weddingCrowdDancers.Count; i++)
         {
             Chapter1CircleDancer dancer = weddingCrowdDancers[i];
             Animator animator = dancer != null ? dancer.animator : null;
-            Transform actorRoot = GetWeddingDancerActorRoot(animator);
-            if (animator != null
-                && actorRoot != null
-                && actorRootIds.Add(actorRoot.GetInstanceID()))
+            if (animator != null && animatorIds.Add(animator.GetInstanceID()))
             {
                 animators.Add(animator);
             }
@@ -7361,89 +7305,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             Vector3 position = circleCenter.position
                 + new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle))
                 * circleRadius;
-            Transform actorRoot = activeDancers[i].transform;
-            position.y = actorRoot.position.y;
-            actorRoot.position = position;
-
-            SnapWeddingActorFacing(actorRoot, circleCenter);
+            position.y = activeDancers[i].transform.position.y;
+            activeDancers[i].transform.position = position;
         }
-    }
-
-    private float GetWeddingVisualYawOffset(
-        Transform actorRoot,
-        Animator animator)
-    {
-        if (actorRoot == null || animator == null)
-        {
-            return 0f;
-        }
-
-        Vector3 rootForward = actorRoot.forward;
-        Vector3 visualForward = animator.transform.forward;
-        rootForward.y = 0f;
-        visualForward.y = 0f;
-        if (rootForward.sqrMagnitude < 0.001f
-            || visualForward.sqrMagnitude < 0.001f)
-        {
-            return 0f;
-        }
-
-        float yawOffset = Vector3.SignedAngle(
-            rootForward.normalized,
-            visualForward.normalized,
-            Vector3.up);
-
-        // The elder FBX used by Mona was authored with its visible front on -Z.
-        // Keep this per-model correction separate from the shared circle facing.
-        string actorName = actorRoot.name.Trim();
-        if (actorName.Contains("莫那")
-            || actorName.Contains("長老")
-            || actorName.ToLowerInvariant().Contains("elder"))
-        {
-            yawOffset += 180f;
-        }
-
-        return Mathf.DeltaAngle(0f, yawOffset);
-    }
-
-    private void SnapWeddingActorFacing(
-        Transform actorRoot,
-        Transform circleCenter)
-    {
-        if (actorRoot == null || circleCenter == null)
-        {
-            return;
-        }
-
-        Chapter1WeddingFaceCenter exactFacing =
-            actorRoot.GetComponent<Chapter1WeddingFaceCenter>();
-        if (exactFacing != null)
-        {
-            exactFacing.FaceCenterNow();
-            return;
-        }
-
-        Chapter1FaceFire faceFire = actorRoot.GetComponent<Chapter1FaceFire>();
-        float yawOffset = faceFire != null
-            ? faceFire.yawOffsetDegrees
-            : 0f;
-        Vector3 visualForward = actorRoot.rotation
-            * (Quaternion.Euler(0f, yawOffset, 0f) * Vector3.forward);
-        Vector3 towardCenter = circleCenter.position - actorRoot.position;
-        visualForward.y = 0f;
-        towardCenter.y = 0f;
-        if (visualForward.sqrMagnitude < 0.001f
-            || towardCenter.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        float yawDelta = Vector3.SignedAngle(
-            visualForward.normalized,
-            towardCenter.normalized,
-            Vector3.up);
-        actorRoot.rotation = Quaternion.AngleAxis(yawDelta, Vector3.up)
-            * actorRoot.rotation;
     }
 
     private void PrepareWeddingDancerVisuals(Animator animator)
@@ -7516,7 +7380,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.roastedPigCenter = center;
             dancer.reservedPlayerSlots = reservedSlotCount;
             dancer.groupStartAngleDegrees = playerGapAngleDegrees;
-            dancer.useFixedCircleRadius = true;
+            dancer.useFixedCircleRadius = false;
             dancer.fixedCircleRadius = weddingCircleRadius;
             dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
@@ -7607,7 +7471,9 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
-            Transform actorRoot = GetWeddingDancerActorRoot(animator);
+            Transform actorRoot = isNamedAddedDancer && namedRoot != null
+                ? namedRoot
+                : animator.transform;
 
             if (actorRoot == null
                 || !adjustedRoots.Add(actorRoot.GetInstanceID())
@@ -7753,7 +7619,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.useFixedCircleRadius = true;
+            dancer.useFixedCircleRadius = false;
             dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
         }
@@ -7839,7 +7705,11 @@ public class Chapter1PerformanceController : MonoBehaviour
                     continue;
                 }
 
-                Transform actorRoot = GetWeddingDancerActorRoot(animator);
+                Transform actorRoot = TryFindNamedAddedDancerRoot(
+                    animator.transform,
+                    out Transform namedRoot)
+                        ? namedRoot
+                        : animator.transform;
                 if (actorRoot == null
                     || !countedActorRoots.Add(actorRoot.GetInstanceID()))
                 {
@@ -7919,109 +7789,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             return total / count;
         }
 
-        Chapter1CircleDancer dancer =
-            animator.GetComponentInParent<Chapter1CircleDancer>(true);
+        Chapter1CircleDancer dancer = animator.GetComponent<Chapter1CircleDancer>();
         return dancer != null ? dancer.GetAverageArmReach() : 0f;
-    }
-
-    private Transform GetWeddingDancerActorRoot(Animator animator)
-    {
-        if (animator == null)
-        {
-            return null;
-        }
-
-        if (TryFindNamedAddedDancerRoot(animator.transform, out Transform namedRoot)
-            && namedRoot != null)
-        {
-            return namedRoot;
-        }
-
-        Transform actorRoot = animator.transform;
-        while (actorRoot.parent != null)
-        {
-            Transform parent = actorRoot.parent;
-            string parentName = parent.name.ToLowerInvariant();
-            bool isSceneContainer = IsDancePivotTransform(parent)
-                || parentName.Contains("weddingnpcgroup")
-                || parentName.Contains("npcgroup")
-                || parentName.Contains("villagergroup")
-                || parentName.Contains("crowdgroup");
-            if (isSceneContainer)
-            {
-                break;
-            }
-
-            Animator[] parentAnimators =
-                parent.GetComponentsInChildren<Animator>(true);
-            bool parentLooksLikeActorRoot = parent.GetComponent<Animator>() != null
-                || parent.GetComponent<Chapter1CircleDancer>() != null
-                || parentAnimators.Length <= 1;
-            if (!parentLooksLikeActorRoot)
-            {
-                break;
-            }
-
-            actorRoot = parent;
-        }
-
-        return actorRoot;
-    }
-
-    private Animator GetBestWeddingAnimator(
-        Transform actorRoot,
-        Animator fallback)
-    {
-        if (actorRoot == null)
-        {
-            return fallback;
-        }
-
-        Animator[] candidates = actorRoot.GetComponentsInChildren<Animator>(true);
-        Animator best = fallback;
-        int bestScore = GetWeddingAnimatorScore(best);
-        for (int i = 0; i < candidates.Length; i++)
-        {
-            Animator candidate = candidates[i];
-            int score = GetWeddingAnimatorScore(candidate);
-            if (score > bestScore)
-            {
-                best = candidate;
-                bestScore = score;
-            }
-        }
-
-        return best;
-    }
-
-    private int GetWeddingAnimatorScore(Animator candidate)
-    {
-        if (candidate == null)
-        {
-            return int.MinValue;
-        }
-
-        int score = candidate.enabled ? 1 : 0;
-        if (candidate.runtimeAnimatorController != null)
-        {
-            score += 8;
-        }
-
-        if (candidate.avatar != null && candidate.avatar.isValid)
-        {
-            score += 4;
-            if (candidate.isHuman)
-            {
-                score += 2;
-            }
-        }
-
-        if (candidate.GetComponentInChildren<SkinnedMeshRenderer>(true) != null)
-        {
-            score += 2;
-        }
-
-        return score;
     }
 
     private bool TryFindNamedAddedDancerRoot(
@@ -8148,7 +7917,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        HashSet<int> groundedActorRoots = new HashSet<int>();
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
@@ -8157,31 +7925,11 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
-            Transform actorRoot = GetWeddingDancerActorRoot(animator);
-            if (actorRoot == null
-                || !groundedActorRoots.Add(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            animator = GetBestWeddingAnimator(actorRoot, animator);
-            Chapter1NpcGrounding[] actorGrounders =
-                actorRoot.GetComponentsInChildren<Chapter1NpcGrounding>(true);
             Chapter1NpcGrounding grounder =
-                actorRoot.GetComponent<Chapter1NpcGrounding>();
+                animator.GetComponent<Chapter1NpcGrounding>();
             if (grounder == null)
             {
-                grounder = actorRoot.gameObject.AddComponent<Chapter1NpcGrounding>();
-            }
-
-            for (int grounderIndex = 0;
-                grounderIndex < actorGrounders.Length;
-                grounderIndex++)
-            {
-                if (actorGrounders[grounderIndex] != grounder)
-                {
-                    actorGrounders[grounderIndex].enabled = false;
-                }
+                grounder = animator.gameObject.AddComponent<Chapter1NpcGrounding>();
             }
 
             grounder.Configure(animator, guidedGroundLayers);
@@ -8224,14 +7972,14 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (animator == null
             || !animator.gameObject.scene.IsValid()
-            || !animator.gameObject.activeInHierarchy)
+            || !animator.gameObject.activeInHierarchy
+            || animator.GetComponentInChildren<SkinnedMeshRenderer>(true) == null)
         {
             return false;
         }
 
-        Transform actor = GetWeddingDancerActorRoot(animator);
-        if (actor == null
-            || actor.GetComponentInChildren<SkinnedMeshRenderer>(true) == null)
+        Transform actor = animator.transform;
+        if (actor.parent != null && actor.parent.GetComponentInParent<Animator>() != null)
         {
             return false;
         }
@@ -11174,14 +10922,14 @@ public class Chapter1PerformanceController : MonoBehaviour
                 1.07f);
             minimumWeddingCircleRadius = Mathf.Max(
                 minimumWeddingCircleRadius,
-                22f);
+                6f);
             minimumWeddingNeighborSpacing = Mathf.Max(
                 minimumWeddingNeighborSpacing,
                 1.75f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);
-            weddingCrowdDanceRange = Mathf.Max(weddingCrowdDanceRange, 95f);
+            weddingCrowdDanceRange = 60f;
             keepDeliveryTargetsStationary = false;
             detachDeliveryTargetsFromDancePivot = false;
             forceVisiblePoliceEntranceShot = true;
@@ -11735,88 +11483,6 @@ public class Chapter1ReceiverNaturalGestureDriver : MonoBehaviour
         {
             playing = false;
         }
-    }
-}
-
-/// <summary>
-/// Applies the final wedding-dancer yaw after animation and grounding updates.
-/// </summary>
-[DefaultExecutionOrder(3000)]
-public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
-{
-    public Animator animator;
-    public Transform target;
-    public Chapter1FaceFire faceFire;
-    public Chapter1PerformanceController owner;
-    public float visualYawOffsetDegrees;
-
-    private Chapter1CircleDancer dancer;
-
-    public void Configure(
-        Animator sourceAnimator,
-        Transform centerTarget,
-        Chapter1FaceFire sourceFaceFire,
-        Chapter1PerformanceController chapterOwner,
-        float yawOffsetDegrees)
-    {
-        animator = sourceAnimator;
-        target = centerTarget;
-        faceFire = sourceFaceFire;
-        owner = chapterOwner;
-        visualYawOffsetDegrees = yawOffsetDegrees;
-        dancer = GetComponent<Chapter1CircleDancer>();
-        enabled = true;
-        FaceCenterNow();
-    }
-
-    private void Awake()
-    {
-        dancer = GetComponent<Chapter1CircleDancer>();
-    }
-
-    private void LateUpdate()
-    {
-        if (target == null
-            || faceFire == null
-            || !faceFire.enabled
-            || (owner != null && owner.IsPoliceSequenceStarted)
-            || (dancer != null && !dancer.IsActivelyDancing))
-        {
-            return;
-        }
-
-        FaceCenterNow();
-    }
-
-    public void FaceCenterNow()
-    {
-        if (target == null)
-        {
-            return;
-        }
-
-        Vector3 towardCenter = target.position - transform.position;
-        towardCenter.y = 0f;
-        if (towardCenter.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        Vector3 visualForward = transform.rotation
-            * (Quaternion.Euler(0f, visualYawOffsetDegrees, 0f)
-                * Vector3.forward);
-        visualForward.y = 0f;
-        if (visualForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        float yawDelta = Vector3.SignedAngle(
-            visualForward.normalized,
-            towardCenter.normalized,
-            Vector3.up);
-        transform.rotation = Quaternion.AngleAxis(yawDelta, Vector3.up)
-            * transform.rotation;
     }
 }
 

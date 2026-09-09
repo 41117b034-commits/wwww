@@ -6900,7 +6900,7 @@ MonoBehaviour:
   weddingReservedPlayerSlots: 1
   autoFitWeddingCircleToArmReach: 1
   weddingNeighborSpacingArmMultiplier: 1.9
-  minimumWeddingCircleRadius: 22
+  minimumWeddingCircleRadius: 6
   minimumWeddingNeighborSpacing: 1.75
   weddingCircleRadius: 22
   weddingCircleTempoBpm: 88
