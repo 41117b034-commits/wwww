@@ -743,7 +743,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
     private readonly List<Chapter1NpcGrounding> weddingNpcGrounders = new List<Chapter1NpcGrounding>();
     private bool weddingCircleConfigured;
-    private bool weddingPlayerSlotActive;
     private float weddingPlayerGapAngleRadians;
 
     private string fallbackSpeaker = "";
@@ -6670,7 +6669,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         SetPlayerControl(false);
         SetMission("加入舞蹈：跟著鼓聲踏步，感受婚禮短暫的安寧。");
         ShowLine("族人", "來，跟著鼓聲一起踏步。今晚讓祖靈聽見我們的歌。", 3f);
-        SetWeddingPlayerSlotActive(true);
         yield return new WaitForSeconds(1f);
 
         PlayDirector(danceTimeline);
@@ -6700,7 +6698,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return WaitForDirector(danceTimeline, danceDuration);
         }
 
-        SetWeddingPlayerSlotActive(false, center);
         danceRoutineRunning = false;
         SetPlayerControl(true);
         UpdateWeddingQuestMission();
@@ -6949,8 +6946,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         weddingCircleRadius = CalculateWeddingCircleRadius(
             animators,
             circleCenter,
-            out neighborSpacing,
-            0);
+            out neighborSpacing);
         danceRadius = weddingCircleRadius;
 
         Vector3 playerOffset = playerRoot != null
@@ -6986,7 +6982,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         int fallbackControllerIndex = 0;
         HashSet<string> namedAddedDancersFound = new HashSet<string>();
-        HashSet<int> configuredActorRoots = new HashSet<int>();
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
@@ -6998,14 +6993,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
                 animator.transform,
                 out Transform namedAddedRoot);
-            Transform actorRoot = isNamedAddedDancer && namedAddedRoot != null
-                ? namedAddedRoot
-                : animator.transform;
-
-            if (actorRoot == null || !configuredActorRoots.Add(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
 
             if (isNamedAddedDancer && namedAddedRoot != null)
             {
@@ -7031,7 +7018,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 fallbackControllerIndex++;
             }
 
-            PrepareWeddingDancerVisuals(animator);
+            animator.applyRootMotion = false;
             Chapter1CircleDancer dancer = animator.GetComponent<Chapter1CircleDancer>();
             bool created = dancer == null;
             if (created)
@@ -7050,35 +7037,20 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.radialStepDistance = weddingCrowdRadialStepDistance;
             dancer.swayDegrees = weddingCrowdSwayDegrees;
             dancer.autoArrangeEvenlyAroundCenter = true;
-            dancer.reservedPlayerSlots = 0;
+            dancer.reservedPlayerSlots = Mathf.Max(0, weddingReservedPlayerSlots);
             dancer.groupStartAngleDegrees = playerGapAngleDegrees;
-            dancer.useFixedCircleRadius = false;
+            dancer.useFixedCircleRadius = true;
             dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
             dancer.preventHandHoldAutoShrink = true;
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = !animator.isHuman;
-            dancer.proceduralHandHoldWeight = animator.isHuman ? 0f : 0.72f;
-            dancer.autoCreateHandHoldIKDriver = animator.isHuman;
-            dancer.handHoldIKWeight = 0.82f;
-            dancer.handHoldRotationWeight = 0.05f;
+            dancer.enableProceduralHandHolding = true;
+            dancer.proceduralHandHoldWeight = 1f;
             dancer.handHoldShoulderToHipRatio = 0.5f;
-            dancer.maximumHandPairDistance = Mathf.Max(0.45f, neighborSpacing * 1.08f);
-
-            if (animator.isHuman)
-            {
-                Chapter1HandHoldIK handHoldDriver =
-                    animator.GetComponent<Chapter1HandHoldIK>();
-                if (handHoldDriver == null)
-                {
-                    handHoldDriver = animator.gameObject.AddComponent<Chapter1HandHoldIK>();
-                }
-
-                handHoldDriver.owner = dancer;
-                handHoldDriver.enabled = true;
-            }
+            dancer.maximumHandPairDistance = Mathf.Max(
+                dancer.maximumHandPairDistance,
+                neighborSpacing * 1.2f);
             dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
             dancer.travelFacingBlend = 0f;
@@ -7115,8 +7087,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         weddingCircleRadius = CalculateWeddingCircleRadius(
             animators,
             circleCenter,
-            out finalizedNeighborSpacing,
-            0);
+            out finalizedNeighborSpacing);
         danceRadius = weddingCircleRadius;
         for (int i = 0; i < weddingCrowdDancers.Count; i++)
         {
@@ -7127,15 +7098,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.desiredNeighborSpacing = Mathf.Max(
-                0.65f,
-                finalizedNeighborSpacing);
             dancer.maximumHandPairDistance = Mathf.Max(
-                0.45f,
-                finalizedNeighborSpacing * 1.08f);
+                dancer.maximumHandPairDistance,
+                finalizedNeighborSpacing * 1.2f);
         }
 
-        weddingPlayerSlotActive = false;
         weddingCircleConfigured = weddingCrowdDancers.Count > 0;
         Debug.Log(
             "[Chapter1] Wedding crowd dancers started: " + weddingCrowdDancers.Count
@@ -7152,85 +7119,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                     "[Chapter1] Added wedding dancer was not included: "
                     + AddedWeddingDancerNames[i]);
             }
-        }
-    }
-
-    private void PrepareWeddingDancerVisuals(Animator animator)
-    {
-        if (animator == null)
-        {
-            return;
-        }
-
-        animator.enabled = true;
-        animator.applyRootMotion = false;
-        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-
-        SkinnedMeshRenderer[] renderers =
-            animator.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            if (renderers[i] != null)
-            {
-                // Animated hands can leave stale imported bounds while the arms move.
-                renderers[i].updateWhenOffscreen = true;
-            }
-        }
-    }
-
-    private void SetWeddingPlayerSlotActive(bool active, Transform centerOverride = null)
-    {
-        if (!weddingCircleConfigured)
-        {
-            return;
-        }
-
-        int reservedSlotCount = active
-            ? Mathf.Max(1, weddingReservedPlayerSlots)
-            : 0;
-        weddingPlayerSlotActive = active;
-
-        Transform center = centerOverride != null
-            ? centerOverride
-            : FindTransformByName("烤乳豬舞圈中心");
-        if (center == null)
-        {
-            center = danceCenter != null ? danceCenter : GetDanceCenter();
-        }
-
-        if (center == null)
-        {
-            return;
-        }
-
-        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
-        float neighborSpacing;
-        weddingCircleRadius = CalculateWeddingCircleRadius(
-            animators,
-            center,
-            out neighborSpacing,
-            reservedSlotCount);
-        danceRadius = weddingCircleRadius;
-
-        float playerGapAngleDegrees = weddingPlayerGapAngleRadians * Mathf.Rad2Deg;
-        for (int i = 0; i < weddingCrowdDancers.Count; i++)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            if (dancer == null || !dancer.canCircleDance)
-            {
-                continue;
-            }
-
-            dancer.center = center;
-            dancer.roastedPigCenter = center;
-            dancer.reservedPlayerSlots = reservedSlotCount;
-            dancer.groupStartAngleDegrees = playerGapAngleDegrees;
-            dancer.useFixedCircleRadius = false;
-            dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
-            dancer.maximumHandPairDistance = Mathf.Max(
-                0.45f,
-                neighborSpacing * 1.08f);
         }
     }
 
@@ -7451,25 +7339,23 @@ public class Chapter1PerformanceController : MonoBehaviour
         weddingCircleRadius = CalculateWeddingCircleRadius(
             animators,
             center,
-            out neighborSpacing,
-            weddingPlayerSlotActive ? Mathf.Max(1, weddingReservedPlayerSlots) : 0);
+            out neighborSpacing);
         danceRadius = weddingCircleRadius;
 
         for (int i = 0; i < weddingCrowdDancers.Count; i++)
         {
             Chapter1CircleDancer dancer = weddingCrowdDancers[i];
             if (dancer == null
-                || !dancer.canCircleDance)
+                || !dancer.canCircleDance
+                || IsDeliveryTaskNPC(dancer.transform))
             {
                 continue;
             }
 
             dancer.fixedCircleRadius = weddingCircleRadius;
-            dancer.useFixedCircleRadius = false;
-            dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
             dancer.maximumHandPairDistance = Mathf.Max(
-                0.45f,
-                neighborSpacing * 1.08f);
+                dancer.maximumHandPairDistance,
+                neighborSpacing * 1.2f);
         }
     }
 
@@ -7531,11 +7417,9 @@ public class Chapter1PerformanceController : MonoBehaviour
     private float CalculateWeddingCircleRadius(
         Animator[] animators,
         Transform center,
-        out float neighborSpacing,
-        int reservedSlotCount = -1)
+        out float neighborSpacing)
     {
         List<float> armReaches = new List<float>();
-        HashSet<int> countedActorRoots = new HashSet<int>();
         int activeDancerCount = 0;
 
         if (animators != null)
@@ -7543,7 +7427,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             for (int i = 0; i < animators.Length; i++)
             {
                 Animator animator = animators[i];
-                if (!IsWeddingCrowdActor(animator, center))
+                if (!IsWeddingCrowdActor(animator, center)
+                    || IsDeliveryTaskNPC(animator.transform))
                 {
                     continue;
                 }
@@ -7551,17 +7436,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 Chapter1CircleDancer existing = animator.GetComponent<Chapter1CircleDancer>();
                 if (existing != null && !existing.canCircleDance
                     && !TryFindNamedAddedDancerRoot(animator.transform, out _))
-                {
-                    continue;
-                }
-
-                Transform actorRoot = TryFindNamedAddedDancerRoot(
-                    animator.transform,
-                    out Transform namedRoot)
-                        ? namedRoot
-                        : animator.transform;
-                if (actorRoot == null
-                    || !countedActorRoots.Add(actorRoot.GetInstanceID()))
                 {
                     continue;
                 }
@@ -7577,23 +7451,23 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         int slotCount = Mathf.Max(
             3,
-            activeDancerCount + (reservedSlotCount >= 0
-                ? reservedSlotCount
-                : Mathf.Max(0, weddingReservedPlayerSlots)));
-        neighborSpacing = 1.12f;
+            activeDancerCount + Mathf.Max(0, weddingReservedPlayerSlots));
+        float radius = Mathf.Max(2.2f, weddingCircleRadius);
 
         if (autoFitWeddingCircleToArmReach && armReaches.Count > 0)
         {
             float medianArmReach = GetMedian(armReaches);
             neighborSpacing = medianArmReach
                 * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.55f, 1.75f);
+            float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
+            if (denominator > 0.001f)
+            {
+                radius = neighborSpacing / denominator;
+            }
+
+            radius = Mathf.Clamp(radius, 2.2f, Mathf.Max(30f, weddingCircleRadius * 2f));
         }
 
-        float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
-        float radius = denominator > 0.001f
-            ? neighborSpacing / denominator
-            : 2.2f;
-        radius = Mathf.Clamp(radius, 2.2f, 30f);
         neighborSpacing = 2f * radius * Mathf.Sin(Mathf.PI / slotCount);
         return radius;
     }
