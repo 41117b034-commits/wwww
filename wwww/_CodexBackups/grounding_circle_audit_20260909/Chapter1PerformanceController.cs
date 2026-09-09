@@ -72,8 +72,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
     public bool autoFitWeddingCircleToArmReach = true;
     [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
-    [Range(3.5f, 10f)] public float minimumWeddingCircleRadius = 5.2f;
-    [Range(1f, 3f)] public float minimumWeddingNeighborSpacing = 1.55f;
     public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
     public float weddingCircleDegreesPerBeat = 1.65f;
@@ -6977,11 +6975,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
-            if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
-            {
-                continue;
-            }
-
             RuntimeAnimatorController runtimeController = animator.runtimeAnimatorController;
             if (runtimeController != null
                 && runtimeController.name.StartsWith("VillagerAnimator")
@@ -6998,11 +6991,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             Animator animator = animators[i];
             if (!IsWeddingCrowdActor(animator, circleCenter))
-            {
-                continue;
-            }
-
-            if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
             {
                 continue;
             }
@@ -7077,7 +7065,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.handHoldIKWeight = 0.82f;
             dancer.handHoldRotationWeight = 0.05f;
             dancer.handHoldShoulderToHipRatio = 0.5f;
-            dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
+            dancer.maximumHandPairDistance = Mathf.Max(0.45f, neighborSpacing * 1.08f);
 
             if (animator.isHuman)
             {
@@ -7142,8 +7130,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.desiredNeighborSpacing = Mathf.Max(
                 0.65f,
                 finalizedNeighborSpacing);
-            dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(
-                finalizedNeighborSpacing);
+            dancer.maximumHandPairDistance = Mathf.Max(
+                0.45f,
+                finalizedNeighborSpacing * 1.08f);
         }
 
         weddingPlayerSlotActive = false;
@@ -7239,7 +7228,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.useFixedCircleRadius = false;
             dancer.fixedCircleRadius = weddingCircleRadius;
             dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
-            dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
+            dancer.maximumHandPairDistance = Mathf.Max(
+                0.45f,
+                neighborSpacing * 1.08f);
         }
     }
 
@@ -7455,7 +7446,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, center);
-        EnsureNewPoliceSceneNpcGrounding();
 
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
@@ -7477,13 +7467,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.fixedCircleRadius = weddingCircleRadius;
             dancer.useFixedCircleRadius = false;
             dancer.desiredNeighborSpacing = Mathf.Max(0.65f, neighborSpacing);
-            dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
+            dancer.maximumHandPairDistance = Mathf.Max(
+                0.45f,
+                neighborSpacing * 1.08f);
         }
-    }
-
-    private float GetWeddingMaximumHandPairDistance(float neighborSpacing)
-    {
-        return Mathf.Clamp(neighborSpacing * 1.08f, 0.45f, 1.65f);
     }
 
     private bool TryGetAnimatorRigHeight(Animator animator, out float height)
@@ -7568,11 +7555,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                     continue;
                 }
 
-                if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
-                {
-                    continue;
-                }
-
                 Transform actorRoot = TryFindNamedAddedDancerRoot(
                     animator.transform,
                     out Transform namedRoot)
@@ -7598,25 +7580,20 @@ public class Chapter1PerformanceController : MonoBehaviour
             activeDancerCount + (reservedSlotCount >= 0
                 ? reservedSlotCount
                 : Mathf.Max(0, weddingReservedPlayerSlots)));
-        neighborSpacing = Mathf.Max(1.12f, minimumWeddingNeighborSpacing);
+        neighborSpacing = 1.12f;
 
         if (autoFitWeddingCircleToArmReach && armReaches.Count > 0)
         {
             float medianArmReach = GetMedian(armReaches);
-            neighborSpacing = Mathf.Max(
-                neighborSpacing,
-                medianArmReach
-                    * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.55f, 1.75f));
+            neighborSpacing = medianArmReach
+                * Mathf.Clamp(weddingNeighborSpacingArmMultiplier, 1.55f, 1.75f);
         }
 
         float denominator = 2f * Mathf.Sin(Mathf.PI / slotCount);
         float radius = denominator > 0.001f
             ? neighborSpacing / denominator
             : 2.2f;
-        radius = Mathf.Clamp(
-            radius,
-            Mathf.Max(2.2f, minimumWeddingCircleRadius),
-            30f);
+        radius = Mathf.Clamp(radius, 2.2f, 30f);
         neighborSpacing = 2f * radius * Mathf.Sin(Mathf.PI / slotCount);
         return radius;
     }
@@ -7801,10 +7778,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             grounder.Configure(animator, guidedGroundLayers);
-            grounder.footClearance = 0.018f;
-            grounder.hardSnapThreshold = 0.08f;
-            grounder.followSpeed = 32f;
-            grounder.maximumCorrection = 12f;
             grounder.enabled = true;
             grounder.SnapImmediately();
 
@@ -10782,12 +10755,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             showPickupLocationGuidance = true;
             normalizeNamedAddedDancerHeight = true;
             normalizeWeddingNpcProportions = true;
-            minimumWeddingNpcHeightRatio = Mathf.Max(
-                minimumWeddingNpcHeightRatio,
-                0.93f);
-            maximumWeddingNpcHeightRatio = Mathf.Min(
-                maximumWeddingNpcHeightRatio,
-                1.07f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);

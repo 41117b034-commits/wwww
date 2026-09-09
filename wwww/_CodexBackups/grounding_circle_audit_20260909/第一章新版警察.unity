@@ -6893,15 +6893,13 @@ MonoBehaviour:
   normalizeNamedAddedDancerHeight: 1
   namedAddedDancerHeightRatio: 1
   normalizeWeddingNpcProportions: 1
-  minimumWeddingNpcHeightRatio: 0.93
-  maximumWeddingNpcHeightRatio: 1.07
+  minimumWeddingNpcHeightRatio: 0.9
+  maximumWeddingNpcHeightRatio: 1.1
   maximumWeddingNpcScaleCorrection: 16
   fallbackChildHeightRatio: 0.72
   weddingReservedPlayerSlots: 1
   autoFitWeddingCircleToArmReach: 1
   weddingNeighborSpacingArmMultiplier: 1.9
-  minimumWeddingCircleRadius: 5.2
-  minimumWeddingNeighborSpacing: 1.55
   weddingCircleRadius: 22
   weddingCircleTempoBpm: 88
   weddingCircleDegreesPerBeat: 1.65

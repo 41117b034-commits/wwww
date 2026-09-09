@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[DefaultExecutionOrder(2000)]
+[DefaultExecutionOrder(1000)]
 public sealed class Chapter1NpcGrounding : MonoBehaviour
 {
     public Animator animator;
@@ -57,29 +57,6 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
         {
             leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
             rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
-        }
-
-        if (animator != null && (leftFoot == null || rightFoot == null))
-        {
-            Transform[] rigTransforms = animator.GetComponentsInChildren<Transform>(true);
-            leftFoot = leftFoot != null
-                ? leftFoot
-                : FindRigBone(
-                    rigTransforms,
-                    "L_Foot",
-                    "LeftFoot",
-                    "Foot.L",
-                    "foot_l",
-                    "J_Bip_L_Foot");
-            rightFoot = rightFoot != null
-                ? rightFoot
-                : FindRigBone(
-                    rigTransforms,
-                    "R_Foot",
-                    "RightFoot",
-                    "Foot.R",
-                    "foot_r",
-                    "J_Bip_R_Foot");
         }
     }
 
@@ -205,12 +182,31 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
 
     private bool TryGetGroundY(Vector3 position, out float groundY)
     {
-        // Probe from just above the current foot first. This finds the visible
-        // cobblestone/ground mesh without accidentally selecting a roof above the
-        // character, and avoids treating the terrain under that mesh as the floor.
-        float localProbeUp = Mathf.Clamp(groundProbeUp, 0.35f, 1.25f);
-        Vector3 origin = position + Vector3.up * localProbeUp;
-        float distance = Mathf.Max(1f, localProbeUp + groundProbeDown);
+        Terrain[] terrains = Terrain.activeTerrains;
+        for (int i = 0; i < terrains.Length; i++)
+        {
+            Terrain terrain = terrains[i];
+            if (terrain == null || terrain.terrainData == null)
+            {
+                continue;
+            }
+
+            Vector3 terrainPosition = terrain.transform.position;
+            Vector3 terrainSize = terrain.terrainData.size;
+            bool inside = position.x >= terrainPosition.x
+                && position.x <= terrainPosition.x + terrainSize.x
+                && position.z >= terrainPosition.z
+                && position.z <= terrainPosition.z + terrainSize.z;
+
+            if (inside)
+            {
+                groundY = terrain.SampleHeight(position) + terrainPosition.y;
+                return true;
+            }
+        }
+
+        Vector3 origin = position + Vector3.up * Mathf.Max(0.5f, groundProbeUp);
+        float distance = Mathf.Max(1f, groundProbeUp + groundProbeDown);
         RaycastHit[] hits = Physics.RaycastAll(
             origin,
             Vector3.down,
@@ -244,105 +240,6 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
             }
         }
 
-        if (foundGround)
-        {
-            return true;
-        }
-
-        // Terrain is a fallback because this scene also has a raised visible
-        // ground mesh whose height does not always match Terrain.SampleHeight.
-        Terrain[] terrains = Terrain.activeTerrains;
-        for (int i = 0; i < terrains.Length; i++)
-        {
-            Terrain terrain = terrains[i];
-            if (terrain == null || terrain.terrainData == null)
-            {
-                continue;
-            }
-
-            Vector3 terrainPosition = terrain.transform.position;
-            Vector3 terrainSize = terrain.terrainData.size;
-            bool inside = position.x >= terrainPosition.x
-                && position.x <= terrainPosition.x + terrainSize.x
-                && position.z >= terrainPosition.z
-                && position.z <= terrainPosition.z + terrainSize.z;
-
-            if (inside)
-            {
-                groundY = terrain.SampleHeight(position) + terrainPosition.y;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static Transform FindRigBone(
-        Transform[] rigTransforms,
-        params string[] aliases)
-    {
-        if (rigTransforms == null || aliases == null)
-        {
-            return null;
-        }
-
-        string[] normalizedAliases = new string[aliases.Length];
-        for (int i = 0; i < aliases.Length; i++)
-        {
-            normalizedAliases[i] = NormalizeBoneName(aliases[i]);
-        }
-
-        for (int pass = 0; pass < 2; pass++)
-        {
-            for (int i = 0; i < rigTransforms.Length; i++)
-            {
-                Transform candidate = rigTransforms[i];
-                if (candidate == null)
-                {
-                    continue;
-                }
-
-                string candidateName = NormalizeBoneName(candidate.name);
-                for (int j = 0; j < normalizedAliases.Length; j++)
-                {
-                    string alias = normalizedAliases[j];
-                    if (alias.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    bool matches = pass == 0
-                        ? candidateName == alias
-                        : candidateName.EndsWith(alias, System.StringComparison.Ordinal);
-                    if (matches)
-                    {
-                        return candidate;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static string NormalizeBoneName(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return string.Empty;
-        }
-
-        char[] normalized = new char[value.Length];
-        int count = 0;
-        for (int i = 0; i < value.Length; i++)
-        {
-            char character = value[i];
-            if (char.IsLetterOrDigit(character))
-            {
-                normalized[count++] = char.ToLowerInvariant(character);
-            }
-        }
-
-        return new string(normalized, 0, count);
+        return foundGround;
     }
 }
