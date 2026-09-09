@@ -101,7 +101,6 @@ public sealed class MenuPresentationController : MonoBehaviour
         // Reapply the saved master volume after all scene Start methods have run.
         GameAudioSettings.Apply();
         Canvas.ForceUpdateCanvases();
-        EnlargeBrownMenuPanels();
 
         if (scene.name == "點選介面")
         {
@@ -129,76 +128,8 @@ public sealed class MenuPresentationController : MonoBehaviour
             return;
         }
 
-        ConfigureMainMenuTitle(title);
         Canvas canvas = title.GetComponentInParent<Canvas>();
         CenterCanvasVertically(canvas);
-    }
-
-    private static void EnlargeBrownMenuPanels()
-    {
-        Image[] images = FindObjectsByType<Image>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None);
-
-        for (int i = 0; i < images.Length; i++)
-        {
-            Image image = images[i];
-            if (image == null
-                || image.gameObject.name != "Panel"
-                || !IsBrownMenuPanel(image.color))
-            {
-                continue;
-            }
-
-            RectTransform panelRect = image.rectTransform;
-            bool stretchesHorizontally = Mathf.Approximately(
-                panelRect.anchorMax.x - panelRect.anchorMin.x,
-                1f);
-            bool stretchesVertically = Mathf.Approximately(
-                panelRect.anchorMax.y - panelRect.anchorMin.y,
-                1f);
-
-            if (stretchesHorizontally && stretchesVertically)
-            {
-                panelRect.anchoredPosition = Vector2.zero;
-                panelRect.offsetMin = new Vector2(-8f, -6f);
-                panelRect.offsetMax = new Vector2(8f, 6f);
-            }
-            else
-            {
-                panelRect.sizeDelta = new Vector2(
-                    panelRect.sizeDelta.x + 16f,
-                    panelRect.sizeDelta.y + 12f);
-            }
-        }
-    }
-
-    private static bool IsBrownMenuPanel(Color color)
-    {
-        return color.r >= 0.60f
-            && color.r <= 0.76f
-            && color.g >= 0.45f
-            && color.g <= 0.62f
-            && color.b <= 0.18f;
-    }
-
-    private static void ConfigureMainMenuTitle(TextMeshProUGUI title)
-    {
-        RectTransform titleRect = title.rectTransform;
-        titleRect.anchorMin = new Vector2(0.5f, 0.5f);
-        titleRect.anchorMax = new Vector2(0.5f, 0.5f);
-        titleRect.pivot = new Vector2(0.5f, 0.5f);
-        titleRect.anchoredPosition = new Vector2(0f, 35f);
-        titleRect.sizeDelta = new Vector2(108f, 24f);
-        titleRect.localScale = Vector3.one;
-
-        title.alignment = TextAlignmentOptions.Center;
-        title.enableAutoSizing = true;
-        title.fontSizeMin = 15f;
-        title.fontSizeMax = 24f;
-        title.textWrappingMode = TextWrappingModes.NoWrap;
-        title.margin = new Vector4(3f, 1f, 3f, 1f);
-        title.raycastTarget = false;
     }
 
     private void BindLanguageButtons()
