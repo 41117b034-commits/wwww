@@ -3956,13 +3956,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -4004,8 +4004,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
@@ -5234,13 +5234,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -5282,8 +5282,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
@@ -5408,13 +5408,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -5456,8 +5456,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
@@ -6606,13 +6606,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -6654,8 +6654,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
@@ -6901,7 +6901,7 @@ MonoBehaviour:
   autoFitWeddingCircleToArmReach: 1
   weddingNeighborSpacingArmMultiplier: 1.9
   minimumWeddingCircleRadius: 6
-  minimumWeddingNeighborSpacing: 1.75
+  minimumWeddingNeighborSpacing: 1.65
   weddingCircleRadius: 22
   weddingCircleTempoBpm: 88
   weddingCircleDegreesPerBeat: 1.65
@@ -12433,13 +12433,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -12481,8 +12481,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0
@@ -13098,13 +13098,13 @@ MonoBehaviour:
   inOutDistance: 0.18
   stepBobHeight: 0.028
   kneePulse: 0.012
-  enableProceduralStepping: 0
+  enableProceduralStepping: 1
   upperLegLiftDegrees: 14
   kneeBendDegrees: 28
   pelvisBobHeightRatio: 0.012
   pelvisWeightShiftRatio: 0.007
   useSkeletonLegBendAxis: 1
-  stabilizeFootFacing: 0
+  stabilizeFootFacing: 1
   footFacingWeight: 1
   maxFootYawCorrection: 120
   faceCenter: 1
@@ -13146,8 +13146,8 @@ MonoBehaviour:
   desiredNeighborSpacing: 1.12
   handHoldRadiusAdjustSpeed: 0.8
   autoCreateHandHoldIKDriver: 1
-  enableProceduralHandHolding: 0
-  proceduralHandHoldWeight: 0
+  enableProceduralHandHolding: 1
+  proceduralHandHoldWeight: 0.94
   handHoldShoulderDropRatio: 0.26
   handHoldShoulderToHipRatio: 0.52
   logHandHoldSetup: 0

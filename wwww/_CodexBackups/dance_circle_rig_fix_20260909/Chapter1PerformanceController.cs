@@ -6946,7 +6946,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, circleCenter);
-        weddingCrowdDancers.Clear();
 
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
@@ -7035,21 +7034,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             PrepareWeddingDancerVisuals(animator);
-            Chapter1CircleDancer[] actorDancers =
-                animator.GetComponents<Chapter1CircleDancer>();
-            Chapter1CircleDancer dancer = actorDancers.Length > 0
-                ? actorDancers[0]
-                : null;
-            if (dancer == null)
+            Chapter1CircleDancer dancer = animator.GetComponent<Chapter1CircleDancer>();
+            bool created = dancer == null;
+            if (created)
             {
                 dancer = animator.gameObject.AddComponent<Chapter1CircleDancer>();
-            }
-
-            // Old scene revisions can leave more than one circle controller on the
-            // same actor. Keep one authoritative component so one body gets one slot.
-            for (int dancerIndex = 1; dancerIndex < actorDancers.Length; dancerIndex++)
-            {
-                DisableDuplicateWeddingDancer(actorDancers[dancerIndex]);
             }
 
             dancer.animator = animator;
@@ -7075,11 +7064,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = false;
-            dancer.proceduralHandHoldWeight = 0f;
+            dancer.enableProceduralHandHolding = !animator.isHuman;
+            dancer.proceduralHandHoldWeight = animator.isHuman ? 0f : 0.72f;
             dancer.autoCreateHandHoldIKDriver = animator.isHuman;
-            dancer.handHoldIKWeight = animator.isHuman ? 0.55f : 0f;
-            dancer.handHoldRotationWeight = 0f;
+            dancer.handHoldIKWeight = 0.82f;
+            dancer.handHoldRotationWeight = 0.05f;
             dancer.handHoldShoulderToHipRatio = 0.5f;
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
 
@@ -7095,23 +7084,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 handHoldDriver.owner = dancer;
                 handHoldDriver.enabled = true;
             }
-            else
-            {
-                Chapter1HandHoldIK handHoldDriver =
-                    animator.GetComponent<Chapter1HandHoldIK>();
-                if (handHoldDriver != null)
-                {
-                    handHoldDriver.enabled = false;
-                }
-            }
-
-            // Imported Generic rigs do not share a common bone axis. Directly
-            // rotating their arms or legs can detach, mirror, or reverse limbs.
-            // The Animator owns the pose; this component only moves the intact root.
-            dancer.enableProceduralStepping = false;
-            dancer.stabilizeFootFacing = false;
-            dancer.individualTempoVariation = 0f;
-            dancer.individualPhaseVariation = 0f;
+            dancer.enableProceduralStepping = true;
             dancer.faceCenter = true;
             dancer.travelFacingBlend = 0f;
             dancer.turnSmooth = Mathf.Max(12f, dancer.turnSmooth);
@@ -7126,7 +7099,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             faceFire.owner = this;
             faceFire.turnSpeed = 14f;
             faceFire.yawOffsetDegrees = 0f;
-            faceFire.useSkeletonFacing = true;
 
             dancer.enabled = true;
             dancer.SetCanCircleDance(true);
@@ -7138,14 +7110,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        SanitizeWeddingCircleDancers(circleCenter);
-
-        // Recalculate from the actual authoritative participant list. This keeps
-        // the radius and slot count identical even when a prefab has nested Animators.
-        Animator[] configuredAnimators = GetConfiguredWeddingAnimatorArray();
+        // All components now exist, including the Generic-rig dancers. Recalculate
+        // once more so their actual arm lengths determine a reachable hand-hold ring.
         float finalizedNeighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
-            configuredAnimators,
+            animators,
             circleCenter,
             out finalizedNeighborSpacing,
             0);
@@ -7166,11 +7135,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 finalizedNeighborSpacing);
         }
 
-        SnapWeddingDancersToSingleCircle(
-            circleCenter,
-            weddingCircleRadius,
-            playerGapAngleDegrees);
-
         weddingPlayerSlotActive = false;
         weddingCircleConfigured = weddingCrowdDancers.Count > 0;
         Debug.Log(
@@ -7188,125 +7152,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                     "[Chapter1] Added wedding dancer was not included: "
                     + AddedWeddingDancerNames[i]);
             }
-        }
-    }
-
-    private void DisableDuplicateWeddingDancer(Chapter1CircleDancer dancer)
-    {
-        if (dancer == null)
-        {
-            return;
-        }
-
-        dancer.StopDancing();
-        dancer.canCircleDance = false;
-        dancer.enabled = false;
-
-        Chapter1HandHoldIK handHoldDriver =
-            dancer.GetComponent<Chapter1HandHoldIK>();
-        if (handHoldDriver != null && handHoldDriver.owner == dancer)
-        {
-            handHoldDriver.enabled = false;
-        }
-    }
-
-    private void SanitizeWeddingCircleDancers(Transform circleCenter)
-    {
-        HashSet<int> trackedDancerIds = new HashSet<int>();
-        HashSet<int> trackedAnimatorIds = new HashSet<int>();
-
-        for (int i = weddingCrowdDancers.Count - 1; i >= 0; i--)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            Animator dancerAnimator = dancer != null ? dancer.animator : null;
-            if (dancer == null
-                || dancerAnimator == null
-                || !trackedDancerIds.Add(dancer.GetInstanceID())
-                || !trackedAnimatorIds.Add(dancerAnimator.GetInstanceID()))
-            {
-                DisableDuplicateWeddingDancer(dancer);
-                weddingCrowdDancers.RemoveAt(i);
-            }
-        }
-
-        Chapter1CircleDancer[] allDancers =
-            Resources.FindObjectsOfTypeAll<Chapter1CircleDancer>();
-        for (int i = 0; i < allDancers.Length; i++)
-        {
-            Chapter1CircleDancer candidate = allDancers[i];
-            if (candidate == null
-                || trackedDancerIds.Contains(candidate.GetInstanceID())
-                || !candidate.gameObject.scene.IsValid())
-            {
-                continue;
-            }
-
-            Animator candidateAnimator = candidate.animator != null
-                ? candidate.animator
-                : candidate.GetComponentInChildren<Animator>(true);
-            if (IsWeddingCrowdActor(candidateAnimator, circleCenter))
-            {
-                DisableDuplicateWeddingDancer(candidate);
-            }
-        }
-    }
-
-    private Animator[] GetConfiguredWeddingAnimatorArray()
-    {
-        List<Animator> animators = new List<Animator>();
-        HashSet<int> animatorIds = new HashSet<int>();
-
-        for (int i = 0; i < weddingCrowdDancers.Count; i++)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            Animator animator = dancer != null ? dancer.animator : null;
-            if (animator != null && animatorIds.Add(animator.GetInstanceID()))
-            {
-                animators.Add(animator);
-            }
-        }
-
-        return animators.ToArray();
-    }
-
-    private void SnapWeddingDancersToSingleCircle(
-        Transform circleCenter,
-        float circleRadius,
-        float startAngleDegrees)
-    {
-        if (circleCenter == null)
-        {
-            return;
-        }
-
-        List<Chapter1CircleDancer> activeDancers =
-            new List<Chapter1CircleDancer>();
-        for (int i = 0; i < weddingCrowdDancers.Count; i++)
-        {
-            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
-            if (dancer != null && dancer.canCircleDance && dancer.enabled)
-            {
-                activeDancers.Add(dancer);
-            }
-        }
-
-        activeDancers.Sort(
-            (a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
-        int participantCount = activeDancers.Count;
-        if (participantCount == 0)
-        {
-            return;
-        }
-
-        float startAngle = startAngleDegrees * Mathf.Deg2Rad;
-        for (int i = 0; i < participantCount; i++)
-        {
-            float angle = startAngle + Mathf.PI * 2f * i / participantCount;
-            Vector3 position = circleCenter.position
-                + new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle))
-                * circleRadius;
-            position.y = activeDancers[i].transform.position.y;
-            activeDancers[i].transform.position = position;
         }
     }
 
@@ -7358,7 +7203,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        Animator[] animators = GetConfiguredWeddingAnimatorArray();
+        Animator[] animators = Resources.FindObjectsOfTypeAll<Animator>();
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
             animators,
@@ -7603,7 +7448,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
-            GetConfiguredWeddingAnimatorArray(),
+            animators,
             center,
             out neighborSpacing,
             weddingPlayerSlotActive ? Mathf.Max(1, weddingReservedPlayerSlots) : 0);
@@ -10925,7 +10770,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 6f);
             minimumWeddingNeighborSpacing = Mathf.Max(
                 minimumWeddingNeighborSpacing,
-                1.75f);
+                1.65f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);
