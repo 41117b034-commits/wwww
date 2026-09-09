@@ -328,12 +328,22 @@ public sealed class MenuPresentationController : MonoBehaviour
         accentRect.sizeDelta = new Vector2(-1.2f, 1.25f);
 
         CreateDialogText(
+            "Warning Icon",
+            panelRect,
+            fontTemplate,
+            "!",
+            new Vector2(-37f, 5.5f),
+            new Vector2(8f, 10f),
+            7.5f,
+            new Color(0.96f, 0.76f, 0.30f, 1f));
+
+        CreateDialogText(
             "Question",
             panelRect,
             fontTemplate,
             "確定要退出遊戲嗎？",
-            new Vector2(0f, 5.5f),
-            new Vector2(88f, 9f),
+            new Vector2(2.5f, 5.5f),
+            new Vector2(70f, 9f),
             5.4f,
             new Color(0.98f, 0.93f, 0.79f, 1f));
 

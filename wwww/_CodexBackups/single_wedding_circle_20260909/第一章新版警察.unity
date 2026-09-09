@@ -6900,8 +6900,8 @@ MonoBehaviour:
   weddingReservedPlayerSlots: 1
   autoFitWeddingCircleToArmReach: 1
   weddingNeighborSpacingArmMultiplier: 1.9
-  minimumWeddingCircleRadius: 6
-  minimumWeddingNeighborSpacing: 1.65
+  minimumWeddingCircleRadius: 5.2
+  minimumWeddingNeighborSpacing: 1.55
   weddingCircleRadius: 22
   weddingCircleTempoBpm: 88
   weddingCircleDegreesPerBeat: 1.65
@@ -7085,8 +7085,8 @@ MonoBehaviour:
   deliveryGroundArrowPulseAmount: 0.1
   deliveryGroundArrowPulseSpeed: 4.5
   deliveryGroundArrowColor: {r: 1, g: 0.82, b: 0.02, a: 1}
-  keepDeliveryTargetsStationary: 0
-  detachDeliveryTargetsFromDancePivot: 0
+  keepDeliveryTargetsStationary: 1
+  detachDeliveryTargetsFromDancePivot: 1
   deliveryTargetIdleStateName: Idle
   guidePlayerDuringItemInteractions: 1
   guidedWalkToPickupSeconds: 1.15

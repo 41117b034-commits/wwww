@@ -6977,6 +6977,11 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
+            if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
+            {
+                continue;
+            }
+
             RuntimeAnimatorController runtimeController = animator.runtimeAnimatorController;
             if (runtimeController != null
                 && runtimeController.name.StartsWith("VillagerAnimator")
@@ -6993,6 +6998,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             Animator animator = animators[i];
             if (!IsWeddingCrowdActor(animator, circleCenter))
+            {
+                continue;
+            }
+
+            if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
             {
                 continue;
             }
@@ -7052,9 +7062,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.radialStepDistance = weddingCrowdRadialStepDistance;
             dancer.swayDegrees = weddingCrowdSwayDegrees;
             dancer.autoArrangeEvenlyAroundCenter = true;
-            dancer.synchronizeRootMovement = true;
-            dancer.inOutDistance = 0f;
-            dancer.circleArrangeSpeed = 12f;
             dancer.reservedPlayerSlots = 0;
             dancer.groupStartAngleDegrees = playerGapAngleDegrees;
             dancer.useFixedCircleRadius = false;
@@ -7100,8 +7107,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             faceFire.turnSpeed = 14f;
             faceFire.yawOffsetDegrees = 0f;
 
-            dancer.enabled = true;
-            dancer.SetCanCircleDance(true);
+            if (isNamedAddedDancer && namedAddedRoot != null)
+            {
+                dancer.enabled = true;
+                dancer.SetCanCircleDance(true);
+            }
+
             dancer.SetDancing(true);
 
             if (!weddingCrowdDancers.Contains(dancer))
@@ -7546,6 +7557,18 @@ public class Chapter1PerformanceController : MonoBehaviour
             {
                 Animator animator = animators[i];
                 if (!IsWeddingCrowdActor(animator, center))
+                {
+                    continue;
+                }
+
+                Chapter1CircleDancer existing = animator.GetComponent<Chapter1CircleDancer>();
+                if (existing != null && !existing.canCircleDance
+                    && !TryFindNamedAddedDancerRoot(animator.transform, out _))
+                {
+                    continue;
+                }
+
+                if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(animator.transform))
                 {
                     continue;
                 }
@@ -10765,18 +10788,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             maximumWeddingNpcHeightRatio = Mathf.Min(
                 maximumWeddingNpcHeightRatio,
                 1.07f);
-            minimumWeddingCircleRadius = Mathf.Max(
-                minimumWeddingCircleRadius,
-                6f);
-            minimumWeddingNeighborSpacing = Mathf.Max(
-                minimumWeddingNeighborSpacing,
-                1.65f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);
             weddingCrowdDanceRange = 60f;
-            keepDeliveryTargetsStationary = false;
-            detachDeliveryTargetsFromDancePivot = false;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
