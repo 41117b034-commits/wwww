@@ -66,29 +66,17 @@ public class UIButtonSound : MonoBehaviour
 
         for (int i = 0; i < buttons.Length; i++)
         {
-            BindButton(buttons[i]);
-        }
-    }
+            Button button = buttons[i];
+            if (button == null)
+            {
+                continue;
+            }
 
-    public static void RegisterButton(Button button)
-    {
-        if (instance != null)
-        {
-            instance.BindButton(button);
-        }
-    }
-
-    private void BindButton(Button button)
-    {
-        if (button == null)
-        {
-            return;
-        }
-
-        button.onClick.RemoveListener(PlayClickSound);
-        if (!HasPersistentClickListener(button))
-        {
-            button.onClick.AddListener(PlayClickSound);
+            button.onClick.RemoveListener(PlayClickSound);
+            if (!HasPersistentClickListener(button))
+            {
+                button.onClick.AddListener(PlayClickSound);
+            }
         }
     }
 

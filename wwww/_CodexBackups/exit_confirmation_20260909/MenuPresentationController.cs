@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -12,13 +11,10 @@ public sealed class MenuPresentationController : MonoBehaviour
 
     private readonly HashSet<int> boundLanguageButtons = new HashSet<int>();
     private readonly HashSet<int> boundVolumeButtons = new HashSet<int>();
-    private readonly HashSet<int> boundExitButtons = new HashSet<int>();
     private TextMeshProUGUI volumeLabel;
     private AudioSource volumePreviewSource;
     private AudioClip volumePreviewClip;
     private bool returningToSettings;
-    private GameObject exitConfirmationOverlay;
-    private bool quitPending;
 
     private static readonly string[] ChapterPrefixes =
     {
@@ -88,26 +84,12 @@ public sealed class MenuPresentationController : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (exitConfirmationOverlay != null
-            && exitConfirmationOverlay.activeSelf
-            && !quitPending
-            && Input.GetKeyDown(KeyCode.Escape))
-        {
-            HideExitConfirmation();
-        }
-    }
-
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         boundLanguageButtons.Clear();
         boundVolumeButtons.Clear();
-        boundExitButtons.Clear();
         volumeLabel = null;
         returningToSettings = false;
-        exitConfirmationOverlay = null;
-        quitPending = false;
         GameAudioSettings.Apply();
         StartCoroutine(ApplyScenePresentationAfterLayout(scene));
     }
@@ -124,7 +106,6 @@ public sealed class MenuPresentationController : MonoBehaviour
         if (scene.name == "點選介面")
         {
             CenterMainMenuCanvas();
-            BindMainMenuExitButton();
         }
         else if (scene.name == "字幕選單")
         {
@@ -218,333 +199,6 @@ public sealed class MenuPresentationController : MonoBehaviour
         title.textWrappingMode = TextWrappingModes.NoWrap;
         title.margin = new Vector4(3f, 1f, 3f, 1f);
         title.raycastTarget = false;
-    }
-
-    private void BindMainMenuExitButton()
-    {
-        Button[] buttons = FindObjectsByType<Button>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None);
-
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            Button button = buttons[i];
-            TextMeshProUGUI label = button != null
-                ? button.GetComponentInChildren<TextMeshProUGUI>(true)
-                : null;
-            if (label == null || Compact(label.text) != "退出")
-            {
-                continue;
-            }
-
-            Canvas canvas = button.GetComponentInParent<Canvas>();
-            if (canvas == null)
-            {
-                continue;
-            }
-
-            EnsureExitConfirmationDialog(
-                canvas,
-                label,
-                button.targetGraphic as Image);
-
-            if (boundExitButtons.Add(button.GetInstanceID()))
-            {
-                button.onClick.AddListener(ShowExitConfirmation);
-            }
-        }
-    }
-
-    private void EnsureExitConfirmationDialog(
-        Canvas canvas,
-        TextMeshProUGUI fontTemplate,
-        Image buttonImageTemplate)
-    {
-        if (exitConfirmationOverlay != null || canvas == null || fontTemplate == null)
-        {
-            return;
-        }
-
-        exitConfirmationOverlay = new GameObject(
-            "Exit Confirmation Overlay",
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(CanvasGroup),
-            typeof(Image));
-        exitConfirmationOverlay.layer = canvas.gameObject.layer;
-
-        RectTransform overlayRect = exitConfirmationOverlay.GetComponent<RectTransform>();
-        overlayRect.SetParent(canvas.transform, false);
-        overlayRect.anchorMin = Vector2.zero;
-        overlayRect.anchorMax = Vector2.one;
-        overlayRect.pivot = new Vector2(0.5f, 0.5f);
-        overlayRect.anchoredPosition = Vector2.zero;
-        overlayRect.offsetMin = Vector2.zero;
-        overlayRect.offsetMax = Vector2.zero;
-        overlayRect.localScale = Vector3.one;
-
-        Image overlayImage = exitConfirmationOverlay.GetComponent<Image>();
-        overlayImage.color = new Color(0.035f, 0.025f, 0.018f, 0.76f);
-        overlayImage.raycastTarget = true;
-
-        CanvasGroup overlayGroup = exitConfirmationOverlay.GetComponent<CanvasGroup>();
-        overlayGroup.interactable = true;
-        overlayGroup.blocksRaycasts = true;
-
-        GameObject panelObject = new GameObject(
-            "Exit Confirmation Panel",
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(Image),
-            typeof(Outline));
-        panelObject.layer = canvas.gameObject.layer;
-        RectTransform panelRect = panelObject.GetComponent<RectTransform>();
-        panelRect.SetParent(overlayRect, false);
-        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
-        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.pivot = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = Vector2.zero;
-        panelRect.sizeDelta = new Vector2(88f, 32f);
-        panelRect.localScale = Vector3.one;
-
-        Image panelImage = panelObject.GetComponent<Image>();
-        panelImage.color = new Color(0.25f, 0.17f, 0.105f, 0.98f);
-        panelImage.raycastTarget = true;
-
-        Outline panelOutline = panelObject.GetComponent<Outline>();
-        panelOutline.effectColor = new Color(0.78f, 0.60f, 0.24f, 0.92f);
-        panelOutline.effectDistance = new Vector2(0.55f, -0.55f);
-        panelOutline.useGraphicAlpha = true;
-
-        Image accent = CreateDialogImage(
-            "Top Accent",
-            panelRect,
-            new Color(0.58f, 0.22f, 0.14f, 1f));
-        RectTransform accentRect = accent.rectTransform;
-        accentRect.anchorMin = new Vector2(0f, 1f);
-        accentRect.anchorMax = new Vector2(1f, 1f);
-        accentRect.pivot = new Vector2(0.5f, 1f);
-        accentRect.anchoredPosition = Vector2.zero;
-        accentRect.sizeDelta = new Vector2(-1.2f, 1.25f);
-
-        CreateDialogText(
-            "Warning Icon",
-            panelRect,
-            fontTemplate,
-            "!",
-            new Vector2(-37f, 5.5f),
-            new Vector2(8f, 10f),
-            7.5f,
-            new Color(0.96f, 0.76f, 0.30f, 1f));
-
-        CreateDialogText(
-            "Question",
-            panelRect,
-            fontTemplate,
-            "確定要退出遊戲嗎？",
-            new Vector2(2.5f, 5.5f),
-            new Vector2(70f, 9f),
-            5.4f,
-            new Color(0.98f, 0.93f, 0.79f, 1f));
-
-        Image divider = CreateDialogImage(
-            "Divider",
-            panelRect,
-            new Color(0.78f, 0.60f, 0.24f, 0.52f));
-        RectTransform dividerRect = divider.rectTransform;
-        dividerRect.anchorMin = new Vector2(0.5f, 0.5f);
-        dividerRect.anchorMax = new Vector2(0.5f, 0.5f);
-        dividerRect.pivot = new Vector2(0.5f, 0.5f);
-        dividerRect.anchoredPosition = new Vector2(0f, 0.2f);
-        dividerRect.sizeDelta = new Vector2(74f, 0.45f);
-
-        CreateExitDialogButton(
-            "Confirm Exit",
-            panelRect,
-            fontTemplate,
-            buttonImageTemplate,
-            "確定",
-            new Vector2(-18f, -8.2f),
-            new Color(0.48f, 0.18f, 0.13f, 1f),
-            ConfirmExit);
-
-        CreateExitDialogButton(
-            "Cancel Exit",
-            panelRect,
-            fontTemplate,
-            buttonImageTemplate,
-            "取消",
-            new Vector2(18f, -8.2f),
-            new Color(0.32f, 0.25f, 0.16f, 1f),
-            HideExitConfirmation);
-
-        exitConfirmationOverlay.transform.SetAsLastSibling();
-        exitConfirmationOverlay.SetActive(false);
-    }
-
-    private static Image CreateDialogImage(
-        string objectName,
-        Transform parent,
-        Color color)
-    {
-        GameObject imageObject = new GameObject(
-            objectName,
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(Image));
-        imageObject.layer = parent.gameObject.layer;
-        RectTransform rect = imageObject.GetComponent<RectTransform>();
-        rect.SetParent(parent, false);
-        rect.localScale = Vector3.one;
-
-        Image image = imageObject.GetComponent<Image>();
-        image.color = color;
-        image.raycastTarget = false;
-        return image;
-    }
-
-    private static TextMeshProUGUI CreateDialogText(
-        string objectName,
-        Transform parent,
-        TextMeshProUGUI fontTemplate,
-        string value,
-        Vector2 position,
-        Vector2 size,
-        float maximumFontSize,
-        Color color)
-    {
-        GameObject textObject = new GameObject(
-            objectName,
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(TextMeshProUGUI));
-        textObject.layer = parent.gameObject.layer;
-        RectTransform rect = textObject.GetComponent<RectTransform>();
-        rect.SetParent(parent, false);
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = size;
-        rect.localScale = Vector3.one;
-
-        TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
-        text.font = fontTemplate.font;
-        text.text = value;
-        text.color = color;
-        text.fontStyle = FontStyles.Bold;
-        text.alignment = TextAlignmentOptions.Center;
-        text.enableAutoSizing = true;
-        text.fontSizeMin = Mathf.Max(2f, maximumFontSize * 0.72f);
-        text.fontSizeMax = maximumFontSize;
-        text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.raycastTarget = false;
-        return text;
-    }
-
-    private static Button CreateExitDialogButton(
-        string objectName,
-        Transform parent,
-        TextMeshProUGUI fontTemplate,
-        Image imageTemplate,
-        string label,
-        Vector2 position,
-        Color normalColor,
-        UnityAction action)
-    {
-        GameObject buttonObject = new GameObject(
-            objectName,
-            typeof(RectTransform),
-            typeof(CanvasRenderer),
-            typeof(Image),
-            typeof(Button),
-            typeof(Outline));
-        buttonObject.layer = parent.gameObject.layer;
-        RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        rect.SetParent(parent, false);
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(30f, 7.8f);
-        rect.localScale = Vector3.one;
-
-        Image image = buttonObject.GetComponent<Image>();
-        image.color = normalColor;
-        image.raycastTarget = true;
-        if (imageTemplate != null && imageTemplate.sprite != null)
-        {
-            image.sprite = imageTemplate.sprite;
-            image.type = Image.Type.Sliced;
-        }
-
-        Outline outline = buttonObject.GetComponent<Outline>();
-        outline.effectColor = new Color(0.82f, 0.66f, 0.35f, 0.85f);
-        outline.effectDistance = new Vector2(0.35f, -0.35f);
-
-        Button button = buttonObject.GetComponent<Button>();
-        button.targetGraphic = image;
-        ColorBlock colors = button.colors;
-        colors.normalColor = normalColor;
-        colors.highlightedColor = Color.Lerp(normalColor, Color.white, 0.16f);
-        colors.pressedColor = Color.Lerp(normalColor, Color.black, 0.28f);
-        colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(normalColor.r, normalColor.g, normalColor.b, 0.45f);
-        colors.fadeDuration = 0.08f;
-        button.colors = colors;
-
-        CreateDialogText(
-            "Label",
-            rect,
-            fontTemplate,
-            label,
-            Vector2.zero,
-            new Vector2(27f, 6.4f),
-            4.8f,
-            new Color(1f, 0.95f, 0.82f, 1f));
-
-        UIButtonSound.RegisterButton(button);
-        button.onClick.AddListener(action);
-        return button;
-    }
-
-    private void ShowExitConfirmation()
-    {
-        if (exitConfirmationOverlay == null || quitPending)
-        {
-            return;
-        }
-
-        exitConfirmationOverlay.SetActive(true);
-        exitConfirmationOverlay.transform.SetAsLastSibling();
-    }
-
-    private void HideExitConfirmation()
-    {
-        if (exitConfirmationOverlay != null && !quitPending)
-        {
-            exitConfirmationOverlay.SetActive(false);
-        }
-    }
-
-    private void ConfirmExit()
-    {
-        if (!quitPending)
-        {
-            quitPending = true;
-            StartCoroutine(QuitAfterClickSound());
-        }
-    }
-
-    private IEnumerator QuitAfterClickSound()
-    {
-        yield return new WaitForSecondsRealtime(0.16f);
-
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 
     private void BindLanguageButtons()
