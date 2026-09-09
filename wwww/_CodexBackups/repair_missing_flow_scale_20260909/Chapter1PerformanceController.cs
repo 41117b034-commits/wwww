@@ -61,14 +61,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float weddingCrowdSwayDegrees = 5f;
     public bool normalizeNamedAddedDancerHeight = true;
     [Range(0.8f, 1.2f)] public float namedAddedDancerHeightRatio = 1f;
-
-    [Header("Wedding NPC Proportions")]
-    public bool normalizeWeddingNpcProportions = true;
-    [Range(0.8f, 0.98f)] public float minimumWeddingNpcHeightRatio = 0.9f;
-    [Range(1.02f, 1.25f)] public float maximumWeddingNpcHeightRatio = 1.1f;
-    [Range(1f, 20f)] public float maximumWeddingNpcScaleCorrection = 16f;
-    [Range(0.55f, 0.9f)] public float fallbackChildHeightRatio = 0.72f;
-
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
     public bool autoFitWeddingCircleToArmReach = true;
     [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
@@ -1468,7 +1460,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         freeExplorationUnlocked = true;
-        EnsureDanceInteractionFallback();
         CreateMissingExplorationInteractions();
 
         if (usePhysicalWeddingDelivery)
@@ -3661,41 +3652,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                     new Color(0.85f, 0.45f, 0.12f, 1f));
             }
         }
-    }
-
-    private void EnsureDanceInteractionFallback()
-    {
-        if (danceCenter == null)
-        {
-            danceCenter = FindTransformByName("DanceTrigger");
-        }
-
-        if (danceCenter == null)
-        {
-            Debug.LogWarning("[Chapter1] Dance interaction fallback could not find DanceTrigger.");
-            return;
-        }
-
-        Chapter1Interactable interactable =
-            danceCenter.GetComponent<Chapter1Interactable>();
-        if (interactable == null)
-        {
-            interactable = danceCenter.gameObject.AddComponent<Chapter1Interactable>();
-        }
-
-        interactable.controller = this;
-        interactable.playerRoot = playerRoot;
-        interactable.interactionType = Chapter1Interactable.InteractionType.JoinDance;
-        interactable.interactKey = GetDanceInteractionKey();
-        interactable.alsoUseEKey = true;
-        interactable.autoFindController = true;
-        interactable.disableAfterUse = false;
-        interactable.hidePromptAfterUse = true;
-        interactable.showPrompt = false;
-        interactable.restrictDancePromptToFreeExploration = true;
-        interactable.useDistanceCheck = true;
-        interactable.interactRange = Mathf.Max(4.5f, autoInteractionDistance);
-        interactable.dancePromptRange = Mathf.Max(4.5f, autoInteractionDistance);
     }
 
     private bool HasInteractionType(Chapter1Interactable.InteractionType interactionType)
@@ -7126,89 +7082,58 @@ public class Chapter1PerformanceController : MonoBehaviour
         Animator[] animators,
         Transform center)
     {
-        if ((!normalizeNamedAddedDancerHeight && !normalizeWeddingNpcProportions)
-            || animators == null
-            || center == null)
+        if (!normalizeNamedAddedDancerHeight || animators == null || center == null)
         {
             return;
         }
 
-        List<float> adultReferenceHeights = new List<float>();
-        List<float> childReferenceHeights = new List<float>();
-        List<float> allAdultHeights = new List<float>();
-        List<float> allChildHeights = new List<float>();
+        List<float> referenceHeights = new List<float>();
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
             if (!IsWeddingCrowdActor(animator, center)
-                || !TryGetAnimatorRigHeight(animator, out float rigHeight))
+                || IsDeliveryTaskNPC(animator.transform)
+                || TryFindNamedAddedDancerRoot(animator.transform, out _))
             {
                 continue;
             }
 
-            bool isChild = IsChildCharacter(animator);
-            List<float> allHeights = isChild ? allChildHeights : allAdultHeights;
-            allHeights.Add(rigHeight);
-
-            bool isTrustedReference = !IsDeliveryTaskNPC(animator.transform)
-                && !TryFindNamedAddedDancerRoot(animator.transform, out _);
-            if (isTrustedReference)
+            if (TryGetAnimatorRigHeight(animator, out float rigHeight))
             {
-                List<float> referenceHeights = isChild
-                    ? childReferenceHeights
-                    : adultReferenceHeights;
                 referenceHeights.Add(rigHeight);
             }
         }
 
-        if (adultReferenceHeights.Count == 0)
+        if (referenceHeights.Count == 0)
         {
-            adultReferenceHeights.AddRange(allAdultHeights);
-        }
-
-        if (childReferenceHeights.Count == 0)
-        {
-            childReferenceHeights.AddRange(allChildHeights);
-        }
-
-        if (adultReferenceHeights.Count == 0)
-        {
-            Debug.LogWarning("[Chapter1] No adult NPC rig height was available for proportion normalization.");
+            Debug.LogWarning("[Chapter1] No existing dancer rig height was available for crowd normalization.");
             return;
         }
 
-        float adultTargetHeight = GetMedian(adultReferenceHeights)
+        float targetHeight = GetMedian(referenceHeights)
             * Mathf.Clamp(namedAddedDancerHeightRatio, 0.8f, 1.2f);
-        float childTargetHeight = childReferenceHeights.Count > 0
-            ? GetMedian(childReferenceHeights)
-            : adultTargetHeight * Mathf.Clamp(fallbackChildHeightRatio, 0.55f, 0.9f);
-        float minimumRatio = Mathf.Clamp(minimumWeddingNpcHeightRatio, 0.8f, 0.98f);
-        float maximumRatio = Mathf.Clamp(maximumWeddingNpcHeightRatio, 1.02f, 1.25f);
-        float maximumCorrection = Mathf.Max(1f, maximumWeddingNpcScaleCorrection);
         HashSet<int> adjustedRoots = new HashSet<int>();
-        int auditedCount = 0;
-        int correctedCount = 0;
 
         for (int i = 0; i < animators.Length; i++)
         {
             Animator animator = animators[i];
             if (animator == null
-                || !IsWeddingCrowdActor(animator, center))
+                || !IsWeddingCrowdActor(animator, center)
+                || IsDeliveryTaskNPC(animator.transform))
             {
                 continue;
             }
 
+            Chapter1CircleDancer existing = animator.GetComponent<Chapter1CircleDancer>();
             bool isNamedAddedDancer = TryFindNamedAddedDancerRoot(
                 animator.transform,
                 out Transform namedRoot);
-            if (!normalizeWeddingNpcProportions && !isNamedAddedDancer)
+            if (!isNamedAddedDancer || namedRoot == null)
             {
                 continue;
             }
 
-            Transform actorRoot = isNamedAddedDancer && namedRoot != null
-                ? namedRoot
-                : animator.transform;
+            Transform actorRoot = namedRoot;
 
             if (actorRoot == null
                 || !adjustedRoots.Add(actorRoot.GetInstanceID())
@@ -7217,103 +7142,16 @@ public class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
-            auditedCount++;
-            bool isChild = IsChildCharacter(animator);
-            float targetHeight = isChild ? childTargetHeight : adultTargetHeight;
-            float currentRatio = currentHeight / Mathf.Max(0.05f, targetHeight);
-            if (currentRatio >= minimumRatio && currentRatio <= maximumRatio)
-            {
-                continue;
-            }
-
-            float scaleFactor = Mathf.Clamp(
-                targetHeight / currentHeight,
-                1f / maximumCorrection,
-                maximumCorrection);
+            float scaleFactor = Mathf.Clamp(targetHeight / currentHeight, 0.25f, 4f);
             if (Mathf.Abs(scaleFactor - 1f) > 0.01f)
             {
                 actorRoot.localScale *= scaleFactor;
-                correctedCount++;
             }
 
             Debug.Log(
-                "[Chapter1 Proportions] " + actorRoot.name
-                + " " + currentHeight.ToString("0.00")
-                + "m -> " + targetHeight.ToString("0.00")
-                + "m (" + (isChild ? "child" : "adult") + ").");
+                "[Chapter1] Dancer " + actorRoot.name
+                + " rig height normalized to " + targetHeight.ToString("0.00") + ".");
         }
-
-        Debug.Log(
-            "[Chapter1 Proportions] Audited " + auditedCount
-            + " NPCs; corrected " + correctedCount
-            + ". Adult target=" + adultTargetHeight.ToString("0.00")
-            + "m, child target=" + childTargetHeight.ToString("0.00") + "m.");
-    }
-
-    private bool IsChildCharacter(Animator animator)
-    {
-        if (animator == null)
-        {
-            return false;
-        }
-
-        if (TryFindNamedAddedDancerRoot(animator.transform, out Transform namedRoot)
-            && namedRoot != null
-            && string.Equals(
-                namedRoot.name.Trim(),
-                "4",
-                System.StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        if (ContainsChildKeyword(animator.name)
-            || (animator.avatar != null && ContainsChildKeyword(animator.avatar.name)))
-        {
-            return true;
-        }
-
-        Transform current = animator.transform;
-        while (current != null && current.gameObject.scene.IsValid())
-        {
-            if (ContainsChildKeyword(current.name))
-            {
-                return true;
-            }
-
-            current = current.parent;
-        }
-
-        SkinnedMeshRenderer[] renderers =
-            animator.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            SkinnedMeshRenderer renderer = renderers[i];
-            if (renderer != null
-                && (ContainsChildKeyword(renderer.name)
-                    || (renderer.sharedMesh != null
-                        && ContainsChildKeyword(renderer.sharedMesh.name))))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool ContainsChildKeyword(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return false;
-        }
-
-        string normalized = value.ToLowerInvariant();
-        return normalized.Contains("小孩")
-            || normalized.Contains("兒童")
-            || normalized.Contains("孩童")
-            || normalized.Contains("child")
-            || normalized.Contains("kid");
     }
 
     private IEnumerator RefreshWeddingDancerSizingAfterAnimatorUpdate()
@@ -10542,9 +10380,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             femaleVillagerActor = FindTransformByName("新娘");
             if (femaleVillagerActor == null) femaleVillagerActor = FindTransformByName("女性族人");
-            if (femaleVillagerActor == null) femaleVillagerActor = FindTransformByName("部落女姓2");
-            if (femaleVillagerActor == null) femaleVillagerActor = FindTransformByName("部落女性1");
-            if (femaleVillagerActor == null) femaleVillagerActor = FindTransformContaining("女姓", "女性", "新娘");
         }
 
         if (shovedVillagerActor == null)
@@ -10627,11 +10462,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             explorationDurationSeconds = 180f;
             showExplorationTimer = true;
             showPickupLocationGuidance = true;
-            normalizeNamedAddedDancerHeight = true;
-            normalizeWeddingNpcProportions = true;
-            maximumWeddingNpcScaleCorrection = Mathf.Max(
-                maximumWeddingNpcScaleCorrection,
-                16f);
+            normalizeNamedAddedDancerHeight = false;
             weddingCrowdDanceRange = 60f;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
@@ -10778,38 +10609,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                 && candidate.gameObject.scene.IsValid())
             {
                 return candidate;
-            }
-        }
-
-        return null;
-    }
-
-    private Transform FindTransformContaining(params string[] keywords)
-    {
-        if (keywords == null || keywords.Length == 0)
-        {
-            return null;
-        }
-
-        Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
-        for (int i = 0; i < allTransforms.Length; i++)
-        {
-            Transform candidate = allTransforms[i];
-            if (candidate == null || !candidate.gameObject.scene.IsValid())
-            {
-                continue;
-            }
-
-            for (int keywordIndex = 0; keywordIndex < keywords.Length; keywordIndex++)
-            {
-                string keyword = keywords[keywordIndex];
-                if (!string.IsNullOrWhiteSpace(keyword)
-                    && candidate.name.IndexOf(
-                        keyword,
-                        System.StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    return candidate;
-                }
             }
         }
 

@@ -1248,16 +1248,10 @@ PrefabInstance:
       addedObject: {fileID: 1558329868}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1558329870}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1558329871}
     - targetCorrespondingSourceObject: {fileID: -6239046904889172022, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 991935961}
-    - targetCorrespondingSourceObject: {fileID: -6239046904889172022, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 991935964}
   m_SourcePrefab: {fileID: 100100000, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
 --- !u!1001 &131719068
 PrefabInstance:
@@ -2911,7 +2905,7 @@ LensFlare:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318967914}
   m_Enabled: 1
-  m_Flare: {fileID: 12100000, guid: 54fbbf098d116effa00081aba8ad6659, type: 2}
+  m_Flare: {fileID: 0}
   m_Color: {r: 0.13235295, g: 0.13235295, b: 0.13235295, a: 0}
   m_Brightness: 6
   m_FadeSpeed: 5
@@ -3138,6 +3132,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 12.315352
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 12.315352
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 12.315352
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 53ca33221ba349a45ab22e8a57fdba8c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3766.68
@@ -3839,18 +3845,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
   m_PrefabInstance: {fileID: 496578543}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &455722976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 455722975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da713c636d76aa1408b53e6f8361e085, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!136 &455722977
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4027,7 +4021,6 @@ GameObject:
   - component: {fileID: 466568415}
   - component: {fileID: 466568414}
   - component: {fileID: 466568413}
-  - component: {fileID: 466568412}
   m_Layer: 0
   m_Name: DanceTrigger
   m_TagString: Untagged
@@ -4035,18 +4028,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &466568412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 466568411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f0742c46785b0a4ea37a0cf0ed1ff08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &466568413
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4361,9 +4342,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 455722977}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 455722976}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 455722979}
@@ -6298,6 +6276,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 12.27369
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 12.27369
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 12.27369
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3767.5054
       objectReference: {fileID: 0}
@@ -6902,6 +6892,11 @@ MonoBehaviour:
   weddingCrowdSwayDegrees: 5
   normalizeNamedAddedDancerHeight: 1
   namedAddedDancerHeightRatio: 1
+  normalizeWeddingNpcProportions: 1
+  minimumWeddingNpcHeightRatio: 0.9
+  maximumWeddingNpcHeightRatio: 1.1
+  maximumWeddingNpcScaleCorrection: 16
+  fallbackChildHeightRatio: 0.72
   weddingReservedPlayerSlots: 1
   autoFitWeddingCircleToArmReach: 1
   weddingNeighborSpacingArmMultiplier: 1.9
@@ -7205,7 +7200,7 @@ MonoBehaviour:
   cupCloseUpReturnSeconds: 0.42
   groomActor: {fileID: 455722982}
   shovedVillagerActor: {fileID: 1604896042}
-  femaleVillagerActor: {fileID: 0}
+  femaleVillagerActor: {fileID: 1717308720}
   hutEntrancePoint: {fileID: 1108419086}
   policeExitPoint: {fileID: 1822936992}
   ceremonyCup: {fileID: 1433957981}
@@ -8073,18 +8068,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cab037581ec139a4a8117bfad9a3bb5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &991935964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991935958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 075a5902e04b59f44a60cc60405145a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &995566605
 GameObject:
   m_ObjectHideFlags: 0
@@ -8094,7 +8077,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 995566607}
-  - component: {fileID: 995566606}
   - component: {fileID: 995566608}
   m_Layer: 0
   m_Name: Chapter1_PerformanceController
@@ -8103,18 +8085,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &995566606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 995566605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2482ddb1974a494ea3ff756fa9fcd86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &995566607
 Transform:
   m_ObjectHideFlags: 0
@@ -8462,6 +8432,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10.586293
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10.586293
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10.586293
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3767.7886
@@ -12112,18 +12094,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1558329870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1558329864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 075a5902e04b59f44a60cc60405145a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1558329871
 MonoBehaviour:
   m_ObjectHideFlags: 0
