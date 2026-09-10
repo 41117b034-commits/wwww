@@ -70,11 +70,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0.55f, 0.9f)] public float fallbackChildHeightRatio = 0.72f;
 
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
-    public bool autoFitWeddingCircleToArmReach = false;
+    public bool autoFitWeddingCircleToArmReach = true;
     [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
-    [Range(3.5f, 30f)] public float minimumWeddingCircleRadius = 12.5f;
-    [Range(1f, 8f)] public float minimumWeddingNeighborSpacing = 6.35f;
-    public float weddingCircleRadius = 18.5f;
+    [Range(3.5f, 30f)] public float minimumWeddingCircleRadius = 22f;
+    [Range(1f, 3f)] public float minimumWeddingNeighborSpacing = 1.55f;
+    public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
     public float weddingCircleDegreesPerBeat = 1.65f;
 
@@ -744,8 +744,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
     private readonly List<Chapter1NpcGrounding> weddingNpcGrounders = new List<Chapter1NpcGrounding>();
-    private readonly Dictionary<int, DeliveryNpcAuthoredTransform> deliveryNpcAuthoredTransforms =
-        new Dictionary<int, DeliveryNpcAuthoredTransform>();
     private bool weddingCircleConfigured;
     private bool weddingPlayerSlotActive;
     private float weddingPlayerGapAngleRadians;
@@ -790,16 +788,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private int talkLineIndex;
 
-    private sealed class DeliveryNpcAuthoredTransform
-    {
-        public Transform actorRoot;
-        public Transform parent;
-        public int siblingIndex;
-        public Vector3 worldPosition;
-        public Quaternion worldRotation;
-        public Vector3 localScale;
-    }
-
     private void Awake()
     {
         if (autoFindMissingReferences)
@@ -808,8 +796,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         RepairInteractionHudRuntimeDefaults();
-        CaptureDeliveryTaskNpcOriginalTransforms();
-        PrepareDeliveryTaskNPCs();
         EnsureNarrationAudioSource();
         EnsureWeddingVocalsReference();
         ApplyWeddingMusicVolume();
@@ -7097,20 +7083,34 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = true;
-            dancer.proceduralHandHoldWeight = 0.92f;
-            dancer.autoCreateHandHoldIKDriver = false;
-            dancer.handHoldIKWeight = 0f;
+            dancer.enableProceduralHandHolding = false;
+            dancer.proceduralHandHoldWeight = 0f;
+            dancer.autoCreateHandHoldIKDriver = animator.isHuman;
+            dancer.handHoldIKWeight = animator.isHuman ? 0.55f : 0f;
             dancer.handHoldRotationWeight = 0f;
-            dancer.handHoldShoulderToHipRatio = 0.68f;
-            dancer.handHoldPulseHeightRatio = 0.035f;
+            dancer.handHoldShoulderToHipRatio = 0.5f;
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
 
-            Chapter1HandHoldIK handHoldDriver =
-                animator.GetComponent<Chapter1HandHoldIK>();
-            if (handHoldDriver != null)
+            if (animator.isHuman)
             {
-                handHoldDriver.enabled = false;
+                Chapter1HandHoldIK handHoldDriver =
+                    animator.GetComponent<Chapter1HandHoldIK>();
+                if (handHoldDriver == null)
+                {
+                    handHoldDriver = animator.gameObject.AddComponent<Chapter1HandHoldIK>();
+                }
+
+                handHoldDriver.owner = dancer;
+                handHoldDriver.enabled = true;
+            }
+            else
+            {
+                Chapter1HandHoldIK handHoldDriver =
+                    animator.GetComponent<Chapter1HandHoldIK>();
+                if (handHoldDriver != null)
+                {
+                    handHoldDriver.enabled = false;
+                }
             }
 
             // Bone offsets are only safe on a validated Humanoid avatar.
@@ -7770,7 +7770,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, center);
         EnsureNewPoliceSceneNpcGrounding();
-        PrepareDeliveryTaskNPCs();
 
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
@@ -8273,11 +8272,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             return false;
         }
 
-        if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(actor))
-        {
-            return false;
-        }
-
         if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
         {
             return false;
@@ -8321,70 +8315,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         StopDeliveryTargetArray(foodDeliveryTargets);
     }
 
-    private void CaptureDeliveryTaskNpcOriginalTransforms()
-    {
-        CaptureDeliveryTargetArray(wineDeliveryTargets);
-        CaptureDeliveryTargetArray(foodDeliveryTargets);
-    }
-
-    private void CaptureDeliveryTargetArray(Transform[] targets)
-    {
-        if (targets == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < targets.Length; i++)
-        {
-            Transform actorRoot = GetDeliveryActorRoot(targets[i]);
-            if (actorRoot == null
-                || deliveryNpcAuthoredTransforms.ContainsKey(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            deliveryNpcAuthoredTransforms.Add(
-                actorRoot.GetInstanceID(),
-                new DeliveryNpcAuthoredTransform
-                {
-                    actorRoot = actorRoot,
-                    parent = actorRoot.parent,
-                    siblingIndex = actorRoot.GetSiblingIndex(),
-                    worldPosition = actorRoot.position,
-                    worldRotation = actorRoot.rotation,
-                    localScale = actorRoot.localScale
-                });
-        }
-    }
-
-    private void RestoreDeliveryTaskNpcOriginalTransform(Transform actorRoot)
-    {
-        if (actorRoot == null
-            || !deliveryNpcAuthoredTransforms.TryGetValue(
-                actorRoot.GetInstanceID(),
-                out DeliveryNpcAuthoredTransform authored))
-        {
-            return;
-        }
-
-        if (actorRoot.parent != authored.parent)
-        {
-            actorRoot.SetParent(authored.parent, false);
-        }
-
-        actorRoot.position = authored.worldPosition;
-        actorRoot.rotation = authored.worldRotation;
-        actorRoot.localScale = authored.localScale;
-
-        if (actorRoot.parent != null)
-        {
-            actorRoot.SetSiblingIndex(Mathf.Clamp(
-                authored.siblingIndex,
-                0,
-                actorRoot.parent.childCount - 1));
-        }
-    }
-
     private void StopDeliveryTargetArray(Transform[] targets)
     {
         if (targets == null)
@@ -8409,8 +8339,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         // 只關 Chapter1CircleDancer 是不夠的；子物件仍會被父物件帶著繞圈。
         // 所以先找出「角色 Root」，再把它從旋轉 Pivot 底下移出去。
         Transform actorRoot = GetDeliveryActorRoot(target);
-
-        RestoreDeliveryTaskNpcOriginalTransform(actorRoot);
 
         if (detachDeliveryTargetsFromDancePivot && actorRoot != null)
         {
@@ -8443,12 +8371,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             parentDancer.SetDancing(false);
             parentDancer.enabled = false;
         }
-
-        DisableDeliveryNpcBehaviour<Chapter1HandHoldIK>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1FaceFire>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1WeddingFaceCenter>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1WeddingLimbDance>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1NpcGrounding>(searchRoot);
 
         // 切回 Idle。
         Animator[] animators = searchRoot.GetComponentsInChildren<Animator>(true);
@@ -8492,24 +8414,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                         + " 的 Animator 找不到 Idle State："
                         + idleState);
                 }
-            }
-        }
-    }
-
-    private void DisableDeliveryNpcBehaviour<T>(Transform searchRoot)
-        where T : Behaviour
-    {
-        if (searchRoot == null)
-        {
-            return;
-        }
-
-        T[] behaviours = searchRoot.GetComponentsInChildren<T>(true);
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            if (behaviours[i] != null)
-            {
-                behaviours[i].enabled = false;
             }
         }
     }
@@ -11306,16 +11210,16 @@ public class Chapter1PerformanceController : MonoBehaviour
                 1.07f);
             minimumWeddingCircleRadius = Mathf.Max(
                 minimumWeddingCircleRadius,
-                12.5f);
+                22f);
             minimumWeddingNeighborSpacing = Mathf.Max(
                 minimumWeddingNeighborSpacing,
-                6.35f);
+                1.75f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);
             weddingCrowdDanceRange = Mathf.Max(weddingCrowdDanceRange, 95f);
-            keepDeliveryTargetsStationary = true;
-            detachDeliveryTargetsFromDancePivot = true;
+            keepDeliveryTargetsStationary = false;
+            detachDeliveryTargetsFromDancePivot = false;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);

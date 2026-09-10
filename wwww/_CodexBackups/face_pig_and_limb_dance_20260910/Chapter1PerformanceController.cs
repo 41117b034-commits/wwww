@@ -70,11 +70,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0.55f, 0.9f)] public float fallbackChildHeightRatio = 0.72f;
 
     [Range(0, 2)] public int weddingReservedPlayerSlots = 1;
-    public bool autoFitWeddingCircleToArmReach = false;
+    public bool autoFitWeddingCircleToArmReach = true;
     [Range(1.5f, 1.9f)] public float weddingNeighborSpacingArmMultiplier = 1.7f;
-    [Range(3.5f, 30f)] public float minimumWeddingCircleRadius = 12.5f;
-    [Range(1f, 8f)] public float minimumWeddingNeighborSpacing = 6.35f;
-    public float weddingCircleRadius = 18.5f;
+    [Range(3.5f, 30f)] public float minimumWeddingCircleRadius = 22f;
+    [Range(1f, 3f)] public float minimumWeddingNeighborSpacing = 1.55f;
+    public float weddingCircleRadius = 22f;
     public float weddingCircleTempoBpm = 88f;
     public float weddingCircleDegreesPerBeat = 1.65f;
 
@@ -744,8 +744,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Quaternion wineBottleUprightOffset = Quaternion.identity;
     private readonly List<Chapter1CircleDancer> weddingCrowdDancers = new List<Chapter1CircleDancer>();
     private readonly List<Chapter1NpcGrounding> weddingNpcGrounders = new List<Chapter1NpcGrounding>();
-    private readonly Dictionary<int, DeliveryNpcAuthoredTransform> deliveryNpcAuthoredTransforms =
-        new Dictionary<int, DeliveryNpcAuthoredTransform>();
     private bool weddingCircleConfigured;
     private bool weddingPlayerSlotActive;
     private float weddingPlayerGapAngleRadians;
@@ -790,16 +788,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private int talkLineIndex;
 
-    private sealed class DeliveryNpcAuthoredTransform
-    {
-        public Transform actorRoot;
-        public Transform parent;
-        public int siblingIndex;
-        public Vector3 worldPosition;
-        public Quaternion worldRotation;
-        public Vector3 localScale;
-    }
-
     private void Awake()
     {
         if (autoFindMissingReferences)
@@ -808,8 +796,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         RepairInteractionHudRuntimeDefaults();
-        CaptureDeliveryTaskNpcOriginalTransforms();
-        PrepareDeliveryTaskNPCs();
         EnsureNarrationAudioSource();
         EnsureWeddingVocalsReference();
         ApplyWeddingMusicVolume();
@@ -6958,7 +6944,16 @@ public class Chapter1PerformanceController : MonoBehaviour
             circleCenter = center;
         }
 
-        Transform facingCenter = circleCenter;
+        Transform facingCenter = FindTransformByName("CampFireFX");
+        if (facingCenter == null)
+        {
+            facingCenter = FindTransformByName("CampFireLight");
+        }
+
+        if (facingCenter == null)
+        {
+            facingCenter = circleCenter;
+        }
 
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, circleCenter);
@@ -7097,32 +7092,40 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.tempoBpm = weddingCircleTempoBpm;
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
-            dancer.enableProceduralHandHolding = true;
-            dancer.proceduralHandHoldWeight = 0.92f;
-            dancer.autoCreateHandHoldIKDriver = false;
-            dancer.handHoldIKWeight = 0f;
+            dancer.enableProceduralHandHolding = false;
+            dancer.proceduralHandHoldWeight = 0f;
+            dancer.autoCreateHandHoldIKDriver = animator.isHuman;
+            dancer.handHoldIKWeight = animator.isHuman ? 0.55f : 0f;
             dancer.handHoldRotationWeight = 0f;
-            dancer.handHoldShoulderToHipRatio = 0.68f;
-            dancer.handHoldPulseHeightRatio = 0.035f;
+            dancer.handHoldShoulderToHipRatio = 0.5f;
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
 
-            Chapter1HandHoldIK handHoldDriver =
-                animator.GetComponent<Chapter1HandHoldIK>();
-            if (handHoldDriver != null)
+            if (animator.isHuman)
             {
-                handHoldDriver.enabled = false;
+                Chapter1HandHoldIK handHoldDriver =
+                    animator.GetComponent<Chapter1HandHoldIK>();
+                if (handHoldDriver == null)
+                {
+                    handHoldDriver = animator.gameObject.AddComponent<Chapter1HandHoldIK>();
+                }
+
+                handHoldDriver.owner = dancer;
+                handHoldDriver.enabled = true;
+            }
+            else
+            {
+                Chapter1HandHoldIK handHoldDriver =
+                    animator.GetComponent<Chapter1HandHoldIK>();
+                if (handHoldDriver != null)
+                {
+                    handHoldDriver.enabled = false;
+                }
             }
 
-            // Bone offsets are only safe on a validated Humanoid avatar.
-            // Generic rigs keep their authored pose so their meshes stay intact.
-            bool hasSafeHumanoidRig = animator.avatar != null
-                && animator.avatar.isValid
-                && animator.isHuman;
-            dancer.enableProceduralStepping = hasSafeHumanoidRig;
-            dancer.upperLegLiftDegrees = 9f;
-            dancer.kneeBendDegrees = 16f;
-            dancer.pelvisBobHeightRatio = 0.007f;
-            dancer.pelvisWeightShiftRatio = 0.004f;
+            // Imported Generic rigs do not share a common bone axis. Directly
+            // rotating their arms or legs can detach, mirror, or reverse limbs.
+            // The Animator owns the pose; this component only moves the intact root.
+            dancer.enableProceduralStepping = false;
             dancer.stabilizeFootFacing = false;
             dancer.individualTempoVariation = 0f;
             dancer.individualPhaseVariation = 0f;
@@ -7179,23 +7182,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 facingCenter,
                 faceFire,
                 this,
-                faceFire.yawOffsetDegrees,
-                ShouldReverseWeddingSkeletonFacing(actorRoot));
-
-            Chapter1WeddingLimbDance limbDance =
-                actorRoot.GetComponent<Chapter1WeddingLimbDance>();
-            if (limbDance == null)
-            {
-                limbDance = actorRoot.gameObject.AddComponent<Chapter1WeddingLimbDance>();
-            }
-
-            limbDance.Configure(
-                animator,
-                dancer,
-                faceFire,
-                this,
-                weddingCircleTempoBpm,
-                i);
+                faceFire.yawOffsetDegrees);
 
             dancer.enabled = true;
             dancer.SetCanCircleDance(true);
@@ -7428,15 +7415,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return Mathf.DeltaAngle(0f, yawOffset);
-    }
-
-    private bool ShouldReverseWeddingSkeletonFacing(Transform actorRoot)
-    {
-        return actorRoot != null
-            && string.Equals(
-                actorRoot.name.Trim(),
-                "賽德克青年",
-                System.StringComparison.Ordinal);
     }
 
     private void SnapWeddingActorFacing(
@@ -7770,7 +7748,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, center);
         EnsureNewPoliceSceneNpcGrounding();
-        PrepareDeliveryTaskNPCs();
 
         float neighborSpacing;
         weddingCircleRadius = CalculateWeddingCircleRadius(
@@ -8273,11 +8250,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             return false;
         }
 
-        if (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(actor))
-        {
-            return false;
-        }
-
         if (playerRoot != null && (actor.IsChildOf(playerRoot) || playerRoot.IsChildOf(actor)))
         {
             return false;
@@ -8321,70 +8293,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         StopDeliveryTargetArray(foodDeliveryTargets);
     }
 
-    private void CaptureDeliveryTaskNpcOriginalTransforms()
-    {
-        CaptureDeliveryTargetArray(wineDeliveryTargets);
-        CaptureDeliveryTargetArray(foodDeliveryTargets);
-    }
-
-    private void CaptureDeliveryTargetArray(Transform[] targets)
-    {
-        if (targets == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < targets.Length; i++)
-        {
-            Transform actorRoot = GetDeliveryActorRoot(targets[i]);
-            if (actorRoot == null
-                || deliveryNpcAuthoredTransforms.ContainsKey(actorRoot.GetInstanceID()))
-            {
-                continue;
-            }
-
-            deliveryNpcAuthoredTransforms.Add(
-                actorRoot.GetInstanceID(),
-                new DeliveryNpcAuthoredTransform
-                {
-                    actorRoot = actorRoot,
-                    parent = actorRoot.parent,
-                    siblingIndex = actorRoot.GetSiblingIndex(),
-                    worldPosition = actorRoot.position,
-                    worldRotation = actorRoot.rotation,
-                    localScale = actorRoot.localScale
-                });
-        }
-    }
-
-    private void RestoreDeliveryTaskNpcOriginalTransform(Transform actorRoot)
-    {
-        if (actorRoot == null
-            || !deliveryNpcAuthoredTransforms.TryGetValue(
-                actorRoot.GetInstanceID(),
-                out DeliveryNpcAuthoredTransform authored))
-        {
-            return;
-        }
-
-        if (actorRoot.parent != authored.parent)
-        {
-            actorRoot.SetParent(authored.parent, false);
-        }
-
-        actorRoot.position = authored.worldPosition;
-        actorRoot.rotation = authored.worldRotation;
-        actorRoot.localScale = authored.localScale;
-
-        if (actorRoot.parent != null)
-        {
-            actorRoot.SetSiblingIndex(Mathf.Clamp(
-                authored.siblingIndex,
-                0,
-                actorRoot.parent.childCount - 1));
-        }
-    }
-
     private void StopDeliveryTargetArray(Transform[] targets)
     {
         if (targets == null)
@@ -8409,8 +8317,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         // 只關 Chapter1CircleDancer 是不夠的；子物件仍會被父物件帶著繞圈。
         // 所以先找出「角色 Root」，再把它從旋轉 Pivot 底下移出去。
         Transform actorRoot = GetDeliveryActorRoot(target);
-
-        RestoreDeliveryTaskNpcOriginalTransform(actorRoot);
 
         if (detachDeliveryTargetsFromDancePivot && actorRoot != null)
         {
@@ -8443,12 +8349,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             parentDancer.SetDancing(false);
             parentDancer.enabled = false;
         }
-
-        DisableDeliveryNpcBehaviour<Chapter1HandHoldIK>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1FaceFire>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1WeddingFaceCenter>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1WeddingLimbDance>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1NpcGrounding>(searchRoot);
 
         // 切回 Idle。
         Animator[] animators = searchRoot.GetComponentsInChildren<Animator>(true);
@@ -8492,24 +8392,6 @@ public class Chapter1PerformanceController : MonoBehaviour
                         + " 的 Animator 找不到 Idle State："
                         + idleState);
                 }
-            }
-        }
-    }
-
-    private void DisableDeliveryNpcBehaviour<T>(Transform searchRoot)
-        where T : Behaviour
-    {
-        if (searchRoot == null)
-        {
-            return;
-        }
-
-        T[] behaviours = searchRoot.GetComponentsInChildren<T>(true);
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            if (behaviours[i] != null)
-            {
-                behaviours[i].enabled = false;
             }
         }
     }
@@ -11306,16 +11188,16 @@ public class Chapter1PerformanceController : MonoBehaviour
                 1.07f);
             minimumWeddingCircleRadius = Mathf.Max(
                 minimumWeddingCircleRadius,
-                12.5f);
+                22f);
             minimumWeddingNeighborSpacing = Mathf.Max(
                 minimumWeddingNeighborSpacing,
-                6.35f);
+                1.75f);
             maximumWeddingNpcScaleCorrection = Mathf.Max(
                 maximumWeddingNpcScaleCorrection,
                 16f);
             weddingCrowdDanceRange = Mathf.Max(weddingCrowdDanceRange, 95f);
-            keepDeliveryTargetsStationary = true;
-            detachDeliveryTargetsFromDancePivot = true;
+            keepDeliveryTargetsStationary = false;
+            detachDeliveryTargetsFromDancePivot = false;
             forceVisiblePoliceEntranceShot = true;
             policePairSpacing = Mathf.Max(policePairSpacing, 2.2f);
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
@@ -11870,333 +11752,6 @@ public class Chapter1ReceiverNaturalGestureDriver : MonoBehaviour
     }
 }
 
-internal static class Chapter1WeddingRigBones
-{
-    public static Transform Resolve(
-        Animator animator,
-        HumanBodyBones humanoidBone,
-        params string[] genericNames)
-    {
-        if (animator == null)
-        {
-            return null;
-        }
-
-        if (animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman)
-        {
-            Transform humanoidTransform = animator.GetBoneTransform(humanoidBone);
-            if (humanoidTransform != null)
-            {
-                return humanoidTransform;
-            }
-        }
-
-        Transform[] transforms =
-            animator.transform.GetComponentsInChildren<Transform>(true);
-        for (int nameIndex = 0; nameIndex < genericNames.Length; nameIndex++)
-        {
-            string expected = Normalize(genericNames[nameIndex]);
-            for (int transformIndex = 0;
-                transformIndex < transforms.Length;
-                transformIndex++)
-            {
-                Transform candidate = transforms[transformIndex];
-                if (candidate != null && Normalize(candidate.name) == expected)
-                {
-                    return candidate;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static string Normalize(string value)
-    {
-        return string.IsNullOrEmpty(value)
-            ? string.Empty
-            : value.ToLowerInvariant()
-                .Replace("mixamorig:", string.Empty)
-                .Replace("_", string.Empty)
-                .Replace(" ", string.Empty);
-    }
-}
-
-/// <summary>
-/// Adds a restrained full-body dance pulse after the Animator pose is evaluated.
-/// Generic rigs use absolute offsets from a cached pose to prevent accumulation.
-/// </summary>
-[DefaultExecutionOrder(2200)]
-public sealed class Chapter1WeddingLimbDance : MonoBehaviour
-{
-    public Animator animator;
-    public Chapter1CircleDancer dancer;
-    public Chapter1FaceFire faceFire;
-    public Chapter1PerformanceController owner;
-    public float tempoBpm = 88f;
-    public float phaseRadians;
-    public float armSwingDegrees = 18f;
-    public float armLiftDegrees = 8f;
-    public float genericLegSwingDegrees = 9f;
-
-    private Transform leftUpperArm;
-    private Transform rightUpperArm;
-    private Transform leftUpperLeg;
-    private Transform rightUpperLeg;
-    private Transform hips;
-    private Transform head;
-    private Quaternion genericLeftArmBase;
-    private Quaternion genericRightArmBase;
-    private Quaternion genericLeftLegBase;
-    private Quaternion genericRightLegBase;
-    private bool genericPoseCaptured;
-
-    public void Configure(
-        Animator sourceAnimator,
-        Chapter1CircleDancer sourceDancer,
-        Chapter1FaceFire sourceFaceFire,
-        Chapter1PerformanceController chapterOwner,
-        float bpm,
-        int slotIndex)
-    {
-        animator = sourceAnimator;
-        dancer = sourceDancer;
-        faceFire = sourceFaceFire;
-        owner = chapterOwner;
-        tempoBpm = Mathf.Max(72f, bpm);
-        phaseRadians = Mathf.Repeat(slotIndex, 5) * 0.16f;
-        CacheBones();
-        enabled = HasSafeHumanoidRig() || HasSafeGenericRig();
-    }
-
-    private void Awake()
-    {
-        CacheBones();
-    }
-
-    private void LateUpdate()
-    {
-        bool humanoid = HasSafeHumanoidRig();
-        if ((!humanoid && !HasSafeGenericRig())
-            || faceFire == null
-            || !faceFire.enabled
-            || (owner != null && owner.IsPoliceSequenceStarted))
-        {
-            if (!humanoid)
-            {
-                RestoreGenericPose();
-            }
-            return;
-        }
-
-        if (leftUpperArm == null
-            || rightUpperArm == null
-            || hips == null
-            || head == null)
-        {
-            CacheBones();
-        }
-
-        if (leftUpperArm == null
-            || rightUpperArm == null
-            || hips == null
-            || head == null)
-        {
-            return;
-        }
-
-        if (!humanoid)
-        {
-            ApplySafeGenericDance();
-            return;
-        }
-
-        Vector3 bodyRight = rightUpperArm.position - leftUpperArm.position;
-        Vector3 bodyUp = head.position - hips.position;
-        Vector3 bodyForward = Vector3.Cross(bodyRight, bodyUp);
-        bodyRight = Vector3.ProjectOnPlane(bodyRight, Vector3.up);
-        bodyForward = Vector3.ProjectOnPlane(bodyForward, Vector3.up);
-        if (bodyRight.sqrMagnitude < 0.001f
-            || bodyForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        bodyRight.Normalize();
-        bodyForward.Normalize();
-
-        float beatsPerSecond = tempoBpm / 60f;
-        float beat = Time.time * beatsPerSecond * Mathf.PI * 2f
-            + phaseRadians;
-        float leftSwing = Mathf.Sin(beat) * armSwingDegrees;
-        float rightSwing = Mathf.Sin(beat + Mathf.PI) * armSwingDegrees;
-        float liftPulse = (0.7f + 0.3f * Mathf.Sin(beat * 0.5f))
-            * armLiftDegrees;
-
-        leftUpperArm.rotation = Quaternion.AngleAxis(leftSwing, bodyRight)
-            * Quaternion.AngleAxis(-liftPulse, bodyForward)
-            * leftUpperArm.rotation;
-        rightUpperArm.rotation = Quaternion.AngleAxis(rightSwing, bodyRight)
-            * Quaternion.AngleAxis(liftPulse, bodyForward)
-            * rightUpperArm.rotation;
-    }
-
-    private bool HasSafeHumanoidRig()
-    {
-        return animator != null
-            && animator.avatar != null
-            && animator.avatar.isValid
-            && animator.isHuman;
-    }
-
-    private bool HasSafeGenericRig()
-    {
-        return animator != null
-            && !HasSafeHumanoidRig()
-            && leftUpperArm != null
-            && rightUpperArm != null
-            && leftUpperLeg != null
-            && rightUpperLeg != null
-            && hips != null
-            && head != null;
-    }
-
-    private void CacheBones()
-    {
-        leftUpperArm = null;
-        rightUpperArm = null;
-        leftUpperLeg = null;
-        rightUpperLeg = null;
-        hips = null;
-        head = null;
-        genericPoseCaptured = false;
-
-        if (animator == null)
-        {
-            return;
-        }
-
-        if (HasSafeHumanoidRig())
-        {
-            leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
-            rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
-            leftUpperLeg = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
-            rightUpperLeg = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
-            hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            head = animator.GetBoneTransform(HumanBodyBones.Head);
-            return;
-        }
-
-        leftUpperArm = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.LeftUpperArm,
-            "L_Upperarm",
-            "LeftArm");
-        rightUpperArm = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.RightUpperArm,
-            "R_Upperarm",
-            "RightArm");
-        leftUpperLeg = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.LeftUpperLeg,
-            "L_Thigh",
-            "LeftUpLeg",
-            "LeftUpperLeg");
-        rightUpperLeg = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.RightUpperLeg,
-            "R_Thigh",
-            "RightUpLeg",
-            "RightUpperLeg");
-        hips = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.Hips,
-            "Hips",
-            "Pelvis");
-        head = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.Head,
-            "Head");
-    }
-
-    private void ApplySafeGenericDance()
-    {
-        if (!genericPoseCaptured)
-        {
-            genericLeftArmBase = leftUpperArm.localRotation;
-            genericRightArmBase = rightUpperArm.localRotation;
-            genericLeftLegBase = leftUpperLeg.localRotation;
-            genericRightLegBase = rightUpperLeg.localRotation;
-            genericPoseCaptured = true;
-        }
-
-        RestoreGenericPose();
-
-        Vector3 bodyRight = Vector3.ProjectOnPlane(
-            rightUpperArm.position - leftUpperArm.position,
-            Vector3.up);
-        Vector3 bodyUp = head.position - hips.position;
-        Vector3 bodyForward = Vector3.ProjectOnPlane(
-            Vector3.Cross(bodyRight, bodyUp),
-            Vector3.up);
-        if (bodyRight.sqrMagnitude < 0.001f
-            || bodyForward.sqrMagnitude < 0.001f)
-        {
-            return;
-        }
-
-        bodyRight.Normalize();
-        bodyForward.Normalize();
-        float beatsPerSecond = tempoBpm / 60f;
-        float beat = Time.time * beatsPerSecond * Mathf.PI * 2f
-            + phaseRadians;
-        float step = Mathf.Sin(beat);
-        float armSwing = step * Mathf.Min(16f, armSwingDegrees);
-        float armLift = (0.65f + 0.35f * Mathf.Sin(beat * 0.5f))
-            * Mathf.Min(9f, armLiftDegrees);
-        float legSwing = step * Mathf.Clamp(genericLegSwingDegrees, 4f, 12f);
-
-        leftUpperArm.rotation = Quaternion.AngleAxis(armSwing, bodyRight)
-            * Quaternion.AngleAxis(-armLift, bodyForward)
-            * leftUpperArm.rotation;
-        rightUpperArm.rotation = Quaternion.AngleAxis(-armSwing, bodyRight)
-            * Quaternion.AngleAxis(armLift, bodyForward)
-            * rightUpperArm.rotation;
-        leftUpperLeg.rotation = Quaternion.AngleAxis(legSwing, bodyRight)
-            * leftUpperLeg.rotation;
-        rightUpperLeg.rotation = Quaternion.AngleAxis(-legSwing, bodyRight)
-            * rightUpperLeg.rotation;
-    }
-
-    private void RestoreGenericPose()
-    {
-        if (!genericPoseCaptured)
-        {
-            return;
-        }
-
-        if (leftUpperArm != null)
-        {
-            leftUpperArm.localRotation = genericLeftArmBase;
-        }
-        if (rightUpperArm != null)
-        {
-            rightUpperArm.localRotation = genericRightArmBase;
-        }
-        if (leftUpperLeg != null)
-        {
-            leftUpperLeg.localRotation = genericLeftLegBase;
-        }
-        if (rightUpperLeg != null)
-        {
-            rightUpperLeg.localRotation = genericRightLegBase;
-        }
-    }
-}
-
 /// <summary>
 /// Applies the final wedding-dancer yaw after animation and grounding updates.
 /// </summary>
@@ -12208,8 +11763,8 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
     public Chapter1FaceFire faceFire;
     public Chapter1PerformanceController owner;
     public float visualYawOffsetDegrees;
-    public bool reverseSkeletonFacing;
 
+    private Chapter1CircleDancer dancer;
     private Transform leftShoulder;
     private Transform rightShoulder;
     private Transform leftUpperArm;
@@ -12223,16 +11778,15 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         Transform centerTarget,
         Chapter1FaceFire sourceFaceFire,
         Chapter1PerformanceController chapterOwner,
-        float yawOffsetDegrees,
-        bool reverseFacing)
+        float yawOffsetDegrees)
     {
         animator = sourceAnimator;
         target = centerTarget;
         faceFire = sourceFaceFire;
         owner = chapterOwner;
         visualYawOffsetDegrees = yawOffsetDegrees;
-        reverseSkeletonFacing = reverseFacing;
-        CacheFacingBones();
+        dancer = GetComponent<Chapter1CircleDancer>();
+        CacheHumanoidBones();
 
         Vector3 fallbackVisualForward = transform.rotation
             * (Quaternion.Euler(0f, visualYawOffsetDegrees, 0f)
@@ -12250,10 +11804,11 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
 
     private void Awake()
     {
-        CacheFacingBones();
+        dancer = GetComponent<Chapter1CircleDancer>();
+        CacheHumanoidBones();
     }
 
-    private void CacheFacingBones()
+    private void CacheHumanoidBones()
     {
         leftShoulder = null;
         rightShoulder = null;
@@ -12262,40 +11817,20 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         hips = null;
         head = null;
 
-        if (animator == null)
+        if (animator == null
+            || animator.avatar == null
+            || !animator.avatar.isValid
+            || !animator.isHuman)
         {
             return;
         }
 
-        leftShoulder = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.LeftShoulder,
-            "L_Shoulder",
-            "LeftShoulder");
-        rightShoulder = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.RightShoulder,
-            "R_Shoulder",
-            "RightShoulder");
-        leftUpperArm = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.LeftUpperArm,
-            "L_Upperarm",
-            "LeftArm");
-        rightUpperArm = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.RightUpperArm,
-            "R_Upperarm",
-            "RightArm");
-        hips = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.Hips,
-            "Hips",
-            "Pelvis");
-        head = Chapter1WeddingRigBones.Resolve(
-            animator,
-            HumanBodyBones.Head,
-            "Head");
+        leftShoulder = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+        rightShoulder = animator.GetBoneTransform(HumanBodyBones.RightShoulder);
+        leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+        head = animator.GetBoneTransform(HumanBodyBones.Head);
     }
 
     private void LateUpdate()
@@ -12303,7 +11838,8 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         if (target == null
             || faceFire == null
             || !faceFire.enabled
-            || (owner != null && owner.IsPoliceSequenceStarted))
+            || (owner != null && owner.IsPoliceSequenceStarted)
+            || (dancer != null && !dancer.IsActivelyDancing))
         {
             return;
         }
@@ -12326,7 +11862,7 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         }
 
         Vector3 visualForward;
-        if (!TryGetSkeletonVisualForward(out visualForward))
+        if (!TryGetHumanoidVisualForward(out visualForward))
         {
             visualForward = transform.TransformDirection(
                 fallbackLocalVisualForward);
@@ -12346,7 +11882,7 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
             * transform.rotation;
     }
 
-    private bool TryGetSkeletonVisualForward(out Vector3 visualForward)
+    private bool TryGetHumanoidVisualForward(out Vector3 visualForward)
     {
         visualForward = Vector3.zero;
 
@@ -12375,10 +11911,6 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         visualForward = Vector3.Cross(
             bodyRight.normalized,
             bodyUp.normalized);
-        if (reverseSkeletonFacing)
-        {
-            visualForward = -visualForward;
-        }
         visualForward.y = 0f;
         return visualForward.sqrMagnitude > 0.001f;
     }

@@ -6898,11 +6898,11 @@ MonoBehaviour:
   maximumWeddingNpcScaleCorrection: 16
   fallbackChildHeightRatio: 0.72
   weddingReservedPlayerSlots: 1
-  autoFitWeddingCircleToArmReach: 1
+  autoFitWeddingCircleToArmReach: 0
   weddingNeighborSpacingArmMultiplier: 1.9
-  minimumWeddingCircleRadius: 22
-  minimumWeddingNeighborSpacing: 1.75
-  weddingCircleRadius: 22
+  minimumWeddingCircleRadius: 12.5
+  minimumWeddingNeighborSpacing: 6.35
+  weddingCircleRadius: 18.5
   weddingCircleTempoBpm: 88
   weddingCircleDegreesPerBeat: 1.65
   dialogueUI: {fileID: 0}
@@ -7085,8 +7085,8 @@ MonoBehaviour:
   deliveryGroundArrowPulseAmount: 0.1
   deliveryGroundArrowPulseSpeed: 4.5
   deliveryGroundArrowColor: {r: 1, g: 0.82, b: 0.02, a: 1}
-  keepDeliveryTargetsStationary: 0
-  detachDeliveryTargetsFromDancePivot: 0
+  keepDeliveryTargetsStationary: 1
+  detachDeliveryTargetsFromDancePivot: 1
   deliveryTargetIdleStateName: Idle
   guidePlayerDuringItemInteractions: 1
   guidedWalkToPickupSeconds: 1.15

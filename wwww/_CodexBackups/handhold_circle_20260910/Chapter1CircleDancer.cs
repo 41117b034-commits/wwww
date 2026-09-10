@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// è³½å¾·å…‹é¢¨æ ¼ï¼éˆæ„Ÿçš„å©šç¦®åœåœˆç¾¤èˆï¼š
-/// åœåœˆã€æ™‚é€²æ™‚é€€ã€ä¸€æ­¥ä¸€æ­¥å‰é€²ï¼Œä¸¦å¯ç”¨ Humanoid IK è®“ç›¸é„° NPC æ‰‹ç‰½æ‰‹ã€‚
+/// ÁÉ¼w§J­·®æ¡şÆF·Pªº±BÂ§³ò°é¸s»R¡G
+/// ³ò°é¡B®É¶i®É°h¡B¤@¨B¤@¨B«e¶i¡A¨Ã¥i¥Î Humanoid IK Åı¬Û¾F NPC ¤â²o¤â¡C
 /// </summary>
-[DefaultExecutionOrder(3200)]
+[DefaultExecutionOrder(1100)]
 public class Chapter1CircleDancer : MonoBehaviour
 {
     private static readonly List<Chapter1CircleDancer> activeDancers =
         new List<Chapter1CircleDancer>();
 
-    [Header("æ˜¯å¦åƒåŠ ç¹åœˆèˆ")]
-    [Tooltip("ä»»å‹™ NPC è«‹å–æ¶ˆå‹¾é¸ã€‚")]
+    [Header("¬O§_°Ñ¥[Â¶°é»R")]
+    [Tooltip("¥ô°È NPC ½Ğ¨ú®ø¤Ä¿ï¡C")]
     public bool canCircleDance = true;
 
     public bool forceIdleWhenExcluded = true;
@@ -24,66 +24,66 @@ public class Chapter1CircleDancer : MonoBehaviour
     public bool playDanceAnimatorState = true;
     public float animatorDanceSpeed = 1.50f;
 
-    [Tooltip("è·³èˆæœŸé–“æŒçºŒç¢ºèª Animator æ­£åœ¨ Dance Stateï¼Œé¿å…å…¶ä»–è…³æœ¬æŠŠè§’è‰²åˆ‡å› Idleã€‚")]
+    [Tooltip("¸õ»R´Á¶¡«ùÄò½T»{ Animator ¥¿¦b Dance State¡AÁ×§K¨ä¥L¸}¥»§â¨¤¦â¤Á¦^ Idle¡C")]
     public bool keepDanceAnimationPlaying = true;
 
-    [Tooltip("å¤šä¹…ç¢ºèªä¸€æ¬¡ Dance Stateã€‚")]
+    [Tooltip("¦h¤[½T»{¤@¦¸ Dance State¡C")]
     public float danceStateCheckInterval = 0.35f;
 
-    [Header("èˆåœˆä¸­å¿ƒ")]
-    [Tooltip("å»ºè­°æ‹–å…¥ä¸€å€‹æ”¾åœ¨çƒ¤ä¹³è±¬æ­£ä¸­å¤®çš„ç©ºç‰©ä»¶ã€‚")]
+    [Header("»R°é¤¤¤ß")]
+    [Tooltip("«ØÄ³©ì¤J¤@­Ó©ñ¦b¯N¨Å½Ş¥¿¤¤¥¡ªºªÅª«¥ó¡C")]
     public Transform roastedPigCenter;
 
-    [Tooltip("æœ‰æŒ‡å®š Roasted Pig Center æ™‚ï¼Œè‡ªå‹•æŠŠå®ƒç•¶æˆèˆåœˆä¸­å¿ƒã€‚")]
+    [Tooltip("¦³«ü©w Roasted Pig Center ®É¡A¦Û°Ê§â¥¦·í¦¨»R°é¤¤¤ß¡C")]
     public bool useRoastedPigAsCenter = true;
 
     public Transform center;
     public string fallbackCenterName = "DanceTrigger";
     public bool playOnAwake = true;
 
-    [Header("èˆŠç‰ˆç›¸å®¹æ¬„ä½ï¼ˆè«‹ä¸ç”¨èª¿ï¼‰")]
-    [Tooltip("ä¿ç•™çµ¦ Chapter1PerformanceController èˆŠç‰ˆç¨‹å¼ä½¿ç”¨ï¼›æ–°ç‰ˆèˆè¹ˆä¸ä½¿ç”¨æ­¤å€¼ã€‚")]
+    [Header("ÂÂª©¬Û®eÄæ¦ì¡]½Ğ¤£¥Î½Õ¡^")]
+    [Tooltip("«O¯dµ¹ Chapter1PerformanceController ÂÂª©µ{¦¡¨Ï¥Î¡F·sª©»RÁĞ¤£¨Ï¥Î¦¹­È¡C")]
     public float orbitSpeedDegrees = -34f;
 
-    [Tooltip("ä¿ç•™çµ¦ Chapter1PerformanceController èˆŠç‰ˆç¨‹å¼ä½¿ç”¨ï¼›æ–°ç‰ˆè«‹èª¿ Step Bob Heightã€‚")]
+    [Tooltip("«O¯dµ¹ Chapter1PerformanceController ÂÂª©µ{¦¡¨Ï¥Î¡F·sª©½Ğ½Õ Step Bob Height¡C")]
     public float stepHeight = 0.12f;
 
-    [Tooltip("ä¿ç•™çµ¦ Chapter1PerformanceController èˆŠç‰ˆç¨‹å¼ä½¿ç”¨ï¼›æ–°ç‰ˆè«‹èª¿ Tempo Bpmã€‚")]
+    [Tooltip("«O¯dµ¹ Chapter1PerformanceController ÂÂª©µ{¦¡¨Ï¥Î¡F·sª©½Ğ½Õ Tempo Bpm¡C")]
     public float stepFrequency = 2.2f;
 
-    [Tooltip("ä¿ç•™çµ¦ Chapter1PerformanceController èˆŠç‰ˆç¨‹å¼ä½¿ç”¨ï¼›æ–°ç‰ˆè«‹èª¿ In Out Distanceã€‚")]
+    [Tooltip("«O¯dµ¹ Chapter1PerformanceController ÂÂª©µ{¦¡¨Ï¥Î¡F·sª©½Ğ½Õ In Out Distance¡C")]
     public float radialStepDistance = 0.12f;
 
-    [Tooltip("ä¿ç•™çµ¦ Chapter1PerformanceController èˆŠç‰ˆç¨‹å¼ä½¿ç”¨ï¼›æ–°ç‰ˆå·²å–æ¶ˆèª‡å¼µå·¦å³æ–ã€‚")]
+    [Tooltip("«O¯dµ¹ Chapter1PerformanceController ÂÂª©µ{¦¡¨Ï¥Î¡F·sª©¤w¨ú®ø¸Ø±i¥ª¥k·n¡C")]
     public float swayDegrees = 5f;
 
-    [Header("è‡ªå‹•æ’æˆå®Œæ•´åœ“åœˆ")]
-    [Tooltip("å‹¾é¸å¾Œï¼Œæ‰€æœ‰ä½¿ç”¨åŒä¸€å€‹ä¸­å¿ƒçš„èˆè€…æœƒè‡ªå‹•å¹³å‡æ’æˆä¸€åœˆï¼Œä¸å†å„è‡ªåœ¨åŸæœ¬ä½ç½®ç¹ã€‚")]
+    [Header("¦Û°Ê±Æ¦¨§¹¾ã¶ê°é")]
+    [Tooltip("¤Ä¿ï«á¡A©Ò¦³¨Ï¥Î¦P¤@­Ó¤¤¤ßªº»RªÌ·|¦Û°Ê¥­§¡±Æ¦¨¤@°é¡A¤£¦A¦U¦Û¦b­ì¥»¦ì¸mÂ¶¡C")]
     public bool autoArrangeEvenlyAroundCenter = true;
 
-    [Tooltip("è§’è‰²ç§»åˆ°è‡ªå·±çš„åœ“åœˆä½ç½®çš„é€Ÿåº¦ã€‚å»ºè­° 3~6ã€‚")]
+    [Tooltip("¨¤¦â²¾¨ì¦Û¤vªº¶ê°é¦ì¸mªº³t«×¡C«ØÄ³ 3~6¡C")]
     public float circleArrangeSpeed = 9.5f;
 
-    [Tooltip("æ•´å€‹èˆåœˆçš„èµ·å§‹è§’åº¦ï¼Œåªç”¨ä¾†è½‰æ•´åœˆæ–¹å‘ã€‚")]
+    [Tooltip("¾ã­Ó»R°éªº°_©l¨¤«×¡A¥u¥Î¨ÓÂà¾ã°é¤è¦V¡C")]
     public float groupStartAngleDegrees = 0f;
 
-    [Tooltip("æ‰€æœ‰ NPC çš„ç¹åœˆè…³æ­¥ä½¿ç”¨åŒä¸€å€‹ç¯€æ‹ï¼Œé¿å…æœ‰äººè¶Šèµ°è¶Šå‰é¢æˆ–è½å¾Œã€‚")]
+    [Tooltip("©Ò¦³ NPC ªºÂ¶°é¸}¨B¨Ï¥Î¦P¤@­Ó¸`©ç¡AÁ×§K¦³¤H¶V¨«¶V«e­±©Î¸¨«á¡C")]
     public bool synchronizeRootMovement = true;
 
     [Tooltip("Leave one empty circle slot for the player to join after the tasks.")]
     [Range(0, 2)]
     public int reservedPlayerSlots = 1;
 
-    [Tooltip("ç›´æ¥ä½¿ç”¨å›ºå®šèˆåœˆåŠå¾‘ã€‚é€™ç‰ˆé è¨­é–‹å•Ÿï¼Œé¿å…å¤§å®¶ç¸®æˆä¸€å¨ã€‚")]
+    [Tooltip("ª½±µ¨Ï¥Î©T©w»R°é¥b®|¡C³oª©¹w³]¶}±Ò¡AÁ×§K¤j®aÁY¦¨¤@Ì@¡C")]
     public bool useFixedCircleRadius = true;
 
-    [Tooltip("NPC è·é›¢çƒ¤ä¹³è±¬ä¸­å¿ƒçš„è·é›¢ã€‚å»ºè­° 2.2~3.0ã€‚")]
-    public float fixedCircleRadius = 18.5f;
+    [Tooltip("NPC ¶ZÂ÷¯N¨Å½Ş¤¤¤ßªº¶ZÂ÷¡C«ØÄ³ 2.2~3.0¡C")]
+    public float fixedCircleRadius = 22.00f;
 
-    [Tooltip("å›ºå®šåŠå¾‘æ¨¡å¼ä¸‹ï¼Œä¸å†å› æ‰‹ç‰½æ‰‹åŠŸèƒ½è‡ªå‹•ç¸®å°èˆåœˆã€‚")]
+    [Tooltip("©T©w¥b®|¼Ò¦¡¤U¡A¤£¦A¦]¤â²o¤â¥\¯à¦Û°ÊÁY¤p»R°é¡C")]
     public bool preventHandHoldAutoShrink = true;
 
-    [Header("è³½å¾·å…‹é¢¨æ ¼ç¾¤èˆç¯€å¥")]
+    [Header("ÁÉ¼w§J­·®æ¸s»R¸`«µ")]
     public float tempoBpm = 88f;
     public float degreesPerBeat = 1.65f;
     public float inOutDistance = 0.10f;
@@ -106,7 +106,7 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Range(0f, 1f)] public float footFacingWeight = 1f;
     [Range(0f, 180f)] public float maxFootYawCorrection = 120f;
 
-    [Header("æœå‘")]
+    [Header("´Â¦V")]
     public bool faceCenter = true;
 
     [Range(0f, 0.35f)]
@@ -114,12 +114,12 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     public float turnSmooth = 7f;
 
-    [Header("èº«é«”è‡ªç„¶æ„Ÿ")]
+    [Header("¨­Åé¦ÛµM·P")]
     public Transform visualRoot;
     public float bodyLeanDegrees = 1.3f;
     public float weightShiftDegrees = 0.8f;
 
-    [Header("å€‹é«”å·®ç•°")]
+    [Header("­ÓÅé®t²§")]
     [Range(0f, 0.08f)]
     public float individualTempoVariation = 0.02f;
 
@@ -128,97 +128,97 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     public float minimumRadius = 1.2f;
 
-    [Header("è²¼åœ°ä¿®æ­£")]
-    [Tooltip("è®“æ¯å€‹ NPC è‡ªå‹•è²¼è‘—åœ°é¢èµ°ï¼Œé¿å…æ–œå¡ä¸Šæœ‰äººåŸ‹é€²åœ°æ¿æˆ–é£›èµ·ä¾†ã€‚")]
+    [Header("¶K¦a­×¥¿")]
+    [Tooltip("Åı¨C­Ó NPC ¦Û°Ê¶KµÛ¦a­±¨«¡AÁ×§K±×©Y¤W¦³¤H®I¶i¦aªO©Î­¸°_¨Ó¡C")]
     public bool followGround = true;
 
-    [Tooltip("å¾€è§’è‰²ä¸Šæ–¹å¤šé«˜é–‹å§‹å¾€ä¸‹åµæ¸¬åœ°é¢ã€‚")]
+    [Tooltip("©¹¨¤¦â¤W¤è¦h°ª¶}©l©¹¤U°»´ú¦a­±¡C")]
     public float groundProbeUp = 5f;
 
-    [Tooltip("å¾€ä¸‹æœ€å¤šåµæ¸¬å¤šé ã€‚")]
+    [Tooltip("©¹¤U³Ì¦h°»´ú¦h»·¡C")]
     public float groundProbeDown = 12f;
 
-    [Tooltip("åœ°é¢è·Ÿéš¨é€Ÿåº¦ã€‚è¶Šå¤§è¶Šè²¼åœ°ã€‚")]
+    [Tooltip("¦a­±¸òÀH³t«×¡C¶V¤j¶V¶K¦a¡C")]
     public float groundFollowSpeed = 28f;
 
-    [Tooltip("æ¯æ¬¡åœ°é¢åµæ¸¬å…è¨±èˆ‡ä¸Šä¸€å€‹åœ°é¢é«˜åº¦ç›¸å·®å¤šå°‘ã€‚ç”¨ä¾†é¿å…çªç„¶æ‰“åˆ°å±‹é ‚ã€æœ¨æ¶æˆ–å…¶ä»–é“å…·ã€‚")]
+    [Tooltip("¨C¦¸¦a­±°»´ú¤¹³\»P¤W¤@­Ó¦a­±°ª«×¬Û®t¦h¤Ö¡C¥Î¨ÓÁ×§K¬ğµM¥´¨ì«Î³»¡B¤ì¬[©Î¨ä¥L¹D¨ã¡C")]
     public float maxGroundHeightJump = 1.25f;
 
-    [Tooltip("åªæ¥å—æœä¸Šçš„è¡¨é¢ï¼Œé¿å…å°„ç·šæ‰“åˆ°ç‰†é¢ã€‚")]
+    [Tooltip("¥u±µ¨ü´Â¤Wªºªí­±¡AÁ×§K®g½u¥´¨ìÀğ­±¡C")]
     [Range(0f, 1f)]
     public float minimumGroundNormalY = 0.45f;
 
-    [Tooltip("åœ°é¢ Layerã€‚é è¨­ Everythingï¼›å¦‚æœå ´æ™¯æœ‰ Ground/Terrain Layerï¼Œå»ºè­°åªå‹¾åœ°é¢ã€‚")]
+    [Tooltip("¦a­± Layer¡C¹w³] Everything¡F¦pªG³õ´º¦³ Ground/Terrain Layer¡A«ØÄ³¥u¤Ä¦a­±¡C")]
     public LayerMask groundLayers = ~0;
 
-    [Tooltip("ä¿ç•™è§’è‰²ä¸€é–‹å§‹ç›¸å°åœ°é¢çš„é«˜åº¦å·®ï¼Œé©åˆä¸åŒæ¨¡å‹ Pivotã€‚")]
+    [Tooltip("«O¯d¨¤¦â¤@¶}©l¬Û¹ï¦a­±ªº°ª«×®t¡A¾A¦X¤£¦P¼Ò«¬ Pivot¡C")]
     public bool preserveInitialGroundOffset = true;
 
-    [Tooltip("é˜²æ­¢å°„ç·šèª¤æ‰“åˆ°çƒ¤ä¹³è±¬ã€æ¡Œå­ã€æœ¨é ­å¾ŒæŠŠ NPC ç¬é–“æŠ¬é«˜ã€‚")]
+    [Tooltip("¨¾¤î®g½u»~¥´¨ì¯N¨Å½Ş¡B®à¤l¡B¤ìÀY«á§â NPC Àş¶¡©ï°ª¡C")]
     public bool rejectSuspiciousHighGround = true;
 
-    [Tooltip("åµæ¸¬åˆ°çš„åœ°é¢è‹¥æ¯”è§’è‰²ä¸€é–‹å§‹çš„åœ°é¢é«˜è¶…éæ­¤å€¼ï¼Œå°±è¦–ç‚ºé“å…·è€Œä¸æ˜¯åœ°é¢ã€‚")]
+    [Tooltip("°»´ú¨ìªº¦a­±­Y¤ñ¨¤¦â¤@¶}©lªº¦a­±°ª¶W¹L¦¹­È¡A´Nµø¬°¹D¨ã¦Ó¤£¬O¦a­±¡C")]
     public float maximumGroundRiseFromStart = 0.45f;
 
-    [Tooltip("åµæ¸¬åˆ°çš„åœ°é¢è‹¥æ¯”è§’è‰²ä¸€é–‹å§‹çš„åœ°é¢ä½è¶…éæ­¤å€¼ï¼Œå°±å…ˆä¸è·Ÿéš¨ã€‚")]
+    [Tooltip("°»´ú¨ìªº¦a­±­Y¤ñ¨¤¦â¤@¶}©lªº¦a­±§C¶W¹L¦¹­È¡A´N¥ı¤£¸òÀH¡C")]
     public float maximumGroundDropFromStart = 0.70f;
 
-    [Tooltip("Ground Layers é‚„æ²’è¨­å®šå¥½æ™‚ï¼Œé¡å¤–å¿½ç•¥çƒ¤ä¹³è±¬ä¸­å¿ƒç‰©ä»¶åŠå…¶å­ç‰©ä»¶ Colliderã€‚")]
+    [Tooltip("Ground Layers ÁÙ¨S³]©w¦n®É¡AÃB¥~©¿²¤¯N¨Å½Ş¤¤¤ßª«¥ó¤Î¨ä¤lª«¥ó Collider¡C")]
     public bool ignoreRoastedPigCollidersForGround = true;
 
-    [Header("å…¨å“¡åŒä¸€åœ°é¢é«˜åº¦")]
-    [Tooltip("å‹¾é¸å¾Œï¼Œæ‰€æœ‰ä½¿ç”¨åŒä¸€å€‹çƒ¤ä¹³è±¬ä¸­å¿ƒçš„èˆè€…æœƒä»¥çƒ¤ä¹³è±¬é™„è¿‘çš„åŒä¸€å€‹åœ°é¢é«˜åº¦ç‚ºåŸºæº–ï¼Œä¸æœƒæœ‰äººä¸€é«˜ä¸€ä½ã€‚")]
+    [Header("¥ş­û¦P¤@¦a­±°ª«×")]
+    [Tooltip("¤Ä¿ï«á¡A©Ò¦³¨Ï¥Î¦P¤@­Ó¯N¨Å½Ş¤¤¤ßªº»RªÌ·|¥H¯N¨Å½Şªşªñªº¦P¤@­Ó¦a­±°ª«×¬°°ò·Ç¡A¤£·|¦³¤H¤@°ª¤@§C¡C")]
     public bool lockAllDancersToSharedGround = false;
 
-    [Tooltip("Humanoid è§’è‰²æœƒç”¨å·¦å³è…³éª¨çš„ä½ç½®æ ¡æ­£ Root é«˜åº¦ï¼Œé¿å…ä¸åŒæ¨¡å‹ Pivot é€ æˆæœ‰äººæµ®èµ·æˆ–é™·åœ°ã€‚")]
+    [Tooltip("Humanoid ¨¤¦â·|¥Î¥ª¥k¸}°©ªº¦ì¸m®Õ¥¿ Root °ª«×¡AÁ×§K¤£¦P¼Ò«¬ Pivot ³y¦¨¦³¤H¯B°_©Î³´¦a¡C")]
     public bool useHumanoidFeetForGrounding = false;
 
-    [Tooltip("è…³åº•ç¨å¾®é›¢åœ°çš„é«˜åº¦ã€‚0.01~0.03 é€šå¸¸æœ€è‡ªç„¶ã€‚")]
+    [Tooltip("¸}©³µy·LÂ÷¦aªº°ª«×¡C0.01~0.03 ³q±`³Ì¦ÛµM¡C")]
     public float footGroundClearance = 0.025f;
 
-    [Tooltip("åœ¨æ–œå¡ä¸Šé¡å¤–æª¢æŸ¥å·¦å³è…³åº•ï¼›ä»»ä½•ä¸€éš»è…³ç©¿åœ°ï¼Œå°±æŠŠæ•´å€‹è§’è‰²å¾€ä¸Šè£œã€‚")]
+    [Tooltip("¦b±×©Y¤WÃB¥~ÀË¬d¥ª¥k¸}©³¡F¥ô¦ó¤@°¦¸}¬ï¦a¡A´N§â¾ã­Ó¨¤¦â©¹¤W¸É¡C")]
     public bool preventFeetSinkingOnSlopes = false;
 
-    [Tooltip("è…³åº•ç©¿åœ°æ ¡æ­£æœ€å¤šä¸€æ¬¡æŠ¬é«˜å¤šå°‘ï¼Œé¿å…æ’åˆ°å¥‡æ€ª Collider æ™‚ç¬é–“é£›èµ·ã€‚")]
+    [Tooltip("¸}©³¬ï¦a®Õ¥¿³Ì¦h¤@¦¸©ï°ª¦h¤Ö¡AÁ×§K¼²¨ì©_©Ç Collider ®ÉÀş¶¡­¸°_¡C")]
     public float maxFootPenetrationCorrection = 0.22f;
 
-    [Tooltip("å¾çƒ¤ä¹³è±¬ä¸­å¿ƒä¸Šæ–¹å¾€ä¸‹æ‰¾çœŸæ­£åœ°é¢æ™‚çš„é¡å¤–é«˜åº¦ã€‚")]
+    [Tooltip("±q¯N¨Å½Ş¤¤¤ß¤W¤è©¹¤U§ä¯u¥¿¦a­±®ÉªºÃB¥~°ª«×¡C")]
     public float sharedGroundProbeUp = 8f;
 
-    [Tooltip("å°‹æ‰¾å…±åŒåœ°é¢çš„æœ€å¤§å‘ä¸‹è·é›¢ã€‚")]
+    [Tooltip("´M§ä¦@¦P¦a­±ªº³Ì¤j¦V¤U¶ZÂ÷¡C")]
     public float sharedGroundProbeDown = 20f;
 
-    [Header("æ‰‹ç‰½æ‰‹ - Humanoid IK")]
-    [Tooltip("å‹¾é¸å¾Œï¼Œç›¸é„°èˆè€…æœƒè‡ªå‹•å·¦å³æ‰‹ç‰½æ‰‹ã€‚")]
+    [Header("¤â²o¤â - Humanoid IK")]
+    [Tooltip("¤Ä¿ï«á¡A¬Û¾F»RªÌ·|¦Û°Ê¥ª¥k¤â²o¤â¡C")]
     public bool enableHandHolding = true;
 
     [Range(0f, 1f)]
-    [Tooltip("æ‰‹ç‰½æ‰‹ IK å¼·åº¦ã€‚0.8~0.92 æ¯”è¼ƒè‡ªç„¶ã€‚")]
+    [Tooltip("¤â²o¤â IK ±j«×¡C0.8~0.92 ¤ñ¸û¦ÛµM¡C")]
     public float handHoldIKWeight = 0.88f;
 
     [Range(0f, 1f)]
-    [Tooltip("æ‰‹æŒæ—‹è½‰è·Ÿéš¨å¼·åº¦ã€‚å»ºè­°ä½ä¸€é»ï¼Œé¿å…æ‰‹è…•æ‰­æ›²ã€‚")]
+    [Tooltip("¤â´x±ÛÂà¸òÀH±j«×¡C«ØÄ³§C¤@ÂI¡AÁ×§K¤âµÃ§á¦±¡C")]
     public float handHoldRotationWeight = 0.12f;
 
-    [Tooltip("ç‰½æ‰‹ä½ç½®ä¸Šä¸‹å¾®èª¿ã€‚")]
+    [Tooltip("²o¤â¦ì¸m¤W¤U·L½Õ¡C")]
     public float handHoldHeightOffset = -0.025f;
 
-    [Tooltip("å…©äººçš„æ‰‹ç›¸è·è¶…éé€™å€‹å€¼æ™‚ä¸å¼·æ‹‰ï¼Œé¿å…æ‰‹è‡‚è¢«æ‰¯é•·ã€‚")]
+    [Tooltip("¨â¤Hªº¤â¬Û¶Z¶W¹L³o­Ó­È®É¤£±j©Ô¡AÁ×§K¤âÁu³Q§èªø¡C")]
     public float maximumHandPairDistance = 1.65f;
 
-    [Tooltip("è‡ªå‹•æŠŠèˆåœˆç¸®åˆ°ç›¸é„° NPC å¯ä»¥èˆ’æœç‰½æ‰‹çš„å¤§å°ã€‚")]
+    [Tooltip("¦Û°Ê§â»R°éÁY¨ì¬Û¾F NPC ¥i¥HµÎªA²o¤âªº¤j¤p¡C")]
     public bool autoFitCircleForHandHolding = true;
 
-    [Tooltip("ç›¸é„°è§’è‰² Root ç†æƒ³é–“è·ã€‚1.0~1.25 é€šå¸¸é©åˆæˆäººè§’è‰²ã€‚")]
+    [Tooltip("¬Û¾F¨¤¦â Root ²z·Q¶¡¶Z¡C1.0~1.25 ³q±`¾A¦X¦¨¤H¨¤¦â¡C")]
     public float desiredNeighborSpacing = 1.12f;
 
-    [Tooltip("èˆåœˆåŠå¾‘èª¿æ•´é€Ÿåº¦ã€‚")]
+    [Tooltip("»R°é¥b®|½Õ¾ã³t«×¡C")]
     public float handHoldRadiusAdjustSpeed = 0.8f;
 
-    [Tooltip("å¦‚æœ Animator æ˜¯ Humanoidï¼Œæœƒè‡ªå‹•åœ¨ Animator ç‰©ä»¶ä¸ŠåŠ å…¥ IK Driverã€‚")]
+    [Tooltip("¦pªG Animator ¬O Humanoid¡A·|¦Û°Ê¦b Animator ª«¥ó¤W¥[¤J IK Driver¡C")]
     public bool autoCreateHandHoldIKDriver = true;
 
-    [Tooltip("Animator IK æ²’æœ‰è§¸ç™¼æ™‚ï¼Œä»åœ¨ LateUpdate ç”¨ Humanoid æ‰‹è‡‚éª¨æ¶å®Œæˆç‰½æ‰‹ã€‚")]
+    [Tooltip("Animator IK ¨S¦³Ä²µo®É¡A¤´¦b LateUpdate ¥Î Humanoid ¤âÁu°©¬[§¹¦¨²o¤â¡C")]
     public bool enableProceduralHandHolding = true;
 
     [Range(0f, 1f)]
@@ -231,11 +231,7 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Range(0.25f, 0.8f)]
     public float handHoldShoulderToHipRatio = 0.52f;
 
-    [Tooltip("Shared vertical pulse for joined hands, expressed as a fraction of arm length.")]
-    [Range(0f, 0.08f)]
-    public float handHoldPulseHeightRatio = 0.035f;
-
-    [Header("æ‰‹ç‰½æ‰‹é™¤éŒ¯")]
+    [Header("¤â²o¤â°£¿ù")]
     public bool logHandHoldSetup = false;
 
     private bool dancing;
@@ -324,8 +320,8 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     private void Start()
     {
-        // ç©©å®šè²¼åœ°ç‰ˆï¼šå¼·åˆ¶ä½¿ç”¨ã€Œèµ·å§‹ Root åˆ°åœ°é¢çš„åç§»ã€ã€‚
-        // ä¸å†ç”¨ Humanoid è…³éª¨é«˜åº¦æ¨ç®— Rootï¼Œé¿å…ä¸åŒè§’è‰²éª¨æ¶æ¯”ä¾‹é€ æˆæ•´ç¾¤é£„é«˜ã€‚
+        // Ã­©w¶K¦aª©¡G±j¨î¨Ï¥Î¡u°_©l Root ¨ì¦a­±ªº°¾²¾¡v¡C
+        // ¤£¦A¥Î Humanoid ¸}°©°ª«×±Àºâ Root¡AÁ×§K¤£¦P¨¤¦â°©¬[¤ñ¨Ò³y¦¨¾ã¸sÄÆ°ª¡C
         followGround = !ShouldKeepSceneAuthoredHeight();
         lockAllDancersToSharedGround = false;
         useHumanoidFeetForGrounding = false;
@@ -336,7 +332,7 @@ public class Chapter1CircleDancer : MonoBehaviour
             if (roastedPigCenter == null)
             {
                 GameObject sharedPigCenter =
-                    GameObject.Find("çƒ¤ä¹³è±¬èˆåœˆä¸­å¿ƒ");
+                    GameObject.Find("¯N¨Å½Ş»R°é¤¤¤ß");
 
                 if (sharedPigCenter != null)
                 {
@@ -498,42 +494,18 @@ public class Chapter1CircleDancer : MonoBehaviour
         Chapter1CircleDancer previous = FindNeighbor(clockwise: false);
         Chapter1CircleDancer next = FindNeighbor(clockwise: true);
 
-        bool leftArmFacesNext = IsLeftArmCloserTo(
-            next != null ? next.transform.position : transform.position + transform.right);
-
         ApplyProceduralArmIK(
-            leftArmFacesNext ? leftUpperArmBone : rightUpperArmBone,
-            leftArmFacesNext ? leftLowerArmBone : rightLowerArmBone,
-            leftArmFacesNext ? leftHandBone : rightHandBone,
-            next,
-            next != null && next.IsLeftArmCloserTo(transform.position));
-        ApplyProceduralArmIK(
-            leftArmFacesNext ? rightUpperArmBone : leftUpperArmBone,
-            leftArmFacesNext ? rightLowerArmBone : leftLowerArmBone,
-            leftArmFacesNext ? rightHandBone : leftHandBone,
+            leftUpperArmBone,
+            leftLowerArmBone,
+            leftHandBone,
             previous,
-            previous != null && previous.IsLeftArmCloserTo(transform.position));
-    }
-
-    private bool IsLeftArmCloserTo(Vector3 worldTarget)
-    {
-        if (leftUpperArmBone == null || rightUpperArmBone == null)
-        {
-            CacheHumanoidHands();
-        }
-
-        if (leftUpperArmBone == null)
-        {
-            return false;
-        }
-
-        if (rightUpperArmBone == null)
-        {
-            return true;
-        }
-
-        return (leftUpperArmBone.position - worldTarget).sqrMagnitude
-            <= (rightUpperArmBone.position - worldTarget).sqrMagnitude;
+            false);
+        ApplyProceduralArmIK(
+            rightUpperArmBone,
+            rightLowerArmBone,
+            rightHandBone,
+            next,
+            true);
     }
 
     private void ApplyProceduralArmIK(
@@ -582,10 +554,14 @@ public class Chapter1CircleDancer : MonoBehaviour
             partnerUpperArm,
             partnerLowerArm,
             partnerHand);
-        // The solver clamps each arm to its real chain length. Always let a valid
-        // pair reach toward the shared point instead of leaving both arms idle.
+        float shoulderDistance = Vector3.Distance(
+            upperArm.position,
+            partnerUpperArm.position);
+
+        // The two dancers beside the reserved player slot are intentionally not joined.
         if (ownArmLength <= 0.01f
-            || partnerArmLength <= 0.01f)
+            || partnerArmLength <= 0.01f
+            || shoulderDistance > (ownArmLength + partnerArmLength) * 1.08f)
         {
             return;
         }
@@ -612,14 +588,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         }
 
         target += Vector3.up * handHoldHeightOffset;
-
-        float beatsPerSecond = Mathf.Max(72f, tempoBpm) / 60f;
-        float joinedHandPulse = Mathf.Sin(
-            Time.time * beatsPerSecond * Mathf.PI * 2f);
-        target += Vector3.up
-            * joinedHandPulse
-            * Mathf.Min(ownArmLength, partnerArmLength)
-            * Mathf.Clamp(handHoldPulseHeightRatio, 0f, 0.08f);
 
         Vector3 towardCenter = center != null
             ? center.position - Vector3.Lerp(transform.position, partner.transform.position, 0.5f)
@@ -929,8 +897,8 @@ public class Chapter1CircleDancer : MonoBehaviour
 
     private void UpdateNaturalCircleDance()
     {
-        // ç¾æœ‰å ´æ™¯çš„ Inspector å¯èƒ½ä»ä¿ç•™èˆŠé€Ÿåº¦ï¼Œ
-        // é€™ç‰ˆç›´æ¥ä¿è­‰è‡³å°‘ä½¿ç”¨è¼ƒå¿«çš„å©šç¦®èˆç¯€å¥ã€‚
+        // ²{¦³³õ´ºªº Inspector ¥i¯à¤´«O¯dÂÂ³t«×¡A
+        // ³oª©ª½±µ«OÃÒ¦Ü¤Ö¨Ï¥Î¸û§Öªº±BÂ§»R¸`«µ¡C
         float bpm = Mathf.Max(72f, tempoBpm);
         float beatsPerSecond = bpm / 60f;
 
@@ -938,8 +906,8 @@ public class Chapter1CircleDancer : MonoBehaviour
 
         if (synchronizeRootMovement)
         {
-            // æ‰€æœ‰äººä½¿ç”¨åŒä¸€å€‹ä¸–ç•Œæ™‚é–“ç¯€æ‹ï¼Œ
-            // ä¸è®“æ¯å€‹ NPC çš„ tempoScale / phaseOffset æŠŠåœ“åœˆè¶Šèµ°è¶Šæ•£ã€‚
+            // ©Ò¦³¤H¨Ï¥Î¦P¤@­Ó¥@¬É®É¶¡¸`©ç¡A
+            // ¤£Åı¨C­Ó NPC ªº tempoScale / phaseOffset §â¶ê°é¶V¨«¶V´²¡C
             beatTime =
                 Time.time
                 * beatsPerSecond;
@@ -1049,8 +1017,8 @@ public class Chapter1CircleDancer : MonoBehaviour
             float targetGroundY = 0f;
             bool gotGround = false;
 
-            // ä½ çš„å ´åœ°ä¸æ˜¯å¹³çš„ï¼Œæ‰€ä»¥æ¯å€‹ NPC éƒ½è¦ä¾ã€Œç›®å‰ X/Z ä½ç½®ã€
-            // è‡ªå·±æŠ“è…³ä¸‹çš„çœŸå¯¦åœ°é¢é«˜åº¦ï¼Œä¸èƒ½å†å…±ç”¨åŒä¸€å€‹ Yã€‚
+            // §Aªº³õ¦a¤£¬O¥­ªº¡A©Ò¥H¨C­Ó NPC ³£­n¨Ì¡u¥Ø«e X/Z ¦ì¸m¡v
+            // ¦Û¤v§ì¸}¤Uªº¯u¹ê¦a­±°ª«×¡A¤£¯à¦A¦@¥Î¦P¤@­Ó Y¡C
             if (TryGetGroundHeight(
                     targetPosition,
                     out float detectedGroundY))
@@ -1080,18 +1048,18 @@ public class Chapter1CircleDancer : MonoBehaviour
                     groundOffsetCalibrated = true;
                 }
 
-                // Root åªè·Ÿç›®å‰ä½ç½®çš„åœ°é¢é«˜åº¦è®ŠåŒ–èµ°ã€‚
-                // ä¸å†åŠ å…¥è…³éª¨é«˜åº¦ä¿®æ­£ï¼Œé¿å…æ•´å€‹è§’è‰²è¢«æŠ¬åˆ°ç©ºä¸­ã€‚
+                // Root ¥u¸ò¥Ø«e¦ì¸mªº¦a­±°ª«×ÅÜ¤Æ¨«¡C
+                // ¤£¦A¥[¤J¸}°©°ª«×­×¥¿¡AÁ×§K¾ã­Ó¨¤¦â³Q©ï¨ìªÅ¤¤¡C
                 desiredY =
                     targetGroundY
                     + groundRootOffset;
 
-                // ç¨‹å¼ä¸å†é¡å¤–ä¸Šä¸‹å½ˆï¼Œè…³æ­¥æ„Ÿäº¤çµ¦ Animatorã€‚
-                // é€™æ¨£åœ¨æ–œå¡ä¸Šæœ€ç©©å®šã€‚
+                // µ{¦¡¤£¦AÃB¥~¤W¤U¼u¡A¸}¨B·P¥æµ¹ Animator¡C
+                // ³o¼Ë¦b±×©Y¤W³ÌÃ­©w¡C
             }
         }
 
-        // X/Z ç…§èˆåœˆèµ°ï¼›Y å–®ç¨å¹³æ»‘è·Ÿåœ°é¢ï¼Œé¿å…ä¸€å¹€çªç„¶é£›é«˜æˆ–æ’é€²åœ°ä¸‹ã€‚
+        // X/Z ·Ó»R°é¨«¡FY ³æ¿W¥­·Æ¸ò¦a­±¡AÁ×§K¤@´V¬ğµM­¸°ª©Î´¡¶i¦a¤U¡C
         float yLerp =
             1f
             - Mathf.Exp(
@@ -1322,7 +1290,10 @@ public class Chapter1CircleDancer : MonoBehaviour
     {
         if (useFixedCircleRadius)
         {
+            // ¬J¦³³õ´º¤¤ªº Component ·|«O¯d Inspector ÂÂ¼Æ­È¡A
+            // ©Ò¥H³oª©ª½±µ«OÃÒ»R°é¦Ü¤Ö 22 ¤½¤Ø¥b®|¡C
             return Mathf.Max(
+                22.00f,
                 minimumRadius,
                 fixedCircleRadius);
         }
@@ -1504,30 +1475,18 @@ public class Chapter1CircleDancer : MonoBehaviour
         leftLowerArmBone = leftLowerArmBone != null
             ? leftLowerArmBone
             : FindRigBone(rigTransforms, "L_Forearm", "LeftForeArm", "LeftLowerArm", "forearm.L", "forearm_l", "J_Bip_L_ForeArm");
-        Transform namedLeftHandBone = FindRigBone(
-            rigTransforms,
-            "L_Hand", "LeftHand", "Hand.L", "hand_l", "LeftWrist", "J_Bip_L_Hand");
-        if (leftHandBone == null || !IsLikelyHandBone(leftHandBone))
-        {
-            leftHandBone = namedLeftHandBone != null
-                ? namedLeftHandBone
-                : leftHandBone;
-        }
+        leftHandBone = leftHandBone != null
+            ? leftHandBone
+            : FindRigBone(rigTransforms, "L_Hand", "LeftHand", "Hand.L", "hand_l", "LeftWrist", "J_Bip_L_Hand");
         rightUpperArmBone = rightUpperArmBone != null
             ? rightUpperArmBone
             : FindRigBone(rigTransforms, "R_Upperarm", "RightUpperArm", "RightArm", "upper_arm.R", "upperarm_r", "J_Bip_R_UpperArm");
         rightLowerArmBone = rightLowerArmBone != null
             ? rightLowerArmBone
             : FindRigBone(rigTransforms, "R_Forearm", "RightForeArm", "RightLowerArm", "forearm.R", "forearm_r", "J_Bip_R_ForeArm");
-        Transform namedRightHandBone = FindRigBone(
-            rigTransforms,
-            "R_Hand", "RightHand", "Hand.R", "hand_r", "RightWrist", "J_Bip_R_Hand");
-        if (rightHandBone == null || !IsLikelyHandBone(rightHandBone))
-        {
-            rightHandBone = namedRightHandBone != null
-                ? namedRightHandBone
-                : rightHandBone;
-        }
+        rightHandBone = rightHandBone != null
+            ? rightHandBone
+            : FindRigBone(rigTransforms, "R_Hand", "RightHand", "Hand.R", "hand_r", "RightWrist", "J_Bip_R_Hand");
         hipsBone = hipsBone != null
             ? hipsBone
             : FindRigBone(rigTransforms, "Pelvis", "Hips", "Hip", "J_Bip_C_Hips");
@@ -1629,14 +1588,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         return new string(normalized, 0, count);
     }
 
-    private static bool IsLikelyHandBone(Transform bone)
-    {
-        string normalized = bone != null
-            ? NormalizeBoneName(bone.name)
-            : string.Empty;
-        return normalized.Contains("hand") || normalized.Contains("wrist");
-    }
-
     private void EnsureHandHoldIKDriver()
     {
         if (!autoCreateHandHoldIKDriver
@@ -1662,7 +1613,7 @@ public class Chapter1CircleDancer : MonoBehaviour
             Debug.Log(
                 "[Chapter1CircleDancer] "
                 + name
-                + " å·²å»ºç«‹ HandHold IK Driverã€‚",
+                + " ¤w«Ø¥ß HandHold IK Driver¡C",
                 this);
         }
     }
@@ -1706,14 +1657,14 @@ public class Chapter1CircleDancer : MonoBehaviour
             ikAnimator,
             AvatarIKGoal.LeftHand,
             leftHandBone,
-            next,
+            previous,
             false);
 
         ApplySingleHandIK(
             ikAnimator,
             AvatarIKGoal.RightHand,
             rightHandBone,
-            previous,
+            next,
             true);
     }
 
@@ -1978,13 +1929,6 @@ public class Chapter1CircleDancer : MonoBehaviour
         return rightHandBone;
     }
 
-    public Transform GetHandBoneToward(Vector3 worldTarget)
-    {
-        return IsLeftArmCloserTo(worldTarget)
-            ? GetLeftHandBone()
-            : GetRightHandBone();
-    }
-
     private float GetCurrentRootToLowestFootOffset()
     {
         if (!useHumanoidFeetForGrounding
@@ -2132,8 +2076,8 @@ public class Chapter1CircleDancer : MonoBehaviour
             return;
         }
 
-        // çƒ¤ä¹³è±¬ã€æœ¨æ¶ã€ç«å †é€šå¸¸éƒ½åœ¨çœŸæ­£åœ°é¢ä¸Šæ–¹ã€‚
-        // æ‰€ä»¥é€™è£¡é¸ã€Œæœ€ä½çš„æœ‰æ•ˆæœä¸Šè¡¨é¢ã€ä½œç‚ºæ•´å€‹èˆåœˆå…±åŒåœ°é¢ã€‚
+        // ¯N¨Å½Ş¡B¤ì¬[¡B¤õ°ï³q±`³£¦b¯u¥¿¦a­±¤W¤è¡C
+        // ©Ò¥H³o¸Ì¿ï¡u³Ì§Cªº¦³®Ä´Â¤Wªí­±¡v§@¬°¾ã­Ó»R°é¦@¦P¦a­±¡C
         float lowestValidY =
             float.PositiveInfinity;
 
@@ -2202,8 +2146,8 @@ public class Chapter1CircleDancer : MonoBehaviour
             transform.position,
             out float groundY))
         {
-            // è§’è‰²ä¸€é–‹å§‹é€šå¸¸å·²ç¶“æ­£ç¢ºç«™åœ¨å ´æ™¯åœ°é¢ä¸Šã€‚
-            // ç›´æ¥ä¿å­˜ Root åˆ°åœ°é¢çš„é«˜åº¦å·®ï¼Œæ¯”ä¸åŒæ¨¡å‹çš„è…³éª¨æ¯”ä¾‹æ›´å¯é ã€‚
+            // ¨¤¦â¤@¶}©l³q±`¤w¸g¥¿½T¯¸¦b³õ´º¦a­±¤W¡C
+            // ª½±µ«O¦s Root ¨ì¦a­±ªº°ª«×®t¡A¤ñ¤£¦P¼Ò«¬ªº¸}°©¤ñ¨Ò§ó¥i¾a¡C
             groundRootOffset =
                 preserveInitialGroundOffset
                     ? transform.position.y - groundY
@@ -2294,8 +2238,8 @@ public class Chapter1CircleDancer : MonoBehaviour
                     hit.point.y
                     - expectedGroundY);
 
-            // èµ°æ–œå¡æ™‚åœ°é¢é«˜åº¦æœƒæ…¢æ…¢è®Šï¼Œ
-            // ä½†å±‹é ‚ã€æœ¨æ¶ã€çƒ¤æ¶ç­‰é€šå¸¸æœƒçªç„¶å·®å¾ˆå¤šã€‚
+            // ¨«±×©Y®É¦a­±°ª«×·|ºCºCÅÜ¡A
+            // ¦ı«Î³»¡B¤ì¬[¡B¯N¬[µ¥³q±`·|¬ğµM®t«Ü¦h¡C
             if (hasLastGroundY
                 && delta > Mathf.Max(0.1f, maxGroundHeightJump))
             {
@@ -2486,7 +2430,7 @@ public class Chapter1CircleDancer : MonoBehaviour
         AnimatorStateInfo current =
             animator.GetCurrentAnimatorStateInfo(0);
 
-        // åªè¦ä¸æ˜¯ Danceï¼Œå°±æŸ”å’Œåˆ‡å› Danceã€‚
+        // ¥u­n¤£¬O Dance¡A´N¬X©M¤Á¦^ Dance¡C
         if (current.shortNameHash != danceHash)
         {
             animator.CrossFade(
@@ -2495,7 +2439,7 @@ public class Chapter1CircleDancer : MonoBehaviour
                 0);
         }
 
-        // ä¿è­‰çœŸæ­£çš„èˆè¹ˆ Clip ä»æ˜¯å¿«ç‰ˆé€Ÿåº¦ã€‚
+        // «OÃÒ¯u¥¿ªº»RÁĞ Clip ¤´¬O§Öª©³t«×¡C
         animator.speed =
             Mathf.Max(
                 1.50f,
@@ -2745,8 +2689,8 @@ public class Chapter1FaceFire : MonoBehaviour
         Transform[] bones = searchRoot.GetComponentsInChildren<Transform>(true);
         leftShoulder = FindGenericUpperBodyBone(bones, true);
         rightShoulder = FindGenericUpperBodyBone(bones, false);
-        head = FindGenericBone(bones, "head", "é ­");
-        hips = FindGenericBone(bones, "hips", "pelvis", "éª¨ç›†");
+        head = FindGenericBone(bones, "head", "ÀY");
+        hips = FindGenericBone(bones, "hips", "pelvis", "°©¬Ö");
     }
 
     private Transform FindGenericUpperBodyBone(Transform[] bones, bool left)
