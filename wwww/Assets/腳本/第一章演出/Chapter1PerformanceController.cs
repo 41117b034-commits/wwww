@@ -7098,12 +7098,14 @@ public class Chapter1PerformanceController : MonoBehaviour
             dancer.degreesPerBeat = weddingCircleDegreesPerBeat;
             dancer.enableHandHolding = true;
             dancer.enableProceduralHandHolding = true;
-            dancer.proceduralHandHoldWeight = 0.92f;
+            dancer.proceduralHandHoldWeight = 0.72f;
+            dancer.maximumProceduralArmExtensionRatio = 0.94f;
+            dancer.maximumHandBehindShoulderRatio = 0.04f;
             dancer.autoCreateHandHoldIKDriver = false;
             dancer.handHoldIKWeight = 0f;
             dancer.handHoldRotationWeight = 0f;
-            dancer.handHoldShoulderToHipRatio = 0.68f;
-            dancer.handHoldPulseHeightRatio = 0.035f;
+            dancer.handHoldShoulderToHipRatio = 0.52f;
+            dancer.handHoldPulseHeightRatio = 0.018f;
             dancer.maximumHandPairDistance = GetWeddingMaximumHandPairDistance(neighborSpacing);
 
             Chapter1HandHoldIK handHoldDriver =
@@ -7196,6 +7198,9 @@ public class Chapter1PerformanceController : MonoBehaviour
                 this,
                 weddingCircleTempoBpm,
                 i);
+            limbDance.armSwingDegrees = 8f;
+            limbDance.armLiftDegrees = 4f;
+            limbDance.genericLegSwingDegrees = 7f;
 
             dancer.enabled = true;
             dancer.SetCanCircleDance(true);
@@ -7432,11 +7437,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private bool ShouldReverseWeddingSkeletonFacing(Transform actorRoot)
     {
-        return actorRoot != null
-            && string.Equals(
-                actorRoot.name.Trim(),
-                "賽德克青年",
-                System.StringComparison.Ordinal);
+        // All current wedding rigs use the same shoulder-derived forward sign.
+        // The old youth-only inversion made that actor face away from the fire.
+        return false;
     }
 
     private void SnapWeddingActorFacing(
@@ -8448,7 +8451,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         DisableDeliveryNpcBehaviour<Chapter1FaceFire>(searchRoot);
         DisableDeliveryNpcBehaviour<Chapter1WeddingFaceCenter>(searchRoot);
         DisableDeliveryNpcBehaviour<Chapter1WeddingLimbDance>(searchRoot);
-        DisableDeliveryNpcBehaviour<Chapter1NpcGrounding>(searchRoot);
 
         // 切回 Idle。
         Animator[] animators = searchRoot.GetComponentsInChildren<Animator>(true);
@@ -8493,6 +8495,56 @@ public class Chapter1PerformanceController : MonoBehaviour
                         + idleState);
                 }
             }
+        }
+
+        EnsureDeliveryTargetGrounding(searchRoot, animators);
+    }
+
+    private void EnsureDeliveryTargetGrounding(
+        Transform actorRoot,
+        Animator[] animators)
+    {
+        if (actorRoot == null)
+        {
+            return;
+        }
+
+        Animator fallbackAnimator = animators != null && animators.Length > 0
+            ? animators[0]
+            : null;
+        Animator groundingAnimator = GetBestWeddingAnimator(
+            actorRoot,
+            fallbackAnimator);
+        Chapter1NpcGrounding[] grounders =
+            actorRoot.GetComponentsInChildren<Chapter1NpcGrounding>(true);
+        Chapter1NpcGrounding grounder =
+            actorRoot.GetComponent<Chapter1NpcGrounding>();
+        if (grounder == null)
+        {
+            grounder = actorRoot.gameObject.AddComponent<Chapter1NpcGrounding>();
+        }
+
+        for (int i = 0; i < grounders.Length; i++)
+        {
+            if (grounders[i] != null && grounders[i] != grounder)
+            {
+                grounders[i].enabled = false;
+            }
+        }
+
+        grounder.Configure(groundingAnimator, guidedGroundLayers);
+        grounder.footClearance = 0.018f;
+        grounder.groundProbeUp = 8f;
+        grounder.groundProbeDown = 30f;
+        grounder.hardSnapThreshold = 0.08f;
+        grounder.followSpeed = 32f;
+        grounder.maximumCorrection = 20f;
+        grounder.enabled = true;
+        grounder.SnapImmediately();
+
+        if (!weddingNpcGrounders.Contains(grounder))
+        {
+            weddingNpcGrounders.Add(grounder);
         }
     }
 

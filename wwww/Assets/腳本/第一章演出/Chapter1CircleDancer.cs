@@ -224,6 +224,14 @@ public class Chapter1CircleDancer : MonoBehaviour
     [Range(0f, 1f)]
     public float proceduralHandHoldWeight = 0.94f;
 
+    [Tooltip("Limits elbow extension so the joined arm keeps a natural bend.")]
+    [Range(0.82f, 0.98f)]
+    public float maximumProceduralArmExtensionRatio = 0.94f;
+
+    [Tooltip("Prevents a joined hand from being pulled behind the dancer's shoulder plane.")]
+    [Range(0f, 0.2f)]
+    public float maximumHandBehindShoulderRatio = 0.04f;
+
     [Range(0.05f, 0.5f)]
     public float handHoldShoulderDropRatio = 0.26f;
 
@@ -630,7 +638,18 @@ public class Chapter1CircleDancer : MonoBehaviour
             towardCenter = transform.forward;
         }
         towardCenter.Normalize();
-        Vector3 elbowPole = Vector3.down + towardCenter * 0.12f;
+
+        float forwardOffset = Vector3.Dot(
+            target - upperArm.position,
+            towardCenter);
+        float minimumForwardOffset = -ownArmLength
+            * Mathf.Clamp(maximumHandBehindShoulderRatio, 0f, 0.2f);
+        if (forwardOffset < minimumForwardOffset)
+        {
+            target += towardCenter * (minimumForwardOffset - forwardOffset);
+        }
+
+        Vector3 elbowPole = Vector3.down + towardCenter * 0.28f;
 
         SolveTwoBoneArm(
             upperArm,
@@ -671,7 +690,10 @@ public class Chapter1CircleDancer : MonoBehaviour
 
         targetDirection /= targetDistance;
         float minimumReach = Mathf.Abs(upperLength - lowerLength) + 0.002f;
-        float maximumReach = upperLength + lowerLength - 0.002f;
+        float maximumReach = Mathf.Max(
+            minimumReach,
+            (upperLength + lowerLength)
+                * Mathf.Clamp(maximumProceduralArmExtensionRatio, 0.82f, 0.98f));
         targetDistance = Mathf.Clamp(targetDistance, minimumReach, maximumReach);
         Vector3 target = shoulder + targetDirection * targetDistance;
 
