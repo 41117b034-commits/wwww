@@ -6944,6 +6944,17 @@ public class Chapter1PerformanceController : MonoBehaviour
             circleCenter = center;
         }
 
+        Transform facingCenter = FindTransformByName("CampFireFX");
+        if (facingCenter == null)
+        {
+            facingCenter = FindTransformByName("CampFireLight");
+        }
+
+        if (facingCenter == null)
+        {
+            facingCenter = circleCenter;
+        }
+
         Animator[] animators = EnsureNamedAddedWeddingDancerAnimators();
         NormalizeNamedAddedWeddingDancers(animators, circleCenter);
         weddingCrowdDancers.Clear();
@@ -7138,7 +7149,7 @@ public class Chapter1PerformanceController : MonoBehaviour
                 }
             }
 
-            faceFire.target = circleCenter;
+            faceFire.target = facingCenter;
             faceFire.owner = this;
             faceFire.turnSpeed = 1000f;
             faceFire.yawOffsetDegrees = GetWeddingVisualYawOffset(
@@ -7168,7 +7179,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             exactFacing.Configure(
                 animator,
-                circleCenter,
+                facingCenter,
                 faceFire,
                 this,
                 faceFire.yawOffsetDegrees);
@@ -7427,9 +7438,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         float yawOffset = faceFire != null
             ? faceFire.yawOffsetDegrees
             : 0f;
+        Transform facingTarget = faceFire != null && faceFire.target != null
+            ? faceFire.target
+            : circleCenter;
         Vector3 visualForward = actorRoot.rotation
             * (Quaternion.Euler(0f, yawOffset, 0f) * Vector3.forward);
-        Vector3 towardCenter = circleCenter.position - actorRoot.position;
+        Vector3 towardCenter = facingTarget.position - actorRoot.position;
         visualForward.y = 0f;
         towardCenter.y = 0f;
         if (visualForward.sqrMagnitude < 0.001f
@@ -11751,6 +11765,13 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
     public float visualYawOffsetDegrees;
 
     private Chapter1CircleDancer dancer;
+    private Transform leftShoulder;
+    private Transform rightShoulder;
+    private Transform leftUpperArm;
+    private Transform rightUpperArm;
+    private Transform hips;
+    private Transform head;
+    private Vector3 fallbackLocalVisualForward = Vector3.forward;
 
     public void Configure(
         Animator sourceAnimator,
@@ -11765,6 +11786,18 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
         owner = chapterOwner;
         visualYawOffsetDegrees = yawOffsetDegrees;
         dancer = GetComponent<Chapter1CircleDancer>();
+        CacheHumanoidBones();
+
+        Vector3 fallbackVisualForward = transform.rotation
+            * (Quaternion.Euler(0f, visualYawOffsetDegrees, 0f)
+                * Vector3.forward);
+        fallbackVisualForward.y = 0f;
+        if (fallbackVisualForward.sqrMagnitude > 0.001f)
+        {
+            fallbackLocalVisualForward = transform.InverseTransformDirection(
+                fallbackVisualForward.normalized);
+        }
+
         enabled = true;
         FaceCenterNow();
     }
@@ -11772,6 +11805,32 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
     private void Awake()
     {
         dancer = GetComponent<Chapter1CircleDancer>();
+        CacheHumanoidBones();
+    }
+
+    private void CacheHumanoidBones()
+    {
+        leftShoulder = null;
+        rightShoulder = null;
+        leftUpperArm = null;
+        rightUpperArm = null;
+        hips = null;
+        head = null;
+
+        if (animator == null
+            || animator.avatar == null
+            || !animator.avatar.isValid
+            || !animator.isHuman)
+        {
+            return;
+        }
+
+        leftShoulder = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+        rightShoulder = animator.GetBoneTransform(HumanBodyBones.RightShoulder);
+        leftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+        rightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+        hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+        head = animator.GetBoneTransform(HumanBodyBones.Head);
     }
 
     private void LateUpdate()
@@ -11802,9 +11861,13 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
             return;
         }
 
-        Vector3 visualForward = transform.rotation
-            * (Quaternion.Euler(0f, visualYawOffsetDegrees, 0f)
-                * Vector3.forward);
+        Vector3 visualForward;
+        if (!TryGetHumanoidVisualForward(out visualForward))
+        {
+            visualForward = transform.TransformDirection(
+                fallbackLocalVisualForward);
+        }
+
         visualForward.y = 0f;
         if (visualForward.sqrMagnitude < 0.001f)
         {
@@ -11817,6 +11880,39 @@ public sealed class Chapter1WeddingFaceCenter : MonoBehaviour
             Vector3.up);
         transform.rotation = Quaternion.AngleAxis(yawDelta, Vector3.up)
             * transform.rotation;
+    }
+
+    private bool TryGetHumanoidVisualForward(out Vector3 visualForward)
+    {
+        visualForward = Vector3.zero;
+
+        Transform leftSide = leftShoulder != null
+            ? leftShoulder
+            : leftUpperArm;
+        Transform rightSide = rightShoulder != null
+            ? rightShoulder
+            : rightUpperArm;
+        if (leftSide == null
+            || rightSide == null
+            || hips == null
+            || head == null)
+        {
+            return false;
+        }
+
+        Vector3 bodyRight = rightSide.position - leftSide.position;
+        Vector3 bodyUp = head.position - hips.position;
+        if (bodyRight.sqrMagnitude < 0.0001f
+            || bodyUp.sqrMagnitude < 0.0001f)
+        {
+            return false;
+        }
+
+        visualForward = Vector3.Cross(
+            bodyRight.normalized,
+            bodyUp.normalized);
+        visualForward.y = 0f;
+        return visualForward.sqrMagnitude > 0.001f;
     }
 }
 
