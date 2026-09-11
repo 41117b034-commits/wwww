@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.XR;
 
 public class Chapter1PerformanceController : MonoBehaviour
 {
@@ -190,6 +191,14 @@ public class Chapter1PerformanceController : MonoBehaviour
     public bool autoFindMissingReferences = true;
     public bool requireWineBeforeDance = false;
     public bool allowChoiceHotkeys = true;
+
+    [Header("VR Choice Input")]
+    [Tooltip("開啟後，劇情選擇可使用右手 VR 控制器 A / B。A = 選項 1，B = 選項 2。")]
+    public bool allowVRChoiceButtons = true;
+
+    [Tooltip("VR 選擇使用右手控制器。Vive Cosmos：A = Primary Button，B = Secondary Button。")]
+    public XRNode vrChoiceHand = XRNode.RightHand;
+
     public bool showFallbackHud = true;
     public bool lockPlayerDuringPoliceEntrance = false;
     public float defaultDialogueSeconds = 3f;
@@ -830,6 +839,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private string choiceQuestion = "";
     private string optionALabel = "";
     private string optionBLabel = "";
+    private bool previousVRPrimaryButton;
+    private bool previousVRSecondaryButton;
     private Coroutine clearMissionRoutine;
     private bool clearMissionWhenPlayerMoves;
     private string movementSensitiveMissionText = "";
@@ -947,6 +958,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (waitingForChoice && allowChoiceHotkeys)
         {
+            // PC 鍵盤：1 = 上前阻止，2 = 沉默觀望。
             if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
             {
                 ChooseIntervene();
@@ -956,6 +968,10 @@ public class Chapter1PerformanceController : MonoBehaviour
                 ChooseWatch();
             }
         }
+
+        // VR：持續讀取右手控制器按鍵狀態。
+        // 即使目前沒有顯示選項，也會更新上一幀狀態，避免選項剛出現時因為玩家原本就按住 A/B 而誤觸。
+        UpdateVRChoiceInput();
 
         physicalDeliveryInputConsumed = false;
         UpdatePhysicalWeddingDelivery();
@@ -1278,13 +1294,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             Rect optionB =
                 new Rect(box.x + 24f, box.y + 116f, box.width - 48f, 40f);
 
-            if (GUI.Button(optionA, "1　" + optionALabel, hudButtonStyle))
+            if (GUI.Button(optionA, "1 / A　" + optionALabel, hudButtonStyle))
             {
                 PlayChapterUiClick();
                 ChooseIntervene();
             }
 
-            if (GUI.Button(optionB, "2　" + optionBLabel, hudButtonStyle))
+            if (GUI.Button(optionB, "2 / B　" + optionBLabel, hudButtonStyle))
             {
                 PlayChapterUiClick();
                 ChooseWatch();
@@ -11293,7 +11309,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         choiceQuestion = "你要怎麼做？";
         optionALabel = "上前阻止";
         optionBLabel = "沉默觀望";
-        SetMission("導火線事件：選擇上前阻止，或沉默觀望。可按 1 / 2。");
+        SetMission("導火線事件：選擇上前阻止，或沉默觀望。鍵盤 1 / 2，VR 右手 A / B。");
 
         if (heartbeatAudio != null)
         {
@@ -11302,10 +11318,60 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (choiceUI != null)
         {
-            choiceUI.Show(choiceQuestion, optionALabel, optionBLabel);
+            // 正式 Choice UI 也直接顯示鍵盤與 VR 按鍵。
+            choiceUI.Show(
+                choiceQuestion,
+                "1 / A　" + optionALabel,
+                "2 / B　" + optionBLabel);
         }
 
-        ShowLine("系統", "你要怎麼做？按 1 上前阻止，按 2 沉默觀望。", 8f);
+        ShowLine("系統", "你要怎麼做？按 1 / A 上前阻止，按 2 / B 沉默觀望。", 8f);
+    }
+
+    private void UpdateVRChoiceInput()
+    {
+        if (!allowVRChoiceButtons)
+        {
+            previousVRPrimaryButton = false;
+            previousVRSecondaryButton = false;
+            return;
+        }
+
+        InputDevice controller = InputDevices.GetDeviceAtXRNode(vrChoiceHand);
+
+        bool primaryButton = false;
+        bool secondaryButton = false;
+
+        if (controller.isValid)
+        {
+            controller.TryGetFeatureValue(CommonUsages.primaryButton, out primaryButton);
+            controller.TryGetFeatureValue(CommonUsages.secondaryButton, out secondaryButton);
+        }
+
+        // 只在「按下的瞬間」觸發一次，避免按住按鍵時重複選擇。
+        bool primaryPressedThisFrame = primaryButton && !previousVRPrimaryButton;
+        bool secondaryPressedThisFrame = secondaryButton && !previousVRSecondaryButton;
+
+        previousVRPrimaryButton = primaryButton;
+        previousVRSecondaryButton = secondaryButton;
+
+        if (!waitingForChoice || choiceResolved)
+        {
+            return;
+        }
+
+        // Vive Cosmos 右手：A（Primary Button）= 選項 1 = 上前阻止。
+        if (primaryPressedThisFrame)
+        {
+            Debug.Log("[Chapter1 VR Choice] A / Primary Button -> 上前阻止");
+            ChooseIntervene();
+        }
+        // Vive Cosmos 右手：B（Secondary Button）= 選項 2 = 沉默觀望。
+        else if (secondaryPressedThisFrame)
+        {
+            Debug.Log("[Chapter1 VR Choice] B / Secondary Button -> 沉默觀望");
+            ChooseWatch();
+        }
     }
 
     public void ChooseIntervene()
