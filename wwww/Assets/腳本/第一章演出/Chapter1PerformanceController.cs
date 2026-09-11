@@ -26,7 +26,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private static readonly string[] ReplacementWeddingDancerNames =
     {
-        "賽德克帥哥",
+        "賽德克中年(2)",
         "部落男性"
     };
 
@@ -814,6 +814,10 @@ public class Chapter1PerformanceController : MonoBehaviour
     private List<Behaviour> incidentCameraTrackedPoseDrivers;
     private Renderer[] incidentHiddenHandRenderers;
     private bool[] incidentHiddenHandRendererStates;
+    private Vector3 policeWitnessViewPosition;
+    private Quaternion policeWitnessViewRotation;
+    private bool hasPoliceWitnessViewPose;
+    private bool loggedMissingHutScream;
     private Transform scaledDanceHandsRoot;
     private Vector3 originalDanceHandsLocalScale;
     private bool danceHandsScaleApplied;
@@ -9317,6 +9321,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
         yield return MovePlayerToWitnessPoint();
+        CapturePoliceWitnessViewPose();
         yield return new WaitForSeconds(0.35f);
 
         if (animatePoliceEntranceWithoutTimeline)
@@ -9425,18 +9430,23 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return new WaitForSeconds(3.4f);
         }
 
-        // 最後把視線帶回事件中心，再跳出選擇。
-        Transform choiceTarget = choiceFocusPoint != null
-            ? choiceFocusPoint.transform
-            : (groomActor != null ? groomActor : primaryPoliceActor);
-        if (incidentCameraPoseLock == null)
+        // 選項出現前，必須讓玩家清楚看到警察正抓住並壓制女性族人。
+        if (harassingPolice != null && femaleVillagerActor != null)
         {
-            yield return CinematicPanTo(choiceTarget, policeCameraPanSeconds * 0.85f);
+            yield return CinematicFrameIncidentActors(
+                harassingPolice,
+                femaleVillagerActor,
+                Mathf.Max(0.3f, policeCameraPanSeconds * 0.6f));
         }
         else
         {
-            yield return new WaitForSeconds(Mathf.Max(0.15f, policeCameraPanSeconds * 0.35f));
+            Transform choiceTarget = choiceFocusPoint != null
+                ? choiceFocusPoint.transform
+                : (groomActor != null ? groomActor : primaryPoliceActor);
+            yield return CinematicPanTo(choiceTarget, policeCameraPanSeconds * 0.85f);
         }
+
+        yield return new WaitForSeconds(Mathf.Max(0.2f, policeCameraPanSeconds * 0.35f));
 
         ShowConflictChoice();
     }
@@ -10357,7 +10367,10 @@ public class Chapter1PerformanceController : MonoBehaviour
             speakerActor.position.x,
             Mathf.Lerp(minimumY, maximumY, 0.72f),
             speakerActor.position.z);
-        float shotDistance = Mathf.Clamp(actorHeight * 1.12f, 2.1f, 4.4f);
+        float shotDistance = Mathf.Clamp(
+            actorHeight * 1.12f,
+            Mathf.Max(2.1f, actorHeight * 0.9f),
+            Mathf.Max(4.4f, actorHeight * 1.3f));
         Vector3 preferredSpeakerDirection = (
             actorForward
             + actorRight * 0.04f).normalized;
@@ -11001,24 +11014,32 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Transform playerView = GetPlayerViewTransform();
 
+        bool fixedWitnessCamera =
+            usePoliceCinematicCamera
+            && IsNewPoliceScene()
+            && playerView != null;
+
         bool visiblePoliceCamera =
             usePoliceCinematicCamera
+            && !fixedWitnessCamera
             && forceVisiblePoliceEntranceShot
             && IsNewPoliceScene()
             && playerView != null;
 
         bool aerialCamera =
             usePoliceCinematicCamera
+            && !fixedWitnessCamera
             && !visiblePoliceCamera
             && usePoliceEntranceAerialIntro
             && playerView != null;
 
         bool trackingCamera =
-            visiblePoliceCamera
+            !fixedWitnessCamera
+            && (visiblePoliceCamera
             || (usePoliceCinematicCamera
                 && !usePoliceEntranceAerialIntro
                 && usePoliceEntranceTrackingCamera
-                && playerView != null);
+                && playerView != null));
 
         Vector3 originalViewPosition =
             playerView != null ? playerView.position : Vector3.zero;
@@ -11034,13 +11055,17 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         List<Behaviour> trackedPoseDrivers = null;
         Chapter1CinematicCameraPoseLock poseLock = null;
+        Renderer[] hiddenHandRenderers = null;
+        bool[] hiddenHandRendererStates = null;
 
-        if ((aerialCamera || trackingCamera)
+        if ((fixedWitnessCamera || aerialCamera || trackingCamera)
             && playerView != null)
         {
             trackedPoseDrivers =
                 DisableCameraTrackedPoseDrivers(playerView);
             poseLock = BeginCinematicCameraPoseLock(playerView);
+            hiddenHandRenderers = HidePlayerHandRenderers(
+                out hiddenHandRendererStates);
         }
 
         ShowLine(
@@ -11173,7 +11198,15 @@ public class Chapter1PerformanceController : MonoBehaviour
                         Time.deltaTime * 8f);
             }
 
-            if ((aerialCamera || trackingCamera)
+            if (fixedWitnessCamera && playerView != null)
+            {
+                SetCinematicCameraPose(
+                    playerView,
+                    poseLock,
+                    originalViewPosition,
+                    originalViewRotation);
+            }
+            else if ((aerialCamera || trackingCamera)
                 && playerView != null)
             {
                 Vector3 policeCenter =
@@ -11360,7 +11393,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return new WaitForSeconds(policeVisibleShotEndHoldSeconds);
         }
 
-        if ((aerialCamera || trackingCamera)
+        if ((fixedWitnessCamera || aerialCamera || trackingCamera)
             && playerView != null)
         {
             if (returnCameraAfterPoliceEntrance)
@@ -11403,7 +11436,24 @@ public class Chapter1PerformanceController : MonoBehaviour
             playerView.localRotation = originalViewLocalRotation;
 
             RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
+            RestorePlayerHandRenderers(
+                hiddenHandRenderers,
+                hiddenHandRendererStates);
         }
+    }
+
+    private void CapturePoliceWitnessViewPose()
+    {
+        Transform view = GetPlayerViewTransform();
+        if (view == null)
+        {
+            hasPoliceWitnessViewPose = false;
+            return;
+        }
+
+        policeWitnessViewPosition = view.position;
+        policeWitnessViewRotation = view.rotation;
+        hasPoliceWitnessViewPose = true;
     }
 
     private Chapter1PoliceRunAnimator BeginPoliceRiggedRun(Transform actor, float phaseOffset)
@@ -11543,25 +11593,33 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 fireCenter = GetFireCenterPosition();
         Vector3 startPosition = GetSafeGuidedRootPosition(root, root.position, root.position);
         root.position = startPosition;
-        Vector3 outward = startPosition - fireCenter;
-        outward.y = 0f;
-
-        if (outward.sqrMagnitude < 0.01f)
+        Vector3 startOutward = startPosition - fireCenter;
+        startOutward.y = 0f;
+        Vector3 policeApproach = policeEntranceTarget != null
+            ? policeEntranceTarget.position - fireCenter
+            : GetAutoInteractionForward();
+        policeApproach.y = 0f;
+        if (policeApproach.sqrMagnitude < 0.01f)
         {
-            outward = -GetAutoInteractionForward();
-            outward.y = 0f;
+            policeApproach = Vector3.forward;
         }
 
-        if (outward.sqrMagnitude < 0.01f)
-        {
-            outward = Vector3.back;
-        }
-
-        Vector3 targetPosition = fireCenter + outward.normalized * Mathf.Max(2f, witnessRunDistance);
+        Vector3 witnessDirection = startOutward.sqrMagnitude > 0.01f
+            ? startOutward.normalized
+            : -policeApproach.normalized;
+        float witnessDistance = Mathf.Max(
+            startOutward.magnitude,
+            Mathf.Max(
+                30f,
+                Mathf.Max(witnessRunDistance, weddingCircleRadius + 13f)));
+        Vector3 targetPosition = fireCenter + witnessDirection * witnessDistance;
         targetPosition.y = startPosition.y;
         targetPosition = GetSafeGuidedRootPosition(root, targetPosition, startPosition);
 
-        Vector3 lookDirection = (fireCenter + Vector3.up * witnessLookAtHeight) - targetPosition;
+        Vector3 incidentFocus = policeEntranceTarget != null
+            ? Vector3.Lerp(fireCenter, policeEntranceTarget.position, 0.42f)
+            : fireCenter;
+        Vector3 lookDirection = (incidentFocus + Vector3.up * witnessLookAtHeight) - targetPosition;
         lookDirection.y = 0f;
         Quaternion startRotation = root.rotation;
         Quaternion targetRotation = lookDirection.sqrMagnitude > 0.01f
@@ -11751,6 +11809,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform elderSpeaker = FindTransformByName("族人長者");
+        if (elderSpeaker == null)
+        {
+            elderSpeaker = FindTransformByName("莫那");
+        }
         yield return PlayCinematicSpeakerLine(
             elderSpeaker,
             "族人長者",
@@ -11768,7 +11830,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return EndingFallbackRoutine();
         }
 
-        ShowLine("字幕", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。", 5f);
+        ShowLine("", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。", 5f);
         SetMission("第一章結尾：族人望著日警下山的背影，憤恨與無力留在婚禮現場。");
         SaveChapterResult();
         chapterCompleted = true;
@@ -12244,7 +12306,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 right = Vector3.Cross(Vector3.up, outward).normalized;
         float victimHeight = GetActorStandingHeight(victim);
-        float sideSpacing = Mathf.Clamp(victimHeight * 0.23f, 0.40f, 0.58f);
+        float sideSpacing = Mathf.Clamp(victimHeight * 0.42f, 2.4f, 4.8f);
         Vector3 policePosition = victim.position
             - right * sideSpacing
             - outward * Mathf.Clamp(victimHeight * 0.045f, 0.04f, 0.12f);
@@ -12322,7 +12384,8 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             Vector3 correction = shoulderToGrip.normalized
                 * (shoulderToGrip.magnitude - desiredHorizontalReach);
-            police.position += correction;
+            float maximumCorrection = Mathf.Clamp(armReach * 0.45f, 0.35f, 2.4f);
+            police.position += Vector3.ClampMagnitude(correction, maximumCorrection);
         }
     }
 
@@ -12792,16 +12855,22 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private AudioClip GetHutCryClip()
     {
-        // Keep the authored Resources clip as a fallback when the scene field is empty.
-        if (painfulCryClip == null)
+        AudioClip scream = Resources.Load<AudioClip>(
+            "Chapter1Voice/10_hut_female_scream");
+        if (scream != null)
         {
-            painfulCryClip = Resources.Load<AudioClip>(
-                "Chapter1Voice/10_hut_cry");
+            return scream;
         }
 
-        return painfulCryClip != null
-            ? painfulCryClip
-            : femaleResistVoice;
+        if (!loggedMissingHutScream)
+        {
+            loggedMissingHutScream = true;
+            Debug.LogWarning(
+                "[Chapter1] Missing Resources/Chapter1Voice/10_hut_female_scream; "
+                + "the hut scene will remain silent instead of using dialogue audio.");
+        }
+
+        return null;
     }
 
     private IEnumerator WatchFallbackRoutine()
@@ -12829,11 +12898,13 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return FrameHutEntranceRoutine(hutEntrancePoint, 0.7f);
 
             ShowLine("旁白", "她被拖進屋內，門在眾人面前重重關上。", 4.5f);
-            float interiorSeconds = Mathf.Max(10f, hutInteriorHoldSeconds);
             float screamDelay = Mathf.Clamp(
                 hutScreamDelaySeconds,
                 0f,
-                interiorSeconds);
+                2f);
+            float interiorSeconds = Mathf.Max(
+                screamDelay + 10f,
+                hutInteriorHoldSeconds);
             if (screamDelay > 0f)
             {
                 yield return new WaitForSeconds(screamDelay);
@@ -13059,6 +13130,24 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 pairStart = first != null && second != null
             ? (firstStart + secondStart) * 0.5f
             : (first != null ? firstStart : secondStart);
+        if (hasPoliceWitnessViewPose)
+        {
+            Vector3 awayFromWitness = pairStart - policeWitnessViewPosition;
+            Vector3 configuredDirection = target - pairStart;
+            awayFromWitness.y = 0f;
+            configuredDirection.y = 0f;
+            if (awayFromWitness.sqrMagnitude > 0.01f
+                && configuredDirection.sqrMagnitude > 0.01f)
+            {
+                float configuredDistance = configuredDirection.magnitude;
+                Vector3 visibleExitDirection = Vector3.RotateTowards(
+                    awayFromWitness.normalized,
+                    configuredDirection.normalized,
+                    22f * Mathf.Deg2Rad,
+                    0f);
+                target = pairStart + visibleExitDirection * configuredDistance;
+            }
+        }
         Vector3 pathDirection = target - pairStart;
         pathDirection.y = 0f;
         if (pathDirection.sqrMagnitude < 0.01f)
@@ -13100,10 +13189,14 @@ public class Chapter1PerformanceController : MonoBehaviour
             ? GetPlayerViewTransform()
             : null;
         Vector3 cameraStartPosition = endingCameraView != null
-            ? endingCameraView.position
+            ? (hasPoliceWitnessViewPose
+                ? policeWitnessViewPosition
+                : endingCameraView.position)
             : Vector3.zero;
         Quaternion cameraStartRotation = endingCameraView != null
-            ? endingCameraView.rotation
+            ? (hasPoliceWitnessViewPose
+                ? policeWitnessViewRotation
+                : endingCameraView.rotation)
             : Quaternion.identity;
         if (endingCameraView != null)
         {
@@ -13111,57 +13204,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             endingCameraPoseLock = BeginCinematicCameraPoseLock(endingCameraView);
             endingHiddenHandRenderers = HidePlayerHandRenderers(
                 out endingHiddenHandRendererStates);
-        }
-        float exitActorHeight = Mathf.Max(
-            GetActorStandingHeight(first),
-            GetActorStandingHeight(second));
-        Vector3 initialPairCenter = first != null && second != null
-            ? (first.position + second.position) * 0.5f
-            : (first != null ? first.position : second.position);
-        Vector3 initialExitLookPoint = initialPairCenter
-            + pathDirection * policeExitCameraLookAhead
-            + Vector3.up * exitActorHeight * 0.56f;
-        Vector3 exitCameraTarget = initialPairCenter
-            - pathDirection * Mathf.Max(3.2f, policeExitCameraBackDistance)
-            + sideDirection * policeExitCameraSideOffset
-            + Vector3.up * Mathf.Clamp(exitActorHeight * 0.72f, 1.35f, 1.9f);
-        Vector3 smoothedExitCameraPosition = cameraStartPosition;
-        Vector3 exitLookTarget = initialExitLookPoint;
-        Vector3 smoothedExitLookPoint = initialExitLookPoint;
-
-        if (endingCameraView != null)
-        {
-            Quaternion stagedRotation = Quaternion.LookRotation(
-                (initialExitLookPoint - exitCameraTarget).normalized,
-                Vector3.up);
-            float stageElapsed = 0f;
-            const float stageDuration = 0.75f;
-            while (stageElapsed < stageDuration)
-            {
-                stageElapsed += Time.deltaTime;
-                float stageT = Mathf.SmoothStep(
-                    0f,
-                    1f,
-                    Mathf.Clamp01(stageElapsed / stageDuration));
-                SetCinematicCameraPose(
-                    endingCameraView,
-                    endingCameraPoseLock,
-                    Vector3.Lerp(cameraStartPosition, exitCameraTarget, stageT),
-                    Quaternion.Slerp(cameraStartRotation, stagedRotation, stageT));
-                yield return null;
-            }
-
             SetCinematicCameraPose(
                 endingCameraView,
                 endingCameraPoseLock,
-                exitCameraTarget,
-                stagedRotation);
-            cameraStartPosition = exitCameraTarget;
-            cameraStartRotation = stagedRotation;
-            smoothedExitCameraPosition = exitCameraTarget;
-            smoothedExitLookPoint = initialExitLookPoint;
+                cameraStartPosition,
+                cameraStartRotation);
         }
-
         float elapsed = 0f;
         float duration = Mathf.Max(4f, seconds);
 
@@ -13192,38 +13240,11 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             if (endingCameraView != null)
             {
-                Vector3 pairCenter = first != null && second != null
-                    ? (first.position + second.position) * 0.5f
-                    : (first != null ? first.position : second.position);
-                exitLookTarget = pairCenter
-                    + pathDirection * policeExitCameraLookAhead
-                    + Vector3.up * exitActorHeight * 0.56f;
-                exitCameraTarget = pairCenter
-                    - pathDirection * Mathf.Max(3.2f, policeExitCameraBackDistance)
-                    + sideDirection * policeExitCameraSideOffset
-                    + Vector3.up * Mathf.Clamp(exitActorHeight * 0.72f, 1.35f, 1.9f);
-
-                float followBlend = 1f - Mathf.Exp(-5.2f * Time.deltaTime);
-                smoothedExitCameraPosition = Vector3.Lerp(
-                    smoothedExitCameraPosition,
-                    exitCameraTarget,
-                    followBlend);
-                smoothedExitLookPoint = Vector3.Lerp(
-                    smoothedExitLookPoint,
-                    exitLookTarget,
-                    followBlend);
-                Quaternion desiredCameraRotation = Quaternion.LookRotation(
-                    (smoothedExitLookPoint - smoothedExitCameraPosition).normalized,
-                    Vector3.up);
-                float cameraBlend = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(progress / 0.12f));
                 SetCinematicCameraPose(
                     endingCameraView,
                     endingCameraPoseLock,
-                    Vector3.Lerp(
-                        cameraStartPosition,
-                        smoothedExitCameraPosition,
-                        cameraBlend),
-                    Quaternion.Slerp(cameraStartRotation, desiredCameraRotation, cameraBlend));
+                    cameraStartPosition,
+                    cameraStartRotation);
             }
 
             yield return null;
@@ -13779,6 +13800,62 @@ public class Chapter1PerformanceController : MonoBehaviour
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
             policeVisibleShotHeight = Mathf.Max(policeVisibleShotHeight, 2.65f);
             policeVisibleShotEndHoldSeconds = Mathf.Max(policeVisibleShotEndHoldSeconds, 0.9f);
+            SelectNearbyIncidentFemale();
+        }
+    }
+
+    private void SelectNearbyIncidentFemale()
+    {
+        Vector3 fireCenter = GetFireCenterPosition();
+        float currentDistance = femaleVillagerActor != null
+            ? GetFlatDistance(femaleVillagerActor.position, fireCenter)
+            : float.PositiveInfinity;
+        float maximumIncidentDistance = Mathf.Max(42f, weddingCircleRadius * 2.75f);
+        if (femaleVillagerActor != null
+            && !IsDeliveryTaskNPC(femaleVillagerActor)
+            && currentDistance <= maximumIncidentDistance)
+        {
+            return;
+        }
+
+        string[] preferredNames =
+        {
+            "部落女性1",
+            "賽德克新娘",
+            "新娘",
+            "女性族人"
+        };
+        Transform nearest = null;
+        float nearestDistance = float.PositiveInfinity;
+        for (int i = 0; i < preferredNames.Length; i++)
+        {
+            Transform candidate = FindTransformByName(preferredNames[i]);
+            if (candidate == null || IsDeliveryTaskNPC(candidate))
+            {
+                continue;
+            }
+
+            Animator animator = candidate.GetComponentInChildren<Animator>(true);
+            if (animator == null)
+            {
+                continue;
+            }
+
+            float distance = GetFlatDistance(candidate.position, fireCenter);
+            if (distance < nearestDistance)
+            {
+                nearest = candidate;
+                nearestDistance = distance;
+            }
+        }
+
+        if (nearest != null)
+        {
+            femaleVillagerActor = nearest;
+            Debug.Log(
+                "[Chapter1] Incident female reassigned to nearby actor "
+                + nearest.name + " at " + nearestDistance.ToString("0.0")
+                + " units from the fire.");
         }
     }
 
