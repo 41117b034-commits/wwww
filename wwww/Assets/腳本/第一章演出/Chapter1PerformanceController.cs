@@ -17,8 +17,17 @@ public class Chapter1PerformanceController : MonoBehaviour
         "賽德克新娘"
     };
 
-    private const string BrokenWeddingDancerName = "5";
-    private const string ReplacementWeddingDancerName = "3";
+    private static readonly string[] UnreliableWeddingDancerNames =
+    {
+        "3",
+        "5"
+    };
+
+    private static readonly string[] ReplacementWeddingDancerNames =
+    {
+        "賽德克帥哥",
+        "部落男性"
+    };
 
     public enum ConflictChoice
     {
@@ -268,6 +277,13 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     [Tooltip("只關閉 Renderer，不停用 Hands_Rigged GameObject，避免影響 XR / 手部腳本。")]
     public bool hidePlayerHandsByRendererOnly = true;
+
+    [Header("Player Hands During Dance")]
+    [Tooltip("玩家加入舞圈時暫時縮小雙手，避免第一人稱手掌遮住火堆與舞者。")]
+    public bool shrinkPlayerHandsDuringDance = true;
+
+    [Range(0.35f, 0.9f)]
+    public float dancePlayerHandsScaleMultiplier = 0.58f;
 
     [Header("Receiver Thank You Motion")]
     [Tooltip("NPC 收到酒或食物後，自動做感謝動作。")]
@@ -675,6 +691,28 @@ public class Chapter1PerformanceController : MonoBehaviour
     public string policeIdleStateName = "Idle";
     public string villagerFallStateName = "Fall";
 
+    [Header("Police Victim Sequence Timing")]
+    [Tooltip("警察從事件中心小跑到女性族人面前的時間。")]
+    public float policeJogToWomanSeconds = 1.65f;
+
+    [Tooltip("警察抓住女性後，至少先讓玩家看到這麼久的掙扎才顯示選項。")]
+    public float struggleBeforeChoiceSeconds = 3f;
+
+    [Tooltip("沉默觀望分支中，拖往屋子的動作至少維持這麼久。")]
+    public float minimumSlowDragToHutSeconds = 5.5f;
+
+    [Tooltip("兩人進屋消失後，等待這麼久才重新出現。")]
+    public float hutInteriorHoldSeconds = 10f;
+
+    [Tooltip("進屋後多久播放女性慘叫聲。")]
+    public float hutScreamDelaySeconds = 0.8f;
+
+    [Tooltip("警察把女性從屋內拖回屋外的時間。")]
+    public float dragVictimBackOutSeconds = 3.2f;
+
+    [Tooltip("結尾兩名警察下山背影至少跟拍這麼久。")]
+    public float minimumPoliceExitSeconds = 9f;
+
     [Header("Police Incident Ending Camera")]
     public bool frameHarassmentFromOutsideCrowd = true;
     public float incidentCameraMinimumDistance = 5.5f;
@@ -763,6 +801,9 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Transform incidentCameraView;
     private Chapter1CinematicCameraPoseLock incidentCameraPoseLock;
     private List<Behaviour> incidentCameraTrackedPoseDrivers;
+    private Transform scaledDanceHandsRoot;
+    private Vector3 originalDanceHandsLocalScale;
+    private bool danceHandsScaleApplied;
     // Cached once per incident so camera visibility checks stay inexpensive.
     private Renderer[] incidentOcclusionRenderers;
     private bool startPoliceWhenDanceEnds;
@@ -869,7 +910,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void Start()
     {
-        ReplaceBrokenWeddingDancer();
+        ReplaceUnreliableWeddingDancers();
         EnsureWeddingCrowdDancers();
         EnsureNewPoliceSceneNpcGrounding();
         PrepareDeliveryTaskNPCs();
@@ -1249,6 +1290,11 @@ public class Chapter1PerformanceController : MonoBehaviour
                 ChooseWatch();
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        RestoreDancePlayerHandsScale();
     }
 
     private bool ShouldShowSkipToIncidentButton()
@@ -6759,6 +6805,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         danceRoutineRunning = true;
         SetPlayerControl(false);
+        ApplyDancePlayerHandsScale();
         SetMission("加入舞蹈：跟著鼓聲踏步，感受婚禮短暫的安寧。");
         ShowLine("族人", "來，跟著鼓聲一起踏步。今晚讓祖靈聽見我們的歌。", 3f);
         SetWeddingPlayerSlotActive(true);
@@ -6792,6 +6839,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         SetWeddingPlayerSlotActive(false, center);
+        RestoreDancePlayerHandsScale();
         danceRoutineRunning = false;
         SetPlayerControl(true);
         UpdateWeddingQuestMission();
@@ -6908,6 +6956,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         // The skip is a clean story transition. Stop any delivery/dance coroutine
         // before changing the quest state so it cannot move an actor afterwards.
+        RestoreDancePlayerHandsScale();
         StopAllCoroutines();
         physicalDeliveryAnimating = false;
         physicalDeliveryInputConsumed = true;
@@ -6982,6 +7031,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         policeStartQueued = false;
+        RestoreDancePlayerHandsScale();
         SetWeddingCrowdDancing(false);
         // Dancers stop changing their horizontal slots here, but every bystander
         // must keep feet-ground correction during the whole police sequence.
@@ -7605,85 +7655,232 @@ public class Chapter1PerformanceController : MonoBehaviour
         return actorName.Contains("原住民青年2");
     }
 
-    private void ReplaceBrokenWeddingDancer()
+    private void ReplaceUnreliableWeddingDancers()
     {
-        Transform brokenActor = FindExactSceneActorRoot(BrokenWeddingDancerName);
-        if (brokenActor == null)
+        int count = Mathf.Min(
+            UnreliableWeddingDancerNames.Length,
+            ReplacementWeddingDancerNames.Length);
+        for (int i = 0; i < count; i++)
         {
-            return;
+            ReplaceWeddingDancerVisual(
+                UnreliableWeddingDancerNames[i],
+                ReplacementWeddingDancerNames[i]);
         }
+    }
 
-        Animator brokenAnimator = brokenActor.GetComponentInChildren<Animator>(true);
-        bool hasReliableHumanoidRig = brokenAnimator != null
-            && brokenAnimator.avatar != null
-            && brokenAnimator.avatar.isValid
-            && brokenAnimator.isHuman;
-        if (hasReliableHumanoidRig)
-        {
-            return;
-        }
-
-        Transform donorActor = FindExactSceneActorRoot(ReplacementWeddingDancerName);
+    private void ReplaceWeddingDancerVisual(
+        string unreliableActorName,
+        string donorActorName)
+    {
+        Transform unreliableActor = FindExactSceneActorRoot(unreliableActorName);
+        Transform donorActor = FindExactSceneActorRoot(donorActorName);
         Animator donorAnimator = donorActor != null
             ? donorActor.GetComponentInChildren<Animator>(true)
             : null;
+        if (unreliableActor == null)
+        {
+            Debug.LogWarning(
+                "[Chapter1] Wedding dancer " + unreliableActorName
+                + " was not found, so no replacement was needed.");
+            return;
+        }
+
         if (donorActor == null
-            || donorActor == brokenActor
+            || donorActor == unreliableActor
             || donorAnimator == null
             || donorAnimator.avatar == null
             || !donorAnimator.avatar.isValid
             || !donorAnimator.isHuman)
         {
             Debug.LogError(
-                "[Chapter1] Could not replace broken wedding dancer 5 with the "
-                + "validated Indigenous Humanoid dancer 3. The broken actor was hidden.");
-            brokenActor.gameObject.SetActive(false);
+                "[Chapter1] Could not replace wedding dancer "
+                + unreliableActorName + " because Humanoid donor "
+                + donorActorName + " was not available. The original actor was kept.");
             return;
         }
 
-        Transform originalParent = brokenActor.parent;
-        int originalSiblingIndex = brokenActor.GetSiblingIndex();
-        Vector3 originalPosition = brokenActor.position;
+        Transform originalParent = unreliableActor.parent;
+        int originalSiblingIndex = unreliableActor.GetSiblingIndex();
+        Vector3 originalPosition = unreliableActor.position;
 
+        // Runtime-only visual swap keeps the shared scene and imported model assets untouched.
         GameObject replacementObject = Instantiate(
             donorActor.gameObject,
             originalParent);
+        if (originalParent == null
+            && replacementObject.scene != gameObject.scene)
+        {
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(
+                replacementObject,
+                gameObject.scene);
+        }
         Transform replacement = replacementObject.transform;
-        replacement.name = BrokenWeddingDancerName;
+        replacement.name = unreliableActorName;
         replacement.position = originalPosition;
         replacement.rotation = donorActor.rotation;
         replacement.localScale = donorActor.localScale;
         replacement.SetSiblingIndex(originalSiblingIndex);
         replacementObject.SetActive(true);
+        RemoveCopiedWeddingRuntimeBehaviours(replacement);
 
-        brokenActor.name = BrokenWeddingDancerName + "_BrokenGeneric_Replaced";
-        brokenActor.position += Vector3.down * 1000f;
-        brokenActor.gameObject.SetActive(false);
-        Destroy(brokenActor.gameObject);
+        unreliableActor.name = unreliableActorName + "_Unreliable_Replaced";
+        unreliableActor.gameObject.SetActive(false);
+        Destroy(unreliableActor.gameObject);
 
         Debug.Log(
-            "[Chapter1] Replaced broken Generic dancer 5 with validated "
-            + "Humanoid Indigenous dancer 3.");
+            "[Chapter1] Replaced unreliable dancer " + unreliableActorName
+            + " with Humanoid Indigenous donor " + donorActorName
+            + " under " + (originalParent != null ? originalParent.name : "scene root")
+            + " in scene " + gameObject.scene.name + ".");
+    }
+
+    private void RemoveCopiedWeddingRuntimeBehaviours(Transform actorRoot)
+    {
+        if (actorRoot == null)
+        {
+            return;
+        }
+
+        MonoBehaviour[] behaviours =
+            actorRoot.GetComponentsInChildren<MonoBehaviour>(true);
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            MonoBehaviour behaviour = behaviours[i];
+            if (behaviour == null)
+            {
+                continue;
+            }
+
+            string typeName = behaviour.GetType().Name;
+            bool belongsToWeddingRuntime =
+                typeName == "Chapter1Interactable"
+                || typeName == "Chapter1ReceiverFacingLock";
+            if (!belongsToWeddingRuntime)
+            {
+                continue;
+            }
+
+            behaviour.enabled = false;
+            Destroy(behaviour);
+        }
     }
 
     private Transform FindExactSceneActorRoot(string actorName)
     {
         Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+        Transform bestMatch = null;
+        int bestScore = 0;
         for (int i = 0; i < transforms.Length; i++)
         {
             Transform candidate = transforms[i];
+            string candidateName = candidate != null
+                ? candidate.name.Trim()
+                : string.Empty;
+            bool exactMatch = string.Equals(
+                candidateName,
+                actorName,
+                System.StringComparison.Ordinal);
+            bool unityDuplicateName = candidateName.StartsWith(
+                actorName + " (",
+                System.StringComparison.Ordinal)
+                && candidateName.EndsWith(")", System.StringComparison.Ordinal);
             if (candidate != null
                 && candidate.gameObject.scene == gameObject.scene
-                && string.Equals(
-                    candidate.name.Trim(),
-                    actorName,
-                    System.StringComparison.Ordinal))
+                && (exactMatch || unityDuplicateName))
             {
-                return candidate;
+                int score = GetSceneActorRootScore(candidate);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestMatch = candidate;
+                }
             }
         }
 
-        return null;
+        return bestMatch;
+    }
+
+    private int GetSceneActorRootScore(Transform candidate)
+    {
+        if (candidate == null)
+        {
+            return 0;
+        }
+
+        int score = 0;
+        Animator animator = candidate.GetComponentInChildren<Animator>(true);
+        if (animator != null)
+        {
+            score += 40;
+            if (animator.transform == candidate)
+            {
+                score += 12;
+            }
+            if (animator.avatar != null
+                && animator.avatar.isValid
+                && animator.isHuman)
+            {
+                score += 80;
+            }
+        }
+
+        SkinnedMeshRenderer skinned =
+            candidate.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        if (skinned != null && skinned.sharedMesh != null)
+        {
+            score += 45;
+        }
+        else if (candidate.GetComponentInChildren<Renderer>(true) != null)
+        {
+            score += 15;
+        }
+
+        if (candidate.gameObject.activeSelf)
+        {
+            score += 4;
+        }
+        return score;
+    }
+
+    private bool IsLikelyWeddingActorRoot(Transform candidate)
+    {
+        return GetSceneActorRootScore(candidate) >= 15;
+    }
+
+    private void ApplyDancePlayerHandsScale()
+    {
+        if (!shrinkPlayerHandsDuringDance || danceHandsScaleApplied)
+        {
+            return;
+        }
+
+        Transform handsRoot = GetPlayerHandsRoot();
+        if (handsRoot == null)
+        {
+            return;
+        }
+
+        scaledDanceHandsRoot = handsRoot;
+        originalDanceHandsLocalScale = handsRoot.localScale;
+        float multiplier = Mathf.Clamp(dancePlayerHandsScaleMultiplier, 0.35f, 0.9f);
+        handsRoot.localScale = originalDanceHandsLocalScale * multiplier;
+        danceHandsScaleApplied = true;
+    }
+
+    private void RestoreDancePlayerHandsScale()
+    {
+        if (!danceHandsScaleApplied)
+        {
+            return;
+        }
+
+        if (scaledDanceHandsRoot != null)
+        {
+            scaledDanceHandsRoot.localScale = originalDanceHandsLocalScale;
+        }
+
+        scaledDanceHandsRoot = null;
+        danceHandsScaleApplied = false;
     }
 
     private void SnapWeddingActorFacing(
@@ -8330,7 +8527,8 @@ public class Chapter1PerformanceController : MonoBehaviour
                     System.StringComparison.Ordinal)
                     && currentName.EndsWith(")", System.StringComparison.Ordinal);
 
-                if (exactMatch || unityDuplicateName)
+                if ((exactMatch || unityDuplicateName)
+                    && IsLikelyWeddingActorRoot(current))
                 {
                     actorRoot = current;
                     return true;
@@ -9172,12 +9370,13 @@ public class Chapter1PerformanceController : MonoBehaviour
                 femaleVillagerActor,
                 0.42f,
                 1f);
-            yield return MoveActorNearTarget(
+            yield return PoliceJogToVictimRoutine(
                 harassingPolice,
-                femaleVillagerActor.position,
+                femaleVillagerActor,
                 harassmentDistance,
-                policeApproachWomanSeconds);
+                Mathf.Max(policeApproachWomanSeconds, policeJogToWomanSeconds));
             EnsureCinematicActorGrounding(femaleVillagerActor, true);
+            float struggleStartedAt = Time.time;
             BeginHarassmentPerformance(harassingPolice, femaleVillagerActor);
             PlayPoliceEventClip(struggleClip);
             yield return PlayPoliceVoicedLine(
@@ -9185,7 +9384,15 @@ public class Chapter1PerformanceController : MonoBehaviour
                 "放開我！",
                 femaleResistVoice,
                 2.5f);
-            yield return new WaitForSeconds(Mathf.Max(0.1f, harassmentHoldSeconds));
+            float requiredStruggleSeconds = Mathf.Max(
+                3f,
+                Mathf.Max(struggleBeforeChoiceSeconds, harassmentHoldSeconds));
+            float remainingStruggleSeconds = requiredStruggleSeconds
+                - (Time.time - struggleStartedAt);
+            if (remainingStruggleSeconds > 0f)
+            {
+                yield return new WaitForSeconds(remainingStruggleSeconds);
+            }
         }
         else
         {
@@ -11535,6 +11742,119 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
+    private IEnumerator PoliceJogToVictimRoutine(
+        Transform police,
+        Transform victim,
+        float stopDistance,
+        float seconds)
+    {
+        if (police == null || victim == null)
+        {
+            yield break;
+        }
+
+        EnsureCinematicActorGrounding(police, true);
+        EnsureCinematicActorGrounding(victim, true);
+
+        Vector3 start = police.position;
+        Vector3 travelDirection = victim.position - start;
+        travelDirection.y = 0f;
+        if (travelDirection.sqrMagnitude < 0.01f)
+        {
+            yield break;
+        }
+        travelDirection.Normalize();
+
+        Vector3 destination = victim.position
+            - travelDirection * Mathf.Max(0.2f, stopDistance);
+        destination.y = start.y;
+        Quaternion targetRotation = Quaternion.LookRotation(
+            travelDirection,
+            Vector3.up);
+
+        bool usesAnimatorWalk = HasAnimatorState(police, policeWalkStateName);
+        if (usesAnimatorWalk)
+        {
+            PlayPoliceWalkAnimation(
+                police,
+                policeSecondWalkAnimationPhase,
+                Mathf.Max(1.25f, policeSecondWalkAnimatorSpeed * 1.45f));
+        }
+        Chapter1PoliceRunAnimator runFallback = usesAnimatorWalk
+            ? null
+            : BeginPoliceRiggedRun(police, 0f);
+
+        Vector3 side = Vector3.Cross(Vector3.up, travelDirection).normalized;
+        Vector3 cameraPosition = incidentCameraView != null
+            ? incidentCameraView.position
+            : Vector3.zero;
+        Vector3 cameraLookPoint = (police.position + victim.position) * 0.5f
+            + Vector3.up * 1.25f;
+        float nextCameraRefresh = 0f;
+        float duration = Mathf.Max(0.8f, seconds);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            float eased = Mathf.SmoothStep(0f, 1f, progress);
+
+            Vector3 nextPosition = Vector3.Lerp(start, destination, eased);
+            nextPosition.y = police.position.y;
+            police.position = nextPosition;
+            police.rotation = Quaternion.Slerp(
+                police.rotation,
+                targetRotation,
+                Time.deltaTime * 12f);
+
+            if (incidentCameraView != null && incidentCameraPoseLock != null)
+            {
+                if (elapsed >= nextCameraRefresh)
+                {
+                    GetStableIncidentFrame(
+                        police,
+                        victim,
+                        incidentCameraMinimumDistance,
+                        out Vector3 desiredLookPoint,
+                        out float verticalExtent,
+                        out float framingDistance);
+                    Vector3 preferredDirection = (
+                        -travelDirection + side * 0.32f).normalized;
+                    Vector3 desiredCameraPosition = FindClearIncidentCameraPosition(
+                        desiredLookPoint,
+                        police,
+                        victim,
+                        preferredDirection,
+                        framingDistance,
+                        verticalExtent);
+                    cameraPosition = Vector3.Lerp(
+                        cameraPosition,
+                        desiredCameraPosition,
+                        0.62f);
+                    cameraLookPoint = desiredLookPoint;
+                    nextCameraRefresh = elapsed + 0.12f;
+                }
+
+                Quaternion desiredCameraRotation = Quaternion.LookRotation(
+                    (cameraLookPoint - cameraPosition).normalized,
+                    Vector3.up);
+                SetCinematicCameraPose(
+                    incidentCameraView,
+                    incidentCameraPoseLock,
+                    cameraPosition,
+                    desiredCameraRotation);
+            }
+
+            yield return null;
+        }
+
+        SetHorizontalPosition(police, destination);
+        police.rotation = targetRotation;
+        EndPoliceRiggedRun(runFallback);
+        ResetPoliceAnimatorSpeed(police);
+        PlayAnimatorStateIfAvailable(police, policeIdleStateName);
+    }
+
     private void BeginHarassmentPerformance(Transform police, Transform victim)
     {
         if (police == null || victim == null)
@@ -11934,6 +12254,82 @@ public class Chapter1PerformanceController : MonoBehaviour
         actor.position = position;
     }
 
+    private IEnumerator FrameHutEntranceRoutine(Transform hutEntrance, float seconds)
+    {
+        if (hutEntrance == null)
+        {
+            yield break;
+        }
+
+        if (incidentCameraView == null || incidentCameraPoseLock == null)
+        {
+            yield return CinematicPanTo(hutEntrance, seconds);
+            yield break;
+        }
+
+        Vector3 startPosition = incidentCameraView.position;
+        Quaternion startRotation = incidentCameraView.rotation;
+        Vector3 focus = hutEntrance.position + Vector3.up * 1.35f;
+        Vector3 outward = focus - GetFireCenterPosition();
+        outward.y = 0f;
+        if (outward.sqrMagnitude < 0.01f)
+        {
+            outward = startPosition - focus;
+            outward.y = 0f;
+        }
+        if (outward.sqrMagnitude < 0.01f)
+        {
+            outward = -hutEntrance.forward;
+        }
+        outward.Normalize();
+        Vector3 side = Vector3.Cross(Vector3.up, outward).normalized;
+        Vector3 preferredDirection = (outward + side * 0.32f).normalized;
+        Vector3 desiredPosition = FindClearIncidentCameraPosition(
+            focus,
+            null,
+            null,
+            preferredDirection,
+            Mathf.Max(incidentCameraMinimumDistance, 5.8f),
+            1.1f);
+        Quaternion desiredRotation = Quaternion.LookRotation(
+            (focus - desiredPosition).normalized,
+            Vector3.up);
+
+        float duration = Mathf.Max(0.2f, seconds);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+            SetCinematicCameraPose(
+                incidentCameraView,
+                incidentCameraPoseLock,
+                Vector3.Lerp(startPosition, desiredPosition, t),
+                Quaternion.Slerp(startRotation, desiredRotation, t));
+            yield return null;
+        }
+
+        SetCinematicCameraPose(
+            incidentCameraView,
+            incidentCameraPoseLock,
+            desiredPosition,
+            desiredRotation);
+    }
+
+    private AudioClip GetHutCryClip()
+    {
+        // Keep the authored Resources clip as a fallback when the scene field is empty.
+        if (painfulCryClip == null)
+        {
+            painfulCryClip = Resources.Load<AudioClip>(
+                "Chapter1Voice/10_hut_cry");
+        }
+
+        return painfulCryClip != null
+            ? painfulCryClip
+            : femaleResistVoice;
+    }
+
     private IEnumerator WatchFallbackRoutine()
     {
         yield return PlayPoliceVoicedLine(
@@ -11950,18 +12346,66 @@ public class Chapter1PerformanceController : MonoBehaviour
                 draggingPolice,
                 femaleVillagerActor,
                 hutEntrancePoint.position,
-                dragToHutSeconds);
+                Mathf.Max(minimumSlowDragToHutSeconds, dragToHutSeconds));
 
             StopIncidentActorMotions(true);
+            draggingPolice.gameObject.SetActive(false);
             femaleVillagerActor.gameObject.SetActive(false);
-            PlayPoliceEventClip(painfulCryClip);
-            ShowLine("旁白", "她被拖進屋內，門在眾人面前重重關上。婚禮現場只剩壓抑的沉默。", 4.5f);
-            yield return new WaitForSeconds(3.2f);
+            yield return FrameHutEntranceRoutine(hutEntrancePoint, 0.7f);
+
+            ShowLine("旁白", "她被拖進屋內，門在眾人面前重重關上。", 4.5f);
+            float interiorSeconds = Mathf.Max(10f, hutInteriorHoldSeconds);
+            float screamDelay = Mathf.Clamp(
+                hutScreamDelaySeconds,
+                0f,
+                interiorSeconds);
+            if (screamDelay > 0f)
+            {
+                yield return new WaitForSeconds(screamDelay);
+            }
+
+            PlayPoliceEventClip(GetHutCryClip());
+            ShowLine("女性族人", "不要！放開我！", 3.2f);
+            float remainingInsideSeconds = interiorSeconds - screamDelay;
+            if (remainingInsideSeconds > 0f)
+            {
+                yield return new WaitForSeconds(remainingInsideSeconds);
+            }
+
+            Vector3 outward = GetFireCenterPosition() - hutEntrancePoint.position;
+            outward.y = 0f;
+            if (outward.sqrMagnitude < 0.01f)
+            {
+                outward = -hutEntrancePoint.forward;
+                outward.y = 0f;
+            }
+            outward.Normalize();
+
+            SetHorizontalPosition(
+                femaleVillagerActor,
+                hutEntrancePoint.position - outward * 0.18f);
+            SetHorizontalPosition(
+                draggingPolice,
+                hutEntrancePoint.position - outward * 0.5f);
+            draggingPolice.gameObject.SetActive(true);
+            femaleVillagerActor.gameObject.SetActive(true);
+            EnsureCinematicActorGrounding(draggingPolice, true);
+            EnsureCinematicActorGrounding(femaleVillagerActor, true);
+            BeginHarassmentPerformance(draggingPolice, femaleVillagerActor);
+
+            ShowLine("旁白", "過了一陣子，警察又拖著仍在掙扎的女性走出屋子。", 4.2f);
+            Vector3 outsidePoint = hutEntrancePoint.position + outward * 2.3f;
+            yield return DragVictimToHutRoutine(
+                draggingPolice,
+                femaleVillagerActor,
+                outsidePoint,
+                Mathf.Max(2.5f, dragVictimBackOutSeconds));
+            StopIncidentActorMotions(true);
         }
         else
         {
             StopIncidentActorMotions(true);
-            PlayPoliceEventClip(painfulCryClip);
+            PlayPoliceEventClip(GetHutCryClip());
             ShowLine("旁白", "你沉默地站在原地。警察把驚恐反抗的女性族人強行拖向木屋。", 4.5f);
             yield return new WaitForSeconds(3.2f);
         }
@@ -12003,7 +12447,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             target = center + away.normalized * 12f;
         }
 
-        yield return MovePolicePairToExit(first, second, target, policeExitSeconds);
+        yield return MovePolicePairToExit(
+            first,
+            second,
+            target,
+            Mathf.Max(minimumPoliceExitSeconds, policeExitSeconds));
         yield return new WaitForSeconds(1.2f);
     }
 
