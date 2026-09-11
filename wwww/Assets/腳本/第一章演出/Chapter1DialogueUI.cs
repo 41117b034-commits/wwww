@@ -28,9 +28,13 @@ public class Chapter1DialogueUI : MonoBehaviour
             return;
         }
 
+        bool showSpeaker = !ShouldHideNarrationLabel(speaker);
         if (speakerText != null)
         {
-            speakerText.text = GameLanguageSettings.LocalizeSpeaker(speaker);
+            speakerText.gameObject.SetActive(showSpeaker);
+            speakerText.text = showSpeaker
+                ? GameLanguageSettings.LocalizeSpeaker(speaker)
+                : string.Empty;
         }
 
         if (bodyText != null)
@@ -40,6 +44,21 @@ public class Chapter1DialogueUI : MonoBehaviour
 
         ShowInstant();
         hideRoutine = StartCoroutine(HideAfter(seconds));
+    }
+
+    private static bool ShouldHideNarrationLabel(string speaker)
+    {
+        if (string.IsNullOrWhiteSpace(speaker))
+        {
+            return true;
+        }
+
+        string label = speaker.Trim();
+        return label == "字幕"
+            || label == "旁白"
+            || label.Equals("Subtitle", System.StringComparison.OrdinalIgnoreCase)
+            || label.Equals("Narration", System.StringComparison.OrdinalIgnoreCase)
+            || label.Equals("Narrator", System.StringComparison.OrdinalIgnoreCase);
     }
 
     public void ShowInstant()
