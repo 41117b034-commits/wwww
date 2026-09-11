@@ -230,16 +230,21 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private Transform rightShoulder;
     private Transform head;
     private Transform hips;
+    private Transform targetGripBone;
     private GameObject baton;
     private MotionMode mode;
     private float strikeProgress;
     private float actorHeight = 1.7f;
+    private Vector3 smoothedGripPoint;
+    private bool hasSmoothedGripPoint;
 
     public void BeginHarassment(Animator sourceAnimator, Transform harassmentTarget)
     {
         animator = sourceAnimator;
         target = harassmentTarget;
         CacheRig();
+        CacheTargetGripBone();
+        hasSmoothedGripPoint = false;
         mode = MotionMode.Harass;
         enabled = true;
     }
@@ -264,6 +269,8 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     public void StopMotion(bool hideBaton)
     {
         mode = MotionMode.None;
+        targetGripBone = null;
+        hasSmoothedGripPoint = false;
         if (hideBaton)
         {
             SetBatonVisible(false);
@@ -283,10 +290,20 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         }
 
         Vector3 aimPoint = GetAimPoint();
-        float upperWeight = mode == MotionMode.Harass ? 0.72f : 0.9f;
-        float forearmWeight = mode == MotionMode.Harass ? 0.78f : 0.92f;
-        AimBoneAt(rightUpperArm, rightForearm, aimPoint, upperWeight);
-        AimBoneAt(rightForearm, rightHand, aimPoint, forearmWeight);
+        if (mode == MotionMode.Harass)
+        {
+            float smoothing = 1f - Mathf.Exp(-18f * Time.deltaTime);
+            smoothedGripPoint = hasSmoothedGripPoint
+                ? Vector3.Lerp(smoothedGripPoint, aimPoint, smoothing)
+                : aimPoint;
+            hasSmoothedGripPoint = true;
+            AimArmWithTwoBoneIk(smoothedGripPoint);
+        }
+        else
+        {
+            AimBoneAt(rightUpperArm, rightForearm, aimPoint, 0.9f);
+            AimBoneAt(rightForearm, rightHand, aimPoint, 0.92f);
+        }
         UpdateBatonPose();
     }
 
@@ -294,9 +311,11 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     {
         if (mode == MotionMode.Harass)
         {
-            return target != null
-                ? target.position + Vector3.up * (actorHeight * 0.52f)
-                : transform.position + transform.forward * actorHeight;
+            return targetGripBone != null
+                ? targetGripBone.position
+                : (target != null
+                    ? target.position + Vector3.up * (actorHeight * 0.58f)
+                    : transform.position + transform.forward * actorHeight);
         }
 
         Vector3 shoulder = rightShoulder != null
@@ -350,6 +369,62 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         bone.rotation = Quaternion.Slerp(bone.rotation, aimed, Mathf.Clamp01(weight));
     }
 
+    private void AimArmWithTwoBoneIk(Vector3 targetPoint)
+    {
+        if (rightUpperArm == null || rightForearm == null || rightHand == null)
+        {
+            return;
+        }
+
+        Vector3 shoulder = rightUpperArm.position;
+        float upperLength = Vector3.Distance(shoulder, rightForearm.position);
+        float lowerLength = Vector3.Distance(rightForearm.position, rightHand.position);
+        if (upperLength < 0.01f || lowerLength < 0.01f)
+        {
+            return;
+        }
+
+        Vector3 toTarget = targetPoint - shoulder;
+        float rawDistance = toTarget.magnitude;
+        if (rawDistance < 0.01f)
+        {
+            return;
+        }
+
+        Vector3 direction = toTarget / rawDistance;
+        float minimumReach = Mathf.Abs(upperLength - lowerLength) + 0.002f;
+        float maximumReach = upperLength + lowerLength - 0.006f;
+        float distance = Mathf.Clamp(rawDistance, minimumReach, maximumReach);
+        float along = (upperLength * upperLength + distance * distance - lowerLength * lowerLength)
+            / (2f * distance);
+        float bendAmount = Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
+
+        Vector3 currentElbowOffset = rightForearm.position - shoulder;
+        Vector3 bendDirection = currentElbowOffset
+            - direction * Vector3.Dot(currentElbowOffset, direction);
+        if (bendDirection.sqrMagnitude < 0.0001f)
+        {
+            bendDirection = Vector3.Cross(direction, transform.up);
+        }
+        if (bendDirection.sqrMagnitude < 0.0001f)
+        {
+            bendDirection = transform.right;
+        }
+        bendDirection.Normalize();
+
+        Vector3 desiredElbow = shoulder + direction * along + bendDirection * bendAmount;
+        AimBoneAt(rightUpperArm, rightForearm, desiredElbow, 0.94f);
+        AimBoneAt(rightForearm, rightHand, targetPoint, 0.98f);
+
+        if (targetGripBone != null)
+        {
+            rightHand.rotation = Quaternion.Slerp(
+                rightHand.rotation,
+                targetGripBone.rotation,
+                0.28f);
+        }
+    }
+
     private void CacheRig()
     {
         rightUpperArm = Resolve(HumanBodyBones.RightUpperArm, "R_Upperarm", "RightArm");
@@ -360,6 +435,68 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         head = Resolve(HumanBodyBones.Head, "Head");
         hips = Resolve(HumanBodyBones.Hips, "Hips", "Pelvis");
         actorHeight = GetActorHeight();
+    }
+
+    private void CacheTargetGripBone()
+    {
+        targetGripBone = null;
+        if (target == null)
+        {
+            return;
+        }
+
+        Animator targetAnimator = target.GetComponentInChildren<Animator>(true);
+        if (targetAnimator != null && targetAnimator.isHuman)
+        {
+            Transform leftArm = targetAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+            Transform rightArm = targetAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            Transform left = leftArm != null
+                ? leftArm
+                : targetAnimator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+            Transform right = rightArm != null
+                ? rightArm
+                : targetAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);
+            Vector3 handPosition = rightHand != null ? rightHand.position : transform.position;
+            if (left != null && right != null)
+            {
+                targetGripBone = Vector3.SqrMagnitude(left.position - handPosition)
+                    <= Vector3.SqrMagnitude(right.position - handPosition)
+                        ? left
+                        : right;
+            }
+            else
+            {
+                targetGripBone = left != null ? left : right;
+            }
+        }
+
+        if (targetGripBone == null)
+        {
+            Transform left = Chapter1WeddingRigBones.Resolve(
+                targetAnimator,
+                HumanBodyBones.LeftUpperArm,
+                "L_Upperarm",
+                "LeftArm",
+                "LeftUpperArm");
+            Transform right = Chapter1WeddingRigBones.Resolve(
+                targetAnimator,
+                HumanBodyBones.RightUpperArm,
+                "R_Upperarm",
+                "RightArm",
+                "RightUpperArm");
+            Vector3 handPosition = rightHand != null ? rightHand.position : transform.position;
+            if (left != null && right != null)
+            {
+                targetGripBone = Vector3.SqrMagnitude(left.position - handPosition)
+                    <= Vector3.SqrMagnitude(right.position - handPosition)
+                        ? left
+                        : right;
+            }
+            else
+            {
+                targetGripBone = left != null ? left : right;
+            }
+        }
     }
 
     private Transform Resolve(HumanBodyBones humanoidBone, params string[] aliases)
