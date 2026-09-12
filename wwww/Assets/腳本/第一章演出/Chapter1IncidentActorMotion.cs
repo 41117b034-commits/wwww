@@ -312,14 +312,23 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
 
     private void PinHandToGrip(Vector3 gripPoint)
     {
-        if (rightHand == null)
+        if (rightHand == null || rightUpperArm == null || rightForearm == null)
         {
             return;
         }
 
-        // The actor roots are staged within arm's reach. Pinning in LateUpdate
-        // keeps the rendered hand on the victim after both Animators evaluate.
-        rightHand.position = gripPoint;
+        float armLength = Vector3.Distance(
+            rightUpperArm.position,
+            rightForearm.position)
+            + Vector3.Distance(rightForearm.position, rightHand.position);
+        Vector3 shoulderToGrip = gripPoint - rightUpperArm.position;
+        float maximumReach = Mathf.Max(0.05f, armLength * 0.985f);
+        Vector3 reachableGrip = shoulderToGrip.sqrMagnitude > maximumReach * maximumReach
+            ? rightUpperArm.position + shoulderToGrip.normalized * maximumReach
+            : gripPoint;
+
+        // Never detach the rendered hand from the arm to fake a distant grip.
+        rightHand.position = reachableGrip;
     }
 
     private Vector3 GetAimPoint()
