@@ -21,13 +21,15 @@ public class Chapter1PerformanceController : MonoBehaviour
     private static readonly string[] UnreliableWeddingDancerNames =
     {
         "3",
-        "5"
+        "5",
+        "賽德克青年"
     };
 
     private static readonly string[] ReplacementWeddingDancerNames =
     {
         "賽德克中年(2)",
-        "部落男性"
+        "部落男性",
+        "賽德克中年(2)"
     };
 
     public enum ConflictChoice
@@ -720,7 +722,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float dragVictimBackOutSeconds = 3.2f;
 
     [Tooltip("結尾兩名警察下山背影至少跟拍這麼久。")]
-    public float minimumPoliceExitSeconds = 9f;
+    public float minimumPoliceExitSeconds = 8f;
 
     [Header("Police Incident Ending Camera")]
     public bool frameHarassmentFromOutsideCrowd = true;
@@ -823,6 +825,8 @@ public class Chapter1PerformanceController : MonoBehaviour
     private bool danceHandsScaleApplied;
     // Cached once per incident so camera visibility checks stay inexpensive.
     private Renderer[] incidentOcclusionRenderers;
+    private readonly List<Renderer> incidentShotHiddenRenderers =
+        new List<Renderer>();
     private bool startPoliceWhenDanceEnds;
     private bool autoInteractionsCreated;
     private float explorationTimerRemaining;
@@ -933,6 +937,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         EnsureWeddingCrowdDancers();
         EnsureNewPoliceSceneNpcGrounding();
         PrepareDeliveryTaskNPCs();
+        StartCoroutine(RepairWeddingPickupPropsAfterSceneReady());
         StartCoroutine(RefreshWeddingDancerSizingAfterAnimatorUpdate());
 
         if (autoStartOnAwake || autoBeginStoryIfControllerExists)
@@ -1319,6 +1324,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private void OnDisable()
     {
         RestoreDancePlayerHandsScale();
+        RestoreIncidentShotOccluders();
     }
 
     private bool ShouldShowSkipToIncidentButton()
@@ -6619,6 +6625,216 @@ public class Chapter1PerformanceController : MonoBehaviour
         food.transform.localScale *= targetSize / largestDimension;
     }
 
+    private IEnumerator RepairWeddingPickupPropsAfterSceneReady()
+    {
+        if (!IsNewPoliceScene())
+        {
+            yield break;
+        }
+
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        Transform food = ResolvePhysicalPickupPoint(false);
+        if (food != null)
+        {
+            // This is the original authored serving position from the recovered
+            // chapter-one scene. A later scene edit displaced the pickup far away.
+            if (food.name.IndexOf("烤魚", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                Vector3 position = food.position;
+                position.x = 3733.75f;
+                position.z = -118.48f;
+                food.position = position;
+            }
+
+            FlattenFoodPickup(food);
+            SnapPickupPropToGround(food, 0.025f);
+        }
+
+        Transform wine = ResolvePhysicalPickupPoint(true);
+        if (wine != null)
+        {
+            SnapPickupPropToGround(wine, 0.02f);
+        }
+
+        Physics.SyncTransforms();
+        yield return null;
+
+        SnapPickupPropToGround(food, 0.025f);
+        SnapPickupPropToGround(wine, 0.02f);
+        Debug.Log(
+            "[Chapter1 Pickup Grounding] Food and wine were aligned to the visible ground.");
+    }
+
+    private void FlattenFoodPickup(Transform food)
+    {
+        MeshFilter[] filters = food.GetComponentsInChildren<MeshFilter>(true);
+        MeshFilter reference = null;
+        float largestVolume = 0f;
+        for (int i = 0; i < filters.Length; i++)
+        {
+            Mesh mesh = filters[i] != null ? filters[i].sharedMesh : null;
+            if (mesh == null)
+            {
+                continue;
+            }
+
+            Vector3 size = mesh.bounds.size;
+            float volume = Mathf.Abs(size.x * size.y * size.z);
+            if (reference == null || volume > largestVolume)
+            {
+                reference = filters[i];
+                largestVolume = volume;
+            }
+        }
+
+        if (reference == null || reference.sharedMesh == null)
+        {
+            return;
+        }
+
+        Vector3 meshSize = reference.sharedMesh.bounds.size;
+        Vector3 localThinAxis = meshSize.x <= meshSize.y && meshSize.x <= meshSize.z
+            ? Vector3.right
+            : (meshSize.y <= meshSize.z ? Vector3.up : Vector3.forward);
+        Vector3 worldThinAxis = reference.transform.TransformDirection(localThinAxis).normalized;
+        if (Vector3.Dot(worldThinAxis, Vector3.up) < 0f)
+        {
+            worldThinAxis = -worldThinAxis;
+        }
+
+        food.rotation = Quaternion.FromToRotation(worldThinAxis, Vector3.up)
+            * food.rotation;
+        Physics.SyncTransforms();
+    }
+
+    private void SnapPickupPropToGround(Transform prop, float clearance)
+    {
+        if (prop == null || !TryGetVisibleBounds(prop, out Bounds bounds))
+        {
+            return;
+        }
+
+        Physics.SyncTransforms();
+        if (!TryGetPickupGroundY(prop, bounds, out float groundY))
+        {
+            return;
+        }
+
+        Vector3 position = prop.position;
+        position.y += groundY + Mathf.Max(0f, clearance) - bounds.min.y;
+        prop.position = position;
+        Physics.SyncTransforms();
+    }
+
+    private bool TryGetPickupGroundY(
+        Transform prop,
+        Bounds bounds,
+        out float groundY)
+    {
+        float probeHeight = Mathf.Max(bounds.max.y + 2f, prop.position.y + 2f);
+        Vector3 origin = new Vector3(bounds.center.x, probeHeight, bounds.center.z);
+        RaycastHit[] hits = Physics.RaycastAll(
+            origin,
+            Vector3.down,
+            80f,
+            guidedGroundLayers,
+            QueryTriggerInteraction.Ignore);
+
+        bool found = false;
+        groundY = float.NegativeInfinity;
+        float highestAllowedSurface = prop.position.y
+            + Mathf.Max(1.5f, bounds.extents.y + 0.5f);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+            if (hit.collider == null
+                || hit.normal.y < 0.45f
+                || hit.point.y > highestAllowedSurface)
+            {
+                continue;
+            }
+
+            Transform hitTransform = hit.collider.transform;
+            if (hitTransform == prop
+                || hitTransform.IsChildOf(prop)
+                || prop.IsChildOf(hitTransform)
+                || hitTransform.GetComponentInParent<Animator>() != null)
+            {
+                continue;
+            }
+
+            if (!found || hit.point.y > groundY)
+            {
+                groundY = hit.point.y;
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            return true;
+        }
+
+        Terrain[] terrains = Terrain.activeTerrains;
+        for (int i = 0; i < terrains.Length; i++)
+        {
+            Terrain terrain = terrains[i];
+            if (terrain == null || terrain.terrainData == null)
+            {
+                continue;
+            }
+
+            Vector3 terrainPosition = terrain.transform.position;
+            Vector3 terrainSize = terrain.terrainData.size;
+            if (origin.x < terrainPosition.x
+                || origin.x > terrainPosition.x + terrainSize.x
+                || origin.z < terrainPosition.z
+                || origin.z > terrainPosition.z + terrainSize.z)
+            {
+                continue;
+            }
+
+            groundY = terrain.SampleHeight(origin) + terrainPosition.y;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetVisibleBounds(Transform root, out Bounds bounds)
+    {
+        bounds = new Bounds(root != null ? root.position : Vector3.zero, Vector3.zero);
+        if (root == null)
+        {
+            return false;
+        }
+
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+        bool found = false;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer == null || !renderer.enabled)
+            {
+                continue;
+            }
+
+            if (!found)
+            {
+                bounds = renderer.bounds;
+                found = true;
+            }
+            else
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+        }
+
+        return found;
+    }
+
     private void FitHeldWineBottle(GameObject bottle)
     {
         Renderer[] renderers = bottle.GetComponentsInChildren<Renderer>(true);
@@ -7077,8 +7293,16 @@ public class Chapter1PerformanceController : MonoBehaviour
         // Stopping a dance Animator can change foot bounds one frame later.
         // Re-snap after both Animator and LateUpdate have evaluated the idle pose.
         yield return null;
+        EnsureNewPoliceSceneNpcGrounding();
+        PrepareDeliveryTaskNPCs();
+        EnsureCinematicActorGrounding(primaryPoliceActor, true);
+        EnsureCinematicActorGrounding(secondaryPoliceActor, true);
+        EnsureCinematicActorGrounding(femaleVillagerActor, true);
         SetWeddingNpcGrounding(true);
         yield return new WaitForEndOfFrame();
+        EnsureCinematicActorGrounding(primaryPoliceActor, true);
+        EnsureCinematicActorGrounding(secondaryPoliceActor, true);
+        EnsureCinematicActorGrounding(femaleVillagerActor, true);
         SetWeddingNpcGrounding(true);
     }
 
@@ -9280,8 +9504,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         SetPlayerControl(false);
         EnsurePoliceActorsForIntrusion();
+        SelectNearbyIncidentFemale();
+        PrepareIncidentVictimForPoliceSequence();
         EnsureCinematicActorGrounding(primaryPoliceActor, true);
         EnsureCinematicActorGrounding(secondaryPoliceActor, true);
+        EnsureCinematicActorGrounding(femaleVillagerActor, true);
         SetMission("婚禮中斷：兩名日本警察闖入會場。");
 
         if (hardCutWeddingAudioOnPolice)
@@ -9404,10 +9631,18 @@ public class Chapter1PerformanceController : MonoBehaviour
             float struggleStartedAt = Time.time;
             BeginHarassmentPerformance(harassingPolice, femaleVillagerActor);
             PlayPoliceEventClip(struggleClip);
-            yield return CinematicFrameIncidentActors(
+            yield return new WaitForSeconds(0.45f);
+
+            Vector3 rightCorner = GetIncidentRightCornerPosition(
+                femaleVillagerActor.position);
+            yield return DragVictimWithFixedWitnessCameraRoutine(
                 harassingPolice,
                 femaleVillagerActor,
-                Mathf.Max(0.25f, policeCameraPanSeconds * 0.55f));
+                rightCorner,
+                2.65f);
+
+            // The plea comes only after the officer has visibly dragged her
+            // out of the dancers and into the right-side corner.
             yield return PlayCinematicSpeakerLine(
                 femaleVillagerActor,
                 "女性族人",
@@ -9436,7 +9671,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield return CinematicFrameIncidentActors(
                 harassingPolice,
                 femaleVillagerActor,
-                Mathf.Max(0.3f, policeCameraPanSeconds * 0.6f));
+                Mathf.Max(0.3f, policeCameraPanSeconds * 0.6f),
+                true,
+                0.72f);
         }
         else
         {
@@ -9454,8 +9691,11 @@ public class Chapter1PerformanceController : MonoBehaviour
     private IEnumerator CinematicFrameIncidentActors(
         Transform firstActor,
         Transform secondActor,
-        float seconds)
+        float seconds,
+        bool keepOccludersHidden = false,
+        float framingDistanceScale = 1f)
     {
+        RestoreIncidentShotOccluders();
         if (incidentCameraView == null)
         {
             incidentCameraView = GetPlayerViewTransform();
@@ -9500,7 +9740,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         outward.Normalize();
         Vector3 side = Vector3.Cross(Vector3.up, outward).normalized;
 
-        float framingDistance = stableFrameDistance;
+        float framingDistance = Mathf.Max(
+            3.2f,
+            stableFrameDistance * Mathf.Max(0.55f, framingDistanceScale));
         Vector3 preferredDirection = (
             outward + side * incidentCameraSideRatio).normalized;
         Vector3 desiredPosition = GetDirectIncidentCameraPosition(
@@ -9510,6 +9752,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             preferredDirection,
             framingDistance,
             verticalExtent);
+        HideIncidentShotOccluders(
+            desiredPosition,
+            focus,
+            firstActor,
+            secondActor,
+            Mathf.Max(12f, verticalExtent * 8f));
         Quaternion desiredRotation = Quaternion.LookRotation(
             (focus - desiredPosition).normalized,
             Vector3.up);
@@ -9533,6 +9781,11 @@ public class Chapter1PerformanceController : MonoBehaviour
             incidentCameraPoseLock,
             desiredPosition,
             desiredRotation);
+
+        if (!keepOccludersHidden)
+        {
+            RestoreIncidentShotOccluders();
+        }
     }
 
     private Vector3 GetDirectIncidentCameraPosition(
@@ -10056,6 +10309,85 @@ public class Chapter1PerformanceController : MonoBehaviour
         return true;
     }
 
+    private void HideIncidentShotOccluders(
+        Vector3 cameraPosition,
+        Vector3 focus,
+        Transform firstActor,
+        Transform secondActor,
+        float maximumDimension)
+    {
+        RestoreIncidentShotOccluders();
+
+        Vector3 toFocus = focus - cameraPosition;
+        float distance = toFocus.magnitude;
+        if (distance < 0.2f)
+        {
+            return;
+        }
+
+        if (incidentOcclusionRenderers == null
+            || incidentOcclusionRenderers.Length == 0)
+        {
+            incidentOcclusionRenderers = Object.FindObjectsByType<Renderer>(
+                FindObjectsInactive.Exclude,
+                FindObjectsSortMode.None);
+        }
+
+        Transform player = GetDancePlayerRoot();
+        Ray viewRay = new Ray(cameraPosition, toFocus / distance);
+        float safeMaximumDimension = Mathf.Max(4f, maximumDimension);
+        for (int i = 0; i < incidentOcclusionRenderers.Length; i++)
+        {
+            Renderer renderer = incidentOcclusionRenderers[i];
+            if (renderer == null
+                || !renderer.enabled
+                || !renderer.gameObject.activeInHierarchy
+                || renderer is ParticleSystemRenderer
+                || renderer is LineRenderer
+                || renderer is TrailRenderer
+                || IsIncidentActorTransform(renderer.transform, firstActor, secondActor)
+                || (player != null
+                    && (renderer.transform == player
+                        || renderer.transform.IsChildOf(player))))
+            {
+                continue;
+            }
+
+            Bounds rendererBounds = renderer.bounds;
+            Vector3 size = rendererBounds.size;
+            float largestDimension = Mathf.Max(size.x, Mathf.Max(size.y, size.z));
+            if (size.sqrMagnitude < 0.0001f
+                || largestDimension > safeMaximumDimension)
+            {
+                continue;
+            }
+
+            rendererBounds.Expand(0.12f);
+            if (rendererBounds.Contains(cameraPosition)
+                || (rendererBounds.IntersectRay(viewRay, out float entryDistance)
+                    && entryDistance > 0.05f
+                    && entryDistance < distance - 0.08f))
+            {
+                renderer.enabled = false;
+                incidentShotHiddenRenderers.Add(renderer);
+            }
+        }
+    }
+
+    private void RestoreIncidentShotOccluders()
+    {
+        for (int i = 0; i < incidentShotHiddenRenderers.Count; i++)
+        {
+            Renderer renderer = incidentShotHiddenRenderers[i];
+            if (renderer != null)
+            {
+                renderer.enabled = true;
+            }
+        }
+
+        incidentShotHiddenRenderers.Clear();
+    }
+
     private static bool IsIncidentActorTransform(
         Transform candidate,
         Transform firstActor,
@@ -10088,16 +10420,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator CinematicPoliceFrontRevealAndFirstLine()
     {
-        if (primaryPoliceActor != null)
-        {
-            yield return PlayCinematicSpeakerLine(
-                primaryPoliceActor,
-                "日警",
-                "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
-                policeInsultVoice,
-                4f);
-            yield break;
-        }
+        RestoreIncidentShotOccluders();
 
         if (!usePoliceFrontReveal
             || !usePoliceCinematicCamera
@@ -10184,15 +10507,23 @@ public class Chapter1PerformanceController : MonoBehaviour
                     1.08f)
                 : Mathf.Max(0.8f, policeFrontRevealDistance);
 
-        Vector3 desiredPosition =
-            focusPoint
-            + policeForward * revealDistance
-            + policeRight * policeFrontRevealSideOffset;
-
-        desiredPosition.y = hasPrimaryPoliceBounds
-            ? focusPoint.y + primaryPoliceBounds.extents.y * 0.08f
-            : primaryPoliceActor.position.y
-                + Mathf.Max(0.8f, policeFrontRevealHeight);
+        float policeHeight = hasPrimaryPoliceBounds
+            ? Mathf.Max(1f, primaryPoliceBounds.size.y)
+            : GetActorStandingHeight(primaryPoliceActor);
+        float sideRatio = policeFrontRevealSideOffset
+            / Mathf.Max(0.1f, revealDistance);
+        Vector3 desiredPosition = GetFrontSpeakerCameraPosition(
+            primaryPoliceActor,
+            focusPoint,
+            (policeForward + policeRight * sideRatio).normalized,
+            revealDistance,
+            policeHeight);
+        HideIncidentShotOccluders(
+            desiredPosition,
+            focusPoint,
+            primaryPoliceActor,
+            null,
+            Mathf.Max(12f, policeHeight * 5f));
 
         Vector3 lookDirection =
             focusPoint - desiredPosition;
@@ -10294,6 +10625,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         playerView.localRotation = originalLocalRotation;
 
         RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
+        RestoreIncidentShotOccluders();
     }
 
     private IEnumerator PlayCinematicSpeakerLine(
@@ -10304,6 +10636,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         float fallbackSeconds,
         float volumeScale = 1f)
     {
+        RestoreIncidentShotOccluders();
         Transform view = GetPlayerViewTransform();
         if (!usePoliceCinematicCamera || speakerActor == null || view == null)
         {
@@ -10380,6 +10713,12 @@ public class Chapter1PerformanceController : MonoBehaviour
             preferredSpeakerDirection,
             shotDistance,
             actorHeight);
+        HideIncidentShotOccluders(
+            desiredPosition,
+            focusPoint,
+            speakerActor,
+            null,
+            Mathf.Max(12f, actorHeight * 5f));
         Quaternion desiredRotation = Quaternion.LookRotation(
             (focusPoint - desiredPosition).normalized,
             Vector3.up);
@@ -10431,6 +10770,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             RestoreCameraTrackedPoseDrivers(trackedPoseDrivers);
             RestorePlayerHandRenderers(hiddenHandRenderers, hiddenHandRendererStates);
         }
+        RestoreIncidentShotOccluders();
     }
 
     private Vector3 GetFrontSpeakerCameraPosition(
@@ -11748,6 +12088,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         choiceResolved = true;
         waitingForChoice = false;
         lastChoice = choice;
+        RestoreIncidentShotOccluders();
 
         // 玩家選完後，後續分支與結尾繼續自動播放。
         if (autoPlayCinematicStoryAfterWeddingTasks)
@@ -12306,7 +12647,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 right = Vector3.Cross(Vector3.up, outward).normalized;
         float victimHeight = GetActorStandingHeight(victim);
-        float sideSpacing = Mathf.Clamp(victimHeight * 0.42f, 2.4f, 4.8f);
+        float sideSpacing = Mathf.Clamp(victimHeight * 0.30f, 0.55f, 1.10f);
         Vector3 policePosition = victim.position
             - right * sideSpacing
             - outward * Mathf.Clamp(victimHeight * 0.045f, 0.04f, 0.12f);
@@ -12379,14 +12720,270 @@ public class Chapter1PerformanceController : MonoBehaviour
             + Vector3.Distance(forearm.position, hand.position);
         Vector3 shoulderToGrip = victimUpperArm.position - upperArm.position;
         shoulderToGrip.y = 0f;
-        float desiredHorizontalReach = Mathf.Max(0.18f, armReach * 0.78f);
+        float desiredHorizontalReach = Mathf.Max(0.18f, armReach * 0.68f);
         if (shoulderToGrip.magnitude > desiredHorizontalReach)
         {
             Vector3 correction = shoulderToGrip.normalized
                 * (shoulderToGrip.magnitude - desiredHorizontalReach);
-            float maximumCorrection = Mathf.Clamp(armReach * 0.45f, 0.35f, 2.4f);
+            float maximumCorrection = Mathf.Clamp(armReach * 1.5f, 0.45f, 4f);
             police.position += Vector3.ClampMagnitude(correction, maximumCorrection);
         }
+    }
+
+    private void PrepareIncidentVictimForPoliceSequence()
+    {
+        if (femaleVillagerActor == null)
+        {
+            return;
+        }
+
+        Animator victimAnimator = femaleVillagerActor.GetComponentInChildren<Animator>(true);
+        Transform victimRoot = GetWeddingDancerActorRoot(victimAnimator);
+        if (victimRoot == null)
+        {
+            victimRoot = femaleVillagerActor;
+        }
+        femaleVillagerActor = victimRoot;
+
+        for (int i = weddingCrowdDancers.Count - 1; i >= 0; i--)
+        {
+            Chapter1CircleDancer dancer = weddingCrowdDancers[i];
+            if (dancer == null)
+            {
+                weddingCrowdDancers.RemoveAt(i);
+                continue;
+            }
+
+            Transform dancerRoot = dancer.transform;
+            bool sameActor = dancerRoot == victimRoot
+                || dancerRoot.IsChildOf(victimRoot)
+                || victimRoot.IsChildOf(dancerRoot);
+            if (!sameActor)
+            {
+                continue;
+            }
+
+            dancer.StopDancing();
+            dancer.SetCanCircleDance(false);
+            dancer.enabled = false;
+            weddingCrowdDancers.RemoveAt(i);
+        }
+
+        Chapter1CircleDancer[] victimDancers =
+            victimRoot.GetComponentsInChildren<Chapter1CircleDancer>(true);
+        for (int i = 0; i < victimDancers.Length; i++)
+        {
+            victimDancers[i].StopDancing();
+            victimDancers[i].SetCanCircleDance(false);
+            victimDancers[i].enabled = false;
+        }
+
+        Chapter1HandHoldIK[] handHolding =
+            victimRoot.GetComponentsInChildren<Chapter1HandHoldIK>(true);
+        for (int i = 0; i < handHolding.Length; i++)
+        {
+            handHolding[i].enabled = false;
+        }
+
+        Chapter1FaceFire[] faceControllers =
+            victimRoot.GetComponentsInChildren<Chapter1FaceFire>(true);
+        for (int i = 0; i < faceControllers.Length; i++)
+        {
+            faceControllers[i].enabled = false;
+        }
+
+        Chapter1WeddingFaceCenter[] exactFacing =
+            victimRoot.GetComponentsInChildren<Chapter1WeddingFaceCenter>(true);
+        for (int i = 0; i < exactFacing.Length; i++)
+        {
+            exactFacing[i].enabled = false;
+        }
+
+        Chapter1WeddingLimbDance[] limbDance =
+            victimRoot.GetComponentsInChildren<Chapter1WeddingLimbDance>(true);
+        for (int i = 0; i < limbDance.Length; i++)
+        {
+            limbDance[i].enabled = false;
+        }
+
+        DetachActorFromDancePivot(victimRoot);
+        Vector3 center = GetFireCenterPosition();
+        Vector3 outward = victimRoot.position - center;
+        outward.y = 0f;
+        if (outward.sqrMagnitude < 0.01f && hasPoliceWitnessViewPose)
+        {
+            outward = Vector3.ProjectOnPlane(
+                policeWitnessViewRotation * Vector3.right,
+                Vector3.up);
+        }
+        if (outward.sqrMagnitude < 0.01f)
+        {
+            outward = Vector3.right;
+        }
+        outward.Normalize();
+
+        float outsideRadius = Mathf.Max(
+            weddingCircleRadius + 2.4f,
+            minimumWeddingCircleRadius + 2.4f);
+        if (GetFlatDistance(victimRoot.position, center) < outsideRadius)
+        {
+            SetHorizontalPosition(victimRoot, center + outward * outsideRadius);
+        }
+
+        EnsureCinematicActorGrounding(victimRoot, true);
+        Debug.Log("[Chapter1 Incident] Female actor removed from the dance circle and grounded.");
+    }
+
+    private Vector3 GetIncidentRightCornerPosition(Vector3 start)
+    {
+        Vector3 screenRight = hasPoliceWitnessViewPose
+            ? policeWitnessViewRotation * Vector3.right
+            : (GetPlayerViewTransform() != null
+                ? GetPlayerViewTransform().right
+                : Vector3.right);
+        screenRight.y = 0f;
+        if (screenRight.sqrMagnitude < 0.01f)
+        {
+            screenRight = Vector3.right;
+        }
+        screenRight.Normalize();
+
+        Vector3 target = start + screenRight * Mathf.Clamp(
+            weddingCircleRadius * 0.58f,
+            6.5f,
+            9.5f);
+        Vector3 fromFire = target - GetFireCenterPosition();
+        fromFire.y = 0f;
+        float outsideRadius = Mathf.Max(
+            weddingCircleRadius + 3.2f,
+            minimumWeddingCircleRadius + 3.2f);
+        if (fromFire.sqrMagnitude < outsideRadius * outsideRadius)
+        {
+            if (fromFire.sqrMagnitude < 0.01f)
+            {
+                fromFire = screenRight;
+            }
+            target = GetFireCenterPosition() + fromFire.normalized * outsideRadius;
+        }
+        target.y = start.y;
+        return target;
+    }
+
+    private void HoldPoliceWitnessView()
+    {
+        if (!hasPoliceWitnessViewPose)
+        {
+            CapturePoliceWitnessViewPose();
+        }
+        if (!hasPoliceWitnessViewPose)
+        {
+            return;
+        }
+
+        if (incidentCameraView == null)
+        {
+            incidentCameraView = GetPlayerViewTransform();
+        }
+        if (incidentCameraView == null)
+        {
+            return;
+        }
+
+        if (incidentCameraPoseLock == null)
+        {
+            incidentCameraTrackedPoseDrivers = DisableCameraTrackedPoseDrivers(incidentCameraView);
+            incidentCameraPoseLock = BeginCinematicCameraPoseLock(incidentCameraView);
+            incidentHiddenHandRenderers = HidePlayerHandRenderers(
+                out incidentHiddenHandRendererStates);
+        }
+
+        SetCinematicCameraPose(
+            incidentCameraView,
+            incidentCameraPoseLock,
+            policeWitnessViewPosition,
+            policeWitnessViewRotation);
+    }
+
+    private IEnumerator DragVictimWithFixedWitnessCameraRoutine(
+        Transform police,
+        Transform victim,
+        Vector3 victimDestination,
+        float seconds)
+    {
+        if (police == null || victim == null)
+        {
+            yield break;
+        }
+
+        EnsureCinematicActorGrounding(police, true);
+        EnsureCinematicActorGrounding(victim, true);
+        PullPoliceWithinGrabReach(police, victim);
+        BeginHarassmentPerformance(police, victim);
+        HoldPoliceWitnessView();
+
+        Vector3 victimStart = victim.position;
+        Vector3 policeStart = police.position;
+        Vector3 policeOffset = policeStart - victimStart;
+        policeOffset.y = 0f;
+
+        Vector3 travelDirection = victimDestination - victimStart;
+        travelDirection.y = 0f;
+        if (travelDirection.sqrMagnitude < 0.01f)
+        {
+            travelDirection = Vector3.ProjectOnPlane(police.forward, Vector3.up);
+        }
+        if (travelDirection.sqrMagnitude < 0.01f)
+        {
+            travelDirection = Vector3.forward;
+        }
+        travelDirection.Normalize();
+        Vector3 side = Vector3.Cross(Vector3.up, travelDirection).normalized;
+
+        Vector3 victimTarget = victimDestination;
+        Vector3 policeTarget = victimTarget + policeOffset;
+        Quaternion walkingRotation = Quaternion.LookRotation(travelDirection, Vector3.up);
+        PlayPoliceWalkAnimation(
+            police,
+            policeSecondWalkAnimationPhase,
+            policeSecondWalkAnimatorSpeed * 0.72f);
+
+        float elapsed = 0f;
+        float duration = Mathf.Max(1.2f, seconds);
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            float eased = Mathf.SmoothStep(0f, 1f, progress);
+            float resistance = Mathf.Sin(elapsed * 10.5f) * (1f - progress * 0.35f);
+
+            Vector3 nextVictim = Vector3.Lerp(victimStart, victimTarget, eased)
+                + side * resistance * 0.065f;
+            Vector3 nextPolice = Vector3.Lerp(policeStart, policeTarget, eased)
+                + side * resistance * 0.02f;
+            SetHorizontalPosition(victim, nextVictim);
+            SetHorizontalPosition(police, nextPolice);
+            victim.rotation = Quaternion.Slerp(
+                victim.rotation,
+                walkingRotation,
+                Time.deltaTime * 5f);
+            police.rotation = Quaternion.Slerp(
+                police.rotation,
+                walkingRotation,
+                Time.deltaTime * 7f);
+            HoldPoliceWitnessView();
+            yield return null;
+        }
+
+        SetHorizontalPosition(victim, victimTarget);
+        SetHorizontalPosition(police, policeTarget);
+        victim.rotation = walkingRotation;
+        police.rotation = walkingRotation;
+        ResetPoliceAnimatorSpeed(police);
+        PlayAnimatorStateIfAvailable(police, policeIdleStateName);
+        EnsureCinematicActorGrounding(police, true);
+        EnsureCinematicActorGrounding(victim, true);
+        BeginHarassmentPerformance(police, victim);
+        HoldPoliceWitnessView();
     }
 
     private void BeginHarassmentPerformance(Transform police, Transform victim)
@@ -12876,17 +13473,18 @@ public class Chapter1PerformanceController : MonoBehaviour
     private IEnumerator WatchFallbackRoutine()
     {
         Transform draggingPolice = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
-        yield return PlayCinematicSpeakerLine(
-            draggingPolice,
+        HoldPoliceWitnessView();
+        yield return PlayPoliceVoicedLine(
             "日警",
             "都給我安靜。你們最好記住自己的身分。",
             policeWatchCommandVoice,
             3.2f);
+        HoldPoliceWitnessView();
 
         if (femaleVillagerActor != null && draggingPolice != null && hutEntrancePoint != null)
         {
             ShowLine("旁白", "你沒有上前。警察抓住女性族人的手臂，無視她的掙扎，強行把她拖向小木屋。", 4.6f);
-            yield return DragVictimToHutRoutine(
+            yield return DragVictimWithFixedWitnessCameraRoutine(
                 draggingPolice,
                 femaleVillagerActor,
                 hutEntrancePoint.position,
@@ -12895,7 +13493,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             StopIncidentActorMotions(true);
             draggingPolice.gameObject.SetActive(false);
             femaleVillagerActor.gameObject.SetActive(false);
-            yield return FrameHutEntranceRoutine(hutEntrancePoint, 0.7f);
+            HoldPoliceWitnessView();
 
             ShowLine("旁白", "她被拖進屋內，門在眾人面前重重關上。", 4.5f);
             float screamDelay = Mathf.Clamp(
@@ -12908,6 +13506,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             if (screamDelay > 0f)
             {
                 yield return new WaitForSeconds(screamDelay);
+                HoldPoliceWitnessView();
             }
 
             PlayPoliceEventClip(GetHutCryClip());
@@ -12916,6 +13515,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             if (remainingInsideSeconds > 0f)
             {
                 yield return new WaitForSeconds(remainingInsideSeconds);
+                HoldPoliceWitnessView();
             }
 
             Vector3 outward = GetFireCenterPosition() - hutEntrancePoint.position;
@@ -12941,7 +13541,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             ShowLine("旁白", "過了一陣子，警察又拖著仍在掙扎的女性走出屋子。", 4.2f);
             Vector3 outsidePoint = hutEntrancePoint.position + outward * 2.3f;
-            yield return DragVictimToHutRoutine(
+            yield return DragVictimWithFixedWitnessCameraRoutine(
                 draggingPolice,
                 femaleVillagerActor,
                 outsidePoint,
@@ -13130,23 +13730,36 @@ public class Chapter1PerformanceController : MonoBehaviour
         Vector3 pairStart = first != null && second != null
             ? (firstStart + secondStart) * 0.5f
             : (first != null ? firstStart : secondStart);
-        if (hasPoliceWitnessViewPose)
+        Transform fixedWitnessView = followPoliceBacksDuringExit
+            ? GetPlayerViewTransform()
+            : null;
+        Vector3 fixedWitnessPosition = hasPoliceWitnessViewPose
+            ? policeWitnessViewPosition
+            : (fixedWitnessView != null ? fixedWitnessView.position : Vector3.zero);
+        if (fixedWitnessView != null)
         {
-            Vector3 awayFromWitness = pairStart - policeWitnessViewPosition;
-            Vector3 configuredDirection = target - pairStart;
-            awayFromWitness.y = 0f;
-            configuredDirection.y = 0f;
-            if (awayFromWitness.sqrMagnitude > 0.01f
-                && configuredDirection.sqrMagnitude > 0.01f)
+            Vector3 awayFromWitness = Vector3.ProjectOnPlane(
+                pairStart - fixedWitnessPosition,
+                Vector3.up);
+            if (awayFromWitness.sqrMagnitude < 0.01f)
             {
-                float configuredDistance = configuredDirection.magnitude;
-                Vector3 visibleExitDirection = Vector3.RotateTowards(
-                    awayFromWitness.normalized,
-                    configuredDirection.normalized,
-                    22f * Mathf.Deg2Rad,
-                    0f);
-                target = pairStart + visibleExitDirection * configuredDistance;
+                awayFromWitness = Vector3.ProjectOnPlane(
+                    hasPoliceWitnessViewPose
+                        ? policeWitnessViewRotation * Vector3.forward
+                        : fixedWitnessView.forward,
+                    Vector3.up);
             }
+            if (awayFromWitness.sqrMagnitude < 0.01f)
+            {
+                awayFromWitness = Vector3.forward;
+            }
+
+            awayFromWitness.Normalize();
+            float configuredDistance = Vector3.ProjectOnPlane(
+                target - pairStart,
+                Vector3.up).magnitude;
+            float visibleExitDistance = Mathf.Max(configuredDistance, 24f);
+            target = pairStart + awayFromWitness * visibleExitDistance;
         }
         Vector3 pathDirection = target - pairStart;
         pathDirection.y = 0f;
@@ -13171,11 +13784,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         bool secondUsesAnimator = second != null && HasAnimatorState(second, policeWalkStateName);
         if (firstUsesAnimator)
         {
-            PlayPoliceWalkAnimation(first, 0f, policeFirstWalkAnimatorSpeed * 0.82f);
+            PlayPoliceWalkAnimation(first, 0f, policeFirstWalkAnimatorSpeed * 0.62f);
         }
         if (secondUsesAnimator)
         {
-            PlayPoliceWalkAnimation(second, policeSecondWalkAnimationPhase, policeSecondWalkAnimatorSpeed * 0.82f);
+            PlayPoliceWalkAnimation(second, policeSecondWalkAnimationPhase, policeSecondWalkAnimatorSpeed * 0.62f);
         }
 
         Chapter1PoliceRunAnimator firstWalk = firstUsesAnimator
@@ -13185,21 +13798,28 @@ public class Chapter1PerformanceController : MonoBehaviour
             ? null
             : BeginPoliceWalkingFallback(second, Mathf.PI * 0.65f);
 
-        endingCameraView = followPoliceBacksDuringExit
-            ? GetPlayerViewTransform()
-            : null;
+        endingCameraView = fixedWitnessView;
         Vector3 cameraStartPosition = endingCameraView != null
-            ? (hasPoliceWitnessViewPose
-                ? policeWitnessViewPosition
-                : endingCameraView.position)
+            ? fixedWitnessPosition
             : Vector3.zero;
+        float exitActorHeight = Mathf.Max(
+            first != null ? GetActorStandingHeight(first) : 0f,
+            second != null ? GetActorStandingHeight(second) : 0f);
+        Vector3 exitFocus = pairStart
+            + Vector3.up * Mathf.Max(1.1f, exitActorHeight * 0.55f);
+        Vector3 exitLookDirection = exitFocus - cameraStartPosition;
         Quaternion cameraStartRotation = endingCameraView != null
-            ? (hasPoliceWitnessViewPose
-                ? policeWitnessViewRotation
-                : endingCameraView.rotation)
-            : Quaternion.identity;
+            && exitLookDirection.sqrMagnitude > 0.01f
+                ? Quaternion.LookRotation(exitLookDirection.normalized, Vector3.up)
+                : Quaternion.identity;
         if (endingCameraView != null)
         {
+            HideIncidentShotOccluders(
+                cameraStartPosition,
+                exitFocus,
+                first,
+                second,
+                Mathf.Max(12f, exitActorHeight * 5f));
             endingCameraTrackedPoseDrivers = DisableCameraTrackedPoseDrivers(endingCameraView);
             endingCameraPoseLock = BeginCinematicCameraPoseLock(endingCameraView);
             endingHiddenHandRenderers = HidePlayerHandRenderers(
@@ -13296,6 +13916,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void ReleaseEndingCameraLock()
     {
+        RestoreIncidentShotOccluders();
         EndCinematicCameraPoseLock(endingCameraPoseLock);
         endingCameraPoseLock = null;
         RestoreCameraTrackedPoseDrivers(endingCameraTrackedPoseDrivers);
@@ -13310,6 +13931,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void ReleaseIncidentCameraLock()
     {
+        RestoreIncidentShotOccluders();
         EndCinematicCameraPoseLock(incidentCameraPoseLock);
         incidentCameraPoseLock = null;
         RestoreCameraTrackedPoseDrivers(incidentCameraTrackedPoseDrivers);
@@ -13771,6 +14393,10 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (IsNewPoliceScene())
         {
+            showSkipToIncidentButton = false;
+            followPoliceBacksDuringExit = true;
+            minimumPoliceExitSeconds = 8f;
+            policeExitSeconds = 8f;
             useExplorationTimer = true;
             explorationDurationSeconds = 180f;
             showExplorationTimer = true;

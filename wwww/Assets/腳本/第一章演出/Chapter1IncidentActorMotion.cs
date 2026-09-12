@@ -231,6 +231,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private Transform head;
     private Transform hips;
     private Transform targetGripBone;
+    private Transform targetGripLowerBone;
     private GameObject baton;
     private MotionMode mode;
     private float strikeProgress;
@@ -270,6 +271,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     {
         mode = MotionMode.None;
         targetGripBone = null;
+        targetGripLowerBone = null;
         hasSmoothedGripPoint = false;
         if (hideBaton)
         {
@@ -298,6 +300,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
                 : aimPoint;
             hasSmoothedGripPoint = true;
             AimArmWithTwoBoneIk(smoothedGripPoint);
+            PinHandToGrip(smoothedGripPoint);
         }
         else
         {
@@ -307,12 +310,29 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         UpdateBatonPose();
     }
 
+    private void PinHandToGrip(Vector3 gripPoint)
+    {
+        if (rightHand == null)
+        {
+            return;
+        }
+
+        // The actor roots are staged within arm's reach. Pinning in LateUpdate
+        // keeps the rendered hand on the victim after both Animators evaluate.
+        rightHand.position = gripPoint;
+    }
+
     private Vector3 GetAimPoint()
     {
         if (mode == MotionMode.Harass)
         {
             return targetGripBone != null
-                ? targetGripBone.position
+                ? (targetGripLowerBone != null
+                    ? Vector3.Lerp(
+                        targetGripBone.position,
+                        targetGripLowerBone.position,
+                        0.38f)
+                    : targetGripBone.position)
                 : (target != null
                     ? target.position + Vector3.up * (actorHeight * 0.58f)
                     : transform.position + transform.forward * actorHeight);
@@ -440,6 +460,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private void CacheTargetGripBone()
     {
         targetGripBone = null;
+        targetGripLowerBone = null;
         if (target == null)
         {
             return;
@@ -450,6 +471,8 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         {
             Transform leftArm = targetAnimator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Transform rightArm = targetAnimator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            Transform leftLowerArm = targetAnimator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+            Transform rightLowerArm = targetAnimator.GetBoneTransform(HumanBodyBones.RightLowerArm);
             Transform left = leftArm != null
                 ? leftArm
                 : targetAnimator.GetBoneTransform(HumanBodyBones.LeftShoulder);
@@ -468,6 +491,10 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
             {
                 targetGripBone = left != null ? left : right;
             }
+
+            targetGripLowerBone = targetGripBone == left
+                ? leftLowerArm
+                : (targetGripBone == right ? rightLowerArm : null);
         }
 
         if (targetGripBone == null)
