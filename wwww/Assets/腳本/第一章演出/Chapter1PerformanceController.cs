@@ -706,6 +706,28 @@ public class Chapter1PerformanceController : MonoBehaviour
     public string policeIdleStateName = "Idle";
     public string villagerFallStateName = "Fall";
 
+    [Header("Intervene Knockout Sequence")]
+    [Tooltip("選擇上前阻止後，警察緩步走到玩家面前的時間。")]
+    public float policeApproachPlayerSeconds = 2.4f;
+
+    [Tooltip("被警棍擊中後，鏡頭倒向地面的時間。")]
+    public float knockoutCameraFallSeconds = 0.9f;
+
+    [Tooltip("倒地後視點距離地面的高度。")]
+    public float knockoutCameraHeightAboveGround = 0.28f;
+
+    [Tooltip("倒地視點的側傾角度。")]
+    public float knockoutCameraRollDegrees = 78f;
+
+    [Tooltip("畫面中央暈眩圖案每秒旋轉角度。")]
+    public float knockoutDizzyRotationDegreesPerSecond = 180f;
+
+    [Range(0.1f, 0.3f)]
+    [Tooltip("暈眩圖案佔螢幕寬度的比例。")]
+    public float knockoutDizzyScreenWidthRatio = 0.17f;
+
+    public string knockoutDizzyResourcePath = "Chapter1UI/KnockoutDizzy";
+
     [Header("Police Victim Sequence Timing")]
     [Tooltip("警察從事件中心小跑到女性族人面前的時間。")]
     public float policeJogToWomanSeconds = 1.65f;
@@ -813,6 +835,13 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Chapter1VictimResistanceMotion victimResistanceMotion;
     private Chapter1PoliceIncidentMotion harassingPoliceMotion;
     private Chapter1PoliceIncidentMotion batonPoliceMotion;
+    private bool playerKnockedOut;
+    private bool knockoutDizzyVisible;
+    private bool loggedMissingKnockoutDizzy;
+    private float knockoutDizzyRotationDegrees;
+    private Texture2D knockoutDizzyTexture;
+    private Vector3 knockoutCameraPosition;
+    private Quaternion knockoutCameraRotation;
     private Transform endingCameraView;
     private Chapter1CinematicCameraPoseLock endingCameraPoseLock;
     private List<Behaviour> endingCameraTrackedPoseDrivers;
@@ -967,6 +996,14 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void Update()
     {
+        if (knockoutDizzyVisible)
+        {
+            knockoutDizzyRotationDegrees = Mathf.Repeat(
+                knockoutDizzyRotationDegrees
+                    + Time.deltaTime * knockoutDizzyRotationDegreesPerSecond,
+                360f);
+        }
+
         if (debugStartDanceWithJ && Input.GetKeyDown(KeyCode.J))
         {
             Debug.Log("[Chapter1] Debug J key pressed.");
@@ -1241,6 +1278,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         if (!showFallbackHud)
         {
+            DrawKnockoutDizzyEffect();
             return;
         }
 
@@ -1254,6 +1292,8 @@ public class Chapter1PerformanceController : MonoBehaviour
                 DrawFallbackDialogue();
             }
 
+            DrawKnockoutDizzyEffect();
+
             return;
         }
 
@@ -1266,6 +1306,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             {
                 DrawFallbackDialogue();
             }
+
+            DrawKnockoutDizzyEffect();
 
             return;
         }
@@ -1361,10 +1403,13 @@ public class Chapter1PerformanceController : MonoBehaviour
                 ChooseWatch();
             }
         }
+
+        DrawKnockoutDizzyEffect();
     }
 
     private void OnDisable()
     {
+        knockoutDizzyVisible = false;
         RestoreDancePlayerHandsScale();
         RestoreIncidentShotOccluders();
         RestoreWitnessCameraFieldOfView();
@@ -1428,6 +1473,62 @@ public class Chapter1PerformanceController : MonoBehaviour
                 barHeight),
             Texture2D.whiteTexture);
 
+        GUI.color = previousColor;
+    }
+
+    private void ShowKnockoutDizzyEffect()
+    {
+        if (knockoutDizzyTexture == null
+            && !string.IsNullOrWhiteSpace(knockoutDizzyResourcePath))
+        {
+            knockoutDizzyTexture = Resources.Load<Texture2D>(
+                knockoutDizzyResourcePath);
+        }
+
+        knockoutDizzyRotationDegrees = 0f;
+        knockoutDizzyVisible = knockoutDizzyTexture != null;
+        if (!knockoutDizzyVisible && !loggedMissingKnockoutDizzy)
+        {
+            loggedMissingKnockoutDizzy = true;
+            Debug.LogWarning(
+                "[Chapter1] Missing knockout dizzy texture at Resources/"
+                + knockoutDizzyResourcePath + ".");
+        }
+    }
+
+    private void DrawKnockoutDizzyEffect()
+    {
+        if (!knockoutDizzyVisible || knockoutDizzyTexture == null)
+        {
+            return;
+        }
+
+        float width = Mathf.Clamp(
+            Screen.width * knockoutDizzyScreenWidthRatio,
+            150f,
+            300f);
+        float aspect = knockoutDizzyTexture.height > 0
+            ? (float)knockoutDizzyTexture.width / knockoutDizzyTexture.height
+            : 1.75f;
+        float height = width / Mathf.Max(0.5f, aspect);
+        Rect effectRect = new Rect(
+            (Screen.width - width) * 0.5f,
+            (Screen.height - height) * 0.5f,
+            width,
+            height);
+
+        Matrix4x4 previousMatrix = GUI.matrix;
+        Color previousColor = GUI.color;
+        GUI.color = Color.white;
+        GUIUtility.RotateAroundPivot(
+            knockoutDizzyRotationDegrees,
+            effectRect.center);
+        GUI.DrawTexture(
+            effectRect,
+            knockoutDizzyTexture,
+            ScaleMode.ScaleToFit,
+            true);
+        GUI.matrix = previousMatrix;
         GUI.color = previousColor;
     }
 
@@ -12381,18 +12482,27 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
         }
 
-        RestoreWitnessCameraFieldOfView();
         Transform elderSpeaker = FindTransformByName("族人長者");
         if (elderSpeaker == null)
         {
             elderSpeaker = FindTransformByName("莫那");
         }
-        yield return PlayCinematicSpeakerLine(
-            elderSpeaker,
-            "族人長者",
-            "今天的事，族人不會忘記。",
-            null,
-            3.5f);
+        RestoreWitnessCameraFieldOfView();
+        if (choice == ConflictChoice.Intervene && playerKnockedOut)
+        {
+            // 玩家已倒地，保持地面視點，只讓長者的話從現場傳來。
+            ShowLine("族人長者", "今天的事，族人不會忘記。", 3.5f);
+            yield return new WaitForSeconds(3.5f);
+        }
+        else
+        {
+            yield return PlayCinematicSpeakerLine(
+                elderSpeaker,
+                "族人長者",
+                "今天的事，族人不會忘記。",
+                null,
+                3.5f);
+        }
 
         if (endingTimeline != null)
         {
@@ -14019,7 +14129,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform playerGroundRoot = GetDancePlayerRoot();
-        Transform playerView = GetPlayerViewTransform();
+        Transform playerView = incidentCameraView != null
+            ? incidentCameraView
+            : GetPlayerViewTransform();
         Vector3 targetPosition = incidentCameraView != null && playerView != null
             ? playerView.position
             : (playerGroundRoot != null
@@ -14033,6 +14145,19 @@ public class Chapter1PerformanceController : MonoBehaviour
             null,
             0.43f,
             1.25f);
+        Animator policeAnimator = police.GetComponentInChildren<Animator>(true);
+        bool usesWalkState = HasAnimatorState(police, policeWalkStateName);
+        if (usesWalkState)
+        {
+            PlayPoliceWalkAnimation(
+                police,
+                policeSecondWalkAnimationPhase,
+                policeSecondWalkAnimatorSpeed * 0.62f);
+        }
+        Chapter1PoliceRunAnimator approachWalkFallback = usesWalkState
+            ? null
+            : BeginPoliceWalkingFallback(police, policeSecondWalkAnimationPhase);
+        Vector3 approachDestination;
         if (playerView != null)
         {
             Vector3 cameraForward = Vector3.ProjectOnPlane(
@@ -14049,19 +14174,41 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
             cameraForward.Normalize();
 
-            Vector3 visibleStagingPosition = playerView.position
+            approachDestination = playerView.position
                 + cameraForward * batonConfrontDistance;
-            visibleStagingPosition.y = police.position.y;
-            yield return MoveTransform(police, visibleStagingPosition, 0.85f);
+            approachDestination.y = police.position.y;
         }
         else
         {
-            yield return MoveActorNearTarget(
-                police,
-                targetPosition,
-                batonConfrontDistance,
-                0.85f);
+            Vector3 approach = targetPosition - police.position;
+            approach.y = 0f;
+            approachDestination = approach.sqrMagnitude > 0.01f
+                ? targetPosition - approach.normalized * batonConfrontDistance
+                : police.position;
         }
+
+        float rootToBottom = 0f;
+        if (TryGetVisibleBounds(police, out Bounds policeBounds))
+        {
+            rootToBottom = police.position.y - policeBounds.min.y;
+        }
+        if (TryGetPhysicsGroundY(police, approachDestination, out float approachGroundY)
+            || TryGetIncidentSurfaceY(approachDestination, out approachGroundY))
+        {
+            approachDestination.y = approachGroundY + rootToBottom;
+        }
+
+        float approachDistance = Vector3.ProjectOnPlane(
+            approachDestination - police.position,
+            Vector3.up).magnitude;
+        float approachSeconds = Mathf.Clamp(
+            approachDistance / 1.8f,
+            Mathf.Max(1.8f, policeApproachPlayerSeconds),
+            7.5f);
+        yield return MoveTransform(police, approachDestination, approachSeconds);
+        EndPoliceRiggedRun(approachWalkFallback);
+        ResetPoliceAnimatorSpeed(police);
+        PlayAnimatorStateIfAvailable(police, policeIdleStateName);
 
         Vector3 facePlayer = targetPosition - police.position;
         facePlayer.y = 0f;
@@ -14070,7 +14217,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             police.rotation = Quaternion.LookRotation(facePlayer.normalized, Vector3.up);
         }
 
-        Animator policeAnimator = police.GetComponentInChildren<Animator>(true);
         batonPoliceMotion = police.GetComponent<Chapter1PoliceIncidentMotion>();
         if (batonPoliceMotion == null)
         {
@@ -14080,8 +14226,6 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 originalViewPosition = playerView != null ? playerView.position : Vector3.zero;
         Quaternion originalViewRotation = playerView != null ? playerView.rotation : Quaternion.identity;
-        Vector3 originalViewLocalPosition = playerView != null ? playerView.localPosition : Vector3.zero;
-        Quaternion originalViewLocalRotation = playerView != null ? playerView.localRotation : Quaternion.identity;
         List<Behaviour> trackedDrivers = playerView != null
             ? DisableCameraTrackedPoseDrivers(playerView)
             : null;
@@ -14143,12 +14287,70 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         if (playerView != null)
         {
-            SetCinematicCameraPose(playerView, poseLock, originalViewPosition, originalViewRotation);
-            EndCinematicCameraPoseLock(poseLock);
-            playerView.localPosition = originalViewLocalPosition;
-            playerView.localRotation = originalViewLocalRotation;
-            RestoreCameraTrackedPoseDrivers(trackedDrivers);
+            Vector3 downedPosition = originalViewPosition
+                + originalViewRotation * Vector3.right * 0.12f;
+            bool foundGround = TryGetPhysicsGroundY(
+                playerGroundRoot,
+                originalViewPosition,
+                out float groundY);
+            if (!foundGround)
+            {
+                foundGround = TryGetIncidentSurfaceY(
+                    originalViewPosition,
+                    out groundY);
+            }
+            downedPosition.y = foundGround
+                ? groundY + Mathf.Max(0.16f, knockoutCameraHeightAboveGround)
+                : originalViewPosition.y - 1.25f;
+            downedPosition.y = Mathf.Min(
+                downedPosition.y,
+                originalViewPosition.y - 0.7f);
+
+            Vector3 downedFocus = GetPoliceVisualFocusPoint(police, null, 1.05f);
+            Vector3 downedLookDirection = downedFocus - downedPosition;
+            Quaternion downedLookRotation = downedLookDirection.sqrMagnitude > 0.01f
+                ? Quaternion.LookRotation(downedLookDirection.normalized, Vector3.up)
+                : originalViewRotation;
+            Quaternion downedRotation = downedLookRotation
+                * Quaternion.AngleAxis(knockoutCameraRollDegrees, Vector3.forward);
+
+            Vector3 fallStartPosition = playerView.position;
+            Quaternion fallStartRotation = playerView.rotation;
+            float fallDuration = Mathf.Max(0.35f, knockoutCameraFallSeconds);
+            float fallElapsed = 0f;
+            while (fallElapsed < fallDuration)
+            {
+                fallElapsed += Time.deltaTime;
+                float fallProgress = Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(fallElapsed / fallDuration));
+                SetCinematicCameraPose(
+                    playerView,
+                    poseLock,
+                    Vector3.Lerp(fallStartPosition, downedPosition, fallProgress),
+                    Quaternion.Slerp(fallStartRotation, downedRotation, fallProgress));
+                yield return null;
+            }
+
+            knockoutCameraPosition = downedPosition;
+            knockoutCameraRotation = downedRotation;
+            SetCinematicCameraPose(
+                playerView,
+                poseLock,
+                knockoutCameraPosition,
+                knockoutCameraRotation);
+
+            // 不恢復頭戴追蹤與原本站姿；倒地視點持續到本章結束。
+            if (trackedDrivers != null && trackedDrivers.Count > 0)
+            {
+                incidentCameraTrackedPoseDrivers = trackedDrivers;
+            }
         }
+
+        playerKnockedOut = true;
+        ShowKnockoutDizzyEffect();
+        Debug.Log("[Chapter1] Player knocked out; floor view and rotating dizzy effect enabled.");
     }
 
     private static void SetHorizontalPosition(Transform actor, Vector3 target)
@@ -14351,7 +14553,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         ShowLine("旁白", "你上前阻止。警察惱怒地抽出警棍，朝你逼近。", 3.5f);
         yield return PoliceBatonAttackPlayerRoutine(attackingPolice);
-        ShowLine("旁白", "警棍猛然落下。劇痛與暈眩讓你踉蹌退開，四周的人全都僵住。", 4.2f);
+        ShowLine("旁白", "警棍猛然落下。劇痛與暈眩讓你倒在地上，意識逐漸模糊。", 4.2f);
         yield return new WaitForSeconds(3.1f);
     }
 
@@ -14360,7 +14562,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         ShowLine("旁白", "兩名警察整理衣服，轉身沿著山路離開。婚禮現場只剩火堆與沉默。", 4.5f);
 
         StopIncidentActorMotions(true);
-        ReleaseIncidentCameraLock();
+        if (!playerKnockedOut)
+        {
+            ReleaseIncidentCameraLock();
+        }
 
         Transform first = primaryPoliceActor;
         Transform second = secondaryPoliceActor;
@@ -14518,9 +14723,11 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform fixedWitnessView = followPoliceBacksDuringExit
             ? GetPlayerViewTransform()
             : null;
-        Vector3 fixedWitnessPosition = hasPoliceWitnessViewPose
-            ? policeWitnessViewPosition
-            : (fixedWitnessView != null ? fixedWitnessView.position : Vector3.zero);
+        Vector3 fixedWitnessPosition = playerKnockedOut && fixedWitnessView != null
+            ? knockoutCameraPosition
+            : (hasPoliceWitnessViewPose
+                ? policeWitnessViewPosition
+                : (fixedWitnessView != null ? fixedWitnessView.position : Vector3.zero));
         if (fixedWitnessView != null)
         {
             Vector3 awayFromWitness = Vector3.ProjectOnPlane(
@@ -14597,10 +14804,17 @@ public class Chapter1PerformanceController : MonoBehaviour
         exitFocus.y += Mathf.Max(0.35f, exitVerticalExtent * 0.32f);
         float exitActorHeight = Mathf.Max(1f, exitVerticalExtent * 2f);
         Vector3 exitLookDirection = exitFocus - cameraStartPosition;
+        Vector3 cameraUp = playerKnockedOut
+            ? knockoutCameraRotation * Vector3.up
+            : Vector3.up;
+        if (Vector3.Cross(exitLookDirection, cameraUp).sqrMagnitude < 0.01f)
+        {
+            cameraUp = Vector3.up;
+        }
         Quaternion cameraStartRotation = endingCameraView != null
             && exitLookDirection.sqrMagnitude > 0.01f
-                ? Quaternion.LookRotation(exitLookDirection.normalized, Vector3.up)
-                : Quaternion.identity;
+                ? Quaternion.LookRotation(exitLookDirection.normalized, cameraUp)
+                : (playerKnockedOut ? knockoutCameraRotation : Quaternion.identity);
         if (endingCameraView != null)
         {
             HideIncidentShotOccluders(
