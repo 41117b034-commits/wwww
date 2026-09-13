@@ -862,6 +862,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     private bool cinematicStoryPlaying;
     private bool tensionAudioHasStarted;
     private readonly HashSet<AudioSource> capturedWeddingAudioSources = new HashSet<AudioSource>();
+    private readonly HashSet<Transform> incidentPoliceScaleAdjusted = new HashSet<Transform>();
 
     private GUIStyle hudBoxStyle;
     private GUIStyle hudTitleStyle;
@@ -1076,6 +1077,20 @@ public class Chapter1PerformanceController : MonoBehaviour
             || source == narrationAudio;
     }
 
+    private void EnsureTensionAmbienceReference()
+    {
+        if (tensionAmbience != null)
+        {
+            return;
+        }
+
+        GameObject tensionObject = GameObject.Find("TensionBGN");
+        if (tensionObject != null)
+        {
+            tensionAmbience = tensionObject.GetComponent<AudioSource>();
+        }
+    }
+
     private void CaptureCurrentlyPlayingWeddingAudio()
     {
         capturedWeddingAudioSources.Clear();
@@ -1168,6 +1183,8 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private void StartTensionAudioAndStopDrums()
     {
+        EnsureTensionAmbienceReference();
+
         if (!tensionAudioHasStarted)
         {
             // 關鍵：先抓「這一刻所有正在播放的聲音」。
@@ -1177,14 +1194,25 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         tensionAudioHasStarted = true;
 
+        // Keep the police entrance source out of the wedding-audio stop list,
+        // including when P jumps directly into the incident.
+        capturedWeddingAudioSources.Remove(tensionAmbience);
+
         // 同一幀全部 Stop + Mute。
         StopCapturedWeddingAudioHard();
 
         if (tensionAmbience != null)
         {
+            if (!tensionAmbience.gameObject.activeSelf)
+            {
+                tensionAmbience.gameObject.SetActive(true);
+            }
+            tensionAmbience.enabled = true;
             tensionAmbience.mute = false;
             tensionAmbience.loop = true;
             tensionAmbience.playOnAwake = false;
+            tensionAmbience.spatialBlend = 0f;
+            tensionAmbience.pitch = 1f;
             tensionAmbience.volume = Mathf.Clamp01(tensionMusicTargetVolume);
 
             if (!tensionAmbience.isPlaying)
@@ -6642,7 +6670,13 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform food = ResolvePhysicalPickupPoint(false);
         if (food != null)
         {
-            // Keep the pickup at the position authored in the current scene.
+            // Restore the fish to the position from the earliest police-scene
+            // backup. Later scene edits accidentally moved it away from the
+            // original food pickup area and toward the wedding crowd.
+            Vector3 restoredFoodPosition = food.position;
+            restoredFoodPosition.x = 3696.6064f;
+            restoredFoodPosition.z = -133.91905f;
+            food.position = restoredFoodPosition;
             FlattenFoodPickup(food);
             SnapPickupPropToGround(food, 0.025f);
         }
@@ -11623,11 +11657,24 @@ public class Chapter1PerformanceController : MonoBehaviour
 
             if (fixedWitnessCamera && playerView != null)
             {
+                Vector3 policeCenter = secondPolice != null
+                    ? (firstPolice.position + secondPolice.position) * 0.5f
+                    : firstPolice.position;
+                Vector3 witnessLookPoint = policeCenter
+                    + Vector3.up * stableEntranceHeight * 0.48f;
+                Vector3 witnessLookDirection = witnessLookPoint - originalViewPosition;
+                Quaternion witnessRotation = witnessLookDirection.sqrMagnitude > 0.01f
+                    ? Quaternion.LookRotation(witnessLookDirection.normalized, Vector3.up)
+                    : originalViewRotation;
+                float witnessAimBlend = Mathf.SmoothStep(
+                    0f,
+                    1f,
+                    Mathf.Clamp01(elapsed / 0.45f));
                 SetCinematicCameraPose(
                     playerView,
                     poseLock,
                     originalViewPosition,
-                    originalViewRotation);
+                    Quaternion.Slerp(originalViewRotation, witnessRotation, witnessAimBlend));
             }
             else if ((aerialCamera || trackingCamera)
                 && playerView != null)
@@ -11912,6 +11959,32 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         return runAnimator;
+    }
+
+    private Chapter1PoliceRunAnimator BeginPoliceRiggedWalk(
+        Transform actor,
+        float phaseOffset)
+    {
+        float cachedCadence = policeRunCadence;
+        float cachedLegSwing = policeRunLegSwing;
+        float cachedKneeBend = policeRunKneeBend;
+        float cachedArmSwing = policeRunArmSwing;
+        float cachedLean = policeRunForwardLeanDegrees;
+
+        policeRunCadence = policeWalkCadence;
+        policeRunLegSwing = policeWalkLegSwing;
+        policeRunKneeBend = policeWalkKneeBend;
+        policeRunArmSwing = policeWalkArmSwing;
+        policeRunForwardLeanDegrees = policeWalkForwardLeanDegrees;
+
+        Chapter1PoliceRunAnimator result = BeginPoliceRiggedRun(actor, phaseOffset);
+
+        policeRunCadence = cachedCadence;
+        policeRunLegSwing = cachedLegSwing;
+        policeRunKneeBend = cachedKneeBend;
+        policeRunArmSwing = cachedArmSwing;
+        policeRunForwardLeanDegrees = cachedLean;
+        return result;
     }
 
     private static void EndPoliceRiggedRun(Chapter1PoliceRunAnimator runAnimator)
@@ -12716,6 +12789,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        EnsureHarassingPoliceIsAdultSized(police, victim);
+
         Vector3 outward = victim.position - GetFireCenterPosition();
         outward.y = 0f;
         if (outward.sqrMagnitude < 0.01f)
@@ -12738,6 +12813,10 @@ public class Chapter1PerformanceController : MonoBehaviour
         Quaternion outwardRotation = Quaternion.LookRotation(outward, Vector3.up);
         victim.rotation = outwardRotation;
         police.rotation = outwardRotation;
+        Quaternion victimFacing = AlignActorVisibleForward(victim, outward);
+        Quaternion policeFacing = AlignActorVisibleForward(police, outward);
+        victim.rotation = victimFacing;
+        police.rotation = policeFacing;
         EnsureCinematicActorGrounding(police, true);
         EnsureCinematicActorGrounding(victim, true);
         AlignPoliceVisualBesideVictim(police, victim, right);
@@ -12761,6 +12840,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
+        EnsureHarassingPoliceIsAdultSized(police, victim);
+
         Vector3 viewDirection = victim.position - policeWitnessViewPosition;
         viewDirection.y = 0f;
         if (viewDirection.sqrMagnitude < 0.01f)
@@ -12776,18 +12857,152 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 screenRight = Vector3.Cross(Vector3.up, viewDirection).normalized;
         float spacing = GetNaturalGrabRootSpacing(police, victim);
-        SetHorizontalPosition(police, victim.position - screenRight * spacing);
+        SetHorizontalPosition(police, victim.position + screenRight * spacing);
 
-        // The officer's right side faces the victim, so the right-hand grip
-        // reads as contact while both upper bodies remain distinct on screen.
-        Vector3 policeForward = Vector3.Cross(screenRight, Vector3.up).normalized;
+        // Face both visible rigs toward the witness. These two source models use
+        // opposite prefab forward axes, so root rotation alone is not enough.
+        Vector3 policeForward = -viewDirection;
         Quaternion pairRotation = Quaternion.LookRotation(policeForward, Vector3.up);
         police.rotation = pairRotation;
         victim.rotation = pairRotation;
+        Quaternion correctedPoliceRotation = AlignActorVisibleForward(police, policeForward);
+        Quaternion correctedVictimRotation = AlignActorVisibleForward(victim, policeForward);
+        police.rotation = correctedPoliceRotation;
+        victim.rotation = correctedVictimRotation;
         EnsureCinematicActorGrounding(police, true);
-        EnsureCinematicActorGrounding(victim, true);
-        AlignPoliceVisualBesideVictim(police, victim, screenRight);
+        Chapter1NpcGrounding victimGrounder = victim.GetComponent<Chapter1NpcGrounding>();
+        if (victimGrounder == null || victimGrounder.enabled)
+        {
+            EnsureCinematicActorGrounding(victim, true);
+        }
+        AlignPoliceVisualBesideVictim(police, victim, -screenRight);
         EnsureCinematicActorGrounding(police, true);
+    }
+
+    private void EnsureHarassingPoliceIsAdultSized(
+        Transform police,
+        Transform victim)
+    {
+        if (police == null
+            || victim == null
+            || incidentPoliceScaleAdjusted.Contains(police))
+        {
+            return;
+        }
+
+        float policeHeight = GetVisibleRigHeight(police);
+        float victimHeight = GetVisibleRigHeight(victim);
+        if (policeHeight <= 0.1f || victimHeight <= 0.1f)
+        {
+            return;
+        }
+
+        float desiredPoliceHeight = victimHeight * 1.08f;
+        float scaleFactor = Mathf.Clamp(
+            desiredPoliceHeight / policeHeight,
+            1f,
+            2.25f);
+        police.localScale *= scaleFactor;
+        incidentPoliceScaleAdjusted.Add(police);
+        Physics.SyncTransforms();
+
+        Debug.Log(
+            "[Chapter1 Incident] Adult-sized harassing police "
+            + police.name
+            + " by x"
+            + scaleFactor.ToString("0.00")
+            + ".");
+    }
+
+    private float GetVisibleRigHeight(Transform actor)
+    {
+        if (actor == null)
+        {
+            return 0f;
+        }
+
+        Animator animator = actor.GetComponentInChildren<Animator>(true);
+        if (animator != null)
+        {
+            animator.Update(0f);
+            Transform head = Chapter1WeddingRigBones.Resolve(
+                animator,
+                HumanBodyBones.Head,
+                "Head");
+            Transform hips = Chapter1WeddingRigBones.Resolve(
+                animator,
+                HumanBodyBones.Hips,
+                "Hips");
+            Transform leftFoot = Chapter1WeddingRigBones.Resolve(
+                animator,
+                HumanBodyBones.LeftFoot,
+                "LeftFoot");
+            Transform rightFoot = Chapter1WeddingRigBones.Resolve(
+                animator,
+                HumanBodyBones.RightFoot,
+                "RightFoot");
+            if (head != null && (leftFoot != null || rightFoot != null))
+            {
+                float feetY = leftFoot != null
+                    ? leftFoot.position.y
+                    : rightFoot.position.y;
+                if (rightFoot != null)
+                {
+                    feetY = Mathf.Min(feetY, rightFoot.position.y);
+                }
+
+                float headAllowance = hips != null
+                    ? Vector3.Distance(head.position, hips.position) * 0.18f
+                    : 0f;
+                float rigHeight = head.position.y + headAllowance - feetY;
+                if (rigHeight > 0.2f && rigHeight < 30f)
+                {
+                    return rigHeight;
+                }
+            }
+        }
+
+        return GetActorStandingHeight(actor);
+    }
+
+    private Quaternion AlignActorVisibleForward(
+        Transform actor,
+        Vector3 desiredWorldForward)
+    {
+        if (actor == null)
+        {
+            return Quaternion.identity;
+        }
+
+        Vector3 desiredForward = Vector3.ProjectOnPlane(
+            desiredWorldForward,
+            Vector3.up);
+        if (desiredForward.sqrMagnitude < 0.001f)
+        {
+            return actor.rotation;
+        }
+        desiredForward.Normalize();
+
+        Animator animator = actor.GetComponentInChildren<Animator>(true);
+        if (animator != null)
+        {
+            animator.Update(0f);
+        }
+        Vector3 visibleForward = GetReceiverVisualForward(actor);
+        if (visibleForward.sqrMagnitude < 0.001f)
+        {
+            return actor.rotation;
+        }
+
+        Quaternion correction = Quaternion.FromToRotation(
+            visibleForward.normalized,
+            desiredForward);
+        actor.rotation = correction * actor.rotation;
+        if (animator != null)
+        {
+            animator.Update(0f);
+        }
+        return actor.rotation;
     }
 
     private void AlignPoliceVisualBesideVictim(
@@ -12826,12 +13041,12 @@ public class Chapter1PerformanceController : MonoBehaviour
         sideDirection.Normalize();
 
         float shorterHeight = Mathf.Min(
-            GetActorStandingHeight(police),
-            GetActorStandingHeight(victim));
+            GetVisibleRigHeight(police),
+            GetVisibleRigHeight(victim));
         float visualSpacing = Mathf.Clamp(
-            shorterHeight * 0.28f,
-            0.85f,
-            3.40f);
+            shorterHeight * 0.20f,
+            1.15f,
+            2.60f);
         Vector3 desiredPoliceHead = victimHead.position
             - sideDirection * visualSpacing;
         Vector3 correction = desiredPoliceHead - policeHead.position;
@@ -13111,8 +13326,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield break;
         }
 
-        Vector3 victimStart = victim.position;
-        Vector3 travelDirection = victimDestination - victimStart;
+        Vector3 travelDirection = victimDestination - victim.position;
         travelDirection.y = 0f;
         if (travelDirection.sqrMagnitude < 0.01f)
         {
@@ -13124,43 +13338,52 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         travelDirection.Normalize();
         Vector3 side = Vector3.Cross(Vector3.up, travelDirection).normalized;
-
-        Vector3 viewDirection = victim.position - policeWitnessViewPosition;
-        viewDirection.y = 0f;
-        if (viewDirection.sqrMagnitude < 0.01f)
-        {
-            viewDirection = travelDirection;
-        }
-        viewDirection.Normalize();
-        Vector3 frameRight = Vector3.Cross(Vector3.up, viewDirection).normalized;
         Quaternion walkingRotation = Quaternion.LookRotation(travelDirection, Vector3.up);
-        Vector3 gripForward = Vector3.Cross(frameRight, Vector3.up).normalized;
-        Vector3 policeFacing = travelDirection + gripForward * 0.42f;
-        if (policeFacing.sqrMagnitude < 0.01f)
-        {
-            policeFacing = travelDirection;
-        }
-        Quaternion policeWalkingRotation = Quaternion.LookRotation(
-            policeFacing.normalized,
-            Vector3.up);
         victim.rotation = walkingRotation;
+        police.rotation = walkingRotation;
+        Quaternion victimWalkingRotation = AlignActorVisibleForward(victim, travelDirection);
+        Quaternion policeWalkingRotation = AlignActorVisibleForward(police, travelDirection);
+        victim.rotation = victimWalkingRotation;
         police.rotation = policeWalkingRotation;
         EnsureCinematicActorGrounding(police, true);
-        EnsureCinematicActorGrounding(victim, true);
-        AlignPoliceVisualBesideVictim(police, victim, frameRight);
+
+        Chapter1NpcGrounding victimGrounder = victim.GetComponent<Chapter1NpcGrounding>();
+        bool alreadyBeingCarried = victimGrounder != null && !victimGrounder.enabled;
+        if (!alreadyBeingCarried)
+        {
+            victimGrounder = EnsureCinematicActorGrounding(victim, true);
+        }
+        if (victimGrounder != null)
+        {
+            victimGrounder.enabled = false;
+        }
+
+        AlignPoliceVisualBesideVictim(police, victim, side);
         EnsureCinematicActorGrounding(police, true);
 
+        Vector3 victimStart = victim.position;
+        float victimLiftHeight = alreadyBeingCarried
+            ? 0f
+            : Mathf.Clamp(GetVisibleRigHeight(victim) * 0.18f, 0.42f, 1.35f);
         Vector3 policeOffset = police.position - victim.position;
-        policeOffset.y = 0f;
         BeginHarassmentPerformance(police, victim);
+        if (victimResistanceMotion != null)
+        {
+            victimResistanceMotion.SetCarried(true);
+        }
         HoldPoliceWitnessViewTowardsActors(police, victim);
 
         Vector3 victimTarget = victimDestination;
+        victimTarget.y = victimStart.y + victimLiftHeight;
         Vector3 policeTarget = victimTarget + policeOffset;
+        policeTarget.y = police.position.y;
         PlayPoliceWalkAnimation(
             police,
             policeSecondWalkAnimationPhase,
             policeSecondWalkAnimatorSpeed * 0.72f);
+        Chapter1PoliceRunAnimator walkFallback = BeginPoliceRiggedWalk(
+            police,
+            policeSecondWalkAnimationPhase);
 
         float elapsed = 0f;
         float duration = Mathf.Max(1.2f, seconds);
@@ -13170,28 +13393,37 @@ public class Chapter1PerformanceController : MonoBehaviour
             float progress = Mathf.Clamp01(elapsed / duration);
             float eased = Mathf.SmoothStep(0f, 1f, progress);
             float resistance = Mathf.Sin(elapsed * 10.5f) * (1f - progress * 0.35f);
+            float liftProgress = alreadyBeingCarried
+                ? 1f
+                : Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(progress / 0.18f));
 
             Vector3 nextVictim = Vector3.Lerp(victimStart, victimTarget, eased)
                 + side * resistance * 0.065f;
+            nextVictim.y = victimStart.y + victimLiftHeight * liftProgress;
             Vector3 nextPolice = nextVictim + policeOffset
                 + side * resistance * 0.012f;
-            SetHorizontalPosition(victim, nextVictim);
+            nextPolice.y = police.position.y;
+            victim.position = nextVictim;
             SetHorizontalPosition(police, nextPolice);
-            victim.rotation = walkingRotation;
+            victim.rotation = victimWalkingRotation;
             police.rotation = policeWalkingRotation;
             HoldPoliceWitnessViewTowardsActors(police, victim);
             yield return null;
         }
 
-        SetHorizontalPosition(victim, victimTarget);
+        victim.position = victimTarget;
         SetHorizontalPosition(police, policeTarget);
-        victim.rotation = walkingRotation;
+        victim.rotation = victimWalkingRotation;
         police.rotation = policeWalkingRotation;
+        EndPoliceRiggedRun(walkFallback);
         ResetPoliceAnimatorSpeed(police);
         PlayAnimatorStateIfAvailable(police, policeIdleStateName);
         EnsureCinematicActorGrounding(police, true);
-        EnsureCinematicActorGrounding(victim, true);
         BeginHarassmentPerformance(police, victim);
+        if (victimResistanceMotion != null)
+        {
+            victimResistanceMotion.SetCarried(true);
+        }
         HoldPoliceWitnessViewTowardsActors(police, victim);
     }
 
@@ -13209,6 +13441,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             victimResistanceMotion = victim.gameObject.AddComponent<Chapter1VictimResistanceMotion>();
         }
         victimResistanceMotion.BeginResistance(victimAnimator, police, 0.72f);
+        Chapter1NpcGrounding victimGrounder = victim.GetComponent<Chapter1NpcGrounding>();
+        victimResistanceMotion.SetCarried(
+            victimGrounder != null && !victimGrounder.enabled);
 
         Animator policeAnimator = police.GetComponentInChildren<Animator>(true);
         harassingPoliceMotion = police.GetComponent<Chapter1PoliceIncidentMotion>();
@@ -14645,6 +14880,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             policeVisibleShotLeadDistance = Mathf.Max(policeVisibleShotLeadDistance, 4.8f);
             policeVisibleShotHeight = Mathf.Max(policeVisibleShotHeight, 2.65f);
             policeVisibleShotEndHoldSeconds = Mathf.Max(policeVisibleShotEndHoldSeconds, 0.9f);
+            tensionMusicTargetVolume = Mathf.Max(tensionMusicTargetVolume, 0.52f);
             SelectNearbyIncidentFemale();
         }
     }
