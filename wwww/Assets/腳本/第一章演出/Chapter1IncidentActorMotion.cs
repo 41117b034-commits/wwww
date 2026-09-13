@@ -249,6 +249,9 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private Transform rightUpperArm;
     private Transform rightForearm;
     private Transform rightHand;
+    private Transform leftUpperArm;
+    private Transform leftForearm;
+    private Transform leftHand;
     private Transform leftShoulder;
     private Transform rightShoulder;
     private Transform head;
@@ -267,6 +270,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         animator = sourceAnimator;
         target = harassmentTarget;
         CacheRig();
+        SelectClosestHarassmentArm();
         CacheTargetGripBone();
         hasSmoothedGripPoint = false;
         mode = MotionMode.Harass;
@@ -482,11 +486,45 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         rightUpperArm = Resolve(HumanBodyBones.RightUpperArm, "R_Upperarm", "RightArm");
         rightForearm = Resolve(HumanBodyBones.RightLowerArm, "R_Forearm", "RightForeArm");
         rightHand = Resolve(HumanBodyBones.RightHand, "R_Hand", "RightHand");
+        leftUpperArm = Resolve(HumanBodyBones.LeftUpperArm, "L_Upperarm", "LeftArm");
+        leftForearm = Resolve(HumanBodyBones.LeftLowerArm, "L_Forearm", "LeftForeArm");
+        leftHand = Resolve(HumanBodyBones.LeftHand, "L_Hand", "LeftHand");
         leftShoulder = Resolve(HumanBodyBones.LeftShoulder, "L_Shoulder", "LeftShoulder");
         rightShoulder = Resolve(HumanBodyBones.RightShoulder, "R_Shoulder", "RightShoulder");
         head = Resolve(HumanBodyBones.Head, "Head");
         hips = Resolve(HumanBodyBones.Hips, "Hips", "Pelvis");
         actorHeight = GetActorHeight();
+    }
+
+    private void SelectClosestHarassmentArm()
+    {
+        if (target == null
+            || leftUpperArm == null
+            || leftForearm == null
+            || leftHand == null
+            || rightHand == null)
+        {
+            return;
+        }
+
+        Animator targetAnimator = target.GetComponentInChildren<Animator>(true);
+        Transform targetChest = Chapter1WeddingRigBones.Resolve(
+            targetAnimator,
+            HumanBodyBones.Chest,
+            "Chest",
+            "Spine2");
+        Vector3 targetPoint = targetChest != null
+            ? targetChest.position
+            : target.position + Vector3.up * actorHeight * 0.55f;
+        if (Vector3.SqrMagnitude(leftHand.position - targetPoint)
+            >= Vector3.SqrMagnitude(rightHand.position - targetPoint))
+        {
+            return;
+        }
+
+        rightUpperArm = leftUpperArm;
+        rightForearm = leftForearm;
+        rightHand = leftHand;
     }
 
     private void CacheTargetGripBone()

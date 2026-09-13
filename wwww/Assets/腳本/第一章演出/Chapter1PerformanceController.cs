@@ -6670,15 +6670,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         Transform food = ResolvePhysicalPickupPoint(false);
         if (food != null)
         {
-            // Restore the fish to the position from the earliest police-scene
-            // backup. Later scene edits accidentally moved it away from the
-            // original food pickup area and toward the wedding crowd.
-            Vector3 restoredFoodPosition = food.position;
-            restoredFoodPosition.x = 3696.6064f;
-            restoredFoodPosition.z = -133.91905f;
-            food.position = restoredFoodPosition;
-            FlattenFoodPickup(food);
-            SnapPickupPropToGround(food, 0.025f);
+            RestoreOriginalPoliceSceneFoodTransform(food);
         }
 
         Transform wine = ResolvePhysicalPickupPoint(true);
@@ -6687,13 +6679,71 @@ public class Chapter1PerformanceController : MonoBehaviour
             SnapPickupPropToGround(wine, 0.02f);
         }
 
+        List<Transform> looseGroundProps = FindLooseWeddingGroundProps();
+        for (int i = 0; i < looseGroundProps.Count; i++)
+        {
+            SnapPickupPropToGround(looseGroundProps[i], 0.018f);
+        }
+
         Physics.SyncTransforms();
         yield return null;
 
-        SnapPickupPropToGround(food, 0.025f);
+        RestoreOriginalPoliceSceneFoodTransform(food);
         SnapPickupPropToGround(wine, 0.02f);
+        for (int i = 0; i < looseGroundProps.Count; i++)
+        {
+            SnapPickupPropToGround(looseGroundProps[i], 0.018f);
+        }
         Debug.Log(
-            "[Chapter1 Pickup Grounding] Food and wine were aligned to the visible ground.");
+            "[Chapter1 Pickup Grounding] Food, wine and loose jars were aligned to the visible ground.");
+    }
+
+    private static void RestoreOriginalPoliceSceneFoodTransform(Transform food)
+    {
+        if (food == null)
+        {
+            return;
+        }
+
+        // Exact transform from the earliest backup of 第一章新版警察.unity.
+        // Restoring all axes also keeps both plates contained in the FBX on the
+        // road instead of letting a later bounds probe lift the whole model.
+        food.position = new Vector3(3696.6064f, -5816.806f, -133.91905f);
+        food.rotation = new Quaternion(
+            -0.58882827f,
+            0.3915115f,
+            -0.4503087f,
+            0.54518086f);
+        Physics.SyncTransforms();
+    }
+
+    private List<Transform> FindLooseWeddingGroundProps()
+    {
+        Transform[] sceneTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+        List<Transform> result = new List<Transform>();
+        for (int i = 0; i < sceneTransforms.Length; i++)
+        {
+            Transform candidate = sceneTransforms[i];
+            if (!IsValidScenePickupTransform(candidate)
+                || candidate.GetComponentInParent<Animator>() != null)
+            {
+                continue;
+            }
+
+            string objectName = candidate.name.ToLowerInvariant();
+            bool isLooseGroundProp = objectName.Contains("酒甕")
+                || objectName.Contains("酒缸")
+                || objectName.Contains("酒桶")
+                || objectName.Contains("wine jar")
+                || objectName.Contains("barrel")
+                || objectName.Contains("盤子")
+                || objectName.Contains("plate");
+            if (isLooseGroundProp && !result.Contains(candidate))
+            {
+                result.Add(candidate);
+            }
+        }
+        return result;
     }
 
     private void FlattenFoodPickup(Transform food)
@@ -12857,7 +12907,9 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 screenRight = Vector3.Cross(Vector3.up, viewDirection).normalized;
         float spacing = GetNaturalGrabRootSpacing(police, victim);
-        SetHorizontalPosition(police, victim.position + screenRight * spacing);
+        // The victim is already staged at the right edge of the wedding. Keep
+        // the officer on her centre-facing side so both actors remain on screen.
+        SetHorizontalPosition(police, victim.position - screenRight * spacing);
 
         // Face both visible rigs toward the witness. These two source models use
         // opposite prefab forward axes, so root rotation alone is not enough.
@@ -12875,7 +12927,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         {
             EnsureCinematicActorGrounding(victim, true);
         }
-        AlignPoliceVisualBesideVictim(police, victim, -screenRight);
+        AlignPoliceVisualBesideVictim(police, victim, screenRight);
         EnsureCinematicActorGrounding(police, true);
     }
 
