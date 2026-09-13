@@ -27,8 +27,11 @@ public sealed class Chapter1VictimResistanceMotion : MonoBehaviour
     private Transform rightForearm;
     private Transform leftUpperLeg;
     private Transform rightUpperLeg;
+    private Transform leftLowerLeg;
+    private Transform rightLowerLeg;
     private readonly List<BlendShapeTarget> fearBlendShapes = new List<BlendShapeTarget>();
     private bool resisting;
+    private bool carried;
     private float startedAt;
 
     public void BeginResistance(Animator sourceAnimator, Transform threatTarget, float strength)
@@ -43,9 +46,15 @@ public sealed class Chapter1VictimResistanceMotion : MonoBehaviour
         enabled = true;
     }
 
+    public void SetCarried(bool value)
+    {
+        carried = value;
+    }
+
     public void StopResistance()
     {
         resisting = false;
+        carried = false;
         RestoreFearBlendShapes();
         if (animator != null && animator.isActiveAndEnabled)
         {
@@ -92,6 +101,18 @@ public sealed class Chapter1VictimResistanceMotion : MonoBehaviour
 
         RotateWorld(leftUpperLeg, bodyRight, fast * 9f * weight);
         RotateWorld(rightUpperLeg, bodyRight, opposite * 10f * weight);
+        if (carried)
+        {
+            // Once lifted, the legs no longer need to support body weight. Use
+            // asymmetric kicks and a stronger arm struggle to read as dangling
+            // resistance rather than a standing character sliding over ground.
+            RotateWorld(leftUpperArm, bodyForward, fast * 24f * weight);
+            RotateWorld(rightUpperArm, bodyForward, opposite * 26f * weight);
+            RotateWorld(leftUpperLeg, bodyRight, (-24f + fast * 28f) * weight);
+            RotateWorld(rightUpperLeg, bodyRight, (-18f + opposite * 31f) * weight);
+            RotateWorld(leftLowerLeg, bodyRight, (-34f + opposite * 18f) * weight);
+            RotateWorld(rightLowerLeg, bodyRight, (-38f + fast * 21f) * weight);
+        }
 
         ApplyFearBlendShapes(65f + Mathf.Abs(fast) * 25f);
     }
@@ -108,6 +129,8 @@ public sealed class Chapter1VictimResistanceMotion : MonoBehaviour
         rightForearm = Resolve(HumanBodyBones.RightLowerArm, "R_Forearm", "RightForeArm");
         leftUpperLeg = Resolve(HumanBodyBones.LeftUpperLeg, "L_Thigh", "LeftUpLeg");
         rightUpperLeg = Resolve(HumanBodyBones.RightUpperLeg, "R_Thigh", "RightUpLeg");
+        leftLowerLeg = Resolve(HumanBodyBones.LeftLowerLeg, "L_Calf", "LeftLeg");
+        rightLowerLeg = Resolve(HumanBodyBones.RightLowerLeg, "R_Calf", "RightLeg");
     }
 
     private Transform Resolve(HumanBodyBones humanoidBone, params string[] aliases)
@@ -226,6 +249,9 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private Transform rightUpperArm;
     private Transform rightForearm;
     private Transform rightHand;
+    private Transform leftUpperArm;
+    private Transform leftForearm;
+    private Transform leftHand;
     private Transform leftShoulder;
     private Transform rightShoulder;
     private Transform head;
@@ -244,6 +270,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         animator = sourceAnimator;
         target = harassmentTarget;
         CacheRig();
+        SelectClosestHarassmentArm();
         CacheTargetGripBone();
         hasSmoothedGripPoint = false;
         mode = MotionMode.Harass;
@@ -459,11 +486,45 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         rightUpperArm = Resolve(HumanBodyBones.RightUpperArm, "R_Upperarm", "RightArm");
         rightForearm = Resolve(HumanBodyBones.RightLowerArm, "R_Forearm", "RightForeArm");
         rightHand = Resolve(HumanBodyBones.RightHand, "R_Hand", "RightHand");
+        leftUpperArm = Resolve(HumanBodyBones.LeftUpperArm, "L_Upperarm", "LeftArm");
+        leftForearm = Resolve(HumanBodyBones.LeftLowerArm, "L_Forearm", "LeftForeArm");
+        leftHand = Resolve(HumanBodyBones.LeftHand, "L_Hand", "LeftHand");
         leftShoulder = Resolve(HumanBodyBones.LeftShoulder, "L_Shoulder", "LeftShoulder");
         rightShoulder = Resolve(HumanBodyBones.RightShoulder, "R_Shoulder", "RightShoulder");
         head = Resolve(HumanBodyBones.Head, "Head");
         hips = Resolve(HumanBodyBones.Hips, "Hips", "Pelvis");
         actorHeight = GetActorHeight();
+    }
+
+    private void SelectClosestHarassmentArm()
+    {
+        if (target == null
+            || leftUpperArm == null
+            || leftForearm == null
+            || leftHand == null
+            || rightHand == null)
+        {
+            return;
+        }
+
+        Animator targetAnimator = target.GetComponentInChildren<Animator>(true);
+        Transform targetChest = Chapter1WeddingRigBones.Resolve(
+            targetAnimator,
+            HumanBodyBones.Chest,
+            "Chest",
+            "Spine2");
+        Vector3 targetPoint = targetChest != null
+            ? targetChest.position
+            : target.position + Vector3.up * actorHeight * 0.55f;
+        if (Vector3.SqrMagnitude(leftHand.position - targetPoint)
+            >= Vector3.SqrMagnitude(rightHand.position - targetPoint))
+        {
+            return;
+        }
+
+        rightUpperArm = leftUpperArm;
+        rightForearm = leftForearm;
+        rightHand = leftHand;
     }
 
     private void CacheTargetGripBone()
