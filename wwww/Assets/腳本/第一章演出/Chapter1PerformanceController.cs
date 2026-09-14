@@ -2385,8 +2385,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             return foodPickupPoint;
         }
 
-        // 食物沒指定時也以婚禮中心作為保底測試點。
-        if (danceCenter != null)
+        // 舊場景保留舞圈保底；新版警察場景必須等到真正食物解析完成，
+        // 否則綠色標記會在載入第一幀短暫跳到火堆中央。
+        if (danceCenter != null && !IsNewPoliceScene())
         {
             return danceCenter;
         }
@@ -6834,6 +6835,8 @@ public class Chapter1PerformanceController : MonoBehaviour
             SnapLooseWeddingPropToGround(looseGroundProps[i], 0.018f);
         }
         PlaceFoodOnWeddingPlates(food);
+        guidedFoodPickupSource = food;
+        nextPickupLocationRefreshTime = 0f;
         Debug.Log(
             "[Chapter1 Pickup Grounding] Fish was placed on the stone plates; wine and loose props were aligned to ground.");
     }
@@ -6940,7 +6943,9 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform[] sceneTransforms = Resources.FindObjectsOfTypeAll<Transform>();
-        float highestNearbyPlateTop = float.NegativeInfinity;
+        Transform nearestPlate = null;
+        Bounds nearestPlateBounds = new Bounds();
+        float nearestPlateDistance = float.PositiveInfinity;
         const float maximumPlateDistance = 12f;
         for (int i = 0; i < sceneTransforms.Length; i++)
         {
@@ -6963,33 +6968,60 @@ public class Chapter1PerformanceController : MonoBehaviour
             Vector3 platePosition = candidate.position;
             foodPosition.y = 0f;
             platePosition.y = 0f;
-            if ((platePosition - foodPosition).sqrMagnitude
-                > maximumPlateDistance * maximumPlateDistance
+            float plateDistance = (platePosition - foodPosition).sqrMagnitude;
+            if (plateDistance > maximumPlateDistance * maximumPlateDistance
+                || plateDistance >= nearestPlateDistance
                 || !TryGetVisibleBounds(candidate, out Bounds plateBounds))
             {
                 continue;
             }
 
-            highestNearbyPlateTop = Mathf.Max(
-                highestNearbyPlateTop,
-                plateBounds.max.y);
+            nearestPlate = candidate;
+            nearestPlateBounds = plateBounds;
+            nearestPlateDistance = plateDistance;
         }
 
-        if (float.IsNegativeInfinity(highestNearbyPlateTop))
+        if (nearestPlate == null)
         {
             Debug.LogWarning("[Chapter1 Pickup Grounding] No nearby stone plate was found for the fish.");
             return;
         }
 
+        float plateDiameter = Mathf.Max(
+            nearestPlateBounds.size.x,
+            nearestPlateBounds.size.z);
+        float foodLength = Mathf.Max(foodBounds.size.x, foodBounds.size.z);
+        float targetFoodLength = plateDiameter * 0.82f;
+        if (foodLength > 0.0001f && targetFoodLength > 0.0001f)
+        {
+            float fitScale = Mathf.Min(1f, targetFoodLength / foodLength);
+            if (fitScale < 0.999f)
+            {
+                food.localScale *= fitScale;
+                Physics.SyncTransforms();
+                if (!TryGetVisibleBounds(food, out foodBounds))
+                {
+                    return;
+                }
+            }
+        }
+
         Vector3 position = food.position;
-        position.y += highestNearbyPlateTop + 0.025f - foodBounds.min.y;
+        position.x += nearestPlateBounds.center.x - foodBounds.center.x;
+        position.z += nearestPlateBounds.center.z - foodBounds.center.z;
+        position.y += nearestPlateBounds.max.y + 0.025f - foodBounds.min.y;
         food.position = position;
         Physics.SyncTransforms();
         if (TryGetVisibleBounds(food, out Bounds placedBounds))
         {
             Debug.Log(
                 "[Chapter1 Pickup Grounding] Fish bottom/plate-top delta="
-                + (placedBounds.min.y - highestNearbyPlateTop).ToString("0.000"));
+                + (placedBounds.min.y - nearestPlateBounds.max.y).ToString("0.000")
+                + ", center offset="
+                + Vector2.Distance(
+                    new Vector2(placedBounds.center.x, placedBounds.center.z),
+                    new Vector2(nearestPlateBounds.center.x, nearestPlateBounds.center.z))
+                    .ToString("0.000"));
         }
     }
 
