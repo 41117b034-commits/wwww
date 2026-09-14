@@ -296,6 +296,13 @@ public class Chapter1PerformanceController : MonoBehaviour
     [Range(0.35f, 0.9f)]
     public float dancePlayerHandsScaleMultiplier = 0.58f;
 
+    [Header("Player View During Dance")]
+    [Tooltip("玩家加入舞圈時只暫時抬高視角，讓相鄰舞者的手移出畫面。")]
+    public bool raisePlayerViewDuringDance = true;
+
+    [Tooltip("只套用在舞蹈期間的 Camera Offset 高度；舞蹈結束或跳過時會還原。")]
+    public float dancePlayerViewHeightOffset = 1.65f;
+
     [Header("Receiver Thank You Motion")]
     [Tooltip("NPC 收到酒或食物後，自動做感謝動作。")]
     public bool playReceiverThankYouMotion = true;
@@ -862,6 +869,9 @@ public class Chapter1PerformanceController : MonoBehaviour
     private Transform scaledDanceHandsRoot;
     private Vector3 originalDanceHandsLocalScale;
     private bool danceHandsScaleApplied;
+    private Transform raisedDanceViewOffset;
+    private Vector3 originalDanceViewOffsetLocalPosition;
+    private bool danceViewHeightApplied;
     // Cached once per incident so camera visibility checks stay inexpensive.
     private Renderer[] incidentOcclusionRenderers;
     private readonly List<Renderer> incidentShotHiddenRenderers =
@@ -1007,7 +1017,17 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (debugStartDanceWithJ && Input.GetKeyDown(KeyCode.J))
         {
             Debug.Log("[Chapter1] Debug J key pressed.");
+#if UNITY_EDITOR
+            bool originalRequireWineBeforeDance = requireWineBeforeDance;
+            bool originalRequireWeddingTasks = requireWineAndFoodBeforeDance;
+            requireWineBeforeDance = false;
+            requireWineAndFoodBeforeDance = false;
             JoinDance(null, playerRoot);
+            requireWineBeforeDance = originalRequireWineBeforeDance;
+            requireWineAndFoodBeforeDance = originalRequireWeddingTasks;
+#else
+            JoinDance(null, playerRoot);
+#endif
         }
 
         if (skipToIncidentKey != KeyCode.None
@@ -1411,6 +1431,7 @@ public class Chapter1PerformanceController : MonoBehaviour
     {
         knockoutDizzyVisible = false;
         RestoreDancePlayerHandsScale();
+        RestoreDancePlayerViewHeight();
         RestoreIncidentShotOccluders();
         RestoreWitnessCameraFieldOfView();
     }
@@ -6783,6 +6804,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         if (food != null)
         {
             RestoreOriginalPoliceSceneFoodTransform(food);
+            FlattenFoodPickup(food);
         }
 
         Transform wine = ResolvePhysicalPickupPoint(true);
@@ -6794,20 +6816,26 @@ public class Chapter1PerformanceController : MonoBehaviour
         List<Transform> looseGroundProps = FindLooseWeddingGroundProps();
         for (int i = 0; i < looseGroundProps.Count; i++)
         {
-            SnapPickupPropToGround(looseGroundProps[i], 0.018f);
+            SnapLooseWeddingPropToGround(looseGroundProps[i], 0.018f);
         }
+        PlaceFoodOnWeddingPlates(food);
 
         Physics.SyncTransforms();
         yield return null;
 
-        RestoreOriginalPoliceSceneFoodTransform(food);
+        if (food != null)
+        {
+            RestoreOriginalPoliceSceneFoodTransform(food);
+            FlattenFoodPickup(food);
+        }
         SnapPickupPropToGround(wine, 0.02f);
         for (int i = 0; i < looseGroundProps.Count; i++)
         {
-            SnapPickupPropToGround(looseGroundProps[i], 0.018f);
+            SnapLooseWeddingPropToGround(looseGroundProps[i], 0.018f);
         }
+        PlaceFoodOnWeddingPlates(food);
         Debug.Log(
-            "[Chapter1 Pickup Grounding] Food, wine and loose jars were aligned to the visible ground.");
+            "[Chapter1 Pickup Grounding] Fish was placed on the stone plates; wine and loose props were aligned to ground.");
     }
 
     private static void RestoreOriginalPoliceSceneFoodTransform(Transform food)
@@ -6817,10 +6845,9 @@ public class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        // Exact transform from the earliest backup of 第一章新版警察.unity.
-        // Restoring all axes also keeps both plates contained in the FBX on the
-        // road instead of letting a later bounds probe lift the whole model.
-        food.position = new Vector3(3696.6064f, -5816.806f, -133.91905f);
+        // Authored transform in 第一章新版警察.unity. The fish model contains the
+        // pair arranged for the two nearby stone plates, so preserve X/Z and yaw.
+        food.position = new Vector3(3676.19f, -5814f, -133.47f);
         food.rotation = new Quaternion(
             -0.58882827f,
             0.3915115f,
@@ -6860,8 +6887,119 @@ public class Chapter1PerformanceController : MonoBehaviour
         return result;
     }
 
+    private void SnapLooseWeddingPropToGround(Transform prop, float clearance)
+    {
+        if (prop == null)
+        {
+            return;
+        }
+
+        string objectName = prop.name.ToLowerInvariant();
+        bool isWineJar = objectName.Contains("酒甕")
+            || objectName.Contains("酒缸")
+            || objectName.Contains("酒桶")
+            || objectName.Contains("wine jar")
+            || objectName.Contains("barrel");
+        bool isGroundPlate = objectName.Contains("盤子")
+            || objectName.Contains("stone plate")
+            || objectName.Contains("plate");
+
+        if ((!isWineJar && !isGroundPlate)
+            || !TryGetVisibleBounds(prop, out Bounds bounds))
+        {
+            SnapPickupPropToGround(prop, clearance);
+            return;
+        }
+
+        // A physics probe can hit fish, nearby props, or a stilt-house floor and
+        // lift these loose props. They belong on terrain, so use visible bounds.
+        if (!TryGetTerrainGroundY(bounds.center, out float terrainGroundY))
+        {
+            SnapPickupPropToGround(prop, clearance);
+            return;
+        }
+
+        Vector3 position = prop.position;
+        position.y += terrainGroundY + Mathf.Max(0f, clearance) - bounds.min.y;
+        prop.position = position;
+        Physics.SyncTransforms();
+        if (TryGetVisibleBounds(prop, out Bounds groundedBounds))
+        {
+            Debug.Log(
+                "[Chapter1 Pickup Grounding] " + prop.name
+                + " bottom/terrain delta="
+                + (groundedBounds.min.y - terrainGroundY).ToString("0.000"));
+        }
+    }
+
+    private void PlaceFoodOnWeddingPlates(Transform food)
+    {
+        if (food == null || !TryGetVisibleBounds(food, out Bounds foodBounds))
+        {
+            return;
+        }
+
+        Transform[] sceneTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+        float highestNearbyPlateTop = float.NegativeInfinity;
+        const float maximumPlateDistance = 12f;
+        for (int i = 0; i < sceneTransforms.Length; i++)
+        {
+            Transform candidate = sceneTransforms[i];
+            if (!IsValidScenePickupTransform(candidate)
+                || candidate.GetComponentInParent<Animator>() != null)
+            {
+                continue;
+            }
+
+            string objectName = candidate.name.ToLowerInvariant();
+            if (!objectName.Contains("盤子")
+                && !objectName.Contains("stone plate")
+                && !objectName.Contains("plate"))
+            {
+                continue;
+            }
+
+            Vector3 foodPosition = food.position;
+            Vector3 platePosition = candidate.position;
+            foodPosition.y = 0f;
+            platePosition.y = 0f;
+            if ((platePosition - foodPosition).sqrMagnitude
+                > maximumPlateDistance * maximumPlateDistance
+                || !TryGetVisibleBounds(candidate, out Bounds plateBounds))
+            {
+                continue;
+            }
+
+            highestNearbyPlateTop = Mathf.Max(
+                highestNearbyPlateTop,
+                plateBounds.max.y);
+        }
+
+        if (float.IsNegativeInfinity(highestNearbyPlateTop))
+        {
+            Debug.LogWarning("[Chapter1 Pickup Grounding] No nearby stone plate was found for the fish.");
+            return;
+        }
+
+        Vector3 position = food.position;
+        position.y += highestNearbyPlateTop + 0.025f - foodBounds.min.y;
+        food.position = position;
+        Physics.SyncTransforms();
+        if (TryGetVisibleBounds(food, out Bounds placedBounds))
+        {
+            Debug.Log(
+                "[Chapter1 Pickup Grounding] Fish bottom/plate-top delta="
+                + (placedBounds.min.y - highestNearbyPlateTop).ToString("0.000"));
+        }
+    }
+
     private void FlattenFoodPickup(Transform food)
     {
+        if (food == null)
+        {
+            return;
+        }
+
         MeshFilter[] filters = food.GetComponentsInChildren<MeshFilter>(true);
         MeshFilter reference = null;
         float largestVolume = 0f;
@@ -7239,6 +7377,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         danceRoutineRunning = true;
         SetPlayerControl(false);
         ApplyDancePlayerHandsScale();
+        ApplyDancePlayerViewHeight();
         SetMission("加入舞蹈：跟著鼓聲踏步，感受婚禮短暫的安寧。");
         ShowLine("族人", "來，跟著鼓聲一起踏步。今晚讓祖靈聽見我們的歌。", 3f);
         SetWeddingPlayerSlotActive(true);
@@ -7273,6 +7412,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         SetWeddingPlayerSlotActive(false, center);
         RestoreDancePlayerHandsScale();
+        RestoreDancePlayerViewHeight();
         danceRoutineRunning = false;
         SetPlayerControl(true);
         UpdateWeddingQuestMission();
@@ -7390,6 +7530,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         // The skip is a clean story transition. Stop any delivery/dance coroutine
         // before changing the quest state so it cannot move an actor afterwards.
         RestoreDancePlayerHandsScale();
+        RestoreDancePlayerViewHeight();
         StopAllCoroutines();
         physicalDeliveryAnimating = false;
         physicalDeliveryInputConsumed = true;
@@ -7465,6 +7606,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         policeStartQueued = false;
         RestoreDancePlayerHandsScale();
+        RestoreDancePlayerViewHeight();
         SetWeddingCrowdDancing(false);
         // Dancers stop changing their horizontal slots here, but every bystander
         // must keep feet-ground correction during the whole police sequence.
@@ -8322,6 +8464,55 @@ public class Chapter1PerformanceController : MonoBehaviour
 
         scaledDanceHandsRoot = null;
         danceHandsScaleApplied = false;
+    }
+
+    private void ApplyDancePlayerViewHeight()
+    {
+        if (!raisePlayerViewDuringDance || danceViewHeightApplied)
+        {
+            return;
+        }
+
+        Transform root = GetDancePlayerRoot();
+        Transform view = GetPlayerViewTransform();
+        if (root == null || view == null)
+        {
+            return;
+        }
+
+        Transform offset = view;
+        while (offset.parent != null && offset.parent != root)
+        {
+            offset = offset.parent;
+        }
+
+        if (offset.parent != root)
+        {
+            return;
+        }
+
+        raisedDanceViewOffset = offset;
+        originalDanceViewOffsetLocalPosition = offset.localPosition;
+        Vector3 raisedPosition = originalDanceViewOffsetLocalPosition;
+        raisedPosition.y += Mathf.Max(0f, dancePlayerViewHeightOffset);
+        offset.localPosition = raisedPosition;
+        danceViewHeightApplied = true;
+    }
+
+    private void RestoreDancePlayerViewHeight()
+    {
+        if (!danceViewHeightApplied)
+        {
+            return;
+        }
+
+        if (raisedDanceViewOffset != null)
+        {
+            raisedDanceViewOffset.localPosition = originalDanceViewOffsetLocalPosition;
+        }
+
+        raisedDanceViewOffset = null;
+        danceViewHeightApplied = false;
     }
 
     private void SnapWeddingActorFacing(
