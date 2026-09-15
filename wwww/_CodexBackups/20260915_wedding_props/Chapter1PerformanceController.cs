@@ -443,9 +443,6 @@ public class Chapter1PerformanceController : MonoBehaviour
     public float physicalGiveSeconds = 0.45f;
     public Transform winePickupPoint;
     public Transform foodPickupPoint;
-    [Tooltip("Use the prop positions saved in this scene instead of the legacy startup placement.")]
-    public bool preserveAuthoredWeddingPropPlacement;
-    private bool weddingPickupPropsReady;
     public Transform carryHoldPoint;
     public GameObject foodCarryTemplate;
     public string foodPickupObjectName = "烤魚";
@@ -2403,13 +2400,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         return candidate != null
             && candidate.gameObject != null
             && candidate.gameObject.scene.IsValid()
-            && candidate.gameObject.activeInHierarchy
-            // Runtime guidance and carried visuals must never become pickup sources.
-            && candidate != transform
-            && !candidate.IsChildOf(transform)
-            && (physicalCarriedProp == null
-                || (candidate != physicalCarriedProp.transform
-                    && !candidate.IsChildOf(physicalCarriedProp.transform)));
+            && candidate.gameObject.activeInHierarchy;
     }
 
     private Transform FindBestScenePickupByKeywords(params string[] keywords)
@@ -2977,7 +2968,7 @@ public class Chapter1PerformanceController : MonoBehaviour
 
     private bool ShouldShowPickupLocationGuidance()
     {
-        return showPickupLocationGuidance && IsNewPoliceScene() && weddingPickupPropsReady;
+        return showPickupLocationGuidance && IsNewPoliceScene();
     }
 
     private void UpdatePickupLocationGuidance()
@@ -6807,15 +6798,6 @@ public class Chapter1PerformanceController : MonoBehaviour
             yield break;
         }
 
-        if (preserveAuthoredWeddingPropPlacement)
-        {
-            guidedFoodPickupSource = ResolvePhysicalPickupPoint(false);
-            guidedWinePickupSource = ResolvePhysicalPickupPoint(true);
-            weddingPickupPropsReady = true;
-            nextPickupLocationRefreshTime = 0f;
-            yield break;
-        }
-
         yield return null;
         yield return new WaitForEndOfFrame();
 
@@ -6854,7 +6836,6 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
         PlaceFoodOnWeddingPlates(food);
         guidedFoodPickupSource = food;
-        weddingPickupPropsReady = true;
         nextPickupLocationRefreshTime = 0f;
         Debug.Log(
             "[Chapter1 Pickup Grounding] Fish was placed on the stone plates; wine and loose props were aligned to ground.");
@@ -6892,8 +6873,7 @@ public class Chapter1PerformanceController : MonoBehaviour
             }
 
             string objectName = candidate.name.ToLowerInvariant();
-            bool isLooseGroundProp = objectName.Contains("酒瓶")
-                || objectName.Contains("酒甕")
+            bool isLooseGroundProp = objectName.Contains("酒甕")
                 || objectName.Contains("酒缸")
                 || objectName.Contains("酒桶")
                 || objectName.Contains("wine jar")
@@ -6918,8 +6898,7 @@ public class Chapter1PerformanceController : MonoBehaviour
         }
 
         string objectName = prop.name.ToLowerInvariant();
-        bool isWineJar = objectName.Contains("酒瓶")
-                || objectName.Contains("酒甕")
+        bool isWineJar = objectName.Contains("酒甕")
             || objectName.Contains("酒缸")
             || objectName.Contains("酒桶")
             || objectName.Contains("wine jar")
