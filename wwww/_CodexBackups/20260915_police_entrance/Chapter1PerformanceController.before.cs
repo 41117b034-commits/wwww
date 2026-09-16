@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.XR;
 
-public partial class Chapter1PerformanceController : MonoBehaviour
+public class Chapter1PerformanceController : MonoBehaviour
 {
     public bool IsPoliceSequenceStarted => policeSequenceStarted;
 
@@ -1433,8 +1433,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     private void OnDisable()
     {
         knockoutDizzyVisible = false;
-        ReleaseIncidentCameraLock();
-        ReleaseEndingCameraLock();
         RestoreDancePlayerHandsScale();
         RestoreDancePlayerViewHeight();
         RestoreIncidentShotOccluders();
@@ -7659,7 +7657,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        CancelOpeningForPoliceIncident();
         policeStartQueued = false;
         RestoreDancePlayerHandsScale();
         RestoreDancePlayerViewHeight();
@@ -9986,43 +9983,35 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             StartTensionAudioAndStopDrums();
         }
 
-        if (IsNewPoliceScene())
+        ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
+        yield return MovePlayerToWitnessPoint();
+        CapturePoliceWitnessViewPose();
+        yield return new WaitForSeconds(0.35f);
+
+        if (animatePoliceEntranceWithoutTimeline)
         {
-            yield return StableWeddingPoliceEntrance();
+            yield return AnimatePoliceEntranceFallback();
+        }
+        else if (policeEnterTimeline != null)
+        {
+            PlayDirector(policeEnterTimeline);
+            yield return WaitForDirector(policeEnterTimeline, 8f);
         }
         else
         {
-            ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
-            yield return MovePlayerToWitnessPoint();
-            CapturePoliceWitnessViewPose();
-            yield return new WaitForSeconds(0.35f);
-    
-            if (animatePoliceEntranceWithoutTimeline)
-            {
-                yield return AnimatePoliceEntranceFallback();
-            }
-            else if (policeEnterTimeline != null)
-            {
-                PlayDirector(policeEnterTimeline);
-                yield return WaitForDirector(policeEnterTimeline, 8f);
-            }
-            else
-            {
-                yield return new WaitForSeconds(3f);
-            }
-    
-            // 天空俯視慢慢壓低後，切到第一名日警正面近景說第一句台詞。
-            yield return CinematicPoliceFrontRevealAndFirstLine();
-    
-            yield return PlayCinematicSpeakerLine(
-                groomActor,
-                "新郎",
-                "我們只是辦婚禮，沒有冒犯。",
-                groomReplyVoice,
-                3.2f,
-                groomReplyVolumeScale);
-    
+            yield return new WaitForSeconds(3f);
         }
+
+        // 天空俯視慢慢壓低後，切到第一名日警正面近景說第一句台詞。
+        yield return CinematicPoliceFrontRevealAndFirstLine();
+
+        yield return PlayCinematicSpeakerLine(
+            groomActor,
+            "新郎",
+            "我們只是辦婚禮，沒有冒犯。",
+            groomReplyVoice,
+            3.2f,
+            groomReplyVolumeScale);
 
         if (useFallbackIncidentAnimation)
         {
@@ -10577,10 +10566,10 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     {
         if (TryGetStableActorVerticalSpan(actor, out float minimumY, out float maximumY))
         {
-            return Mathf.Clamp(maximumY - minimumY, 1f, 30f);
+            return Mathf.Clamp(maximumY - minimumY, 1f, 4f);
         }
 
-        return Mathf.Clamp(GetLargestAbsoluteScale(actor) * 0.88f, 1.4f, 30f);
+        return Mathf.Clamp(GetLargestAbsoluteScale(actor) * 0.88f, 1.4f, 3.2f);
     }
 
     private float GetIncidentPersonalSpace(
@@ -16888,24 +16877,6 @@ public sealed class Chapter1CinematicCameraPoseLock : MonoBehaviour
     private void LateUpdate()
     {
         ApplyPose();
-    }
-
-    private void OnEnable()
-    {
-        UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering += BeforeCameraRendering;
-        Application.onBeforeRender += ApplyPose;
-    }
-
-    private void OnDisable()
-    {
-        UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering -= BeforeCameraRendering;
-        Application.onBeforeRender -= ApplyPose;
-    }
-
-    private void BeforeCameraRendering(UnityEngine.Rendering.ScriptableRenderContext context, Camera camera)
-    {
-        if (camera != null && camera.transform == (targetView != null ? targetView : transform))
-            ApplyPose();
     }
 
     private void OnPreCull()

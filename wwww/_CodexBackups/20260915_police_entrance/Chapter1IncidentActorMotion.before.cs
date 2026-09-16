@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -240,8 +240,7 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     {
         None,
         Harass,
-        BatonStrike,
-        BatonPoint
+        BatonStrike
     }
 
     public Animator animator;
@@ -262,13 +261,6 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     private GameObject baton;
     private MotionMode mode;
     private float strikeProgress;
-    private float pointProgress;
-    private Vector3 pointDirection;
-    private Transform[] pointPoseBones;
-    private Vector3[] pointPosePositions;
-    private Quaternion[] pointPoseRotations;
-    private float pointAnimatorSpeed;
-    private bool pointAnimatorWasEnabled;
     private float actorHeight = 1.7f;
     private Vector3 smoothedGripPoint;
     private bool hasSmoothedGripPoint;
@@ -283,28 +275,6 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
         hasSmoothedGripPoint = false;
         mode = MotionMode.Harass;
         enabled = true;
-    }
-
-    public void BeginBatonPoint(Animator sourceAnimator, Transform pointTarget)
-    {
-        animator = sourceAnimator;
-        target = pointTarget;
-        CacheRig();
-        EnsureBaton();
-        SetBatonVisible(true);
-        pointProgress = 0f;
-        pointDirection = Vector3.ProjectOnPlane(
-            target != null ? target.position - transform.position : transform.forward,
-            Vector3.up).normalized;
-        if (pointDirection.sqrMagnitude < 0.01f) pointDirection = transform.forward;
-        mode = MotionMode.BatonPoint;
-        PreparePointStandingPose();
-        enabled = true;
-    }
-
-    public void SetBatonPointProgress(float progress)
-    {
-        pointProgress = Mathf.Clamp01(progress);
     }
 
     public void BeginBatonStrike(Animator sourceAnimator, Transform strikeTarget)
@@ -326,16 +296,6 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
 
     public void StopMotion(bool hideBaton)
     {
-        if (mode == MotionMode.BatonPoint)
-        {
-            RestorePointStandingPose();
-            if (animator != null)
-            {
-                animator.enabled = pointAnimatorWasEnabled;
-                animator.speed = pointAnimatorSpeed;
-            }
-            pointPoseBones = null;
-        }
         mode = MotionMode.None;
         targetGripBone = null;
         targetGripLowerBone = null;
@@ -355,21 +315,6 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
     {
         if (mode == MotionMode.None || animator == null || rightUpperArm == null)
         {
-            return;
-        }
-
-        if (mode == MotionMode.BatonPoint)
-        {
-            RestorePointStandingPose();
-            float reach = Vector3.Distance(rightUpperArm.position, rightForearm.position)
-                + Vector3.Distance(rightForearm.position, rightHand.position);
-            Vector3 lowered = rightUpperArm.position - Vector3.up * reach * 0.78f
-                + transform.forward * reach * 0.16f;
-            Vector3 extended = rightUpperArm.position + pointDirection * reach * 0.91f
-                - Vector3.up * reach * 0.09f;
-            AimArmWithTwoBoneIk(Vector3.Lerp(lowered, extended,
-                Mathf.SmoothStep(0f, 1f, pointProgress)));
-            UpdateBatonPose();
             return;
         }
 
@@ -411,72 +356,6 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
 
         // Never detach the rendered hand from the arm to fake a distant grip.
         rightHand.position = reachableGrip;
-    }
-
-    private void PreparePointStandingPose()
-    {
-        if (animator == null || !animator.isHuman) return;
-        pointAnimatorSpeed = animator.speed;
-        pointAnimatorWasEnabled = animator.enabled;
-        animator.speed = 0f;
-        animator.enabled = false;
-        CloseBatonGrip();
-        // The supplied police controller has no Idle state. Straighten the legs
-        // into a planted stance instead of freezing in the middle of a walk step.
-        HumanBodyBones[] upper = { HumanBodyBones.LeftUpperLeg, HumanBodyBones.RightUpperLeg };
-        HumanBodyBones[] lower = { HumanBodyBones.LeftLowerLeg, HumanBodyBones.RightLowerLeg };
-        HumanBodyBones[] feet = { HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot };
-        for (int i = 0; i < 2; i++)
-        {
-            Transform thigh = animator.GetBoneTransform(upper[i]);
-            Transform calf = animator.GetBoneTransform(lower[i]);
-            Transform foot = animator.GetBoneTransform(feet[i]);
-            if (thigh == null || calf == null || foot == null) continue;
-            Quaternion footRotation = foot.rotation;
-            AimBoneAt(thigh, calf, thigh.position + Vector3.down * actorHeight, 1f);
-            AimBoneAt(calf, foot, calf.position + Vector3.down * actorHeight, 1f);
-            foot.rotation = footRotation;
-        }
-        pointPoseBones = animator.GetComponentsInChildren<Transform>(true);
-        pointPosePositions = new Vector3[pointPoseBones.Length];
-        pointPoseRotations = new Quaternion[pointPoseBones.Length];
-        for (int i = 0; i < pointPoseBones.Length; i++)
-        {
-            pointPosePositions[i] = pointPoseBones[i].localPosition;
-            pointPoseRotations[i] = pointPoseBones[i].localRotation;
-        }
-    }
-
-    private void RestorePointStandingPose()
-    {
-        if (pointPoseBones == null) return;
-        for (int i = 0; i < pointPoseBones.Length; i++)
-            if (pointPoseBones[i] != null && pointPoseBones[i] != animator.transform)
-                pointPoseBones[i].SetLocalPositionAndRotation(pointPosePositions[i], pointPoseRotations[i]);
-    }
-
-    private void CloseBatonGrip()
-    {
-        var handler = new HumanPoseHandler(animator.avatar, animator.transform);
-        try
-        {
-            HumanPose gripPose = new HumanPose();
-            handler.GetHumanPose(ref gripPose);
-            string[] names = HumanTrait.MuscleName;
-            for (int i = 0; i < names.Length; i++)
-            {
-                string name = names[i];
-                bool finger = name.Contains("Thumb") || name.Contains("Index")
-                    || name.Contains("Middle") || name.Contains("Ring") || name.Contains("Little");
-                if (name.StartsWith("Right") && finger && name.Contains("Stretched"))
-                    gripPose.muscles[i] = name.Contains("Thumb") ? -0.45f : -0.8f;
-            }
-            Vector3 pelvisPosition = hips.localPosition;
-            Quaternion pelvisRotation = hips.localRotation;
-            handler.SetHumanPose(ref gripPose);
-            hips.SetLocalPositionAndRotation(pelvisPosition, pelvisRotation);
-        }
-        finally { handler.Dispose(); }
     }
 
     private Vector3 GetAimPoint()
@@ -811,20 +690,9 @@ public sealed class Chapter1PoliceIncidentMotion : MonoBehaviour
             direction = transform.forward;
         }
         direction.Normalize();
-        if (mode == MotionMode.BatonPoint)
-        {
-            direction = Vector3.Slerp(-transform.up, pointDirection,
-                Mathf.SmoothStep(0f, 1f, pointProgress)).normalized;
-        }
 
         float length = actorHeight * 0.34f;
-        Vector3 grip = rightHand.position;
-        if (mode == MotionMode.BatonPoint && animator != null && animator.isHuman)
-        {
-            Transform index = animator.GetBoneTransform(HumanBodyBones.RightIndexProximal);
-            if (index != null) grip = Vector3.Lerp(grip, index.position, 0.65f);
-        }
-        baton.transform.position = grip + direction * (length * 0.42f);
+        baton.transform.position = rightHand.position + direction * (length * 0.42f);
         baton.transform.rotation = Quaternion.FromToRotation(Vector3.up, direction);
     }
 

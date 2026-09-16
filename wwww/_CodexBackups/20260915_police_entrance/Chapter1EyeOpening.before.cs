@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -173,17 +173,6 @@ public class Chapter1EyeOpening : MonoBehaviour
     private readonly List<Quaternion> rightFingerOpenRotations = new List<Quaternion>();
     private bool fingerPoseCached;
     private bool fingerFlexRunning;
-
-    // P can interrupt the opening while its nested eye/hand coroutine is running.
-    public void FinishForPoliceIncident()
-    {
-        StopAllCoroutines();
-        sequenceRunning = false;
-        fingerFlexRunning = false;
-        if (eyeOpenEffect != null) eyeOpenEffect.FinishOpenAndHide();
-        if (introHandsRoot != null) introHandsRoot.SetActive(false);
-        enabled = false;
-    }
 
     private IEnumerator Start()
     {

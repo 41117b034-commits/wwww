@@ -17,7 +17,6 @@ public sealed class Chapter1PoliceRunAnimator : MonoBehaviour
     private HumanPose pose;
     private float[] baseMuscles;
     private Transform spine;
-    private Transform hips;
     private bool running;
     private bool poseApplied;
     private float runStartedAt;
@@ -95,11 +94,6 @@ public sealed class Chapter1PoliceRunAnimator : MonoBehaviour
             return;
         }
 
-        // Restore every muscle before adding this frame's gait. Otherwise the
-        // previous frame's procedural spine lean is fed back through GetHumanPose
-        // and accumulates until the character bends over while walking.
-        Array.Copy(baseMuscles, pose.muscles, baseMuscles.Length);
-
         float phase = (Time.time - runStartedAt) * cadence * Mathf.PI * 2f + phaseOffset;
         float stride = Mathf.Sin(phase);
         float leftKneeLift = Mathf.Max(0f, -stride);
@@ -116,7 +110,7 @@ public sealed class Chapter1PoliceRunAnimator : MonoBehaviour
         SetMuscle(rightForearm, -(elbowBend + leftKneeLift * 0.12f) * blend);
         SetMuscle(chestTwist, stride * 0.1f * blend);
 
-        ApplyMusclesKeepingRoot();
+        poseHandler.SetHumanPose(ref pose);
 
         if (spine != null && Mathf.Abs(torsoLeanDegrees) > 0.01f)
         {
@@ -148,7 +142,6 @@ public sealed class Chapter1PoliceRunAnimator : MonoBehaviour
 
         poseHandler = new HumanPoseHandler(animator.avatar, animator.transform);
         spine = animator.GetBoneTransform(HumanBodyBones.Spine);
-        hips = animator.GetBoneTransform(HumanBodyBones.Hips);
         leftUpperLeg = FindMuscle("Left Upper Leg Front-Back");
         rightUpperLeg = FindMuscle("Right Upper Leg Front-Back");
         leftLowerLeg = FindMuscle("Left Lower Leg Stretch");
@@ -188,21 +181,10 @@ public sealed class Chapter1PoliceRunAnimator : MonoBehaviour
         if (pose.muscles != null && pose.muscles.Length == baseMuscles.Length)
         {
             Array.Copy(baseMuscles, pose.muscles, baseMuscles.Length);
-            ApplyMusclesKeepingRoot();
+            poseHandler.SetHumanPose(ref pose);
         }
 
         poseApplied = false;
-    }
-
-    private void ApplyMusclesKeepingRoot()
-    {
-        // HumanPose bodyPosition is normalized by avatar scale. Round-tripping it
-        // under this scene's scaled/rotated prefab parents displaces the whole rig.
-        // The fallback only animates muscles; preserve the authored pelvis pose.
-        Vector3 localPosition = hips != null ? hips.localPosition : Vector3.zero;
-        Quaternion localRotation = hips != null ? hips.localRotation : Quaternion.identity;
-        poseHandler.SetHumanPose(ref pose);
-        if (hips != null) hips.SetLocalPositionAndRotation(localPosition, localRotation);
     }
 
     private static int FindMuscle(string muscleName)
