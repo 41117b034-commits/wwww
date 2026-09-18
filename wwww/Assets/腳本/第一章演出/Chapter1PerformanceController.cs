@@ -1299,6 +1299,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void OnGUI()
     {
+        if (doorwayStaged) { DrawDoorwayHud(); return; }
         if (!showFallbackHud)
         {
             DrawKnockoutDizzyEffect();
@@ -1432,6 +1433,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (doorwayVignette != null) { Destroy(doorwayVignette); doorwayVignette = null; }
         knockoutDizzyVisible = false;
         ReleaseIncidentCameraLock();
         ReleaseEndingCameraLock();
@@ -10046,6 +10048,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield return new WaitForSeconds(3.2f);
         }
 
+        if (IsNewPoliceScene())
+        {
+            yield return DoorwayIncidentRoutine();
+            yield break;
+        }
+
         Transform harassingPolice = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
         if (femaleVillagerActor != null && harassingPolice != null)
         {
@@ -12664,7 +12672,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     public void ResolveChoice(ConflictChoice choice)
     {
-        if (choiceResolved)
+        if (choiceResolved || !waitingForChoice)
         {
             return;
         }
@@ -12697,6 +12705,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         if (heartbeatAudio != null)
         {
             heartbeatAudio.Stop();
+        }
+
+        if (IsNewPoliceScene() && doorwayStaged)
+        {
+            yield return ResolveDoorwayChoice(choice);
+            yield break;
         }
 
         if (choice == ConflictChoice.Intervene)

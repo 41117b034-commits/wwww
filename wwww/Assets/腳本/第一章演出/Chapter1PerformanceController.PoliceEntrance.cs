@@ -28,6 +28,9 @@ public partial class Chapter1PerformanceController
 
         SetActiveIncludingParents(first);
         SetActiveIncludingParents(second);
+        PreparePoliceProportions();
+        Chapter1IncidentRig firstRig = first.GetComponent<Chapter1IncidentRig>();
+        Chapter1IncidentRig secondRig = second.GetComponent<Chapter1IncidentRig>();
         PlayAnimatorStateIfAvailable(first, policeIdleStateName);
         PlayAnimatorStateIfAvailable(second, policeIdleStateName);
         Animator firstAnimator = first.GetComponentInChildren<Animator>(true);
@@ -91,15 +94,7 @@ public partial class Chapter1PerformanceController
         }
 
         ShowLine("旁白", "鼓聲突然停了下來。兩名日本警察走入會場，族人停下舞步，轉身望向來人。", 6.4f);
-        bool firstHasWalk = HasAnimatorState(first, policeWalkStateName);
-        bool secondHasWalk = HasAnimatorState(second, policeWalkStateName);
-        PlayPoliceWalkAnimation(first, 0f, policeFirstWalkAnimatorSpeed);
-        PlayPoliceWalkAnimation(second, policeSecondWalkAnimationPhase, policeSecondWalkAnimatorSpeed);
-        Chapter1PoliceRunAnimator firstWalk = firstHasWalk ? null : BeginPoliceWalkingFallback(first, 0f);
-        Chapter1PoliceRunAnimator secondWalk = secondHasWalk ? null : BeginPoliceWalkingFallback(second, 0.65f);
-        // This entrance is a deliberate upright walk, with no running lean.
-        if (firstWalk != null) firstWalk.torsoLeanDegrees = 0f;
-        if (secondWalk != null) secondWalk.torsoLeanDegrees = 0f;
+        firstRig.walking = secondRig.walking = true;
         float elapsed = 0f;
         const float walkSeconds = 5.8f;
         while (elapsed < walkSeconds + 0.35f)
@@ -109,10 +104,11 @@ public partial class Chapter1PerformanceController
                 Mathf.Clamp01(elapsed / walkSeconds)), firstOffset);
             SetEntranceGroundPosition(second, Vector3.Lerp(secondStart, secondEnd,
                 Mathf.Clamp01((elapsed - 0.35f) / walkSeconds)), secondOffset);
+            if(TryGetIncidentSurfaceY(first.position,out float firstFloor))firstRig.Ground(firstFloor);
+            if(TryGetIncidentSurfaceY(second.position,out float secondFloor))secondRig.Ground(secondFloor);
             yield return null;
         }
-        EndPoliceRiggedRun(firstWalk);
-        EndPoliceRiggedRun(secondWalk);
+        firstRig.walking = secondRig.walking = false;
         ResetPoliceAnimatorSpeed(first);
         ResetPoliceAnimatorSpeed(second);
         PlayAnimatorStateIfAvailable(first, policeIdleStateName);
@@ -138,31 +134,25 @@ public partial class Chapter1PerformanceController
             yield return null;
         }
 
-        Chapter1PoliceIncidentMotion firstPoint = first.GetComponent<Chapter1PoliceIncidentMotion>();
-        if (firstPoint == null) firstPoint = first.gameObject.AddComponent<Chapter1PoliceIncidentMotion>();
-        Chapter1PoliceIncidentMotion secondPoint = second.GetComponent<Chapter1PoliceIncidentMotion>();
-        if (secondPoint == null) secondPoint = second.gameObject.AddComponent<Chapter1PoliceIncidentMotion>();
-        firstPoint.BeginBatonPoint(firstAnimator, firstTarget);
-        secondPoint.BeginBatonPoint(secondAnimator, secondTarget);
+        firstRig.pointTarget=firstTarget; secondRig.pointTarget=secondTarget;
+        firstRig.batonVisible=secondRig.batonVisible=true;
         ShowLine("旁白", "兩名警察抽出警棍，指向族人，喝令婚禮立刻停止。", 3.8f);
         elapsed = 0f;
         while (elapsed < 1.6f)
         {
             elapsed += Time.deltaTime;
-            firstPoint.SetBatonPointProgress(elapsed / 1.3f);
-            secondPoint.SetBatonPointProgress((elapsed - 0.2f) / 1.4f);
+            firstRig.pointProgress=Mathf.Clamp01(elapsed/1.3f);
+            secondRig.pointProgress=Mathf.Clamp01((elapsed-0.2f)/1.4f);
             yield return null;
         }
-        firstPoint.SetBatonPointProgress(1f);
-        secondPoint.SetBatonPointProgress(1f);
+        firstRig.pointProgress=secondRig.pointProgress=1f;
         ShowLine("日警", "停止！婚禮立刻停止！", 2.6f);
         yield return new WaitForSeconds(2.6f);
         yield return PlayPoliceVoicedLine("日警", "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
             policeInsultVoice, 4f);
         yield return PlayPoliceVoicedLine("新郎", "我們只是辦婚禮，沒有冒犯。",
             groomReplyVoice, 3.2f, groomReplyVolumeScale);
-        firstPoint.StopMotion(true);
-        secondPoint.StopMotion(true);
+        firstRig.pointTarget=secondRig.pointTarget=null;
         // Keep the same pose lock alive for the existing subsequent story shots.
     }
 
