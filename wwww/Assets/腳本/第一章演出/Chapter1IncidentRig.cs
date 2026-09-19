@@ -34,6 +34,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     GameObject baton;
     Material batonMaterial;
     public bool batonVisible;
+    public bool batonInLeftHand;
     public Transform gripPartner;
     public float pointProgress;
     public Transform pointTarget;
@@ -76,7 +77,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             lengthL=lengthR=(upperL+upperR+lowerL+lowerR)*0.5f;
         }
         float footY=Mathf.Min(leftFoot.position.y,rightFoot.position.y);
-        float desiredHip=footY+Mathf.Min(lengthL,lengthR)*0.997f;
+        float desiredHip=footY+Mathf.Min(lengthL,lengthR)*0.99f;
         hips.position+=Vector3.up*(desiredHip-(leftThigh.position.y+rightThigh.position.y)*0.5f);
         Vector3 l=leftThigh.position;l.y=footY;
         Vector3 r=rightThigh.position;r.y=footY;
@@ -126,7 +127,9 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         for(int i=0;i<bones.Length;i++)if(bones[i]!=null&&bones[i]!=transform)bones[i].SetLocalPositionAndRotation(positions[i],rotations[i]);
         float distance=Vector3.ProjectOnPlane(transform.position-previousPosition,Vector3.up).magnitude;
         previousPosition=transform.position;
-        if(walking&&!frozen)phase+=Mathf.Min(distance,Height*0.2f)/Mathf.Max(0.1f,Height*0.55f)*Mathf.PI*2f;
+        // During the 60% stance phase the foot travels exactly opposite to the
+        // actor's displacement. Match phase advance to the authored stride.
+        if(walking&&!frozen)phase+=Mathf.Min(distance,Height*0.2f)/Mathf.Max(0.1f,Height*0.23f*strideScale/0.6f)*Mathf.PI*2f;
         ApplyLeg(leftThigh,leftCalf,leftFoot,leftAnkle,leftFootRotation,phase);
         ApplyLeg(rightThigh,rightCalf,rightFoot,rightAnkle,rightFootRotation,phase+Mathf.PI);
         Vector3 right=Vector3.Cross(Vector3.up,Forward);
@@ -150,9 +153,12 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(gripPartner!=null)
         {
-            Vector3 grip=(transform.position+gripPartner.position)*0.5f+Vector3.up*Height*0.68f;
+            Vector3 grip=(transform.position+gripPartner.position)*0.5f+Vector3.up*Height*0.72f;
+            var partnerRig=gripPartner.GetComponent<Chapter1IncidentRig>();
+            if(partnerRig!=null && partnerRig.Head!=null)
+                grip.y=(head.position.y+partnerRig.Head.position.y)*0.5f-Mathf.Min(Height,partnerRig.Height)*0.20f;
             Transform arm=gripWithLeft?leftArm:rightArm, elbow=gripWithLeft?leftElbow:rightElbow, hand=gripWithLeft?leftHand:rightHand;
-            Solve(arm,elbow,hand,grip,-Forward+Vector3.down*0.5f);
+            Solve(arm,elbow,hand,grip,Vector3.down);
         }
         if(pointTarget!=null)
         {
@@ -161,11 +167,12 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(strike)
         {
-            Vector3 raised=rightArm.position+Vector3.up*Height*0.27f-Forward*Height*0.12f;
-            Vector3 hit=rightArm.position+Forward*Height*0.34f-Vector3.up*Height*0.06f;
-            Vector3 target=strikeProgress<0.42f?Vector3.Lerp(rightHand.position,raised,Mathf.SmoothStep(0,1,strikeProgress/0.42f)):
+            Transform arm=batonInLeftHand?leftArm:rightArm,elbow=batonInLeftHand?leftElbow:rightElbow,hand=batonInLeftHand?leftHand:rightHand;
+            Vector3 raised=arm.position+Vector3.up*Height*0.27f-Forward*Height*0.12f;
+            Vector3 hit=arm.position+Forward*Height*0.34f-Vector3.up*Height*0.06f;
+            Vector3 target=strikeProgress<0.42f?Vector3.Lerp(hand.position,raised,Mathf.SmoothStep(0,1,strikeProgress/0.42f)):
                 Vector3.Lerp(raised,hit,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f));
-            Solve(rightArm,rightElbow,rightHand,target,right+Vector3.up*0.3f);
+            Solve(arm,elbow,hand,target,(batonInLeftHand?-right:right)+Vector3.up*0.3f);
         }
         UpdateBaton();
     }
@@ -207,12 +214,14 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             batonMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit"));batonMaterial.color=new Color(0.095f,0.064f,0.039f);
             baton.GetComponent<Renderer>().sharedMaterial=batonMaterial;
             baton.transform.localScale=new Vector3(Height*0.018f,Height*0.17f,Height*0.018f);
+            baton.transform.SetParent(transform,true);
         }
         if(baton==null)return;
-        baton.SetActive(batonVisible);if(!batonVisible)return;
+        baton.SetActive(batonVisible);baton.GetComponent<Renderer>().enabled=batonVisible;if(!batonVisible)return;
         Vector3 direction=strike?Vector3.Slerp(Vector3.up,Forward,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f)):(Vector3.down+Forward*0.18f).normalized;
         if(pointTarget!=null)direction=Vector3.Slerp(Vector3.down,Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized,pointProgress);
-        baton.transform.SetPositionAndRotation(rightHand.position+direction*Height*0.14f,Quaternion.FromToRotation(Vector3.up,direction));
+        Transform batonHand=batonInLeftHand?leftHand:rightHand;
+        baton.transform.SetPositionAndRotation(batonHand.position+direction*Height*0.14f,Quaternion.FromToRotation(Vector3.up,direction));
     }
     void OnDestroy(){if(baton!=null)Destroy(baton);if(batonMaterial!=null)Destroy(batonMaterial);}
 }

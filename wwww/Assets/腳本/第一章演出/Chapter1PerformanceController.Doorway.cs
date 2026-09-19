@@ -4,7 +4,7 @@ using UnityEngine;
 public partial class Chapter1PerformanceController
 {
     [Header("Doorway Incident")]
-    public Vector3 incidentDoorPosition = new Vector3(3672f, -5816f, -51f);
+    public Vector3 incidentDoorPosition = new Vector3(3686f, -5826.4f, -63f);
     public Vector3 incidentDoorOutward = Vector3.back;
     [Min(0.1f)] public float incidentDoorDragSeconds = 5.5f;
     [Min(0.1f)] public float incidentKnockoutHoldSeconds = 3f;
@@ -14,6 +14,47 @@ public partial class Chapter1PerformanceController
     float doorwayHeight;
     Texture2D doorwayVignette;
     float doorwayVignetteAmount;
+    Mesh doorwayHandMesh;
+    GameObject doorwayFallenHand;
+
+    void OnDestroy()
+    {
+        if(doorwayHandMesh!=null)Destroy(doorwayHandMesh);
+        if(doorwayFallenHand!=null)Destroy(doorwayFallenHand);
+        if(doorwayVignette!=null)Destroy(doorwayVignette);
+    }
+
+    void CreateDoorwayFallenHand(Vector3 cameraPosition)
+    {
+        if(doorwayFallenHand!=null || playerHandsRoot==null || incidentCameraView==null)return;
+        SkinnedMeshRenderer source=null;
+        foreach(var candidate in playerHandsRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            if(candidate.name.ToLowerInvariant().Contains("hand.l")){source=candidate;break;}
+        if(source==null)return;
+        doorwayHandMesh=new Mesh{name="Incident fallen left hand"};source.BakeMesh(doorwayHandMesh);
+        Bounds bounds=doorwayHandMesh.bounds;Vector3 size=bounds.size;
+        Vector3 longAxis=size.x>size.y?(size.x>size.z?Vector3.right:Vector3.forward):(size.y>size.z?Vector3.up:Vector3.forward);
+        Vector3 thinAxis=size.x<size.y?(size.x<size.z?Vector3.right:Vector3.forward):(size.y<size.z?Vector3.up:Vector3.forward);
+        if(longAxis==thinAxis)return;
+        float length=Mathf.Max(size.x,Mathf.Max(size.y,size.z));
+        foreach(var bone in source.bones)
+        {
+            if(bone==null)continue;string name=bone.name.ToLowerInvariant();
+            if(name.Contains("wrist") || name=="hand.l")
+            {if(Vector3.Dot(bounds.center-source.transform.InverseTransformPoint(bone.position),longAxis)<0)longAxis=-longAxis;break;}
+        }
+        Vector3 right=Vector3.ProjectOnPlane(incidentCameraView.right,Vector3.up).normalized;
+        Vector3 forward=Vector3.ProjectOnPlane(incidentCameraView.forward,Vector3.up).normalized;
+        Quaternion rotation=Quaternion.LookRotation((right*0.75f+forward).normalized,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(-longAxis,thinAxis));
+        float scale=doorwayHeight*0.45f/Mathf.Max(0.001f,length);
+        Vector3 center=cameraPosition+forward*doorwayHeight*0.75f-right*doorwayHeight*0.10f;
+        if(TryGetIncidentSurfaceY(center,out float floor))center.y=floor+doorwayHeight*0.025f;
+        doorwayFallenHand=new GameObject("Player fallen left hand");
+        doorwayFallenHand.AddComponent<MeshFilter>().sharedMesh=doorwayHandMesh;
+        doorwayFallenHand.AddComponent<MeshRenderer>().sharedMaterials=source.sharedMaterials;
+        doorwayFallenHand.transform.localScale=Vector3.one*scale;
+        doorwayFallenHand.transform.SetPositionAndRotation(center-rotation*(bounds.center*scale),rotation);
+    }
 
     Chapter1IncidentRig PrepareDoorwayRig(Transform actor,bool isPolice)
     {
@@ -72,7 +113,8 @@ public partial class Chapter1PerformanceController
         PlaceDoorwayActor(doorwayOfficer,doorwayPoliceRest+startOffset);
         PlaceDoorwayActor(doorwayVictim,doorwayVictimRest+startOffset);
         doorwayOfficer.batonVisible=true;
-        doorwayOfficer.gripWithLeft=true;
+        doorwayOfficer.gripWithLeft=false;
+        doorwayOfficer.batonInLeftHand=true;
         doorwayOfficer.gripPartner=doorwayVictim.transform;
         doorwayVictim.gripPartner=doorwayOfficer.transform;
         doorwayVictim.gripWithLeft=false;
@@ -80,8 +122,8 @@ public partial class Chapter1PerformanceController
         doorwayStaged=true;
         incidentCameraView=GetPlayerViewTransform();
         if(incidentCameraPoseLock==null)incidentCameraPoseLock=BeginCinematicCameraPoseLock(incidentCameraView);
-        Vector3 cameraPosition=door+doorwayOut*doorwayHeight*2.25f-doorwayRight*doorwayHeight*1.4f+Vector3.up*doorwayHeight*0.91f;
-        Vector3 focus=door-doorwayRight*doorwayHeight*0.40f+Vector3.up*doorwayHeight*0.55f;
+        Vector3 cameraPosition=door+doorwayOut*doorwayHeight*2.1f-doorwayRight*doorwayHeight*1.25f+Vector3.up*doorwayHeight*0.87f;
+        Vector3 focus=door-doorwayRight*doorwayHeight*0.66f+Vector3.up*doorwayHeight*0.50f;
         SetDoorwayCamera(cameraPosition,focus,49f);
         ShowLine("旁白","警察抓住女性族人的手腕，強行把她拉向木屋門口。",incidentDoorDragSeconds);
         yield return new WaitForSeconds(0.35f);
@@ -97,6 +139,18 @@ public partial class Chapter1PerformanceController
             yield return null;
         }
         doorwayOfficer.walking=doorwayVictim.walking=false;
+        Quaternion policeTurnFrom=officer.rotation,victimTurnFrom=femaleVillagerActor.rotation;
+        doorwayOfficer.Face(doorwayOut+doorwayRight*0.15f);
+        doorwayVictim.Face(doorwayRight*0.90f+doorwayOut*0.25f);
+        Quaternion policeTurnTo=officer.rotation,victimTurnTo=femaleVillagerActor.rotation;
+        for(float t=0;t<0.65f;t+=Time.deltaTime)
+        {
+            float blend=Mathf.SmoothStep(0,1,t/0.65f);
+            officer.rotation=Quaternion.Slerp(policeTurnFrom,policeTurnTo,blend);
+            femaleVillagerActor.rotation=Quaternion.Slerp(victimTurnFrom,victimTurnTo,blend);
+            yield return null;
+        }
+        officer.rotation=policeTurnTo;femaleVillagerActor.rotation=victimTurnTo;
         doorwayOfficer.frozen=doorwayVictim.frozen=true;
         yield return PlayPoliceVoicedLine("女性族人","放開我！",femaleResistVoice,2.2f);
         if(dialogueUI!=null)dialogueUI.HideInstant();
@@ -190,7 +244,10 @@ public partial class Chapter1PerformanceController
         doorwayOfficer.gripPartner=doorwayVictim.transform;
         doorwayVictim.gripPartner=doorwayOfficer.transform;
         doorwayOfficer.gripWithLeft=true;
+        doorwayVictim.gripWithLeft=false;
+        doorwayOfficer.batonInLeftHand=false;
         SetDoorwayCamera(downPosition,downFocus,58f,16f);
+        CreateDoorwayFallenHand(downPosition);
         knockoutCameraPosition=downPosition;knockoutCameraRotation=downRotation;
         playerKnockedOut=true;knockoutDizzyVisible=false;
         doorwayVignetteAmount=0.9f;
@@ -217,10 +274,12 @@ public partial class Chapter1PerformanceController
         if(!waitingForChoice)return;
         EnsureHudStyles();
         float scale=Mathf.Clamp(Screen.height/900f,0.6f,1.5f);
+        var titleStyle=new GUIStyle(hudTitleStyle){fontSize=Mathf.RoundToInt(22*scale),alignment=TextAnchor.MiddleLeft,wordWrap=false};
+        var buttonStyle=new GUIStyle(hudButtonStyle){fontSize=Mathf.RoundToInt(18*scale),alignment=TextAnchor.MiddleCenter,wordWrap=false};
         Rect box=new Rect(Screen.width*0.045f,Screen.height-202f*scale,365f*scale,166f*scale);
         GUI.Box(box,GUIContent.none,hudBoxStyle);
-        GUI.Label(new Rect(box.x+18*scale,box.y+12*scale,box.width-36*scale,30*scale),"你要怎麼做？",hudTitleStyle);
-        if(GUI.Button(new Rect(box.x+18*scale,box.y+52*scale,box.width-36*scale,42*scale),"1 / A　上前阻止",hudButtonStyle)){PlayChapterUiClick();ChooseIntervene();}
-        if(GUI.Button(new Rect(box.x+18*scale,box.y+108*scale,box.width-36*scale,42*scale),"2 / B　沉默觀望",hudButtonStyle)){PlayChapterUiClick();ChooseWatch();}
+        GUI.Label(new Rect(box.x+18*scale,box.y+12*scale,box.width-36*scale,30*scale),"你要怎麼做？",titleStyle);
+        if(GUI.Button(new Rect(box.x+18*scale,box.y+52*scale,box.width-36*scale,42*scale),"1 / A　上前阻止",buttonStyle)){PlayChapterUiClick();ChooseIntervene();}
+        if(GUI.Button(new Rect(box.x+18*scale,box.y+108*scale,box.width-36*scale,42*scale),"2 / B　沉默觀望",buttonStyle)){PlayChapterUiClick();ChooseWatch();}
     }
 }

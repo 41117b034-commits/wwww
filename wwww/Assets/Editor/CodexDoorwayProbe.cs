@@ -10,12 +10,12 @@ using UnityEditor.Animations;
 [InitializeOnLoad]
 public static class CodexDoorwayProbe
 {
-    const string Work = @"C:\Users\jimmy\Documents\Codex\2026-09-18\play-mode-p-play-mode-unity\work";
+    const string Work = @"C:\Users\jimmy\Documents\Codex\2026-09-19\new-chat-2\work";
     static double next;
     static bool wasChoice, wasDown;
     static Chapter1PerformanceController C => UnityEngine.Object.FindFirstObjectByType<Chapter1PerformanceController>();
     static object Field(string n) => C?.GetType().GetField(n, BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public)?.GetValue(C);
-    static CodexDoorwayProbe() { EditorApplication.update += Tick; EditorApplication.playModeStateChanged += s => File.AppendAllText(Path.Combine(Work,"events.txt"), DateTime.UtcNow.ToString("O")+" "+s+"\n"); }
+    static CodexDoorwayProbe() { EditorApplication.update += Tick; EditorApplication.playModeStateChanged += s => File.AppendAllText(Path.Combine(Work,"events.txt"), DateTime.UtcNow.ToString("O")+" "+s+"\n"); Application.logMessageReceived += (message,trace,type)=> {if(message.StartsWith("[Doorway]"))File.AppendAllText(Path.Combine(Work,"events.txt"),DateTime.UtcNow.ToString("O")+" "+message+"\n");if(type==LogType.Error || type==LogType.Exception)File.AppendAllText(Path.Combine(Work,"runtime-errors.txt"),message+"\n"+trace+"\n");}; }
     static void Tick()
     {
         if (EditorApplication.isCompiling || EditorApplication.timeSinceStartup < next) return;
@@ -30,6 +30,27 @@ public static class CodexDoorwayProbe
             string path=Path.Combine(Work,"command.txt"); if(!File.Exists(path))return;
             string cmd=File.ReadAllText(path).Trim();File.Delete(path);
             if(cmd=="play")EditorApplication.isPlaying=true;
+            else if(cmd=="setup")Chapter1DoorwayAuthoring.Build();
+            else if(cmd=="houses")
+            {
+                var b=new StringBuilder();
+                foreach(var r in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
+                {
+                    if(Vector3.Distance(r.bounds.center,new Vector3(3672,-5816,-51))>110 || r.bounds.size.magnitude<18)continue;
+                    b.AppendLine(r.name+" parent="+r.transform.parent?.name+" p="+r.transform.position.ToString("F3")+" r="+r.transform.eulerAngles.ToString("F2")+" scale="+r.transform.lossyScale.ToString("F3")+" bounds="+r.bounds.ToString("F3")+" mesh="+AssetDatabase.GetAssetPath(r.GetComponent<MeshFilter>()?.sharedMesh));
+                }
+                File.WriteAllText(Path.Combine(Work,"houses.txt"),b.ToString());
+            }
+            else if(cmd=="surfaces")
+            {
+                var b=new StringBuilder();
+                for(float x=3670;x<=3750;x+=5)for(float z=-70;z<=0;z+=5)
+                {
+                    var hits=Physics.RaycastAll(new Vector3(x,-5800,z),Vector3.down,50).OrderBy(h=>h.distance);
+                    foreach(var h in hits)if(h.normal.y>0.4f)b.AppendLine(x+","+z+" -> "+h.point.y+" "+h.collider.name);
+                }
+                File.WriteAllText(Path.Combine(Work,"surfaces.txt"),b.ToString());
+            }
             else if(cmd=="house")
             {
                 var asset=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/房子/長木屋/長木屋.fbx");
@@ -95,6 +116,7 @@ public static class CodexDoorwayProbe
     }
     static void Shot(string name)
     {
+        if(EditorApplication.isPlaying)ScreenCapture.CaptureScreenshot(Path.Combine(Work,name+"-game.png"));
         var camera=Camera.main;if(camera==null)return;var rt=RenderTexture.GetTemporary(1600,900,24);var old=camera.targetTexture;var active=RenderTexture.active;
         try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;var tex=new Texture2D(1600,900,TextureFormat.RGB24,false);tex.ReadPixels(new Rect(0,0,1600,900),0,0);tex.Apply();File.WriteAllBytes(Path.Combine(Work,name+".png"),tex.EncodeToPNG());UnityEngine.Object.DestroyImmediate(tex);}
         finally{camera.targetTexture=old;RenderTexture.active=active;RenderTexture.ReleaseTemporary(rt);}
