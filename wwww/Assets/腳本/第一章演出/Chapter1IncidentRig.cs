@@ -165,6 +165,14 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Vector3 dir=Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized;
             Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,rightArm.position+dir*Height*0.27f,pointProgress),Vector3.down);
         }
+        if(police && batonVisible && !strike && pointTarget==null)
+        {
+            // Separate the held baton from the dark trouser silhouette.
+            Vector3 side=batonInLeftHand?-right:right;
+            Transform arm=batonInLeftHand?leftArm:rightArm,elbow=batonInLeftHand?leftElbow:rightElbow,hand=batonInLeftHand?leftHand:rightHand;
+            Vector3 hold=arm.position-Vector3.up*Height*0.30f+side*Height*0.09f+Forward*Height*0.055f;
+            Solve(arm,elbow,hand,hold,-Forward+side*0.4f);
+        }
         if(strike)
         {
             Transform arm=batonInLeftHand?leftArm:rightArm,elbow=batonInLeftHand?leftElbow:rightElbow,hand=batonInLeftHand?leftHand:rightHand;
@@ -211,14 +219,17 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         {
             baton=GameObject.CreatePrimitive(PrimitiveType.Cylinder);baton.name="Incident_Baton";
             var collider=baton.GetComponent<Collider>();collider.enabled=false;Destroy(collider);
-            batonMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit"));batonMaterial.color=new Color(0.095f,0.064f,0.039f);
+            batonMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            batonMaterial.color=new Color(0.24f,0.115f,0.047f);
+            batonMaterial.SetFloat("_Smoothness",0.18f);
             baton.GetComponent<Renderer>().sharedMaterial=batonMaterial;
             baton.transform.localScale=new Vector3(Height*0.018f,Height*0.17f,Height*0.018f);
             baton.transform.SetParent(transform,true);
         }
         if(baton==null)return;
         baton.SetActive(batonVisible);baton.GetComponent<Renderer>().enabled=batonVisible;if(!batonVisible)return;
-        Vector3 direction=strike?Vector3.Slerp(Vector3.up,Forward,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f)):(Vector3.down+Forward*0.18f).normalized;
+        Vector3 side=Vector3.Cross(Vector3.up,Forward)*(batonInLeftHand?-1f:1f);
+        Vector3 direction=strike?Vector3.Slerp(Vector3.up,Forward,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f)):(Vector3.down+Forward*0.25f+side*0.55f).normalized;
         if(pointTarget!=null)direction=Vector3.Slerp(Vector3.down,Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized,pointProgress);
         Transform batonHand=batonInLeftHand?leftHand:rightHand;
         baton.transform.SetPositionAndRotation(batonHand.position+direction*Height*0.14f,Quaternion.FromToRotation(Vector3.up,direction));

@@ -46,8 +46,9 @@ public partial class Chapter1PerformanceController
         Vector3 right=Vector3.ProjectOnPlane(incidentCameraView.right,Vector3.up).normalized;
         Vector3 forward=Vector3.ProjectOnPlane(incidentCameraView.forward,Vector3.up).normalized;
         Quaternion rotation=Quaternion.LookRotation((right*0.75f+forward).normalized,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(-longAxis,thinAxis));
-        float scale=doorwayHeight*0.45f/Mathf.Max(0.001f,length);
-        Vector3 center=cameraPosition+forward*doorwayHeight*0.75f-right*doorwayHeight*0.10f;
+        float scale=doorwayHeight*0.36f/Mathf.Max(0.001f,length);
+        // Keep the cut end of the first-person forearm below the frame.
+        Vector3 center=cameraPosition+forward*doorwayHeight*0.22f-right*doorwayHeight*0.18f;
         if(TryGetIncidentSurfaceY(center,out float floor))center.y=floor+doorwayHeight*0.025f;
         doorwayFallenHand=new GameObject("Player fallen left hand");
         doorwayFallenHand.AddComponent<MeshFilter>().sharedMesh=doorwayHandMesh;
