@@ -52,6 +52,10 @@ public partial class Chapter1PerformanceController
         Vector3 firstStart = firstEnd + new Vector3(-1.2f, 0f, -0.5f) * height;
         Vector3 secondStart = secondEnd + new Vector3(-1.3f, 0f, -0.5f) * height;
         StageStoppedWeddingCrowd(center, height, firstEnd);
+        weddingDramaCenter = center;
+        weddingDramaHeight = height;
+        // The visible central leader is the same actor who answers and steps up.
+        if (groomActor != null) shovedVillagerActor = groomActor;
 
         first.position = firstStart;
         second.position = secondStart;
@@ -146,12 +150,21 @@ public partial class Chapter1PerformanceController
             yield return null;
         }
         firstRig.pointProgress=secondRig.pointProgress=1f;
+        yield return WeddingSpeakerShot(first, true);
+        SetWeddingDramaBeat("police-order");
         ShowLine("日警", "停止！婚禮立刻停止！", 2.6f);
         yield return new WaitForSeconds(2.6f);
+        SetWeddingDramaBeat("police-insult");
         yield return PlayPoliceVoicedLine("日警", "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
             policeInsultVoice, 4f);
-        yield return PlayPoliceVoicedLine("新郎", "我們只是辦婚禮，沒有冒犯。",
+        firstRig.pointTarget=secondRig.pointTarget=null;
+        Chapter1IncidentRig leaderRig = groomActor != null ? PrepareDoorwayRig(groomActor, false) : null;
+        if (leaderRig != null) { leaderRig.conversationTarget=first; leaderRig.speakingWeight=0.8f; }
+        yield return WeddingSpeakerShot(groomActor, false);
+        SetWeddingDramaBeat("leader-reply");
+        yield return PlayPoliceVoicedLine("族人", "我們只是辦婚禮，沒有冒犯。",
             groomReplyVoice, 3.2f, groomReplyVolumeScale);
+        if (leaderRig != null) leaderRig.speakingWeight=0f;
         firstRig.pointTarget=secondRig.pointTarget=null;
         // Keep the same pose lock alive for the existing subsequent story shots.
     }

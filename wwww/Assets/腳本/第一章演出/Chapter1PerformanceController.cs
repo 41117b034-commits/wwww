@@ -10026,7 +10026,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     
         }
 
-        if (useFallbackIncidentAnimation)
+        if (IsNewPoliceScene())
+        {
+            yield return WeddingCupAndConfrontation();
+        }
+        else if (useFallbackIncidentAnimation)
         {
             if (useCeremonyCupCloseUp && ceremonyCup != null)
             {

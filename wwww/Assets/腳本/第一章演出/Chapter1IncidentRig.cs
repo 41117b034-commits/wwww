@@ -38,6 +38,16 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public Transform gripPartner;
     public float pointProgress;
     public Transform pointTarget;
+    public Transform conversationTarget;
+    [Range(0f, 1f)] public float speakingWeight;
+    public Chapter1IncidentRig pushTarget;
+    [Range(0f, 1f)] public float pushWeight;
+    [Range(0f, 1f)] public float stumbleWeight;
+    [Range(0f, 1f)] public float stumbleProgress;
+    public bool smoothLocomotion;
+    float locomotionWeight;
+    Vector3 pushRearAnkle;
+    bool pushing;
 
     public void Initialize(Animator source, bool isPolice)
     {
@@ -127,15 +137,37 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         for(int i=0;i<bones.Length;i++)if(bones[i]!=null&&bones[i]!=transform)bones[i].SetLocalPositionAndRotation(positions[i],rotations[i]);
         float distance=Vector3.ProjectOnPlane(transform.position-previousPosition,Vector3.up).magnitude;
         previousPosition=transform.position;
+        locomotionWeight = smoothLocomotion
+            ? Mathf.MoveTowards(locomotionWeight, walking && !frozen ? 1f : 0f, Time.deltaTime * 6f)
+            : (walking && !frozen ? 1f : 0f);
+        Vector3 right=Vector3.Cross(Vector3.up,Forward);
+        if(pushTarget != null && !pushing)
+        {
+            pushRearAnkle = transform.TransformPoint(leftAnkle);
+            pushing = true;
+        }
+        if(pushTarget == null) pushing = false;
+        if(pushWeight > 0f)
+        {
+            Transform spine = B(HumanBodyBones.Spine);
+            if(spine != null) spine.rotation = Quaternion.AngleAxis(13f * pushWeight, right) * spine.rotation;
+        }
+        if(stumbleWeight > 0f)
+        {
+            hips.position -= Vector3.up * Height * 0.075f * stumbleWeight;
+            hips.rotation = Quaternion.AngleAxis(-20f * stumbleWeight, right) * hips.rotation;
+            Transform spine = B(HumanBodyBones.Spine);
+            if(spine != null) spine.rotation = Quaternion.AngleAxis(-9f * stumbleWeight, right) * spine.rotation;
+            head.rotation = Quaternion.AngleAxis(8f * stumbleWeight, right) * head.rotation;
+        }
         // During the 60% stance phase the foot travels exactly opposite to the
         // actor's displacement. Match phase advance to the authored stride.
         if(walking&&!frozen)phase+=Mathf.Min(distance,Height*0.2f)/Mathf.Max(0.1f,Height*0.23f*strideScale/0.6f)*Mathf.PI*2f;
         ApplyLeg(leftThigh,leftCalf,leftFoot,leftAnkle,leftFootRotation,phase);
         ApplyLeg(rightThigh,rightCalf,rightFoot,rightAnkle,rightFootRotation,phase+Mathf.PI);
-        Vector3 right=Vector3.Cross(Vector3.up,Forward);
-        if(walking&&!frozen)
+        if(locomotionWeight > 0f)
         {
-            float swing=Mathf.Sin(phase)*14f*strideScale;
+            float swing=Mathf.Sin(phase)*14f*strideScale*locomotionWeight;
             leftArm.rotation=Quaternion.AngleAxis(swing,right)*leftArm.rotation;
             rightArm.rotation=Quaternion.AngleAxis(-swing,right)*rightArm.rotation;
         }
@@ -182,18 +214,60 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
                 Vector3.Lerp(raised,hit,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f));
             Solve(arm,elbow,hand,target,(batonInLeftHand?-right:right)+Vector3.up*0.3f);
         }
+        if(conversationTarget != null && speakingWeight > 0f && stumbleWeight <= 0f)
+        {
+            float beat = Mathf.Sin(Time.time * 2.7f);
+            Vector3 gesture = rightArm.position + Forward * Height * (0.24f + beat * 0.018f)
+                + right * Height * 0.055f - Vector3.up * Height * 0.075f;
+            Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, gesture, speakingWeight), Vector3.down);
+            Transform spine = B(HumanBodyBones.Spine);
+            if(spine != null) spine.rotation = Quaternion.AngleAxis((2f + beat) * speakingWeight, right) * spine.rotation;
+            head.rotation = Quaternion.AngleAxis(beat * 2f * speakingWeight, right) * head.rotation;
+        }
+        if(stumbleWeight > 0f)
+        {
+            Vector3 leftCatch = leftArm.position - right * Height * 0.27f
+                + Forward * Height * 0.07f - Vector3.up * Height * 0.12f;
+            Vector3 rightCatch = rightArm.position + right * Height * 0.30f
+                + Forward * Height * 0.08f - Vector3.up * Height * 0.10f;
+            Solve(leftArm,leftElbow,leftHand,Vector3.Lerp(leftHand.position,leftCatch,stumbleWeight),-Forward);
+            Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,rightCatch,stumbleWeight),-Forward);
+        }
+        if(pushTarget != null && pushTarget.Head != null && pushWeight > 0f)
+        {
+            Vector3 chest = pushTarget.Head.position - Vector3.up * pushTarget.Height * 0.18f
+                + pushTarget.Forward * pushTarget.Height * 0.055f;
+            Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,chest,pushWeight),Vector3.down);
+        }
         UpdateBaton();
     }
     void ApplyLeg(Transform thigh,Transform calf,Transform foot,Vector3 ankle,Quaternion rotation,float p)
     {
         Vector3 target=transform.TransformPoint(ankle);
-        if(walking&&!frozen)
+        if(pushing && pushWeight > 0f)
+        {
+            if(foot == leftFoot) target = Vector3.Lerp(target, pushRearAnkle, pushWeight);
+            else target += Forward * Height * 0.10f * pushWeight
+                + Vector3.up * Height * 0.025f * Mathf.Sin(pushWeight * Mathf.PI);
+        }
+        if(locomotionWeight > 0f)
         {
             float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);
             float stride=Height*0.115f*strideScale;
             float offset=cycle<0.6f?Mathf.Lerp(stride,-stride,cycle/0.6f):Mathf.Lerp(-stride,stride,Mathf.SmoothStep(0,1,(cycle-0.6f)/0.4f));
             float lift=cycle<0.6f?0f:Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI)*Height*0.045f;
-            target+=Forward*offset+Vector3.up*lift;
+            target+=(Forward*offset+Vector3.up*lift)*locomotionWeight;
+        }
+        if(stumbleWeight > 0f)
+        {
+            // Two uneven backward recovery steps, with the planted foot opposing
+            // root travel and the other foot lifting over the ground.
+            float cycle=Mathf.Repeat(stumbleProgress*2f+(foot==rightFoot?0.5f:0f),1f);
+            float stride=Height*0.12f;
+            float offset=cycle<0.6f?Mathf.Lerp(-stride,stride,cycle/0.6f)
+                :Mathf.Lerp(stride,-stride,Mathf.SmoothStep(0,1,(cycle-0.6f)/0.4f));
+            float lift=cycle<0.6f?0f:Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI)*Height*0.075f;
+            target+=(Forward*offset+Vector3.up*lift)*stumbleWeight;
         }
         Solve(thigh,calf,foot,target,Forward);
         foot.rotation=transform.rotation*rotation;
