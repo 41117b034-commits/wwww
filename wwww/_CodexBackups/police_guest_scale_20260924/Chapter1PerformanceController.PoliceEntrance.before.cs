@@ -303,19 +303,19 @@ public partial class Chapter1PerformanceController
             // villager takes the nearest free slot to avoid crossing the crowd.
             int nearest = -1;
             float best = float.MaxValue;
-            Animator animator = actor.GetComponentInChildren<Animator>(true);
-            bool childGuest = IsDeliveryTaskNPC(actor) && IsChildCharacter(animator);
+            bool shortGuest = IsDeliveryTaskNPC(actor) && GetActorStandingHeight(actor) < height * 0.8f;
             for (int slot = 0; slot < available.Count; slot++)
             {
                 float distance = Vector3.ProjectOnPlane(available[slot] - start, Vector3.up).sqrMagnitude;
-                // Reserve visible front-row places for child guests so the
-                // roast does not obscure them. Adults use the adult rows.
-                if (frontSlots.Contains(available[slot]) != childGuest) distance += height * height * 100f;
+                // The smaller stationary guests disappear behind the roast if
+                // assigned the back row. Reserve visible front-row places.
+                if (frontSlots.Contains(available[slot]) != shortGuest) distance += height * height * 100f;
                 if (distance < best) { best = distance; nearest = slot; }
             }
             if (actor == groomActor && available.Count > 0) nearest = 0;
             Vector3 destination = nearest >= 0 ? available[nearest] : start;
             if (nearest >= 0) available.RemoveAt(nearest);
+            Animator animator = actor.GetComponentInChildren<Animator>(true);
             if (animator != null)
             {
                 animator.applyRootMotion = false;

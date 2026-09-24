@@ -1,0 +1,428 @@
+{
+    "playing": true,
+    "paused": false,
+    "compiling": false,
+    "letterbox": false,
+    "scene": "第一章新版警察",
+    "beat": "",
+    "time": 7.239137649536133,
+    "maxCrowdSpeed": 0.0,
+    "center": {
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
+    },
+    "actors": [
+        {
+            "name": "賽德克中年(2)",
+            "position": {
+                "x": 3729.37548828125,
+                "y": -5817.06591796875,
+                "z": -124.65919494628906
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.757498741149903,
+            "localScale": {
+                "x": 14.498272895812989,
+                "y": 14.498272895812989,
+                "z": 14.498272895812989
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年嗎",
+            "position": {
+                "x": 3715.4140625,
+                "y": -5817.2001953125,
+                "z": -135.68801879882813
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 13.484798431396485,
+            "localScale": {
+                "x": 15.53821849822998,
+                "y": 15.53821849822998,
+                "z": 15.53821849822998
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "4",
+            "position": {
+                "x": 3701.554931640625,
+                "y": -5819.33740234375,
+                "z": -124.5306625366211
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 9.353007316589356,
+            "localScale": {
+                "x": 10.58629322052002,
+                "y": 10.58629322052002,
+                "z": 10.58629322052002
+            },
+            "child": true,
+            "bones": []
+        },
+        {
+            "name": "賽德克青年",
+            "position": {
+                "x": 3715.5458984375,
+                "y": -5819.95654296875,
+                "z": -107.15199279785156
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.757362365722657,
+            "localScale": {
+                "x": 14.498272895812989,
+                "y": 14.498272895812989,
+                "z": 14.498272895812989
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "3",
+            "position": {
+                "x": 3721.730224609375,
+                "y": -5819.798828125,
+                "z": -108.59356689453125
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.766459465026856,
+            "localScale": {
+                "x": 14.498272895812989,
+                "y": 14.498272895812989,
+                "z": 14.498272895812989
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "新郎",
+            "position": {
+                "x": 3726.67626953125,
+                "y": -5819.17578125,
+                "z": -112.57557678222656
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.769594192504883,
+            "localScale": {
+                "x": 14.498272895812989,
+                "y": 14.498272895812989,
+                "z": 14.498272895812989
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "莫那",
+            "position": {
+                "x": 3729.405029296875,
+                "y": -5818.22314453125,
+                "z": -118.309326171875
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.767871856689454,
+            "localScale": {
+                "x": 14.786947250366211,
+                "y": 14.786947250366211,
+                "z": 14.786947250366211
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "5",
+            "position": {
+                "x": 3701.58447265625,
+                "y": -5820.10986328125,
+                "z": -118.1808090209961
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 11.919734954833985,
+            "localScale": {
+                "x": 13.683178901672364,
+                "y": 13.683178901672364,
+                "z": 13.683178901672364
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "賽德克小孩",
+            "position": {
+                "x": 3704.28369140625,
+                "y": -5818.3779296875,
+                "z": -130.26441955566407
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 9.313095092773438,
+            "localScale": {
+                "x": 10.03358268737793,
+                "y": 10.58629322052002,
+                "z": 10.58629322052002
+            },
+            "child": true,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年",
+            "position": {
+                "x": 3726.593994140625,
+                "y": -5816.92431640625,
+                "z": -130.36749267578126
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.768440246582032,
+            "localScale": {
+                "x": 14.498272895812989,
+                "y": 14.498272895812989,
+                "z": 14.498272895812989
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "1",
+            "position": {
+                "x": 3704.365966796875,
+                "y": -5820.55859375,
+                "z": -112.4725112915039
+            },
+            "human": false,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.85107421875,
+            "localScale": {
+                "x": 12.417503356933594,
+                "y": 12.417503356933594,
+                "z": 12.417503356933594
+            },
+            "child": false,
+            "bones": [
+                "1",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_55823c37"
+            ]
+        },
+        {
+            "name": "2",
+            "position": {
+                "x": 3709.229736328125,
+                "y": -5817.60986328125,
+                "z": -134.24642944335938
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.765933990478516,
+            "localScale": {
+                "x": 14.786901473999024,
+                "y": 14.786901473999024,
+                "z": 14.786901473999024
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "賽德克新娘",
+            "position": {
+                "x": 3709.348876953125,
+                "y": -5820.53662109375,
+                "z": -108.53636932373047
+            },
+            "human": false,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.806640625,
+            "localScale": {
+                "x": 12.366321563720704,
+                "y": 12.366321563720704,
+                "z": 12.366321563720704
+            },
+            "child": false,
+            "bones": [
+                "賽德克新娘",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_880135f6"
+            ]
+        },
+        {
+            "name": "部落女性1",
+            "position": {
+                "x": 3721.611083984375,
+                "y": -5816.78466796875,
+                "z": -134.30361938476563
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.766115188598633,
+            "localScale": {
+                "x": 14.22970199584961,
+                "y": 14.22970199584961,
+                "z": 14.22970199584961
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "部落男性",
+            "position": {
+                "x": 3750.004150390625,
+                "y": -5820.81298828125,
+                "z": -84.20199584960938
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 11.908805847167969,
+            "localScale": {
+                "x": 13.683178901672364,
+                "y": 13.683178901672364,
+                "z": 13.683178901672364
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "部落女姓2",
+            "position": {
+                "x": 3673.9189453125,
+                "y": -5818.72119140625,
+                "z": -150.37474060058595
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.769335746765137,
+            "localScale": {
+                "x": 15.526951789855957,
+                "y": 15.526951789855957,
+                "z": 15.526951789855957
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "賽德克帥哥",
+            "position": {
+                "x": 3678.5,
+                "y": -5816.52587890625,
+                "z": -159.35000610351563
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 12.756223678588868,
+            "localScale": {
+                "x": 14.709810256958008,
+                "y": 14.709810256958008,
+                "z": 14.709810256958008
+            },
+            "child": false,
+            "bones": []
+        },
+        {
+            "name": "原住民小孩(2)",
+            "position": {
+                "x": 3767.60009765625,
+                "y": -5813.89013671875,
+                "z": -127.5999984741211
+            },
+            "human": true,
+            "rigHeight": 0.0,
+            "measuredHeight": 9.132509231567383,
+            "localScale": {
+                "x": 10.58629322052002,
+                "y": 10.58629322052002,
+                "z": 10.58629322052002
+            },
+            "child": true,
+            "bones": []
+        }
+    ],
+    "errors": []
+}

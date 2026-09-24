@@ -120,3 +120,14 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 本次在 Unity 6000.0.58f1 Editor Play Mode 重新按 P 驗證兩輪；最終版本的 18 名族人均有有效動作骨架且到達群眾側。特別核對使用者截圖的「這種野蠻婚禮，竟然還敢辦得這麼熱鬧？」鏡頭，警察身後已無落單族人，滿版画面維持不變，測試沒有 Error／Exception。
 - 這次測試記錄改為同時收集舞圈成員與送酒／食物目標，不再只檢查舞圈名單。備份、完整名單及對照截圖放在 `_CodexBackups/police_receiver_retreat_20260924/`，其中 `police-insult.png` 對應使用者截圖，`crowd-retreat-complete.png` 顯示 18 人的新站位。
 - 測試後退出 Play Mode並移除臨時 Editor 測試腳本與 meta；未使用實體 VR 裝置，未逐項重玩婚禮任務或重測選項分支。
+
+## 修正任務成人 NPC 過小的比例（2026-09-24 後續修正）
+
+- 使用者指出退開全景中有兩名族人異常矮小。確認 `部落女姓2`、`賽德克帥哥` 都是成年人；先前只把較矮的任務 NPC 排到前排，沒有修正兩人被排除在身高統一處理之外的問題。
+- 修改 `Chapter1PerformanceController.cs`：身高統一處理也涵蓋送酒／食物 NPC，仍按成人與小孩分別比對原有舞圈角色的參考身高。維持任務 NPC 的固定站位，不將其加入舞圈。
+- 在遊戲啟動時修正比例，並同步更新任務 NPC 的還原用縮放紀錄，避免 `PrepareDeliveryTaskNPCs` 在轉入劇情前把身高恢復成原先過小的比例。
+- 修改 `Chapter1PerformanceController.PoliceEntrance.cs`：前排優先站位依角色是否為小孩判定，不再把偏小的成人當成小孩安排。
+- 本次實際在 Unity 6000.0.58f1 Editor Play Mode 按 P 驗證一輪，從婚禮任務階段記錄到族人退開、警察對話與門口選項。兩名成人的骨架量測高度約 12.77、12.76 場景單位，與其他成人相近；`原住民小孩(2)` 維持約 9.13，縮放未變。
+- 核對任務階段與退開完成紀錄，四名任務 NPC 的縮放均保持一致；18 名族人都有有效劇情骨架，警察對話鏡頭背後無遺留族人。引擎截圖保持滿版，測試期間無 Error／Exception。未使用實體 VR，未重玩送物互動或門口選項分支。
+- 原檔備份、測試工具副本、前後身高／縮放紀錄與實際畫面保存在 `_CodexBackups/police_guest_scale_20260924/`；`crowd-retreat-complete.png` 為修正後全景，`before-incident.json` 與 `crowd-retreat-complete.json` 可對照比例。
+- 測試後已退出 Play Mode，移除臨時 `Assets/Editor/Chapter1TransitionProbe.cs` 與 meta；本次沒有更動場景序列化內容。

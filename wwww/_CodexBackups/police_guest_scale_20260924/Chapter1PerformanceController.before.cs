@@ -8764,16 +8764,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         {
             Animator animator = animators[i];
             if (animator == null
-                || !animator.gameObject.scene.IsValid()
-                || !animator.gameObject.activeInHierarchy)
-            {
-                continue;
-            }
-
-            // Stationary delivery guests need the same proportions as the
-            // dancers, without adding them to the dance circle.
-            bool isDeliveryGuest = IsDeliveryTaskNPC(animator.transform);
-            if (!isDeliveryGuest && !IsWeddingCrowdActor(animator, center))
+                || !IsWeddingCrowdActor(animator, center))
             {
                 continue;
             }
@@ -8786,9 +8777,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 continue;
             }
 
-            Transform actorRoot = isDeliveryGuest
-                ? GetDeliveryActorRoot(animator.transform)
-                : GetWeddingDancerActorRoot(animator);
+            Transform actorRoot = GetWeddingDancerActorRoot(animator);
 
             if (actorRoot == null
                 || !adjustedRoots.Add(actorRoot.GetInstanceID())
@@ -8813,13 +8802,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             if (Mathf.Abs(scaleFactor - 1f) > 0.01f)
             {
                 actorRoot.localScale *= scaleFactor;
-                // Preparing task NPCs restores their saved transforms again
-                // before the incident; preserve the corrected startup size.
-                if (isDeliveryGuest && deliveryNpcAuthoredTransforms.TryGetValue(
-                    actorRoot.GetInstanceID(), out DeliveryNpcAuthoredTransform authored))
-                {
-                    authored.localScale = actorRoot.localScale;
-                }
                 correctedCount++;
             }
 
