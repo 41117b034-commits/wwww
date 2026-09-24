@@ -1,0 +1,258 @@
+{
+    "playing": true,
+    "paused": false,
+    "compiling": false,
+    "letterbox": false,
+    "scene": "第一章新版警察",
+    "beat": "crowd-retreat-wide",
+    "time": 20.350080490112306,
+    "maxCrowdSpeed": 16.878198623657228,
+    "center": {
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
+    },
+    "actors": [
+        {
+            "name": "部落女性1",
+            "position": {
+                "x": 3728.388916015625,
+                "y": -5815.45263671875,
+                "z": -138.75047302246095
+            },
+            "human": true,
+            "rigHeight": 12.789937019348145,
+            "bones": []
+        },
+        {
+            "name": "3",
+            "position": {
+                "x": 3730.89892578125,
+                "y": -5818.59033203125,
+                "z": -111.89917755126953
+            },
+            "human": true,
+            "rigHeight": 12.873496055603028,
+            "bones": []
+        },
+        {
+            "name": "2",
+            "position": {
+                "x": 3708.808349609375,
+                "y": -5819.42236328125,
+                "z": -116.19052124023438
+            },
+            "human": true,
+            "rigHeight": 12.824531555175782,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年",
+            "position": {
+                "x": 3732.912841796875,
+                "y": -5815.68505859375,
+                "z": -133.44931030273438
+            },
+            "human": true,
+            "rigHeight": 12.856465339660645,
+            "bones": []
+        },
+        {
+            "name": "1",
+            "position": {
+                "x": 3714.57421875,
+                "y": -5819.650390625,
+                "z": -112.96765899658203
+            },
+            "human": false,
+            "rigHeight": 10.553521156311036,
+            "bones": [
+                "1",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_55823c37"
+            ]
+        },
+        {
+            "name": "賽德克中年嗎",
+            "position": {
+                "x": 3709.96044921875,
+                "y": -5818.72705078125,
+                "z": -122.17926025390625
+            },
+            "human": true,
+            "rigHeight": 13.556875228881836,
+            "bones": []
+        },
+        {
+            "name": "5",
+            "position": {
+                "x": 3716.7685546875,
+                "y": -5819.853515625,
+                "z": -108.44420623779297
+            },
+            "human": true,
+            "rigHeight": 11.971372604370118,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年(2)",
+            "position": {
+                "x": 3736.9453125,
+                "y": -5814.76025390625,
+                "z": -136.8466033935547
+            },
+            "human": true,
+            "rigHeight": 12.93470287322998,
+            "bones": []
+        },
+        {
+            "name": "賽德克小孩",
+            "position": {
+                "x": 3713.486572265625,
+                "y": -5818.43115234375,
+                "z": -121.84789276123047
+            },
+            "human": true,
+            "rigHeight": 9.389541625976563,
+            "bones": []
+        },
+        {
+            "name": "賽德克新娘",
+            "position": {
+                "x": 3719.32470703125,
+                "y": -5819.9931640625,
+                "z": -105.55931091308594
+            },
+            "human": false,
+            "rigHeight": 11.026670455932618,
+            "bones": [
+                "賽德克新娘",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_880135f6"
+            ]
+        },
+        {
+            "name": "賽德克青年",
+            "position": {
+                "x": 3723.252197265625,
+                "y": -5818.7724609375,
+                "z": -110.76903533935547
+            },
+            "human": true,
+            "rigHeight": 12.93470287322998,
+            "bones": []
+        },
+        {
+            "name": "新郎",
+            "position": {
+                "x": 3735.625732421875,
+                "y": -5816.0048828125,
+                "z": -131.26620483398438
+            },
+            "human": true,
+            "rigHeight": 12.860723495483399,
+            "bones": []
+        },
+        {
+            "name": "4",
+            "position": {
+                "x": 3714.76416015625,
+                "y": -5819.44921875,
+                "z": -113.58602905273438
+            },
+            "human": true,
+            "rigHeight": 9.385815620422364,
+            "bones": []
+        },
+        {
+            "name": "莫那",
+            "position": {
+                "x": 3742.640869140625,
+                "y": -5816.01025390625,
+                "z": -126.26461029052735
+            },
+            "human": true,
+            "rigHeight": 12.78834056854248,
+            "bones": []
+        }
+    ],
+    "errors": []
+}

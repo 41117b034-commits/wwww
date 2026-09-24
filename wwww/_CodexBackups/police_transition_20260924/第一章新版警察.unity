@@ -7631,9 +7631,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4f1f9f47bae09941a8b3764c648de30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leaderApproachSeconds: 4.4
-  leaderQuestionSeconds: 2.8
-  weddingSpeakerCameraSeconds: 0.8
   incidentDoorPosition: {x: 3686, y: -5826.4, z: -63}
   incidentDoorOutward: {x: 0, y: 0, z: -1}
   incidentDoorDragSeconds: 5.5
@@ -7732,7 +7729,7 @@ MonoBehaviour:
   lockPlayerDuringPoliceEntrance: 0
   defaultDialogueSeconds: 3
   autoPlayCinematicStoryAfterWeddingTasks: 1
-  showCinematicLetterbox: 0
+  showCinematicLetterbox: 1
   cinematicLetterboxHeightRatio: 0.11
   cinematicPreRollSeconds: 0.65
   cinematicSilenceBeatSeconds: 0.55

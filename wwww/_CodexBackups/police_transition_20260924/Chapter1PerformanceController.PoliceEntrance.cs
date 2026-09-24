@@ -14,8 +14,8 @@ public partial class Chapter1PerformanceController
         }
     }
 
-    // Hold the dancers' actual positions for the reaction, then show the police
-    // entering before revealing the crowd walking into the confrontation layout.
+    // A single wide shot establishes the interruption. Its framing is measured
+    // once from standing characters, never from animated feet or moving heads.
     private IEnumerator StableWeddingPoliceEntrance()
     {
         Transform first = primaryPoliceActor;
@@ -51,7 +51,7 @@ public partial class Chapter1PerformanceController
         Vector3 secondEnd = center + new Vector3(-2.65f, 0f, -0.15f) * height;
         Vector3 firstStart = firstEnd + new Vector3(-1.2f, 0f, -0.5f) * height;
         Vector3 secondStart = secondEnd + new Vector3(-1.3f, 0f, -0.5f) * height;
-        List<WeddingRetreatActor> crowd = PrepareWeddingCrowdRetreat(center, height);
+        StageStoppedWeddingCrowd(center, height, firstEnd);
         weddingDramaCenter = center;
         weddingDramaHeight = height;
         // The visible central leader is the same actor who answers and steps up.
@@ -75,12 +75,6 @@ public partial class Chapter1PerformanceController
         secondStart = second.position;
 
         incidentCameraView = GetPlayerViewTransform();
-        Vector3 widePosition = center + new Vector3(-0.55f, 1.1f, -4.15f) * height;
-        if (TryGetIncidentSurfaceY(widePosition, out float wideGround))
-            widePosition.y = Mathf.Max(widePosition.y, wideGround + height * 0.95f);
-        Vector3 wideFocus = center + new Vector3(-0.28f, 0.5f, 0.05f) * height;
-        Vector3 entranceFocus = (firstStart + secondStart) * 0.5f + Vector3.up * height * 0.63f;
-        Vector3 entrancePosition = entranceFocus + new Vector3(0.65f, 0.26f, -3.8f) * height;
         if (incidentCameraView != null)
         {
             incidentCameraTrackedPoseDrivers = DisableCameraTrackedPoseDrivers(incidentCameraView);
@@ -92,36 +86,22 @@ public partial class Chapter1PerformanceController
                 witnessZoomCamera = camera;
                 witnessOriginalFieldOfView = camera.fieldOfView;
                 witnessZoomApplied = true;
-                camera.rect = new Rect(0f, 0f, 1f, 1f);
+                camera.fieldOfView = 50f;
             }
+            Vector3 position = center + new Vector3(-0.55f, 1.1f, -4.15f) * height;
+            if (TryGetIncidentSurfaceY(position, out float cameraGround))
+                position.y = Mathf.Max(position.y, cameraGround + height * 0.95f);
+            Vector3 focus = center + new Vector3(-0.28f, 0.5f, 0.05f) * height;
+            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock,
+                position, Quaternion.LookRotation(focus - position, Vector3.up));
+            CapturePoliceWitnessViewPose();
         }
 
-        SetWeddingDramaBeat("crowd-reaction");
-        ShowLine("旁白", "鼓聲突然停了下來。族人鬆開雙手，轉頭望向腳步聲傳來的方向。", 2.2f);
-        for (float reaction = 0f; reaction < 0.9f; reaction += Time.deltaTime)
-        {
-            foreach (WeddingRetreatActor member in crowd)
-            {
-                float turn = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((reaction - member.delay * 0.5f) / 0.65f));
-                member.actor.rotation = Quaternion.Slerp(member.rotation,
-                    EntranceFacingRotation(member.actor, firstStart), turn);
-            }
-            yield return null;
-        }
-        // A motivated cut to the arriving officers, on the same side of the
-        // action axis. Crowd roots keep moving continuously throughout this shot.
-        SetDoorwayCamera(entrancePosition, entranceFocus, 48f);
-        SetWeddingDramaBeat("police-entrance-short");
-        ShowLine("旁白", "兩名日本警察走入會場，族人紛紛退開，讓出空間。", 7.2f);
+        ShowLine("旁白", "鼓聲突然停了下來。兩名日本警察走入會場，族人停下舞步，轉身望向來人。", 6.4f);
         firstRig.walking = secondRig.walking = true;
-        firstRig.smoothLocomotion = secondRig.smoothLocomotion = true;
         float elapsed = 0f;
         const float walkSeconds = 5.8f;
-        float retreatSeconds = walkSeconds + 0.35f;
-        foreach (WeddingRetreatActor member in crowd)
-            retreatSeconds = Mathf.Max(retreatSeconds, member.delay + member.duration + 0.5f);
-        bool wideShot = false;
-        while (elapsed < retreatSeconds)
+        while (elapsed < walkSeconds + 0.35f)
         {
             elapsed += Time.deltaTime;
             SetEntranceGroundPosition(first, Vector3.Lerp(firstStart, firstEnd,
@@ -130,20 +110,8 @@ public partial class Chapter1PerformanceController
                 Mathf.Clamp01((elapsed - 0.35f) / walkSeconds)), secondOffset);
             if(TryGetIncidentSurfaceY(first.position,out float firstFloor))firstRig.Ground(firstFloor);
             if(TryGetIncidentSurfaceY(second.position,out float secondFloor))secondRig.Ground(secondFloor);
-            firstRig.walking = elapsed < walkSeconds;
-            secondRig.walking = elapsed < walkSeconds + 0.35f;
-            UpdateWeddingCrowdRetreat(crowd, elapsed, firstEnd);
-            if (elapsed >= 1.8f)
-            {
-                if (!wideShot) { wideShot = true; SetWeddingDramaBeat("crowd-retreat-wide"); }
-                // Cut back to a steady wide angle; no fly-through of the dancers.
-                SetDoorwayCamera(widePosition, wideFocus, 50f);
-            }
             yield return null;
         }
-        foreach (WeddingRetreatActor member in crowd) member.rig.walking = false;
-        CapturePoliceWitnessViewPose();
-        SetWeddingDramaBeat("crowd-retreat-complete");
         firstRig.walking = secondRig.walking = false;
         ResetPoliceAnimatorSpeed(first);
         ResetPoliceAnimatorSpeed(second);
@@ -215,11 +183,8 @@ public partial class Chapter1PerformanceController
         if (actor == primaryPoliceActor || actor == secondaryPoliceActor)
             return Quaternion.LookRotation(direction, Vector3.up) * Quaternion.Euler(0f, 90f, 0f);
         Vector3 forward = actor.forward;
-        Chapter1IncidentRig rig = actor.GetComponent<Chapter1IncidentRig>();
-        if (rig != null && rig.Height > 0f)
-            forward = rig.Forward;
         Animator animator = actor.GetComponentInChildren<Animator>(true);
-        if ((rig == null || rig.Height <= 0f) && animator != null && animator.isHuman)
+        if (animator != null && animator.isHuman)
         {
             Transform left = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
             Transform right = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
@@ -238,16 +203,7 @@ public partial class Chapter1PerformanceController
         actor.position = position;
     }
 
-    private sealed class WeddingRetreatActor
-    {
-        public Transform actor;
-        public Chapter1IncidentRig rig;
-        public Quaternion rotation;
-        public List<Vector3> path;
-        public float length, delay, duration, soleOffset;
-    }
-
-    private List<WeddingRetreatActor> PrepareWeddingCrowdRetreat(Vector3 center, float height)
+    private void StageStoppedWeddingCrowd(Vector3 center, float height, Vector3 threat)
     {
         var actors = new List<Transform>();
         if (groomActor != null) actors.Add(groomActor);
@@ -265,9 +221,6 @@ public partial class Chapter1PerformanceController
             new Vector2(0.33f, 1.92f), new Vector2(0.95f, 1.87f),
             new Vector2(1.55f, 1.57f), new Vector2(2.32f, -0.55f)
         };
-        var available = new List<Vector3>();
-        foreach (Vector2 slot in slots) available.Add(center + new Vector3(slot.x, 0f, slot.y) * height);
-        var crowd = new List<WeddingRetreatActor>();
         for (int i = 0; i < actors.Count; i++)
         {
             Transform actor = actors[i];
@@ -277,100 +230,26 @@ public partial class Chapter1PerformanceController
             {
                 string type = component.GetType().Name;
                 if (type == "Chapter1HandHoldIK" || type == "Chapter1FaceFire"
-                    || type == "Chapter1WeddingFaceCenter" || type == "Chapter1WeddingLimbDance"
-                    || type == "NPCNaturalLookAt")
+                    || type == "Chapter1WeddingFaceCenter" || type == "NPCNaturalLookAt")
                     component.enabled = false;
             }
-            DetachActorFromDancePivot(actor);
-            Vector3 start = actor.position;
-            // Keep the speaking leader's established blocking; every other
-            // villager takes the nearest free slot to avoid crossing the crowd.
-            int nearest = -1;
-            float best = float.MaxValue;
-            for (int slot = 0; slot < available.Count; slot++)
+            if (i < slots.Length)
             {
-                float distance = Vector3.ProjectOnPlane(available[slot] - start, Vector3.up).sqrMagnitude;
-                if (distance < best) { best = distance; nearest = slot; }
+                Vector2 slot = slots[i];
+                Vector3 position = center + new Vector3(slot.x, 0f, slot.y) * height;
+                position.y = actor.position.y;
+                actor.position = position;
             }
-            if (actor == groomActor && available.Count > 0) nearest = 0;
-            Vector3 destination = nearest >= 0 ? available[nearest] : start;
-            if (nearest >= 0) available.RemoveAt(nearest);
             Animator animator = actor.GetComponentInChildren<Animator>(true);
             if (animator != null)
             {
                 animator.applyRootMotion = false;
                 animator.speed = 1f;
+                if (animator.HasState(0, Animator.StringToHash("Idle"))) animator.Play("Idle", 0, 0f);
+                animator.Update(0f);
             }
-            Chapter1IncidentRig rig = actor.GetComponent<Chapter1IncidentRig>();
-            if (rig == null) rig = actor.gameObject.AddComponent<Chapter1IncidentRig>();
-            rig.Initialize(animator, false, 0.6f);
-            rig.smoothLocomotion = true;
-            rig.strideScale = 0.8f;
-            var grounder = actor.GetComponent<Chapter1NpcGrounding>();
-            if (grounder != null) grounder.enabled = false;
-            List<Vector3> path = BuildWeddingRetreatPath(start, destination, center, height * 0.72f);
-            float length = 0f;
-            for (int point = 1; point < path.Count; point++) length += Vector3.Distance(path[point - 1], path[point]);
-            crowd.Add(new WeddingRetreatActor {
-                actor = actor, rig = rig, rotation = actor.rotation, path = path, length = length,
-                delay = 0.15f + (i % 5) * 0.12f,
-                duration = Mathf.Max(2.5f, length / (height * 0.90f)), soleOffset = EntranceSoleOffset(actor)
-            });
-        }
-        return crowd;
-    }
-
-    private static List<Vector3> BuildWeddingRetreatPath(Vector3 start, Vector3 end, Vector3 center, float clearance)
-    {
-        end.y = start.y;
-        center.y = start.y;
-        var path = new List<Vector3> { start };
-        Vector3 segment = end - start;
-        float along = segment.sqrMagnitude > 0.001f
-            ? Mathf.Clamp01(Vector3.Dot(center - start, segment) / segment.sqrMagnitude) : 0f;
-        if (Vector3.Distance(start + segment * along, center) < clearance)
-        {
-            Vector3 from = start - center, to = end - center;
-            float angle = Vector3.SignedAngle(from, to, Vector3.up);
-            float radius = Mathf.Max(clearance * 1.08f, Mathf.Min(from.magnitude, to.magnitude));
-            int steps = Mathf.Max(2, Mathf.CeilToInt(Mathf.Abs(angle) / 12f));
-            for (int step = 0; step <= steps; step++)
-                path.Add(center + Quaternion.AngleAxis(angle * step / steps, Vector3.up) * from.normalized * radius);
-        }
-        path.Add(end);
-        return path;
-    }
-
-    private void UpdateWeddingCrowdRetreat(List<WeddingRetreatActor> crowd, float elapsed, Vector3 threat)
-    {
-        foreach (WeddingRetreatActor member in crowd)
-        {
-            float progress = Mathf.Clamp01((elapsed - member.delay) / member.duration);
-            float distance = Mathf.SmoothStep(0f, 1f, progress) * member.length;
-            Vector3 position = member.path[member.path.Count - 1];
-            Vector3 direction = Vector3.zero;
-            for (int point = 1; point < member.path.Count; point++)
-            {
-                Vector3 segment = member.path[point] - member.path[point - 1];
-                float length = segment.magnitude;
-                if (distance <= length && length > 0.001f)
-                {
-                    position = member.path[point - 1] + segment * (distance / length);
-                    direction = segment;
-                    break;
-                }
-                distance -= length;
-            }
-            member.rig.walking = progress > 0f && progress < 1f && member.length > 0.05f;
-            if (progress > 0f)
-            {
-                Vector3 look = progress < 0.94f && direction.sqrMagnitude > 0.001f
-                    ? member.actor.position + direction : threat;
-                member.actor.rotation = Quaternion.RotateTowards(member.actor.rotation,
-                    EntranceFacingRotation(member.actor, look), 160f * Time.deltaTime);
-                SetEntranceGroundPosition(member.actor, position, member.soleOffset);
-            }
-            if (TryGetIncidentSurfaceY(member.actor.position, out float floor)) member.rig.Ground(floor);
+            actor.rotation = EntranceFacingRotation(actor, threat);
+            EnsureCinematicActorGrounding(actor, true);
         }
     }
 }

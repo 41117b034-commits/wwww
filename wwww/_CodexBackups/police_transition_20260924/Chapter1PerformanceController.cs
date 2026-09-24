@@ -210,7 +210,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     public bool autoPlayCinematicStoryAfterWeddingTasks = true;
 
     [Tooltip("劇情過場時上下加入黑邊，畫面更像遊戲 Cutscene。")]
-    public bool showCinematicLetterbox = false;
+    public bool showCinematicLetterbox = true;
 
     [Range(0.06f, 0.20f)]
     public float cinematicLetterboxHeightRatio = 0.11f;
@@ -1321,7 +1321,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        // 自動劇情過場：隱藏一般遊戲 HUD，保留滿版畫面與字幕。
+        // 自動劇情過場：隱藏一般遊戲 HUD，只留黑邊與字幕。
         if (cinematicStoryPlaying && hideGameplayHudDuringCinematic)
         {
             DrawCinematicLetterbox();
@@ -13616,9 +13616,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         float outsideRadius = Mathf.Max(
             weddingCircleRadius + 2.4f,
             minimumWeddingCircleRadius + 2.4f);
-        // The new entrance walks the victim out with the crowd. Preserve her
-        // current position here so the reaction does not begin with a teleport.
-        if (!IsNewPoliceScene() && GetFlatDistance(victimRoot.position, center) < outsideRadius)
+        if (GetFlatDistance(victimRoot.position, center) < outsideRadius)
         {
             SetHorizontalPosition(victimRoot, center + outward * outsideRadius);
         }

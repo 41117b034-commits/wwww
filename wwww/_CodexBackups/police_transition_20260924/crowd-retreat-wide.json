@@ -1,0 +1,258 @@
+{
+    "playing": true,
+    "paused": false,
+    "compiling": false,
+    "letterbox": false,
+    "scene": "第一章新版警察",
+    "beat": "crowd-retreat-wide",
+    "time": 41.32637405395508,
+    "maxCrowdSpeed": 17.002090454101564,
+    "center": {
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
+    },
+    "actors": [
+        {
+            "name": "賽德克小孩",
+            "position": {
+                "x": 3714.819580078125,
+                "y": -5819.50927734375,
+                "z": -111.90867614746094
+            },
+            "human": true,
+            "rigHeight": 9.371445655822754,
+            "bones": []
+        },
+        {
+            "name": "部落女性1",
+            "position": {
+                "x": 3708.1416015625,
+                "y": -5816.75439453125,
+                "z": -139.34939575195313
+            },
+            "human": true,
+            "rigHeight": 12.804306983947754,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年",
+            "position": {
+                "x": 3718.44482421875,
+                "y": -5818.14599609375,
+                "z": -120.9162826538086
+            },
+            "human": true,
+            "rigHeight": 12.841031074523926,
+            "bones": []
+        },
+        {
+            "name": "賽德克新娘",
+            "position": {
+                "x": 3725.226806640625,
+                "y": -5818.900390625,
+                "z": -112.31204986572266
+            },
+            "human": false,
+            "rigHeight": 11.026670455932618,
+            "bones": [
+                "賽德克新娘",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_880135f6"
+            ]
+        },
+        {
+            "name": "賽德克中年(2)",
+            "position": {
+                "x": 3733.534423828125,
+                "y": -5815.24072265625,
+                "z": -134.80490112304688
+            },
+            "human": true,
+            "rigHeight": 12.93470287322998,
+            "bones": []
+        },
+        {
+            "name": "賽德克青年",
+            "position": {
+                "x": 3730.8544921875,
+                "y": -5817.91064453125,
+                "z": -114.32544708251953
+            },
+            "human": true,
+            "rigHeight": 12.93470287322998,
+            "bones": []
+        },
+        {
+            "name": "莫那",
+            "position": {
+                "x": 3733.473876953125,
+                "y": -5815.86474609375,
+                "z": -132.47337341308595
+            },
+            "human": true,
+            "rigHeight": 12.766518592834473,
+            "bones": []
+        },
+        {
+            "name": "賽德克中年嗎",
+            "position": {
+                "x": 3705.29541015625,
+                "y": -5819.74755859375,
+                "z": -115.91132354736328
+            },
+            "human": true,
+            "rigHeight": 13.500991821289063,
+            "bones": []
+        },
+        {
+            "name": "4",
+            "position": {
+                "x": 3724.19580078125,
+                "y": -5819.69287109375,
+                "z": -106.56171417236328
+            },
+            "human": true,
+            "rigHeight": 9.379961013793946,
+            "bones": []
+        },
+        {
+            "name": "5",
+            "position": {
+                "x": 3716.09814453125,
+                "y": -5819.6513671875,
+                "z": -110.99269104003906
+            },
+            "human": true,
+            "rigHeight": 11.945825576782227,
+            "bones": []
+        },
+        {
+            "name": "1",
+            "position": {
+                "x": 3721.0,
+                "y": -5820.033203125,
+                "z": -106.14379119873047
+            },
+            "human": false,
+            "rigHeight": 10.553521156311036,
+            "bones": [
+                "1",
+                "Armature",
+                "Root",
+                "Hip",
+                "Pelvis",
+                "L_Thigh",
+                "L_Calf",
+                "L_CalfTwist01",
+                "L_CalfTwist02",
+                "L_Foot",
+                "L_ThighTwist01",
+                "L_ThighTwist02",
+                "R_Thigh",
+                "R_Calf",
+                "R_CalfTwist01",
+                "R_CalfTwist02",
+                "R_Foot",
+                "R_ThighTwist01",
+                "R_ThighTwist02",
+                "Waist",
+                "Spine01",
+                "Spine02",
+                "L_Clavicle",
+                "L_Upperarm",
+                "L_Forearm",
+                "L_ForearmTwist01",
+                "L_ForearmTwist02",
+                "L_Hand",
+                "L_UpperarmTwist01",
+                "L_UpperarmTwist02",
+                "NeckTwist01",
+                "NeckTwist02",
+                "Head",
+                "R_Clavicle",
+                "R_Upperarm",
+                "R_Forearm",
+                "R_ForearmTwist01",
+                "R_ForearmTwist02",
+                "R_Hand",
+                "R_UpperarmTwist01",
+                "R_UpperarmTwist02",
+                "tripo_node_55823c37"
+            ]
+        },
+        {
+            "name": "3",
+            "position": {
+                "x": 3736.767578125,
+                "y": -5817.7333984375,
+                "z": -116.4500732421875
+            },
+            "human": true,
+            "rigHeight": 12.831450462341309,
+            "bones": []
+        },
+        {
+            "name": "2",
+            "position": {
+                "x": 3719.4951171875,
+                "y": -5818.53662109375,
+                "z": -118.71304321289063
+            },
+            "human": true,
+            "rigHeight": 12.796855926513672,
+            "bones": []
+        },
+        {
+            "name": "新郎",
+            "position": {
+                "x": 3732.87646484375,
+                "y": -5815.89990234375,
+                "z": -133.59959411621095
+            },
+            "human": true,
+            "rigHeight": 12.853803634643555,
+            "bones": []
+        }
+    ],
+    "errors": []
+}

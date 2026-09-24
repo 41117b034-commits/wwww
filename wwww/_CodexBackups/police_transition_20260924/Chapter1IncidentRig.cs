@@ -26,9 +26,6 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     Quaternion leftFootRotation, rightFootRotation;
     float phase, ankleClearance;
     bool ready;
-    Vector3[] blendPositions;
-    Quaternion[] blendRotations;
-    float poseBlendSeconds, poseBlendElapsed;
     public Transform gripTarget;
     public bool gripWithLeft = true;
     public bool resisting;
@@ -52,11 +49,11 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     Vector3 pushRearAnkle;
     bool pushing;
 
-    public void Initialize(Animator source, bool isPolice, float blendSeconds = 0f)
+    public void Initialize(Animator source, bool isPolice)
     {
         if (ready) return;
         animator=source;police=isPolice;
-        if(animator==null)return;
+        if(animator==null||!animator.isHuman)return;
         animator.Update(0f);
         hips=B(HumanBodyBones.Hips);head=B(HumanBodyBones.Head);
         leftThigh=B(HumanBodyBones.LeftUpperLeg);rightThigh=B(HumanBodyBones.RightUpperLeg);
@@ -65,17 +62,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         leftArm=B(HumanBodyBones.LeftUpperArm);rightArm=B(HumanBodyBones.RightUpperArm);
         leftElbow=B(HumanBodyBones.LeftLowerArm);rightElbow=B(HumanBodyBones.RightLowerArm);
         leftHand=B(HumanBodyBones.LeftHand);rightHand=B(HumanBodyBones.RightHand);
-        if(hips==null||head==null||leftFoot==null||rightFoot==null
-            ||leftThigh==null||rightThigh==null||leftCalf==null||rightCalf==null
-            ||leftArm==null||rightArm==null||leftElbow==null||rightElbow==null
-            ||leftHand==null||rightHand==null)return;
-        bones=animator.GetComponentsInChildren<Transform>(true);
-        if(blendSeconds>0f)
-        {
-            poseBlendSeconds=blendSeconds;poseBlendElapsed=0f;
-            blendPositions=new Vector3[bones.Length];blendRotations=new Quaternion[bones.Length];
-            for(int i=0;i<bones.Length;i++){blendPositions[i]=bones[i].localPosition;blendRotations[i]=bones[i].localRotation;}
-        }
+        if(hips==null||head==null||leftFoot==null||rightFoot==null)return;
         Height=(head.position.y-Mathf.Min(leftFoot.position.y,rightFoot.position.y))*1.09f;
         Vector3 forward=police?-transform.right:Vector3.Cross(rightArm.position-leftArm.position,Vector3.up).normalized;
         localForward=transform.InverseTransformDirection(forward);
@@ -120,31 +107,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         for(int i=0;i<bones.Length;i++){positions[i]=bones[i].localPosition;rotations[i]=bones[i].localRotation;}
         previousPosition=transform.position;ready=true;
     }
-    Transform B(HumanBodyBones b)
-    {
-        if(animator.isHuman)return animator.GetBoneTransform(b);
-        switch(b)
-        {
-            case HumanBodyBones.Hips:return Chapter1WeddingRigBones.Resolve(animator,b,"Hips","Pelvis");
-            case HumanBodyBones.Head:return Chapter1WeddingRigBones.Resolve(animator,b,"Head");
-            case HumanBodyBones.Spine:return Chapter1WeddingRigBones.Resolve(animator,b,"Spine","Spine1");
-            case HumanBodyBones.LeftUpperLeg:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Thigh","LeftUpLeg");
-            case HumanBodyBones.RightUpperLeg:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Thigh","RightUpLeg");
-            case HumanBodyBones.LeftLowerLeg:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Calf","LeftLeg");
-            case HumanBodyBones.RightLowerLeg:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Calf","RightLeg");
-            case HumanBodyBones.LeftFoot:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Foot","LeftFoot");
-            case HumanBodyBones.RightFoot:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Foot","RightFoot");
-            case HumanBodyBones.LeftToes:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Toe0","LeftToeBase","L_Toe");
-            case HumanBodyBones.RightToes:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Toe0","RightToeBase","R_Toe");
-            case HumanBodyBones.LeftUpperArm:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Upperarm","LeftArm");
-            case HumanBodyBones.RightUpperArm:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Upperarm","RightArm");
-            case HumanBodyBones.LeftLowerArm:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Forearm","LeftForeArm");
-            case HumanBodyBones.RightLowerArm:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Forearm","RightForeArm");
-            case HumanBodyBones.LeftHand:return Chapter1WeddingRigBones.Resolve(animator,b,"L_Hand","LeftHand");
-            case HumanBodyBones.RightHand:return Chapter1WeddingRigBones.Resolve(animator,b,"R_Hand","RightHand");
-            default:return null;
-        }
-    }
+    Transform B(HumanBodyBones b)=>animator.GetBoneTransform(b);
     static void FlattenFoot(Transform foot,Transform toes,Vector3 forward)
     {
         if(toes==null)return;
@@ -275,17 +238,6 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Vector3 chest = pushTarget.Head.position - Vector3.up * pushTarget.Height * 0.18f
                 + pushTarget.Forward * pushTarget.Height * 0.055f;
             Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,chest,pushWeight),Vector3.down);
-        }
-        if(blendRotations!=null)
-        {
-            poseBlendElapsed+=Time.deltaTime;
-            float blend=Mathf.SmoothStep(0f,1f,poseBlendElapsed/poseBlendSeconds);
-            for(int i=0;i<bones.Length;i++)if(bones[i]!=null&&bones[i]!=transform)
-            {
-                bones[i].localPosition=Vector3.Lerp(blendPositions[i],bones[i].localPosition,blend);
-                bones[i].localRotation=Quaternion.Slerp(blendRotations[i],bones[i].localRotation,blend);
-            }
-            if(blend>=1f){blendRotations=null;blendPositions=null;}
         }
         UpdateBaton();
     }
