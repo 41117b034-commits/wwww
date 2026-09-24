@@ -110,3 +110,13 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 查看實際 Game 畫面與引擎截圖，確認警察短鏡頭、退開全景和後續劇情沒有電影式上下黑邊。
 - 測試後退出 Play Mode，臨時 `Assets/Editor/Chapter1TransitionProbe.cs` 及其 meta 已移除。原檔備份、測試工具副本、狀態紀錄及截圖保留在 `_CodexBackups/police_transition_20260924/`；正式 P 鍵與自動觸發截圖分別在 `p-key-verified/`、`auto-completion-verified/`。
 - 尚未使用實體 VR 頭戴裝置驗證；本次也未改動或重測門口選項之後的兩條分支。
+
+## 補上遺漏的外圍任務 NPC（2026-09-24 後續修正）
+
+- 使用者指出警察說話鏡頭的後方仍留有族人。前一輪轉場與驗證只涵蓋 14 名舞圈／劇情族人，遺漏了固定站立、接收酒與食物的 4 名 NPC。
+- 實際遺漏角色為 `部落男性`、`部落女姓2`、`賽德克帥哥`、`原住民小孩(2)`；截图中留在警察背後的兩人是 `部落女姓2`、`賽德克帥哥`。
+- 修改 `Chapter1PerformanceController.PoliceEntrance.cs`，將送酒、食物目標的完整角色根物件也納入退開名單，排除重複及父子層級重複。婚禮任務階段仍保持原本的固定位置，進入警察劇情後才一起走開。
+- 站位增加到 18 個，較矮的任務 NPC 優先使用火堆旁的前排位置，避免被烤架遮住；另加站位不足時自動補足的處理，避免新增人物再次留在原地。
+- 本次在 Unity 6000.0.58f1 Editor Play Mode 重新按 P 驗證兩輪；最終版本的 18 名族人均有有效動作骨架且到達群眾側。特別核對使用者截圖的「這種野蠻婚禮，竟然還敢辦得這麼熱鬧？」鏡頭，警察身後已無落單族人，滿版画面維持不變，測試沒有 Error／Exception。
+- 這次測試記錄改為同時收集舞圈成員與送酒／食物目標，不再只檢查舞圈名單。備份、完整名單及對照截圖放在 `_CodexBackups/police_receiver_retreat_20260924/`，其中 `police-insult.png` 對應使用者截圖，`crowd-retreat-complete.png` 顯示 18 人的新站位。
+- 測試後退出 Play Mode並移除臨時 Editor 測試腳本與 meta；未使用實體 VR 裝置，未逐項重玩婚禮任務或重測選項分支。

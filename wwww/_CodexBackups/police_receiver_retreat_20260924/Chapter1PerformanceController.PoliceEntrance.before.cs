@@ -250,15 +250,10 @@ public partial class Chapter1PerformanceController
     private List<WeddingRetreatActor> PrepareWeddingCrowdRetreat(Vector3 center, float height)
     {
         var actors = new List<Transform>();
-        AddWeddingRetreatActor(actors, groomActor);
-        // Delivery guests deliberately stay outside the dance circle during
-        // quests. They still belong to the wedding and must react to the police.
-        // Give these outer guests nearby slots before filling the inner crowd.
-        AddWeddingDeliveryGuests(actors, wineDeliveryTargets);
-        AddWeddingDeliveryGuests(actors, foodDeliveryTargets);
+        if (groomActor != null) actors.Add(groomActor);
         foreach (Chapter1CircleDancer dancer in weddingCrowdDancers)
-            if (dancer != null) AddWeddingRetreatActor(actors, dancer.transform);
-        AddWeddingRetreatActor(actors, femaleVillagerActor);
+            if (dancer != null && !actors.Contains(dancer.transform)) actors.Add(dancer.transform);
+        if (femaleVillagerActor != null && !actors.Contains(femaleVillagerActor)) actors.Add(femaleVillagerActor);
         // Leave the near/left side of the fire open so the batons and villagers'
         // faces remain readable, with children in the front and adults behind.
         Vector2[] slots = {
@@ -268,21 +263,10 @@ public partial class Chapter1PerformanceController
             new Vector2(1.95f, 0.22f), new Vector2(1.78f, -0.4f),
             new Vector2(1.3f, -0.9f), new Vector2(-0.28f, 1.85f),
             new Vector2(0.33f, 1.92f), new Vector2(0.95f, 1.87f),
-            new Vector2(1.55f, 1.57f), new Vector2(2.32f, -0.55f),
-            new Vector2(0.50f, -1.15f), new Vector2(1.05f, -1.22f),
-            new Vector2(1.65f, -1.08f), new Vector2(2.26f, 1.25f)
+            new Vector2(1.55f, 1.57f), new Vector2(2.32f, -0.55f)
         };
         var available = new List<Vector3>();
         foreach (Vector2 slot in slots) available.Add(center + new Vector3(slot.x, 0f, slot.y) * height);
-        var frontSlots = new HashSet<Vector3> { available[14], available[15], available[16] };
-        // Future added guests also need a destination, rather than silently
-        // remaining behind the officers when the authored slots run out.
-        while (available.Count < actors.Count)
-        {
-            int extra = available.Count - slots.Length;
-            available.Add(center + new Vector3(-0.35f + (extra % 5) * 0.6f,
-                0f, 2.55f + (extra / 5) * 0.6f) * height);
-        }
         var crowd = new List<WeddingRetreatActor>();
         for (int i = 0; i < actors.Count; i++)
         {
@@ -303,13 +287,9 @@ public partial class Chapter1PerformanceController
             // villager takes the nearest free slot to avoid crossing the crowd.
             int nearest = -1;
             float best = float.MaxValue;
-            bool shortGuest = IsDeliveryTaskNPC(actor) && GetActorStandingHeight(actor) < height * 0.8f;
             for (int slot = 0; slot < available.Count; slot++)
             {
                 float distance = Vector3.ProjectOnPlane(available[slot] - start, Vector3.up).sqrMagnitude;
-                // The smaller stationary guests disappear behind the roast if
-                // assigned the back row. Reserve visible front-row places.
-                if (frontSlots.Contains(available[slot]) != shortGuest) distance += height * height * 100f;
                 if (distance < best) { best = distance; nearest = slot; }
             }
             if (actor == groomActor && available.Count > 0) nearest = 0;
@@ -338,22 +318,6 @@ public partial class Chapter1PerformanceController
             });
         }
         return crowd;
-    }
-
-    private void AddWeddingDeliveryGuests(List<Transform> actors, Transform[] targets)
-    {
-        if (targets == null) return;
-        foreach (Transform target in targets)
-            AddWeddingRetreatActor(actors, GetDeliveryActorRoot(target));
-    }
-
-    private void AddWeddingRetreatActor(List<Transform> actors, Transform actor)
-    {
-        if (actor == null || !actor.gameObject.activeInHierarchy
-            || actor == primaryPoliceActor || actor == secondaryPoliceActor) return;
-        foreach (Transform existing in actors)
-            if (actor == existing || actor.IsChildOf(existing) || existing.IsChildOf(actor)) return;
-        actors.Add(actor);
     }
 
     private static List<Vector3> BuildWeddingRetreatPath(Vector3 start, Vector3 end, Vector3 center, float clearance)
