@@ -1,0 +1,34 @@
+{
+    "playing": true,
+    "paused": false,
+    "compiling": false,
+    "completed": false,
+    "waiting": false,
+    "audioPlaying": false,
+    "knockedOut": false,
+    "scene": "第一章新版警察",
+    "beat": "",
+    "clip": "",
+    "time": 0.0,
+    "doorOpen": 0.0,
+    "clipLength": 0.0,
+    "audioVolume": 0.0,
+    "audioPeak": 0.0,
+    "cameraPosition": {
+        "x": 3732.08349609375,
+        "y": -5802.1298828125,
+        "z": -174.7309112548828
+    },
+    "cameraForward": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+    },
+    "center": {
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
+    },
+    "actors": [],
+    "errors": []
+}
