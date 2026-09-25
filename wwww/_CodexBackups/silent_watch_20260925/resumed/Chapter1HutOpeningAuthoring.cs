@@ -24,9 +24,7 @@ public static class Chapter1HutOpeningAuthoring
     {
         GameObject hut = GameObject.Find("傳統建築");
         MeshFilter filter = hut != null ? hut.GetComponent<MeshFilter>() : null;
-        // The generated asset may be missing after an interrupted authoring
-        // session. The saved imported mesh is enough to rebuild it safely.
-        if (filter == null || (filter.sharedMesh == null && door.originalFacadeMesh == null))
+        if (filter == null || filter.sharedMesh == null)
             throw new System.InvalidOperationException("The incident hut mesh was not found.");
         const string path = "Assets/Models/Chapter1Doorway/IncidentHutOpening.asset";
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);

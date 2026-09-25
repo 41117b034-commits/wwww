@@ -1,5 +1,5 @@
 {
-    "playing": false,
+    "playing": true,
     "paused": false,
     "compiling": false,
     "completed": false,
@@ -8,7 +8,7 @@
     "scene": "第一章新版警察",
     "beat": "",
     "clip": "",
-    "time": 4.353333473205566,
+    "time": 0.0,
     "doorOpen": 0.0,
     "clipLength": 0.0,
     "audioVolume": 0.0,

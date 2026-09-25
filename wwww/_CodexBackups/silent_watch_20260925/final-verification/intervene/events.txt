@@ -1,0 +1,49 @@
+6.020 [Doorway] Local hut mesh opening created; imported source retained.
+6.020 [Doorway] Watch door upgraded; closed-door hold is 5 seconds.
+40.853 [Wedding Confrontation] crowd-reaction
+41.775 [Wedding Confrontation] police-entrance-short
+43.631 [Wedding Confrontation] crowd-retreat-wide
+48.702 [Wedding Confrontation] crowd-retreat-complete
+51.952 [Wedding Confrontation] police-order
+54.587 [Wedding Confrontation] police-insult
+60.540 [Wedding Confrontation] leader-reply
+66.688 [Wedding Confrontation] leader-approach
+71.739 [Wedding Confrontation] leader-question
+74.740 [Wedding Confrontation] police-shove
+75.106 [Wedding Confrontation] shove-contact
+75.378 [Wedding Confrontation] leader-stumble
+77.089 [Wedding Confrontation] leader-recover
+79.099 [Wedding Confrontation] confrontation-complete
+87.070 [Wedding Confrontation] doorway-choice
+87.070 [Doorway] Choice ready; both actors held at the entrance.
+116.734 [Wedding Confrontation] watch-door-opening
+117.640 [Wedding Confrontation] watch-entering-hut
+121.866 [Wedding Confrontation] watch-door-closing
+122.746 [Wedding Confrontation] watch-door-closed
+123.568 [Wedding Confrontation] watch-hut-scream
+127.770 [Doorway Watch] Closed-door hold: 5.024 seconds.
+127.770 [Wedding Confrontation] watch-door-reopening
+128.680 [Wedding Confrontation] watch-dragging-out
+132.564 [Wedding Confrontation] watch-woman-released
+133.466 [Wedding Confrontation] watch-police-regroup
+139.230 [Wedding Confrontation] watch-police-departure
+147.318 [Wedding Confrontation] watch-departure-tableau
+153.349 [Wedding Confrontation] watch-complete
+4.154 [Wedding Confrontation] crowd-reaction
+5.084 [Wedding Confrontation] police-entrance-short
+6.928 [Wedding Confrontation] crowd-retreat-wide
+12.224 [Wedding Confrontation] crowd-retreat-complete
+15.265 [Wedding Confrontation] police-order
+17.893 [Wedding Confrontation] police-insult
+23.777 [Wedding Confrontation] leader-reply
+29.634 [Wedding Confrontation] leader-approach
+34.644 [Wedding Confrontation] leader-question
+37.641 [Wedding Confrontation] police-shove
+38.106 [Wedding Confrontation] shove-contact
+38.456 [Wedding Confrontation] leader-stumble
+40.150 [Wedding Confrontation] leader-recover
+42.032 [Wedding Confrontation] confrontation-complete
+49.977 [Wedding Confrontation] doorway-choice
+49.977 [Doorway] Choice ready; both actors held at the entrance.
+58.699 [Doorway] Baton impact.
+60.205 [Doorway] Knockout tableau ready; stopping Play Mode in 3 seconds.

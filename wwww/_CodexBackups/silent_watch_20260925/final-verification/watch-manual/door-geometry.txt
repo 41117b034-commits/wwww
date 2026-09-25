@@ -1,0 +1,8 @@
+Hut collision segment point=(3686.00, -5824.00, -47.59)
+Shadowed doorway point=(3686.00, -5824.00, -49.50)
+Hut collision segment point=(3686.00, -5820.00, -47.52)
+Shadowed doorway point=(3686.00, -5820.00, -49.50)
+Hut collision segment point=(3686.00, -5816.00, -47.45)
+Shadowed doorway point=(3686.00, -5816.00, -49.50)
+Hut collision segment point=(3686.00, -5812.00, -47.38)
+Shadowed doorway point=(3686.00, -5812.00, -49.50)
