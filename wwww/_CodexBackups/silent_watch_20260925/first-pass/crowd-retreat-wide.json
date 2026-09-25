@@ -1,0 +1,479 @@
+{
+    "playing": true,
+    "paused": false,
+    "compiling": false,
+    "completed": false,
+    "waiting": false,
+    "audioPlaying": false,
+    "scene": "第一章新版警察",
+    "beat": "crowd-retreat-wide",
+    "clip": "",
+    "time": 6.878991603851318,
+    "doorOpen": 0.0,
+    "clipLength": 0.0,
+    "audioVolume": 0.0,
+    "cameraPosition": {
+        "x": 3717.646728515625,
+        "y": -5799.443359375,
+        "z": -180.76670837402345
+    },
+    "cameraForward": {
+        "x": 0.06265442073345185,
+        "y": -0.21468579769134522,
+        "z": 0.974671483039856
+    },
+    "center": {
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
+    },
+    "actors": [
+        {
+            "name": "賽德克中年嗎",
+            "position": {
+                "x": 3727.283935546875,
+                "y": -5815.35791015625,
+                "z": -140.7930908203125
+            },
+            "forward": {
+                "x": 0.8716618418693543,
+                "y": 0.0,
+                "z": -0.4901077151298523
+            },
+            "viewport": {
+                "x": 0.6087061166763306,
+                "y": 0.6418135762214661,
+                "z": 40.94906234741211
+            },
+            "height": 13.553682327270508,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "新郎",
+            "position": {
+                "x": 3735.892578125,
+                "y": -5816.6025390625,
+                "z": -126.46665954589844
+            },
+            "forward": {
+                "x": 0.2452695071697235,
+                "y": 0.0,
+                "z": -0.9694548845291138
+            },
+            "viewport": {
+                "x": 0.6602656245231628,
+                "y": 0.629441499710083,
+                "z": 55.21834945678711
+            },
+            "height": 12.846884727478028,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "部落男性",
+            "position": {
+                "x": 3740.3388671875,
+                "y": -5819.46044921875,
+                "z": -98.964111328125
+            },
+            "forward": {
+                "x": -0.5477717518806458,
+                "y": 0.0,
+                "z": -0.8366278409957886
+            },
+            "viewport": {
+                "x": 0.6256679892539978,
+                "y": 0.6151987314224243,
+                "z": 83.19584655761719
+            },
+            "height": 11.931987762451172,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "莫那",
+            "position": {
+                "x": 3747.89453125,
+                "y": -5817.2333984375,
+                "z": -113.24585723876953
+            },
+            "forward": {
+                "x": 0.9900856614112854,
+                "y": 0.0,
+                "z": 0.1404646933078766
+            },
+            "viewport": {
+                "x": 0.7247049808502197,
+                "y": 0.6374784111976624,
+                "z": 69.15081787109375
+            },
+            "height": 12.808032989501954,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "部落女性1",
+            "position": {
+                "x": 3732.404541015625,
+                "y": -5815.3896484375,
+                "z": -137.36825561523438
+            },
+            "forward": {
+                "x": 0.9883975982666016,
+                "y": 0.0,
+                "z": -0.15188883244991303
+            },
+            "viewport": {
+                "x": 0.6617128849029541,
+                "y": 0.6294810175895691,
+                "z": 44.58930587768555
+            },
+            "height": 12.812822341918946,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "部落女姓2",
+            "position": {
+                "x": 3683.685791015625,
+                "y": -5818.64990234375,
+                "z": -142.47930908203126
+            },
+            "forward": {
+                "x": 0.777889609336853,
+                "y": 0.0,
+                "z": 0.6284010410308838
+            },
+            "viewport": {
+                "x": -0.10022866725921631,
+                "y": 0.5499922037124634,
+                "z": 36.51193618774414
+            },
+            "height": 13.449365615844727,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克帥哥",
+            "position": {
+                "x": 3687.677734375,
+                "y": -5815.73046875,
+                "z": -156.46298217773438
+            },
+            "forward": {
+                "x": 0.953916609287262,
+                "y": 2.2351740014414646e-8,
+                "z": 0.3000718653202057
+            },
+            "viewport": {
+                "x": -0.3596497178077698,
+                "y": 0.49530574679374697,
+                "z": 23.09454345703125
+            },
+            "height": 12.938960075378418,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "原住民小孩(2)",
+            "position": {
+                "x": 3756.24853515625,
+                "y": -5813.83642578125,
+                "z": -134.95970153808595
+            },
+            "forward": {
+                "x": -0.8390799760818481,
+                "y": 0.0,
+                "z": -0.5440081357955933
+            },
+            "viewport": {
+                "x": 0.9438772797584534,
+                "y": 0.5938013792037964,
+                "z": 48.54393005371094
+            },
+            "height": 9.246904373168946,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克新娘",
+            "position": {
+                "x": 3718.082763671875,
+                "y": -5820.03125,
+                "z": -105.95864868164063
+            },
+            "forward": {
+                "x": 0.9433311820030212,
+                "y": 0.0,
+                "z": 0.33185267448425295
+            },
+            "viewport": {
+                "x": 0.4637918770313263,
+                "y": 0.5830565690994263,
+                "z": 75.15412902832031
+            },
+            "height": 11.026670455932618,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "1",
+            "position": {
+                "x": 3718.77001953125,
+                "y": -5819.41650390625,
+                "z": -113.05557250976563
+            },
+            "forward": {
+                "x": 0.9958075284957886,
+                "y": 0.0,
+                "z": 0.09147381782531738
+            },
+            "viewport": {
+                "x": 0.46930262446403506,
+                "y": 0.5732182264328003,
+                "z": 68.17440032958985
+            },
+            "height": 10.553521156311036,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "2",
+            "position": {
+                "x": 3718.685791015625,
+                "y": -5815.7685546875,
+                "z": -141.74810791015626
+            },
+            "forward": {
+                "x": 0.9279877543449402,
+                "y": 0.0,
+                "z": -0.37261083722114565
+            },
+            "viewport": {
+                "x": 0.4761474132537842,
+                "y": 0.607713520526886,
+                "z": 39.87698745727539
+            },
+            "height": 12.8436918258667,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "5",
+            "position": {
+                "x": 3716.3486328125,
+                "y": -5818.98779296875,
+                "z": -116.33646392822266
+            },
+            "forward": {
+                "x": 0.9623705148696899,
+                "y": 0.0,
+                "z": 0.27174049615859988
+            },
+            "viewport": {
+                "x": 0.45051315426826479,
+                "y": 0.5907135009765625,
+                "z": 64.65276336669922
+            },
+            "height": 11.978291511535645,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克小孩",
+            "position": {
+                "x": 3710.338134765625,
+                "y": -5816.42333984375,
+                "z": -140.724609375
+            },
+            "forward": {
+                "x": 0.6498332023620606,
+                "y": 0.0,
+                "z": -0.7600768208503723
+            },
+            "viewport": {
+                "x": 0.35314497351646426,
+                "y": 0.5026934146881104,
+                "z": 40.500816345214847
+            },
+            "height": 9.402847290039063,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "Police02_Model",
+            "position": {
+                "x": 3679.0576171875,
+                "y": -5819.11181640625,
+                "z": -134.82705688476563
+            },
+            "forward": {
+                "x": 0.9333453178405762,
+                "y": 0.0,
+                "z": 0.35897982120513918
+            },
+            "viewport": {
+                "x": -0.05919015407562256,
+                "y": 0.5611212849617004,
+                "z": 44.14649200439453
+            },
+            "height": 13.392416954040528,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "3",
+            "position": {
+                "x": 3729.54296875,
+                "y": -5818.716796875,
+                "z": -111.00889587402344
+            },
+            "forward": {
+                "x": 0.9506999254226685,
+                "y": 0.0,
+                "z": -0.310112327337265
+            },
+            "viewport": {
+                "x": 0.5620334148406982,
+                "y": 0.6182547807693481,
+                "z": 71.01045989990235
+            },
+            "height": 12.891059875488282,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克中年(2)",
+            "position": {
+                "x": 3741.806396484375,
+                "y": -5816.56005859375,
+                "z": -120.00780487060547
+            },
+            "forward": {
+                "x": 0.9989683032035828,
+                "y": 0.0,
+                "z": 0.045413728803396228
+            },
+            "viewport": {
+                "x": 0.6955077648162842,
+                "y": 0.6330524682998657,
+                "z": 61.80314254760742
+            },
+            "height": 12.93470287322998,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克青年",
+            "position": {
+                "x": 3723.358642578125,
+                "y": -5819.39794921875,
+                "z": -105.17503356933594
+            },
+            "forward": {
+                "x": 0.9782178401947022,
+                "y": 0.0,
+                "z": 0.20758095383644105
+            },
+            "viewport": {
+                "x": 0.505564272403717,
+                "y": 0.6107320189476013,
+                "z": 75.68670654296875
+            },
+            "height": 12.93470287322998,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "賽德克中年",
+            "position": {
+                "x": 3741.19091796875,
+                "y": -5815.32470703125,
+                "z": -132.0282440185547
+            },
+            "forward": {
+                "x": 0.9756690263748169,
+                "y": 0.0,
+                "z": -0.21924883127212525
+            },
+            "viewport": {
+                "x": 0.7466525435447693,
+                "y": 0.6409072875976563,
+                "z": 49.92219543457031
+            },
+            "height": 12.870835304260254,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "4",
+            "position": {
+                "x": 3715.590087890625,
+                "y": -5818.56298828125,
+                "z": -121.02165222167969
+            },
+            "forward": {
+                "x": 0.9155053496360779,
+                "y": 0.0,
+                "z": 0.4023056924343109
+            },
+            "viewport": {
+                "x": 0.44012752175331118,
+                "y": 0.5434772372245789,
+                "z": 60.30872344970703
+            },
+            "height": 9.377300262451172,
+            "visibleRenderers": 1,
+            "walking": true
+        },
+        {
+            "name": "Police01_Model",
+            "position": {
+                "x": 3695.438232421875,
+                "y": -5816.0498046875,
+                "z": -153.40945434570313
+            },
+            "forward": {
+                "x": 0.9230773448944092,
+                "y": 0.0,
+                "z": 0.38461431860923769
+            },
+            "viewport": {
+                "x": -0.034101009368896487,
+                "y": 0.5711259245872498,
+                "z": 26.417972564697267
+            },
+            "height": 13.392416954040528,
+            "visibleRenderers": 1,
+            "walking": true
+        }
+    ],
+    "errors": [
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "NullReferenceException: Object reference not set to an instance of an object"
+    ]
+}

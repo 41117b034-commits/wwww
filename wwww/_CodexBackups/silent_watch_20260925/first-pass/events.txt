@@ -1,0 +1,30 @@
+2.008 [Doorway] Watch door upgraded; closed-door hold is 5 seconds.
+4.155 [Wedding Confrontation] crowd-reaction
+5.087 [Wedding Confrontation] police-entrance-short
+6.879 [Wedding Confrontation] crowd-retreat-wide
+11.961 [Wedding Confrontation] crowd-retreat-complete
+15.187 [Wedding Confrontation] police-order
+17.867 [Wedding Confrontation] police-insult
+23.853 [Wedding Confrontation] leader-reply
+30.292 [Wedding Confrontation] leader-approach
+35.446 [Wedding Confrontation] leader-question
+38.247 [Wedding Confrontation] police-shove
+38.705 [Wedding Confrontation] shove-contact
+39.042 [Wedding Confrontation] leader-stumble
+40.834 [Wedding Confrontation] leader-recover
+42.632 [Wedding Confrontation] confrontation-complete
+50.615 [Wedding Confrontation] doorway-choice
+50.615 [Doorway] Choice ready; both actors held at the entrance.
+52.652 [Wedding Confrontation] watch-door-opening
+53.536 [Wedding Confrontation] watch-entering-hut
+57.789 [Wedding Confrontation] watch-door-closing
+58.722 [Wedding Confrontation] watch-door-closed
+59.533 [Wedding Confrontation] watch-hut-scream
+63.788 [Doorway Watch] Closed-door hold: 5.066 seconds.
+63.788 [Wedding Confrontation] watch-door-reopening
+64.704 [Wedding Confrontation] watch-dragging-out
+68.544 [Wedding Confrontation] watch-woman-released
+69.488 [Wedding Confrontation] watch-police-regroup
+74.783 [Wedding Confrontation] watch-police-departure
+91.667 [Wedding Confrontation] watch-departure-tableau
+97.813 [Wedding Confrontation] watch-complete
