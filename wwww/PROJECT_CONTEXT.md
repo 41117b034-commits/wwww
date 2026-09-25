@@ -139,3 +139,24 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 圖片存於 `output/imagegen/沉默觀望_警察離去_v1.png`；完整提示詞存於同目錄的 `沉默觀望_警察離去_v1.prompt.txt`。
 - 已目視確認兩名黑制服警察背對鏡頭走遠、族人在前景目送，背景延續木造屋舍、碎石地與黃綠樹林，沒有字幕或遊戲 UI。此為依截圖生成的圖片，並非 Unity 引擎直接渲染的新鏡頭。
 - 本次只產出圖片，未修改程式、場景或接入選項分支，未執行 Unity／VR 測試；「沉默觀望」離去演出仍未實作。
+
+## 完成「沉默觀望」屋內事件與警察離去（2026-09-25，接續中斷任務）
+
+- 使用者在「生成警察離開的背影圖」（`01a0d6f5-b5b8-74b3-b078-011a4c6be776`）接著要求直接修改 Unity：警察拉女性入屋、關門後只傳出慘叫、關門五秒後拖出女性、兩名警察離去，族人在前景目送。該次工作在最終驗證前中斷；本次接續既有修改完成驗證與收尾。
+- 新增 `Assets/腳本/第一章演出/Chapter1PerformanceController.Watch.cs`，並由 `Chapter1PerformanceController.Doorway.cs` 的沉默分支呼叫。整段保持屋外視角；關門期間隱藏屋內兩人的渲染，沒有屋內動作或屋內鏡頭。女性被帶出後留在屋外，兩名警察回到廣場並慢步離開，最後構圖停留六秒。
+- 新增 `Chapter1HutDoor.cs`、更新 `Chapter1DoorwayAuthoring.cs` 並新增 `Chapter1HutOpeningAuthoring.cs`，為現有木框加入旋轉木門、地板與原屋舍的局部门洞，原始匯入模型保留。場景的整屋 BoxCollider 分割為門洞周围的碰撞區塊，避免用整屋碰撞封住門口。
+- 新門洞模型為 `Assets/Models/Chapter1Doorway/IncidentHutOpening.asset`。本次接手時場景仍引用它，但檔案缺失；已修正建立工具可使用保留的 `originalFacadeMesh` 重建，重新產生並儲存場景。保留未切割部分的原始頂點索引，目前約 124 萬頂點、163 MB 文字序列化檔，沒有改動原始屋舍資產。
+- 新增 `Assets/Resources/Chapter1Voice/10_hut_female_scream.ogg` 與同名 `.LICENSE.txt`。素材來源與 CC0 授權紀錄保存在該檔；`GetHutCryClip()` 載入這個音效，從屋內位置播放並套用低通濾波。原先 `10_hut_cry.wav` 仍保留，這段改用新增音效。
+- `Chapter1PerformanceController.cs` 在停用時停止這段 coroutine 並清理屋內音效、恢復角色可見性與環境音量。演出使用既有角色、場景和滿版鏡頭，沒有用生成圖片取代遊戲畫面。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1 Editor Play Mode，實際按 P 觸發、按 2 選「沉默觀望」，執行到 `watch-complete`。關門至重新開門實測 5.024 秒；音效在播放且有非零輸出，關門期間 `Police02_Model` 與 `部落女性1` 的可見角色渲染數均為 0。
+- 檢查進屋、關門、拖出與離場的引擎截圖，最後畫面能看見前景族人與兩名警察背影。女性釋放後至結尾水平位移為 0；兩名警察正常可見並停止於離場終點。這輪 Error／Exception／Assert 為 0。
+- 儲存後重新載入場景，透過臨時 Editor 測試工具觸發既有劇情與「上前阻止」。實際執行警棍擊中、倒地構圖，約三秒後自動退出 Play Mode；退出記錄 `completed=true`、`knockedOut=true`，沒有 Error／Exception／Assert。
+- 另以場景原有的自動結束設定再跑一次「沉默觀望」：關門等待 5.043 秒，背影結尾停留約六秒後自動退出 Play Mode；退出記錄為 `beat=watch-complete`、`completed=true`、`knockedOut=false`，沒有 Error／Exception／Assert。這輪用程式呼叫與按鍵相同的劇情／選項入口，沒有再重玩婚禮任務。
+- 門口射線檢查：門關閉時會碰到木門；門打開時入口通道不再碰到原屋舍實心碰撞，只在暗處後牆及其後方碰撞終止。
+- 備份及先前測試在 `_CodexBackups/silent_watch_20260925/`；本次測試在其 `final-verification/` 下，`watch-manual/` 保留 P／2 實際按鍵的一輪，`intervene/` 保留另一分支的退出狀態與倒地畫面。
+- `watch-auto-exit/` 保留自動結束的一輪。所有測試均暫時關閉 PlayerPrefs 結果寫入；未更動使用者的進度紀錄。測試後已退出 Play Mode，臨時 `Assets/Editor/Chapter1WatchProbe.cs` 與 meta 已移出 Assets 並存於驗證資料夾，避免之後 Play Mode 自動觸發測試。
+- 移除測試工具後完成最後一次 Unity 腳本重編譯，Console 顯示 0 Error、0 Warning；編輯器留在此場景的 Scene／Edit Mode。
+- 本次尚未使用實體 VR 頭戴裝置，也沒有逐項重玩婚禮送酒、食物與舞蹈互動。
