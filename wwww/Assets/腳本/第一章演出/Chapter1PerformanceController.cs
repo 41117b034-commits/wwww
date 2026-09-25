@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -749,7 +749,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     public float minimumSlowDragToHutSeconds = 5.5f;
 
     [Tooltip("兩人進屋消失後，等待這麼久才重新出現。")]
-    public float hutInteriorHoldSeconds = 10f;
+    public float hutInteriorHoldSeconds = 5f;
 
     [Tooltip("進屋後多久播放女性慘叫聲。")]
     public float hutScreamDelaySeconds = 0.8f;
@@ -1144,6 +1144,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             || source == heartbeatAudio
             || source == policeEventAudio
             || source == policeDialogueAudio
+            || source == hutInteriorAudio
             || source == narrationAudio;
     }
 
@@ -1433,6 +1434,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (doorwayWatchActive) StopAllCoroutines();
+        CleanupDoorwayWatch();
         if (doorwayVignette != null) { Destroy(doorwayVignette); doorwayVignette = null; }
         knockoutDizzyVisible = false;
         ReleaseIncidentCameraLock();

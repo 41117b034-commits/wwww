@@ -1,6 +1,6 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-09-24。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-09-25。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
 ## 專案位置
 
@@ -131,3 +131,11 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 核對任務階段與退開完成紀錄，四名任務 NPC 的縮放均保持一致；18 名族人都有有效劇情骨架，警察對話鏡頭背後無遺留族人。引擎截圖保持滿版，測試期間無 Error／Exception。未使用實體 VR，未重玩送物互動或門口選項分支。
 - 原檔備份、測試工具副本、前後身高／縮放紀錄與實際畫面保存在 `_CodexBackups/police_guest_scale_20260924/`；`crowd-retreat-complete.png` 為修正後全景，`before-incident.json` 與 `crowd-retreat-complete.json` 可對照比例。
 - 測試後已退出 Play Mode，移除臨時 `Assets/Editor/Chapter1TransitionProbe.cs` 與 meta；本次沒有更動場景序列化內容。
+
+## 「沉默觀望」警察離去情境圖（2026-09-25）
+
+- 使用者要求生成兩名警察離開、族人目送背影的圖片，背景延續遊戲場景。
+- 以 `_CodexBackups/police_guest_scale_20260924/` 中的 `crowd-retreat-complete.png`、`police-entrance-short.png`、`police-insult.png` 實際遊戲截圖作為參考，使用內建 image_gen 生成一張橫式情境圖。
+- 圖片存於 `output/imagegen/沉默觀望_警察離去_v1.png`；完整提示詞存於同目錄的 `沉默觀望_警察離去_v1.prompt.txt`。
+- 已目視確認兩名黑制服警察背對鏡頭走遠、族人在前景目送，背景延續木造屋舍、碎石地與黃綠樹林，沒有字幕或遊戲 UI。此為依截圖生成的圖片，並非 Unity 引擎直接渲染的新鏡頭。
+- 本次只產出圖片，未修改程式、場景或接入選項分支，未執行 Unity／VR 測試；「沉默觀望」離去演出仍未實作。

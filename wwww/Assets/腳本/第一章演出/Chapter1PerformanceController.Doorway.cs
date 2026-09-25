@@ -94,6 +94,7 @@ public partial class Chapter1PerformanceController
     }
     IEnumerator DoorwayIncidentRoutine()
     {
+        if (incidentHutDoor != null) incidentHutDoor.SetOpen(0f);
         Transform officer=secondaryPoliceActor!=null?secondaryPoliceActor:primaryPoliceActor;
         if(officer==null||femaleVillagerActor==null){Debug.LogError("[Doorway] Missing incident actors.");yield break;}
         StopIncidentActorMotions(true);
@@ -158,6 +159,7 @@ public partial class Chapter1PerformanceController
         ShowConflictChoice();
         if(dialogueUI!=null)dialogueUI.HideInstant();
         if(choiceUI!=null)choiceUI.Hide(); // This shot uses a compact panel in its empty left area.
+        SetWeddingDramaBeat("doorway-choice");
         Debug.Log("[Doorway] Choice ready; both actors held at the entrance.");
     }
     IEnumerator ResolveDoorwayChoice(ConflictChoice choice)
@@ -166,11 +168,7 @@ public partial class Chapter1PerformanceController
         if(dialogueUI!=null)dialogueUI.HideInstant();
         if(choice==ConflictChoice.Watch)
         {
-            cinematicStoryPlaying=false;
-            SetMission("你選擇沉默觀望。");
-            // The continuation is deliberately left here for the next authoring pass.
-            // No old hut/exit sequence and no chapter-result side effects run.
-            Debug.Log("[Doorway] Watch selected; holding the doorway scene.");
+            yield return DoorwayWatchRoutine();
             yield break;
         }
         doorwayOfficer.gripPartner=null;

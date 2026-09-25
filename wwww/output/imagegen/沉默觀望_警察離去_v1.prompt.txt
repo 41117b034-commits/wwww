@@ -1,0 +1,20 @@
+Generation mode: built-in image_gen
+Generated on: 2026-09-25
+Output: 沉默觀望_警察離去_v1.png
+Reference images: _CodexBackups/police_guest_scale_20260924/{crowd-retreat-complete,police-entrance-short,police-insult}.png
+
+Use case: stylized-concept
+Asset type: A single 16:9 landscape narrative still for the user's existing Unity game about the Wushe Incident.
+Primary request: 「沉默觀望」結局的一張畫面：兩名警察離開，族人留在原地，默默看著他們遠去的背影。背景必須延續參考圖中的同一個遊戲場景。
+
+Input images: Image 1 is the primary reference for the actual Unity village environment, tribal character models and clothing, textures, lighting, and rendering style. Image 2 provides another view of exactly the same village and both police characters. Image 3 provides close details of the exact two black-uniformed police character models and village buildings. These are references, not a request for a collage.
+
+Scene/backdrop: Reconstruct the SAME recognizable Unity village from these references, matching the actual brown timber and bamboo raised houses with rough thatched roofs, low stacked-stone foundations, gray gravel courtyard edged by green grass, densely placed yellow-green autumn trees, low green hills and muted gray-brown sky. Keep the primitive low-to-mid polygon game geometry and coarse terrain/building texture aesthetic. Choose the view looking out across the courtyard toward the existing open passage between the raised wooden houses, so the police can walk away through that passage. Do not invent a new picturesque village, new architecture, a torii, temple, gate, or modern scenery.
+
+Subject/action: Exactly TWO Japanese colonial police matching the reference game's character models, both in the same black fitted uniforms, black peaked caps, black leather belts and knee-high boots. Both are visibly WALKING AWAY from the tribe and camera, backs fully visible, one slightly ahead of the other. They are in the middle distance with enough size to read their uniform silhouettes clearly, moving deeper toward the village exit. Arms at sides in natural walking poses, any baton lowered. They are leaving alone. No escorted person. Do not turn either police character to face the camera.
+Tribal onlookers: A restrained small group of the existing Seediq game characters remains in the near foreground at the left and right edges, viewed from the back or rear three-quarter view. Match the actual cream/off-white woven garments with burgundy-red stripe patterns, dark hair, cloth wraps and bare feet seen in image 1, without adding feather headdresses or fantasy costume. Include adult men and women, maintaining normal comparable adult scale. Their bodies and gazes point toward the departing policemen. They stand still with lowered hands, quietly watching, without pursuing or cheering. Leave the middle of the frame unobstructed, making the police backs the focal point.
+
+Composition/framing: Eye-level over-the-shoulder wide shot from among/just behind the tribe. Foreground onlookers frame the view without dominating it. The two police backs are clear in the center depth of the image, receding toward the background between the wooden buildings. Continuous full-bleed 16:9 image.
+Style/medium: Match the existing real-time Unity 3D game screenshots very closely in materials, polygon detail, character quality, and environmental lighting. Treat this as a new camera shot from the SAME game. Do not upgrade into photography, painterly illustration, glossy cinematic concept art, or a different game.
+Lighting/mood: Same muted daytime light and warm yellow-green foliage as the game reference; a quiet, tense aftermath expressed through the stillness of the onlookers and the distance between the groups. No dramatic sunset, fog, or new weather.
+Constraints: Preserve game identity and two police count. Natural anatomy, grounded feet, plausible walking poses. Remove all UI, subtitles, dialogue panels, text, logos, watermarks, cursor, XR Device Simulator overlays, and black letterbox bars. No text anywhere.

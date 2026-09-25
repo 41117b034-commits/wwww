@@ -1,0 +1,8 @@
+Female Scream 1
+Author: AuraVoice / Nocturnal_Vanguard
+Source: https://opengameart.org/content/female-scream-1
+Original file: https://opengameart.org/sites/default/files/female_scream_1.ogg
+License: CC0 1.0 Universal (public-domain dedication)
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+Downloaded: 2026-09-25
+Original audio is unmodified. Unity applies room/low-pass processing at playback.
