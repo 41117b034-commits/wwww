@@ -5,6 +5,25 @@ using UnityEngine;
 
 public static class Chapter1DoorwayAuthoring
 {
+    [MenuItem("Tools/Chapter 1/Upgrade Watch Branch Door")]
+    public static void UpgradeWatchDoor()
+    {
+        if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Upgrade the doorway in Edit Mode.");
+        var controller = Object.FindFirstObjectByType<Chapter1PerformanceController>();
+        var entry = GameObject.Find("Chapter1_IncidentDoorway");
+        if (controller == null || entry == null || !controller.gameObject.scene.path.EndsWith("第一章新版警察.unity"))
+            throw new System.InvalidOperationException("Open 第一章新版警察 with its existing doorway first.");
+        Undo.RegisterFullObjectHierarchyUndo(entry, "Add working hut door");
+        var timber = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Chapter1Doorway/DoorTimber.mat");
+        controller.incidentHutDoor = Chapter1HutDoor.UpgradeExisting(entry, timber);
+        Chapter1HutOpeningAuthoring.EnsureOpening(controller.incidentHutDoor);
+        controller.hutInteriorHoldSeconds = 5f;
+        EditorUtility.SetDirty(controller);
+        EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
+        EditorSceneManager.SaveScene(controller.gameObject.scene);
+        Debug.Log("[Doorway] Watch door upgraded; closed-door hold is 5 seconds.");
+    }
+
     [MenuItem("Tools/Chapter 1/Build Incident Doorway")]
     public static void Build()
     {
@@ -50,6 +69,9 @@ public static class Chapter1DoorwayAuthoring
         Undo.RecordObject(controller,"Set incident doorway blocking");
         controller.incidentDoorPosition=root.transform.position+Vector3.back*4.4f;
         controller.incidentDoorOutward=Vector3.back;
+        controller.incidentHutDoor=Chapter1HutDoor.UpgradeExisting(root,wood);
+        Chapter1HutOpeningAuthoring.EnsureOpening(controller.incidentHutDoor);
+        controller.hutInteriorHoldSeconds=5f;
         EditorUtility.SetDirty(controller);
         EditorSceneManager.MarkSceneDirty(controller.gameObject.scene);
         AssetDatabase.SaveAssets();EditorSceneManager.SaveScene(controller.gameObject.scene);
