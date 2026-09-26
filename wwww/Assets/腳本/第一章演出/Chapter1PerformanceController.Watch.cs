@@ -295,8 +295,9 @@ public partial class Chapter1PerformanceController
         {
             rig.gripPartner = rig.gripTarget = rig.pointTarget = rig.conversationTarget = null;
             rig.speakingWeight = rig.pushWeight = 0f; rig.strike = false; rig.frozen = false;
-            rig.smoothLocomotion = true; rig.strideScale = 0.8f;
         }
+        first.BeginDepartureWalk(0.12f);
+        second.BeginDepartureWalk(0.48f);
         Vector3 center = weddingDramaCenter;
         // The old PoliceExitPoint is inside a raised hut. Finish the visible
         // departure on the open approach to the lane, before its drying rack.
@@ -333,11 +334,28 @@ public partial class Chapter1PerformanceController
         Chapter1IncidentRig second, List<Vector3> secondPath, List<Chapter1IncidentRig> crowd, float speedInHeights)
     {
         float a = WatchPathLength(firstPath), b = WatchPathLength(secondPath);
+        // Finish the turn before travelling so the first steps do not slide
+        // sideways while the officers are still facing the courtyard.
+        Quaternion firstFrom = first.transform.rotation, secondFrom = second.transform.rotation;
+        Quaternion firstFacing = EntranceFacingRotation(first.transform, firstPath[1]);
+        Quaternion secondFacing = EntranceFacingRotation(second.transform, secondPath[1]);
+        float turnSeconds = Mathf.Max(Quaternion.Angle(firstFrom, firstFacing),
+            Quaternion.Angle(secondFrom, secondFacing)) / 130f;
+        first.walking = second.walking = false;
+        for (float elapsed = 0f; elapsed < turnSeconds; elapsed += Time.deltaTime)
+        {
+            float turn = Mathf.SmoothStep(0f, 1f, elapsed / turnSeconds);
+            first.transform.rotation = Quaternion.Slerp(firstFrom, firstFacing, turn);
+            second.transform.rotation = Quaternion.Slerp(secondFrom, secondFacing, turn);
+            TurnWatchWitnesses(crowd, (first.transform.position + second.transform.position) * 0.5f);
+            yield return null;
+        }
+        first.transform.rotation = firstFacing; second.transform.rotation = secondFacing;
         float minimum = speedInHeights < 0.5f ? Mathf.Max(8f, minimumPoliceExitSeconds) : 1f;
         float duration = Mathf.Max(minimum, Mathf.Max(a, b) / (doorwayHeight * speedInHeights));
         for (float elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
         {
-            float progress = Mathf.Clamp01(elapsed / duration);
+            float progress = WatchWalkProgress(Mathf.Clamp01(elapsed / duration));
             SampleWatchPath(first, firstPath, a * progress);
             SampleWatchPath(second, secondPath, b * progress);
             TurnWatchWitnesses(crowd, (first.transform.position + second.transform.position) * 0.5f);
@@ -345,6 +363,15 @@ public partial class Chapter1PerformanceController
         }
         SampleWatchPath(first, firstPath, a); SampleWatchPath(second, secondPath, b);
         first.walking = second.walking = false;
+    }
+
+    static float WatchWalkProgress(float t)
+    {
+        // Short acceleration/deceleration, constant speed through the shot.
+        const float ramp = 0.08f;
+        if (t < ramp) return t * t / (2f * ramp * (1f - ramp));
+        if (t > 1f - ramp) return 1f - (1f - t) * (1f - t) / (2f * ramp * (1f - ramp));
+        return (t - ramp * 0.5f) / (1f - ramp);
     }
 
     static float WatchPathLength(List<Vector3> path)
@@ -375,6 +402,9 @@ public partial class Chapter1PerformanceController
 
     void CleanupDoorwayWatch()
     {
+        if (doorwayVictim != null) doorwayVictim.strugglingInPlace = false;
+        if (doorwayVictim != null) doorwayVictim.StationaryGrip = null;
+        if (doorwayOfficer != null) doorwayOfficer.StationaryGrip = null;
         if (hutInteriorAudio != null) hutInteriorAudio.Stop();
         if (watchCrowdAdvance != null) { StopCoroutine(watchCrowdAdvance); watchCrowdAdvance = null; }
         SetHutPairVisible(true);

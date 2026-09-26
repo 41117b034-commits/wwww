@@ -4,6 +4,28 @@ using UnityEngine;
 
 public partial class Chapter1PerformanceController
 {
+    readonly List<Transform> incidentHiddenSideGuests = new List<Transform>();
+
+    void HideIncidentSideGuests()
+    {
+        // These delivery guests stand behind the entrance shot. Keep them for
+        // the wedding tasks, but omit their crossing during the police scene.
+        foreach (string actorName in new[] { "部落女姓2", "賽德克帥哥" })
+        {
+            Transform actor = FindTransformByName(actorName);
+            if (actor == null || !actor.gameObject.activeSelf) continue;
+            incidentHiddenSideGuests.Add(actor);
+            actor.gameObject.SetActive(false);
+        }
+    }
+
+    void RestoreIncidentSideGuests()
+    {
+        foreach (Transform actor in incidentHiddenSideGuests)
+            if (actor != null) actor.gameObject.SetActive(true);
+        incidentHiddenSideGuests.Clear();
+    }
+
     private void CancelOpeningForPoliceIncident()
     {
         foreach (Chapter1EyeOpening opening in Object.FindObjectsByType<Chapter1EyeOpening>(
@@ -51,6 +73,7 @@ public partial class Chapter1PerformanceController
         Vector3 secondEnd = center + new Vector3(-2.65f, 0f, -0.15f) * height;
         Vector3 firstStart = firstEnd + new Vector3(-1.2f, 0f, -0.5f) * height;
         Vector3 secondStart = secondEnd + new Vector3(-1.3f, 0f, -0.5f) * height;
+        HideIncidentSideGuests();
         List<WeddingRetreatActor> crowd = PrepareWeddingCrowdRetreat(center, height);
         weddingDramaCenter = center;
         weddingDramaHeight = height;

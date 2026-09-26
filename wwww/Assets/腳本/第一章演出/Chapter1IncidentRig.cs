@@ -32,6 +32,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public Transform gripTarget;
     public bool gripWithLeft = true;
     public bool resisting;
+    public bool strugglingInPlace;
+    public bool relaxedPoliceWalk;
     public bool strike;
     public float strikeProgress;
     GameObject baton;
@@ -39,6 +41,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public bool batonVisible;
     public bool batonInLeftHand;
     public Transform gripPartner;
+    public Vector3? StationaryGrip { get; set; }
     public float pointProgress;
     public Transform pointTarget;
     public Transform conversationTarget;
@@ -168,6 +171,17 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         float localFootY=Mathf.Min(transform.TransformPoint(leftAnkle).y,transform.TransformPoint(rightAnkle).y)-transform.position.y;
         var p=transform.position;p.y=groundY+ankleClearance-localFootY;transform.position=p;
     }
+    public void AnchorPartnerGrip()
+    {
+        var partner=gripPartner!=null?gripPartner.GetComponent<Chapter1IncidentRig>():null;
+        if(partner==null)return;
+        Transform arm=gripWithLeft?leftArm:rightArm;
+        Transform partnerArm=partner.gripWithLeft?partner.leftArm:partner.rightArm;
+        // Both hands share a reachable, fixed wrist position while the woman
+        // pulls away with her body. Head movement must not move the grip target.
+        StationaryGrip=partner.StationaryGrip=(arm.position+partnerArm.position)*0.5f
+            -Vector3.up*Mathf.Min(Height,partner.Height)*0.10f;
+    }
     void LateUpdate()
     {
         if(!ready)return;
@@ -200,20 +214,50 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         // During the 60% stance phase the foot travels exactly opposite to the
         // actor's displacement. Match phase advance to the authored stride.
         if(walking&&!frozen)phase+=Mathf.Min(distance,Height*0.2f)/Mathf.Max(0.1f,Height*0.23f*strideScale/0.6f)*Mathf.PI*2f;
+        if(relaxedPoliceWalk && locomotionWeight > 0f)
+        {
+            // Leave enough knee flexion for the stride to reach the floor.
+            // Moving a nearly straight leg otherwise clamps IK above the ground.
+            hips.position += (Vector3.down * Height * (0.022f + 0.003f * Mathf.Cos(phase * 2f))
+                + right * Height * 0.006f * Mathf.Sin(phase)) * locomotionWeight;
+            hips.rotation = Quaternion.AngleAxis(3f * Mathf.Sin(phase) * locomotionWeight, Vector3.up) * hips.rotation;
+            var spine = B(HumanBodyBones.Spine);
+            if(spine != null) spine.rotation = Quaternion.AngleAxis(-5f * Mathf.Sin(phase) * locomotionWeight, Vector3.up) * spine.rotation;
+        }
+        if(strugglingInPlace && !frozen)
+        {
+            float effort = Time.time * 4.6f;
+            hips.position += Vector3.down * Height * (0.024f + 0.006f * Mathf.Sin(effort))
+                - Forward * Height * 0.018f + right * Height * 0.012f * Mathf.Sin(effort);
+        }
         ApplyLeg(leftThigh,leftCalf,leftFoot,leftAnkle,leftFootRotation,phase);
         ApplyLeg(rightThigh,rightCalf,rightFoot,rightAnkle,rightFootRotation,phase+Mathf.PI);
         if(locomotionWeight > 0f)
         {
-            float swing=Mathf.Sin(phase)*14f*strideScale*locomotionWeight;
+            float swing=relaxedPoliceWalk
+                ? WalkFootOffset(phase) * 20f * strideScale * locomotionWeight
+                : Mathf.Sin(phase)*14f*strideScale*locomotionWeight;
             leftArm.rotation=Quaternion.AngleAxis(swing,right)*leftArm.rotation;
-            rightArm.rotation=Quaternion.AngleAxis(-swing,right)*rightArm.rotation;
+            float rightSwing=relaxedPoliceWalk?WalkFootOffset(phase+Mathf.PI)*20f*strideScale*locomotionWeight:-swing;
+            rightArm.rotation=Quaternion.AngleAxis(rightSwing,right)*rightArm.rotation;
         }
         if(resisting)
         {
-            float tremble=frozen?0f:Mathf.Sin(Time.time*7f)*2f;
+            float tremble=frozen?0f:Mathf.Sin(Time.time*(strugglingInPlace?4.6f:7f))*(strugglingInPlace?7f:2f);
             var spine=B(HumanBodyBones.Spine);
             if(spine!=null)spine.rotation=Quaternion.AngleAxis(-8f+tremble,right)*spine.rotation;
-            Solve(leftArm,leftElbow,leftHand,leftArm.position+Forward*Height*0.23f+right*Height*0.04f,-Forward);
+            Transform freeArm=gripWithLeft?rightArm:leftArm, freeElbow=gripWithLeft?rightElbow:leftElbow, freeHand=gripWithLeft?rightHand:leftHand;
+            Vector3 reach=freeArm.position+Forward*Height*0.23f+right*Height*0.04f;
+            if(strugglingInPlace && !frozen)
+            {
+                float effort=Time.time*4.6f;
+                reach+=Forward*Height*0.075f*Mathf.Sin(effort)
+                    +Vector3.up*Height*(0.035f+0.065f*Mathf.Cos(effort))
+                    +right*Height*0.025f*Mathf.Sin(effort*1.4f);
+                if(spine!=null)spine.rotation=Quaternion.AngleAxis(Mathf.Sin(effort)*8f,Vector3.up)*spine.rotation;
+                head.rotation=Quaternion.AngleAxis(-tremble*0.6f,right)*head.rotation;
+            }
+            Solve(freeArm,freeElbow,freeHand,reach,-Forward);
         }
         if(gripTarget!=null)
         {
@@ -226,6 +270,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             var partnerRig=gripPartner.GetComponent<Chapter1IncidentRig>();
             if(partnerRig!=null && partnerRig.Head!=null)
                 grip.y=(head.position.y+partnerRig.Head.position.y)*0.5f-Mathf.Min(Height,partnerRig.Height)*0.20f;
+            if(StationaryGrip.HasValue)grip=StationaryGrip.Value;
             Transform arm=gripWithLeft?leftArm:rightArm, elbow=gripWithLeft?leftElbow:rightElbow, hand=gripWithLeft?leftHand:rightHand;
             Solve(arm,elbow,hand,grip,Vector3.down);
         }
@@ -240,6 +285,12 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Vector3 side=batonInLeftHand?-right:right;
             Transform arm=batonInLeftHand?leftArm:rightArm,elbow=batonInLeftHand?leftElbow:rightElbow,hand=batonInLeftHand?leftHand:rightHand;
             Vector3 hold=arm.position-Vector3.up*Height*0.30f+side*Height*0.09f+Forward*Height*0.055f;
+            if(relaxedPoliceWalk)
+            {
+                float handSwing=WalkFootOffset(phase+(batonInLeftHand?0f:Mathf.PI));
+                hold=arm.position-Vector3.up*Height*0.30f+side*Height*0.045f
+                    +Forward*Height*(0.025f-handSwing*0.065f*locomotionWeight);
+            }
             Solve(arm,elbow,hand,hold,-Forward+side*0.4f);
         }
         if(strike)
@@ -302,9 +353,17 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         {
             float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);
             float stride=Height*0.115f*strideScale;
-            float offset=cycle<0.6f?Mathf.Lerp(stride,-stride,cycle/0.6f):Mathf.Lerp(-stride,stride,Mathf.SmoothStep(0,1,(cycle-0.6f)/0.4f));
-            float lift=cycle<0.6f?0f:Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI)*Height*0.045f;
+            float offset=WalkFootOffset(p)*stride;
+            float lift=cycle<0.6f?0f:Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI)*Height*(relaxedPoliceWalk?0.032f:0.045f);
             target+=(Forward*offset+Vector3.up*lift)*locomotionWeight;
+        }
+        if(strugglingInPlace && !frozen)
+        {
+            // Alternate a backward tug and knee lift while the other foot stays
+            // planted. The actor root and camera remain at the choice position.
+            float effort=Time.time*4.6f+(foot==rightFoot?Mathf.PI:0f);
+            float lift=Mathf.Pow(Mathf.Max(0f,Mathf.Sin(effort)),2f);
+            target+=(-Forward*Height*0.07f+Vector3.up*Height*0.065f)*lift;
         }
         if(stumbleWeight > 0f)
         {
@@ -319,6 +378,26 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         Solve(thigh,calf,foot,target,Forward);
         foot.rotation=transform.rotation*rotation;
+        if(relaxedPoliceWalk && locomotionWeight>0f)
+        {
+            float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);
+            float swing=cycle<0.6f?0f:Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI);
+            foot.rotation=Quaternion.AngleAxis(-6f*swing*locomotionWeight,Vector3.Cross(Vector3.up,Forward))*foot.rotation;
+        }
+    }
+    static float WalkFootOffset(float p)
+    {
+        float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);
+        return cycle<0.6f?Mathf.Lerp(1f,-1f,cycle/0.6f)
+            :Mathf.Lerp(-1f,1f,Mathf.SmoothStep(0f,1f,(cycle-0.6f)/0.4f));
+    }
+    public void BeginDepartureWalk(float cycleOffset)
+    {
+        relaxedPoliceWalk=true;
+        smoothLocomotion=true;
+        strideScale=0.72f;
+        phase=cycleOffset*Mathf.PI*2f;
+        previousPosition=transform.position;
     }
     public static void Solve(Transform a,Transform b,Transform c,Vector3 target,Vector3 bend)
     {
@@ -352,6 +431,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         baton.SetActive(batonVisible);baton.GetComponent<Renderer>().enabled=batonVisible;if(!batonVisible)return;
         Vector3 side=Vector3.Cross(Vector3.up,Forward)*(batonInLeftHand?-1f:1f);
         Vector3 direction=strike?Vector3.Slerp(Vector3.up,Forward,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f)):(Vector3.down+Forward*0.25f+side*0.55f).normalized;
+        if(relaxedPoliceWalk && !strike)
+            direction=(Vector3.down+side*0.18f+Forward*(0.08f-WalkFootOffset(phase+(batonInLeftHand?0f:Mathf.PI))*0.16f*locomotionWeight)).normalized;
         if(pointTarget!=null)direction=Vector3.Slerp(Vector3.down,Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized,pointProgress);
         Transform batonHand=batonInLeftHand?leftHand:rightHand;
         baton.transform.SetPositionAndRotation(batonHand.position+direction*Height*0.14f,Quaternion.FromToRotation(Vector3.up,direction));

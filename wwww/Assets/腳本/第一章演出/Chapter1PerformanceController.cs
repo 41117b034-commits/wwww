@@ -1436,6 +1436,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     {
         if (doorwayWatchActive) StopAllCoroutines();
         CleanupDoorwayWatch();
+        RestoreIncidentSideGuests();
         if (doorwayVignette != null) { Destroy(doorwayVignette); doorwayVignette = null; }
         knockoutDizzyVisible = false;
         ReleaseIncidentCameraLock();

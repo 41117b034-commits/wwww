@@ -153,7 +153,10 @@ public partial class Chapter1PerformanceController
             yield return null;
         }
         officer.rotation=policeTurnTo;femaleVillagerActor.rotation=victimTurnTo;
-        doorwayOfficer.frozen=doorwayVictim.frozen=true;
+        doorwayOfficer.frozen=true;
+        doorwayVictim.frozen=false;
+        doorwayVictim.strugglingInPlace=true;
+        doorwayOfficer.AnchorPartnerGrip();
         yield return PlayPoliceVoicedLine("女性族人","放開我！",femaleResistVoice,2.2f);
         if(dialogueUI!=null)dialogueUI.HideInstant();
         ShowConflictChoice();
@@ -164,6 +167,8 @@ public partial class Chapter1PerformanceController
     }
     IEnumerator ResolveDoorwayChoice(ConflictChoice choice)
     {
+        doorwayVictim.strugglingInPlace=false;
+        doorwayOfficer.StationaryGrip=doorwayVictim.StationaryGrip=null;
         if(choiceUI!=null)choiceUI.Hide();
         if(dialogueUI!=null)dialogueUI.HideInstant();
         if(choice==ConflictChoice.Watch)
