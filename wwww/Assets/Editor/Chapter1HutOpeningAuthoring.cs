@@ -8,6 +8,38 @@ using UnityEngine.Rendering;
 // imported model and every other instance keep their original mesh and UVs.
 public static class Chapter1HutOpeningAuthoring
 {
+    const string OpeningAssetPath = "Assets/Models/Chapter1Doorway/IncidentHutOpening.asset";
+
+    // This high-detail mesh exceeds GitHub's file limit in text format. Binary
+    // serialization keeps the exact same mesh data and existing scene references.
+    [MenuItem("Tools/Chapter 1/Store Hut Opening as Binary")]
+    public static void StoreOpeningAsBinary()
+    {
+        Mesh opening = AssetDatabase.LoadAssetAtPath<Mesh>(OpeningAssetPath);
+        if (opening == null)
+            throw new System.InvalidOperationException("Build the incident hut opening before storing it.");
+
+        // The main asset chooses the serialization format for the entire file.
+        // Add a binary-preferring container without replacing the existing mesh,
+        // so its GUID/local file ID and the scene's references stay intact.
+        var storage = AssetDatabase.LoadAssetAtPath<Chapter1HutMeshAsset>(OpeningAssetPath);
+        if (storage == null)
+        {
+            storage = ScriptableObject.CreateInstance<Chapter1HutMeshAsset>();
+            storage.name = "Incident hut mesh storage";
+            AssetDatabase.AddObjectToAsset(storage, opening);
+        }
+        storage.mesh = opening;
+        AssetDatabase.SetMainObject(storage, OpeningAssetPath);
+        EditorUtility.SetDirty(storage);
+        AssetDatabase.SaveAssetIfDirty(storage);
+        AssetDatabase.ImportAsset(OpeningAssetPath, ImportAssetOptions.ForceUpdate);
+        long bytes = new FileInfo(OpeningAssetPath).Length;
+        if (bytes >= 100000000)
+            throw new System.InvalidOperationException("The generated hut mesh must be smaller than 100 MB before committing.");
+        Debug.Log("[Doorway] Hut opening stored as binary: " + bytes + " bytes; mesh detail preserved.");
+    }
+
     struct Vertex
     {
         public Vector3 position, normal;
@@ -28,7 +60,7 @@ public static class Chapter1HutOpeningAuthoring
         // session. The saved imported mesh is enough to rebuild it safely.
         if (filter == null || (filter.sharedMesh == null && door.originalFacadeMesh == null))
             throw new System.InvalidOperationException("The incident hut mesh was not found.");
-        const string path = "Assets/Models/Chapter1Doorway/IncidentHutOpening.asset";
+        const string path = OpeningAssetPath;
         Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if (door.originalFacadeMesh == null)
         {
@@ -105,6 +137,7 @@ public static class Chapter1HutOpeningAuthoring
         }
         OpenBoxColliders(hut, door, opening);
         EditorUtility.SetDirty(filter);EditorUtility.SetDirty(door);AssetDatabase.SaveAssets();
+        StoreOpeningAsBinary();
         Debug.Log("[Doorway] Local hut mesh opening created; imported source retained.");
     }
 

@@ -1,6 +1,6 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-09-25。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-09-26。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
 ## 專案位置
 
@@ -160,3 +160,21 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - `watch-auto-exit/` 保留自動結束的一輪。所有測試均暫時關閉 PlayerPrefs 結果寫入；未更動使用者的進度紀錄。測試後已退出 Play Mode，臨時 `Assets/Editor/Chapter1WatchProbe.cs` 與 meta 已移出 Assets 並存於驗證資料夾，避免之後 Play Mode 自動觸發測試。
 - 移除測試工具後完成最後一次 Unity 腳本重編譯，Console 顯示 0 Error、0 Warning；編輯器留在此場景的 Scene／Edit Mode。
 - 本次尚未使用實體 VR 頭戴裝置，也沒有逐項重玩婚禮送酒、食物與舞蹈互動。
+
+## 修正 GitHub 單檔超過 100 MB（2026-09-26）
+
+- 接續「繼續生成警察離去背影圖」（`01a0d84e-08f4-7673-844f-0eafd889d03d`）最後的 GitHub Desktop 上傳問題。使用者明確要求待提交的單一檔案不得大於 100 MB；以更嚴格的 100,000,000 bytes 作為檢查上限。
+- GitHub Desktop 實際使用上一層儲存庫 `C:\Users\jimmy\畢專_霧社事件\wwww`，分支 `main`，遠端 `41117b034-commits/wwww`。Unity 根目錄內另有 Git 登錄，不能以內層全部未追蹤的狀態代替真正待上傳清單。本次開始時，上一層儲存庫僅有 `wwww/Assets/Models/Chapter1Doorway/IncidentHutOpening.asset` 尚未追蹤。
+- 門洞模型原為 163,381,756 bytes 的文字資產；現在為 81,700,300 bytes（81.70 MB）的二進位資產。保留全部 1,236,488 個頂點，沒有減面或降低精度。
+- 新增 `Assets/腳本/第一章演出/Chapter1HutMeshAsset.cs`，用 `[PreferBinarySerialization]` 的主資產容器保留二進位格式，原 Mesh 留在相同資產中。模型 GUID `df746058c5f5aa34db82cde97416f821` 與 Mesh fileID `4300000` 均未改變；`.asset.meta` 的主物件改為容器，場景仍引用原 Mesh。
+- `Chapter1HutOpeningAuthoring.cs` 在重建門洞後會維持上述格式，另提供 `Tools/Chapter 1/Store Hut Opening as Binary`，且檢查輸出必須小於 100,000,000 bytes。Unity 全域設定保持 `ForceText`，不切換整個專案的儲存格式。提交時需包含容器腳本及其 meta、模型及其 meta、建立工具和本交接紀錄。
+- 初次嘗試全域格式切換時，Unity 額外重存了其他資產；已依工作開始時的乾淨 Git 狀態、完整備份與雜湊比對還原，額外產生的範例 Lighting 檔已移至備份。Git 索引內容亦核對維持不變。最終正式修改不包含其他場景、材質、Prefab 或 ProjectSettings。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1 成功編譯。透過獨立反序列化讀回二進位檔，逐位元比對頂點資料、索引資料、屬性排列、子網格與 Bounds 的 SHA-256，與轉存前一致；再次匯入、一般 SaveAssets 及重新載入第一章場景後引用均正常。
+- 轉存前後網格資料 SHA-256：`20945D4AD5024610643ADCE4771EE6F99191553F37C4D2631AAE9B2A77C7785E`。第一章場景檔與工作開始前備份的 SHA-256 完全相同。
+- 在 Editor Play Mode 以臨時驗證工具呼叫既有警察劇情與「沉默觀望」入口，跑到 `watch-complete` 並自動退出。關門等待 5.026 秒，屋內兩名角色渲染均隱藏、慘叫音效有非零輸出，女性釋放後水平位移為 0，結尾可見兩名警察離去背影；這輪 Error／Exception／Assert 為 0。
+- 備份、資產資料比對、復原清單與本輪截圖存於 `_CodexBackups/hut_mesh_size_20260926/`；該資料夾以自己的 `.gitignore` 排除，不會把原本 163 MB 的備份加入提交。
+- 重複執行單檔轉存後仍為 81,700,300 bytes，資料雜湊與引用不變。測試後退出 Play Mode，將兩份臨時 Editor 驗證腳本及 meta 移至上述備份的 `verification-tools/`；正式待提交清單共 6 個檔案，最大為 81.70 MB，全部小於 100,000,000 bytes，`git diff --check` 通過。
+- 本次未實際執行 Git commit／push，也未使用實體 VR 頭戴裝置；沒有重玩婚禮任務或重測「上前阻止」。先前兩分支驗證仍屬 2026-09-25 的紀錄。
