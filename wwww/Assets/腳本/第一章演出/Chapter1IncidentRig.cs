@@ -226,9 +226,10 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(strugglingInPlace && !frozen)
         {
-            float effort = Time.time * 4.6f;
-            hips.position += Vector3.down * Height * (0.024f + 0.006f * Mathf.Sin(effort))
-                - Forward * Height * 0.018f + right * Height * 0.012f * Mathf.Sin(effort);
+            float effort = StrugglePhase;
+            hips.position += Vector3.down * Height * (0.007f + 0.003f * Mathf.Sin(effort))
+                - Forward * Height * (0.008f + 0.004f * Mathf.Sin(effort))
+                + right * Height * 0.003f * Mathf.Sin(effort);
         }
         ApplyLeg(leftThigh,leftCalf,leftFoot,leftAnkle,leftFootRotation,phase);
         ApplyLeg(rightThigh,rightCalf,rightFoot,rightAnkle,rightFootRotation,phase+Mathf.PI);
@@ -243,21 +244,29 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(resisting)
         {
-            float tremble=frozen?0f:Mathf.Sin(Time.time*(strugglingInPlace?4.6f:7f))*(strugglingInPlace?7f:2f);
+            float tremble=frozen?0f:Mathf.Sin(strugglingInPlace?StrugglePhase:Time.time*7f)*(strugglingInPlace?4f:2f);
             var spine=B(HumanBodyBones.Spine);
-            if(spine!=null)spine.rotation=Quaternion.AngleAxis(-8f+tremble,right)*spine.rotation;
+            if(spine!=null)spine.rotation=Quaternion.AngleAxis((strugglingInPlace?-4f:-8f)+tremble,right)*spine.rotation;
             Transform freeArm=gripWithLeft?rightArm:leftArm, freeElbow=gripWithLeft?rightElbow:leftElbow, freeHand=gripWithLeft?rightHand:leftHand;
             Vector3 reach=freeArm.position+Forward*Height*0.23f+right*Height*0.04f;
+            Vector3 elbowPole=-Forward;
             if(strugglingInPlace && !frozen)
             {
-                float effort=Time.time*4.6f;
-                reach+=Forward*Height*0.075f*Mathf.Sin(effort)
-                    +Vector3.up*Height*(0.035f+0.065f*Mathf.Cos(effort))
-                    +right*Height*0.025f*Mathf.Sin(effort*1.4f);
-                if(spine!=null)spine.rotation=Quaternion.AngleAxis(Mathf.Sin(effort)*8f,Vector3.up)*spine.rotation;
-                head.rotation=Quaternion.AngleAxis(-tremble*0.6f,right)*head.rotation;
+                float effort=StrugglePhase;
+                Vector3 freeSide=gripWithLeft?right:-right;
+                if(spine!=null)spine.rotation=Quaternion.AngleAxis(Mathf.Sin(effort)*3f,Vector3.up)*spine.rotation;
+                head.rotation=Quaternion.AngleAxis(-tremble*0.35f,right)*head.rotation;
+                // The free hand protects and pulls at the held wrist. Keep the
+                // elbow below the shoulder instead of folding it behind the head.
+                Vector3 wrist=StationaryGrip??(gripWithLeft?leftHand.position:rightHand.position);
+                reach=wrist-Forward*Height*(0.045f+0.012f*Mathf.Sin(effort))
+                    +freeSide*Height*0.022f+Vector3.up*Height*0.012f;
+                float armLength=Vector3.Distance(freeArm.position,freeElbow.position)
+                    +Vector3.Distance(freeElbow.position,freeHand.position);
+                reach=freeArm.position+Vector3.ClampMagnitude(reach-freeArm.position,armLength*0.94f);
+                elbowPole=Vector3.down+freeSide*0.35f;
             }
-            Solve(freeArm,freeElbow,freeHand,reach,-Forward);
+            Solve(freeArm,freeElbow,freeHand,reach,elbowPole);
         }
         if(gripTarget!=null)
         {
@@ -359,11 +368,11 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(strugglingInPlace && !frozen)
         {
-            // Alternate a backward tug and knee lift while the other foot stays
-            // planted. The actor root and camera remain at the choice position.
-            float effort=Time.time*4.6f+(foot==rightFoot?Mathf.PI:0f);
+            // Small recovery steps while the opposite foot stays planted;
+            // resistance comes from pulling back, not crouching and high knees.
+            float effort=StrugglePhase+(foot==rightFoot?Mathf.PI:0f);
             float lift=Mathf.Pow(Mathf.Max(0f,Mathf.Sin(effort)),2f);
-            target+=(-Forward*Height*0.07f+Vector3.up*Height*0.065f)*lift;
+            target+=(-Forward*Height*0.025f+Vector3.up*Height*0.015f)*lift;
         }
         if(stumbleWeight > 0f)
         {
@@ -385,6 +394,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             foot.rotation=Quaternion.AngleAxis(-6f*swing*locomotionWeight,Vector3.Cross(Vector3.up,Forward))*foot.rotation;
         }
     }
+    float StrugglePhase => Time.time*3.1f+0.22f*Mathf.Sin(Time.time*1.2f);
+
     static float WalkFootOffset(float p)
     {
         float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);

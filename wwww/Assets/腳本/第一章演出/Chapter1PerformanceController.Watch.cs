@@ -325,8 +325,12 @@ public partial class Chapter1PerformanceController
         SetWeddingDramaBeat("watch-police-departure");
         var leaveFirst = new List<Vector3> { first.transform.position, exit - right * doorwayHeight * 0.29f };
         var leaveSecond = new List<Vector3> { second.transform.position, exit + right * doorwayHeight * 0.29f - direction * doorwayHeight * 0.35f };
+        ShowLine("", "警察們揚長而去，族人望著他們下山的背影。",
+            WatchWalkDuration(WatchPathLength(leaveFirst), WatchPathLength(leaveSecond), 0.42f) + 2f);
         yield return WalkWatchPaths(first, leaveFirst, second, leaveSecond, crowd, 0.42f);
         SetWeddingDramaBeat("watch-departure-tableau");
+        ShowLine("", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。",
+            incidentDepartureHoldSeconds + 0.5f);
         yield return new WaitForSeconds(incidentDepartureHoldSeconds);
     }
 
@@ -351,8 +355,7 @@ public partial class Chapter1PerformanceController
             yield return null;
         }
         first.transform.rotation = firstFacing; second.transform.rotation = secondFacing;
-        float minimum = speedInHeights < 0.5f ? Mathf.Max(8f, minimumPoliceExitSeconds) : 1f;
-        float duration = Mathf.Max(minimum, Mathf.Max(a, b) / (doorwayHeight * speedInHeights));
+        float duration = WatchWalkDuration(a, b, speedInHeights);
         for (float elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
         {
             float progress = WatchWalkProgress(Mathf.Clamp01(elapsed / duration));
@@ -363,6 +366,12 @@ public partial class Chapter1PerformanceController
         }
         SampleWatchPath(first, firstPath, a); SampleWatchPath(second, secondPath, b);
         first.walking = second.walking = false;
+    }
+
+    float WatchWalkDuration(float firstLength, float secondLength, float speedInHeights)
+    {
+        float minimum = speedInHeights < 0.5f ? Mathf.Max(8f, minimumPoliceExitSeconds) : 1f;
+        return Mathf.Max(minimum, Mathf.Max(firstLength, secondLength) / (doorwayHeight * speedInHeights));
     }
 
     static float WatchWalkProgress(float t)
