@@ -1,0 +1,18 @@
+123.596 [Wedding Confrontation] crowd-reaction
+124.564 [Wedding Confrontation] police-entrance-short
+126.123 [Wedding Confrontation] crowd-retreat-wide
+130.566 [Wedding Confrontation] crowd-retreat-complete
+133.746 [Wedding Confrontation] police-order
+136.360 [Wedding Confrontation] police-insult
+142.046 [Wedding Confrontation] leader-reply
+148.176 [Wedding Confrontation] leader-approach
+153.005 [Wedding Confrontation] leader-question
+155.840 [Wedding Confrontation] police-shove
+156.374 [Wedding Confrontation] shove-contact
+156.646 [Wedding Confrontation] leader-stumble
+158.379 [Wedding Confrontation] leader-recover
+160.113 [Wedding Confrontation] confrontation-complete
+168.015 [Wedding Confrontation] doorway-choice
+168.015 [Doorway] Choice ready; both actors held at the entrance.
+177.329 [Doorway] Baton impact.
+178.889 [Doorway] Knockout tableau ready; stopping Play Mode in 3 seconds.
