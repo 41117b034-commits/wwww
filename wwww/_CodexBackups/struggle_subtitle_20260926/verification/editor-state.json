@@ -6,20 +6,20 @@
     "waiting": false,
     "audioPlaying": false,
     "knockedOut": false,
-    "scene": "點選介面",
+    "scene": "第一章新版警察",
     "beat": "",
     "clip": "",
     "subtitle": "",
     "subtitleAlpha": 0.0,
     "time": 0.0,
-    "doorOpen": -1.0,
+    "doorOpen": 0.0,
     "clipLength": 0.0,
     "audioVolume": 0.0,
     "audioPeak": 0.0,
     "cameraPosition": {
-        "x": 0.0,
-        "y": 1.3614399433135987,
-        "z": -3.990000009536743
+        "x": 3732.08349609375,
+        "y": -5802.1298828125,
+        "z": -174.7309112548828
     },
     "cameraForward": {
         "x": 0.0,
@@ -27,10 +27,147 @@
         "z": 1.0
     },
     "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 3724.60009765625,
+        "y": -5808.60009765625,
+        "z": -128.3000030517578
     },
-    "actors": [],
+    "actors": [
+        {
+            "name": "賽德克帥哥",
+            "position": {
+                "x": 3678.5,
+                "y": -5817.01513671875,
+                "z": -159.35000610351563
+            },
+            "forward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "viewport": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "hips": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftHand": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightHand": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftFoot": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightFoot": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftKnee": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightKnee": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftElbow": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftShoulder": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "height": 0.0,
+            "visibleRenderers": 1,
+            "walking": false,
+            "struggling": false,
+            "active": true
+        },
+        {
+            "name": "部落女姓2",
+            "position": {
+                "x": 3673.9189453125,
+                "y": -5818.74951171875,
+                "z": -150.37474060058595
+            },
+            "forward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "viewport": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "hips": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftHand": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightHand": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftFoot": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightFoot": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftKnee": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rightKnee": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftElbow": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "leftShoulder": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "height": 0.0,
+            "visibleRenderers": 1,
+            "walking": false,
+            "struggling": false,
+            "active": true
+        }
+    ],
     "errors": []
 }
