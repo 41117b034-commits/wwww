@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 獨立的警察劇情 VR 字幕系統（指定五句版）。
+/// 獨立的警察劇情 VR 字幕系統（前三句共通＋選擇分支版）。
 /// 不依賴 Chapter1DialogueUI，也不需要修改原本字幕腳本。
 /// 掛到 Chapter1Controller 或任意常駐物件即可。
 /// </summary>
@@ -49,7 +49,8 @@ public class Chapter1PoliceSubtitleOverlay : MonoBehaviour
     public Color backgroundColor = new Color(0f, 0f, 0f, 0.72f);
     public TMP_FontAsset chineseFont;
 
-    [Header("Police Subtitle Timeline")]
+    [Header("Police Subtitle Timeline - Common Lines")]
+    [Tooltip("這裡只放所有分支都一定會發生的前三句。")]
     public List<SubtitleEntry> subtitles = new List<SubtitleEntry>()
     {
         new SubtitleEntry
@@ -72,22 +73,21 @@ public class Chapter1PoliceSubtitleOverlay : MonoBehaviour
             speaker = "女性族人",
             text = "放開我！",
             duration = 2.5f
-        },
-        new SubtitleEntry
-        {
-            delayFromPrevious = 0.15f,
-            speaker = "玩家",
-            text = "夠了！不要再羞辱我們！",
-            duration = 2.8f
-        },
-        new SubtitleEntry
-        {
-            delayFromPrevious = 0.15f,
-            speaker = "日警",
-            text = "都給我安靜。你們最好記住自己的身分。",
-            duration = 3.2f
         }
     };
+
+    [Header("Choice Branch Subtitles")]
+    [Tooltip("玩家選擇上前阻止時才顯示。")]
+    [TextArea(2, 4)]
+    public string interveneSubtitle = "夠了！不要再羞辱我們！";
+
+    [Tooltip("玩家選擇沉默觀望時才顯示。")]
+    [TextArea(2, 4)]
+    public string watchSubtitle = "都給我安靜。你們最好記住自己的身分。";
+
+    public float interveneSubtitleSeconds = 2.8f;
+    public float watchSubtitleSeconds = 3.2f;
+
 
     private Canvas subtitleCanvas;
     private CanvasGroup canvasGroup;
@@ -95,6 +95,8 @@ public class Chapter1PoliceSubtitleOverlay : MonoBehaviour
     private Coroutine sequenceRoutine;
     private bool hasPlayed;
     private bool previousPoliceState;
+    private bool interveneBranchSubtitlePlayed;
+    private bool watchBranchSubtitlePlayed;
 
     private void Awake()
     {
@@ -112,6 +114,82 @@ public class Chapter1PoliceSubtitleOverlay : MonoBehaviour
         HideImmediate();
     }
 
+    private void OnEnable()
+    {
+        Application.logMessageReceived += HandleChapterLog;
+    }
+
+    private void OnDisable()
+    {
+        Application.logMessageReceived -= HandleChapterLog;
+    }
+
+    private void HandleChapterLog(
+        string condition,
+        string stackTrace,
+        LogType type)
+    {
+        if (string.IsNullOrEmpty(condition))
+        {
+            return;
+        }
+
+        // 主劇情在 ResolveChoice 裡會先 SetMission，
+        // SetMission 會印 [Chapter1 Mission]，用這個判斷玩家選到哪個分支。
+        if (!interveneBranchSubtitlePlayed
+            && condition.Contains("分支：你選擇上前阻止"))
+        {
+            interveneBranchSubtitlePlayed = true;
+            ShowBranchSubtitle(
+                "玩家",
+                interveneSubtitle,
+                interveneSubtitleSeconds);
+            return;
+        }
+
+        if (!watchBranchSubtitlePlayed
+            && condition.Contains("分支：你選擇沉默觀望"))
+        {
+            watchBranchSubtitlePlayed = true;
+            ShowBranchSubtitle(
+                "日警",
+                watchSubtitle,
+                watchSubtitleSeconds);
+        }
+    }
+
+    private void ShowBranchSubtitle(
+        string speaker,
+        string line,
+        float seconds)
+    {
+        if (sequenceRoutine != null)
+        {
+            StopCoroutine(sequenceRoutine);
+            sequenceRoutine = null;
+        }
+
+        sequenceRoutine =
+            StartCoroutine(
+                ShowBranchSubtitleRoutine(
+                    speaker,
+                    line,
+                    seconds));
+    }
+
+    private IEnumerator ShowBranchSubtitleRoutine(
+        string speaker,
+        string line,
+        float seconds)
+    {
+        yield return ShowSingleSubtitle(
+            speaker,
+            line,
+            seconds);
+
+        sequenceRoutine = null;
+    }
+
     private void Update()
     {
         if (!autoStartWithPoliceSequence || chapterController == null)
@@ -123,6 +201,9 @@ public class Chapter1PoliceSubtitleOverlay : MonoBehaviour
 
         if (policeStarted && !previousPoliceState)
         {
+            interveneBranchSubtitlePlayed = false;
+            watchBranchSubtitlePlayed = false;
+
             if (!playOnlyOnce || !hasPlayed)
             {
                 PlayPoliceSubtitles();
