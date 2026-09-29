@@ -8755,42 +8755,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2f79e6a414461047a9ed2b28a16eacd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chapterController: {fileID: 0}
   vrCamera: {fileID: 0}
-  autoStartWithPoliceSequence: 1
-  playOnlyOnce: 1
+  onlyFivePoliceLines: 1
   distanceFromCamera: 1.55
   verticalOffset: -0.43
   canvasScale: 0.00135
   fontSize: 38
   textColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundColor: {r: 0, g: 0, b: 0, a: 0.72}
-  chineseFont: {fileID: 0}
-  subtitles:
-  - delayFromPrevious: 0
-    speaker: "\u65E5\u8B66"
-    text: "\u9019\u7A2E\u91CE\u883B\u5A5A\u79AE\uFF0C\u7ADF\u7136\u9084\u6562\u8FA6\u5F97\u9019\u9EBC\u71B1\u9B27\uFF1F"
-    duration: 4
-  - delayFromPrevious: 0.15
-    speaker: "\u65CF\u4EBA"
-    text: "\u6211\u5011\u53EA\u662F\u8FA6\u5A5A\u79AE\uFF0C\u6C92\u6709\u5192\u72AF\u3002"
-    duration: 3.2
-  - delayFromPrevious: 0.15
-    speaker: "\u5973\u6027\u65CF\u4EBA"
-    text: "\u653E\u958B\u6211\uFF01"
-    duration: 2.5
-  - delayFromPrevious: 0.15
-    speaker: "\u73A9\u5BB6"
-    text: "\u5920\u4E86\uFF01\u4E0D\u8981\u518D\u7F9E\u8FB1\u6211\u5011\uFF01"
-    duration: 2.8
-  - delayFromPrevious: 0.15
-    speaker: "\u65E5\u8B66"
-    text: "\u90FD\u7D66\u6211\u5B89\u975C\u3002\u4F60\u5011\u6700\u597D\u8A18\u4F4F\u81EA\u5DF1\u7684\u8EAB\u5206\u3002"
-    duration: 3.2
-  interveneSubtitle: "\u5920\u4E86\uFF01\u4E0D\u8981\u518D\u7F9E\u8FB1\u6211\u5011\uFF01"
-  watchSubtitle: "\u90FD\u7D66\u6211\u5B89\u975C\u3002\u4F60\u5011\u6700\u597D\u8A18\u4F4F\u81EA\u5DF1\u7684\u8EAB\u5206\u3002"
-  interveneSubtitleSeconds: 2.8
-  watchSubtitleSeconds: 3.2
+  chineseFont: {fileID: 11400000, guid: 4e7308b1a0cd80f46b6782ef5b4f026e, type: 2}
 --- !u!1 &905586259 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3563653588184051541, guid: d8437141b1e98e5419d4dc09dc343b9e, type: 3}

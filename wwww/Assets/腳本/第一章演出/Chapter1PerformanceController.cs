@@ -10020,7 +10020,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield return MovePlayerToWitnessPoint();
             CapturePoliceWitnessViewPose();
             yield return new WaitForSeconds(0.35f);
-    
+
             if (animatePoliceEntranceWithoutTimeline)
             {
                 yield return AnimatePoliceEntranceFallback();
@@ -10034,10 +10034,10 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             {
                 yield return new WaitForSeconds(3f);
             }
-    
+
             // 天空俯視慢慢壓低後，切到第一名日警正面近景說第一句台詞。
             yield return CinematicPoliceFrontRevealAndFirstLine();
-    
+
             yield return PlayCinematicSpeakerLine(
                 groomActor,
                 "新郎",
@@ -10045,7 +10045,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 groomReplyVoice,
                 3.2f,
                 groomReplyVolumeScale);
-    
+
         }
 
         if (IsNewPoliceScene())
@@ -12735,6 +12735,22 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (IsNewPoliceScene() && doorwayStaged)
         {
+            // 新版 Doorway 劇情會直接跳到 ResolveDoorwayChoice，
+            // 因此下面舊分支裡的「夠了！不要再羞辱我們！」原本永遠不會被執行。
+            // 玩家選擇「上前阻止」時，先在真正進入 Doorway 分支的這一刻顯示玩家台詞。
+            if (choice == ConflictChoice.Intervene)
+            {
+                float interveneSubtitleSeconds =
+                    playerInterveneVoice != null
+                        ? Mathf.Max(0.5f, playerInterveneVoice.length + 0.1f)
+                        : 2.9f;
+
+                ShowLine(
+                    "你",
+                    "夠了！不要再羞辱我們！",
+                    interveneSubtitleSeconds);
+            }
+
             yield return ResolveDoorwayChoice(choice);
             yield break;
         }
@@ -15403,6 +15419,16 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void ShowLine(string speaker, string line, float seconds)
     {
+        // 直接由真正的劇情 ShowLine 同步顯示 VR 字幕。
+        // 劇情走到哪一句，VR 字幕就同一時間出現。
+        if (Chapter1StorySubtitleBridge.Instance != null)
+        {
+            Chapter1StorySubtitleBridge.Instance.ShowFromStory(
+                speaker,
+                line,
+                seconds);
+        }
+
         if (!GameLanguageSettings.SubtitlesEnabled)
         {
             if (dialogueUI != null)
