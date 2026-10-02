@@ -775,6 +775,16 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     public float distantHarassmentFieldOfView = 20f;
     public bool stopPlayModeAfterChapterEnding = true;
 
+    [Header("Chapter 2 Transition")]
+    [Tooltip("第一章結束淡出後，自動切換到第二章。")]
+    public bool loadChapter2AfterEnding = true;
+
+    [Tooltip("第二章 Scene 名稱。留空時，自動載入 Build Profiles / Build Settings 中目前場景的下一個 Scene。")]
+    public string chapter2SceneName = "";
+
+    [Tooltip("畫面淡黑後，等待多久再切換到第二章。")]
+    [Min(0f)] public float chapter2LoadDelaySeconds = 0.25f;
+
     [Header("Wedding Quest Skip")]
     public bool showSkipToIncidentButton = true;
     public KeyCode skipToIncidentKey = KeyCode.P;
@@ -12834,11 +12844,27 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         cinematicStoryPlaying = false;
         ReleaseEndingCameraLock();
 
-        if (stopPlayModeAfterChapterEnding)
+        // 你的 Build Profiles 中第二章固定是 Build Index 7。
+        // 這裡不再依賴 Inspector 布林值，也不再停止 Play Mode。
+        yield return new WaitForSecondsRealtime(0.25f);
+
+        const int chapter2BuildIndex = 7;
+
+        if (chapter2BuildIndex
+            < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
         {
-            yield return null;
-            StopChapterPlayMode();
+            Debug.Log(
+                "[Chapter1] 第一章結束，切換到第二章 Build Index 7。");
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                chapter2BuildIndex);
+
+            yield break;
         }
+
+        Debug.LogError(
+            "[Chapter1] Build Index 7 不存在。"
+            + "請確認第二章仍在 Build Profiles 的索引 7。");
     }
 
     private IEnumerator CinematicCupCloseUpAndShoveVillagerFallback()
@@ -16015,22 +16041,86 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator Fade(float from, float to, float seconds)
     {
+        EnsureFadeCanvas();
+
         if (fadeCanvas == null)
         {
+            Debug.LogError(
+                "[Chapter1] 無法建立 Fade Canvas。");
             yield break;
         }
 
-        fadeCanvas.blocksRaycasts = to > 0.01f;
-        float elapsed = 0f;
-        while (elapsed < seconds)
+        if (!fadeCanvas.gameObject.activeSelf)
         {
-            elapsed += Time.deltaTime;
-            fadeCanvas.alpha = Mathf.Lerp(from, to, elapsed / seconds);
+            fadeCanvas.gameObject.SetActive(true);
+        }
+
+        fadeCanvas.alpha = from;
+        fadeCanvas.blocksRaycasts = to > 0.01f;
+
+        float duration = Mathf.Max(0.01f, seconds);
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            fadeCanvas.alpha = Mathf.Lerp(
+                from,
+                to,
+                Mathf.Clamp01(elapsed / duration));
+
             yield return null;
         }
 
         fadeCanvas.alpha = to;
         fadeCanvas.blocksRaycasts = to > 0.01f;
+    }
+
+    private void EnsureFadeCanvas()
+    {
+        if (fadeCanvas != null)
+        {
+            return;
+        }
+
+        GameObject canvasObject = new GameObject(
+            "Chapter1FadeCanvas_Auto",
+            typeof(RectTransform),
+            typeof(Canvas),
+            typeof(CanvasGroup));
+
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 32767;
+
+        fadeCanvas = canvasObject.GetComponent<CanvasGroup>();
+        fadeCanvas.alpha = 0f;
+        fadeCanvas.interactable = false;
+        fadeCanvas.blocksRaycasts = false;
+
+        GameObject blackObject = new GameObject(
+            "Black",
+            typeof(RectTransform),
+            typeof(UnityEngine.UI.Image));
+
+        blackObject.transform.SetParent(
+            canvasObject.transform,
+            false);
+
+        RectTransform blackRect =
+            blackObject.GetComponent<RectTransform>();
+
+        blackRect.anchorMin = Vector2.zero;
+        blackRect.anchorMax = Vector2.one;
+        blackRect.offsetMin = Vector2.zero;
+        blackRect.offsetMax = Vector2.zero;
+
+        UnityEngine.UI.Image blackImage =
+            blackObject.GetComponent<UnityEngine.UI.Image>();
+
+        blackImage.color = Color.black;
+        blackImage.raycastTarget = false;
     }
 
     private void EnsureHudStyles()
