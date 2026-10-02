@@ -250,7 +250,11 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             // Recover the palm direction from vertices bound to the wrist.
             Vector3 center=left?leftPalmCenter:rightPalmCenter;
             Vector3 meshFingers=center.sqrMagnitude>0.00001f?center.normalized:Vector3.up;
-            Vector3 reference=meshBases.TryGetValue(hand,out Quaternion basis)?basis*Vector3.forward:Vector3.forward;
+            Vector3 bodyForward=meshBases.TryGetValue(hand,out Quaternion basis)?basis*Vector3.forward:Vector3.forward;
+            // The minimum-variance axis is a plane normal with two possible
+            // signs. Use the anatomical palm side, not the back of the hand:
+            // palms face inward in an A pose and downward in a T pose.
+            Vector3 reference=Vector3.Cross(meshFingers,bodyForward)*(left?-1f:1f);
             Vector3 axis=Vector3.ProjectOnPlane(reference,meshFingers).normalized;
             if(axis.sqrMagnitude<0.001f)axis=Vector3.ProjectOnPlane(Vector3.right,meshFingers).normalized;
             Vector3 other=Vector3.Cross(meshFingers,axis).normalized;
@@ -304,14 +308,24 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             BoneWeight[] weights=mesh.boneWeights;
             Matrix4x4[] bindposes=mesh.bindposes;
             Transform[] rigBones=renderer.bones;
+            Vector3 sourceForward=renderer.transform.InverseTransformDirection(forward);
+            Vector3 sourceUp=renderer.transform.InverseTransformDirection(Vector3.up);
+            int leftShoulder=System.Array.IndexOf(rigBones,leftArm),rightShoulder=System.Array.IndexOf(rigBones,rightArm);
+            int sourceHead=System.Array.IndexOf(rigBones,head),sourceHips=System.Array.IndexOf(rigBones,hips);
+            if(leftShoulder>=0&&rightShoulder>=0&&sourceHead>=0&&sourceHips>=0)
+            {
+                Vector3 span=bindposes[rightShoulder].inverse.MultiplyPoint3x4(Vector3.zero)-bindposes[leftShoulder].inverse.MultiplyPoint3x4(Vector3.zero);
+                sourceUp=(bindposes[sourceHead].inverse.MultiplyPoint3x4(Vector3.zero)-bindposes[sourceHips].inverse.MultiplyPoint3x4(Vector3.zero)).normalized;
+                sourceForward=Vector3.Cross(span,sourceUp).normalized;
+            }
             var slots=new Dictionary<int,Transform>();
             for(int i=0;i<rigBones.Length&&i<bindposes.Length;i++)
             {
                 Transform bone=rigBones[i];
                 if(bone==null||!limbVertices.ContainsKey(bone))continue;
                 slots[i]=bone;
-                Vector3 bindForward=bindposes[i].MultiplyVector(renderer.transform.InverseTransformDirection(forward)).normalized;
-                Vector3 bindUp=bindposes[i].MultiplyVector(renderer.transform.InverseTransformDirection(Vector3.up)).normalized;
+                Vector3 bindForward=bindposes[i].MultiplyVector(sourceForward).normalized;
+                Vector3 bindUp=bindposes[i].MultiplyVector(sourceUp).normalized;
                 meshBases[bone]=Quaternion.LookRotation(bindForward,bindUp);
             }
             for(int i=0;i<vertices.Length&&i<weights.Length;i++)
@@ -333,6 +347,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             if(limbVertices[hand].Count>0)center/=limbVertices[hand].Count;
             if(left)leftPalmCenter=center;else rightPalmCenter=center;
         }
+        CalibrateFootGeometry(leftFoot);
+        CalibrateFootGeometry(rightFoot);
         if(meshBases.TryGetValue(rightFoot,out Quaternion footBasis))
         {
             Vector3 localForwardAxis=footBasis*Vector3.forward;
@@ -347,6 +363,56 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             rightToeLocal=localForwardAxis*Mathf.Max(0f,furthest);
         }
         else rightToeLocal=rightFoot.InverseTransformVector(forward*Height*0.055f);
+    }
+    void CalibrateFootGeometry(Transform foot)
+    {
+        var points=limbVertices[foot];
+        if(points.Count<30||!meshBases.TryGetValue(foot,out Quaternion reference))return;
+        // Bind axes describe the skeleton, not the generated shoe. In these
+        // meshes the woman's toes point sideways and the left police shoe is
+        // pitched down. Find the broad supporting sole, then its heel-to-toe
+        // axis, once at setup; never guess these from the animated root yaw.
+        Vector3 center=Vector3.zero,min=points[0],max=points[0];
+        foreach(var p in points){center+=p;min=Vector3.Min(min,p);max=Vector3.Max(max,p);}
+        center/=points.Count;
+        float band=(max-min).magnitude*0.015f;
+        int step=Mathf.Max(1,points.Count/1200),bestScore=-1;
+        float bestPitch=0f,bestRoll=0f;
+        Vector3 soleUp=reference*Vector3.up;
+        for(int pass=0;pass<2;pass++)
+        {
+            float pitchMin=pass==0?-65f:bestPitch-4f,pitchMax=pass==0?65f:bestPitch+4f;
+            float rollMin=pass==0?-35f:bestRoll-4f,rollMax=pass==0?35f:bestRoll+4f;
+            float increment=pass==0?5f:1f;
+            for(float pitch=pitchMin;pitch<=pitchMax;pitch+=increment)
+            for(float roll=rollMin;roll<=rollMax;roll+=increment)
+            {
+                Vector3 normal=reference*(Quaternion.AngleAxis(pitch,Vector3.right)*Quaternion.AngleAxis(roll,Vector3.forward)*Vector3.up);
+                float bottom=float.PositiveInfinity;
+                for(int i=0;i<points.Count;i+=step)bottom=Mathf.Min(bottom,Vector3.Dot(points[i],normal));
+                int score=0;
+                for(int i=0;i<points.Count;i+=step)if(Vector3.Dot(points[i],normal)<bottom+band)score++;
+                if(score<=bestScore)continue;
+                bestScore=score;bestPitch=pitch;bestRoll=roll;soleUp=normal;
+            }
+        }
+        Vector3 toe=Vector3.ProjectOnPlane(center,soleUp).normalized;
+        if(toe.sqrMagnitude<0.01f)toe=Vector3.ProjectOnPlane(reference*Vector3.forward,soleUp).normalized;
+        // Power iteration of the covariance in the sole plane gives the long
+        // axis without treating the boot's tall ankle cuff as its toe direction.
+        for(int iteration=0;iteration<10;iteration++)
+        {
+            Vector3 next=Vector3.zero;
+            for(int i=0;i<points.Count;i+=step)
+            {
+                Vector3 d=Vector3.ProjectOnPlane(points[i]-center,soleUp);
+                next+=d*Vector3.Dot(d,toe);
+            }
+            if(next.sqrMagnitude<1e-12f)break;
+            toe=next.normalized;
+        }
+        if(Vector3.Dot(toe,center)<0f)toe=-toe;
+        meshBases[foot]=Quaternion.LookRotation(toe,soleUp);
     }
     void LevelMeshFoot(Transform foot,Vector3 forward)
     {
@@ -370,7 +436,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     Vector3 ClosedPalmCenter(bool left)
     {
         Quaternion basis=left?leftPalmBasis:rightPalmBasis;
-        return basis*(new Vector3(0f,0.13f,0.48f)*(left?leftPalmLength:rightPalmLength));
+        return basis*(new Vector3(0f,0.16f,0.43f)*(left?leftPalmLength:rightPalmLength));
     }
     void BuildPoliceGripMeshes(float leftSole,float rightSole)
     {
@@ -379,11 +445,14 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Mesh original=renderer.sharedMesh;
             if(original==null||!original.isReadable)continue;
             var vertices=original.vertices;
+            var normals=original.normals;
             var weights=original.boneWeights;
             var bindposes=original.bindposes;
             var rigBones=renderer.bones;
             var leftDelta=new Vector3[vertices.Length];
             var rightDelta=new Vector3[vertices.Length];
+            var leftNormals=new Vector3[vertices.Length];
+            var rightNormals=new Vector3[vertices.Length];
             var soleDelta=new Vector3[vertices.Length];
             float mean=(leftSole+rightSole)*0.5f;
             for(int i=0;i<vertices.Length&&i<weights.Length;i++)
@@ -406,22 +475,29 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
                     Quaternion basis=left?leftPalmBasis:rightPalmBasis;
                     Vector3 fingers=basis*Vector3.forward,normal=basis*Vector3.up;
                     Vector3 point=bindposes[slot].MultiplyPoint3x4(vertices[i]);
-                    float length=left?leftPalmLength:rightPalmLength,knuckle=length*0.52f;
+                    float length=left?leftPalmLength:rightPalmLength,knuckle=length*0.43f;
                     float along=Vector3.Dot(point,fingers);
                     if(along<=knuckle||length<0.0001f)continue;
-                    float radius=length*0.18f;
-                    float curl=Mathf.Min((along-knuckle)/radius,Mathf.PI*0.87f);
+                    float radius=length*0.16f;
+                    float curl=Mathf.Min((along-knuckle)/radius,Mathf.PI*1.03f);
                     Vector3 delta=fingers*(knuckle+Mathf.Sin(curl)*radius-along)
                         +normal*(1f-Mathf.Cos(curl))*radius;
                     Vector3 meshDelta=bindposes[slot].inverse.MultiplyVector(delta)*weight;
                     if(left)leftDelta[i]+=meshDelta;else rightDelta[i]+=meshDelta;
+                    if(i<normals.Length)
+                    {
+                        Vector3 localNormal=bindposes[slot].inverse.transpose.MultiplyVector(normals[i]).normalized;
+                        Quaternion turn=Quaternion.AngleAxis(curl*Mathf.Rad2Deg,Vector3.Cross(fingers,normal));
+                        Vector3 normalDelta=(bindposes[slot].transpose.MultiplyVector(turn*localNormal).normalized-normals[i])*weight;
+                        if(left)leftNormals[i]+=normalDelta;else rightNormals[i]+=normalDelta;
+                    }
                 }
             }
             var posed=Instantiate(original);posed.name=original.name+" incident grip";
             int l=posed.blendShapeCount;
-            posed.AddBlendShapeFrame("Incident left grip",100f,leftDelta,null,null);
+            posed.AddBlendShapeFrame("Incident left grip",100f,leftDelta,leftNormals,null);
             int r=posed.blendShapeCount;
-            posed.AddBlendShapeFrame("Incident right grip",100f,rightDelta,null,null);
+            posed.AddBlendShapeFrame("Incident right grip",100f,rightDelta,rightNormals,null);
             int sole=posed.blendShapeCount;
             posed.AddBlendShapeFrame("Incident level soles",100f,soleDelta,null,null);
             renderer.sharedMesh=posed;
@@ -480,7 +556,12 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             if(spine != null) spine.rotation = Quaternion.AngleAxis(-3f * Mathf.Sin(phase) * locomotionWeight, Vector3.up) * spine.rotation;
         }
         if(kicking)
-            hips.position+=Vector3.down*Height*0.038f*Mathf.Sin(Mathf.PI*kickProgress);
+        {
+            float effort=Mathf.Sin(Mathf.PI*kickProgress);
+            hips.position+=(-right*Height*0.025f-Vector3.up*Height*0.025f)*effort;
+            var spine=B(HumanBodyBones.Spine);
+            if(spine!=null)spine.rotation=Quaternion.AngleAxis(-9f*effort,right)*spine.rotation;
+        }
         if(strugglingInPlace && !frozen)
         {
             float effort = StrugglePhase;
@@ -493,10 +574,10 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         if(locomotionWeight > 0f)
         {
             float swing=relaxedPoliceWalk
-                ? WalkFootOffset(phase) * 20f * strideScale * locomotionWeight
+                ? Mathf.Cos(phase) * 14f * strideScale * locomotionWeight
                 : Mathf.Sin(phase)*14f*strideScale*locomotionWeight;
             leftArm.rotation=Quaternion.AngleAxis(swing,right)*leftArm.rotation;
-            float rightSwing=relaxedPoliceWalk?WalkFootOffset(phase+Mathf.PI)*20f*strideScale*locomotionWeight:-swing;
+            float rightSwing=-swing;
             rightArm.rotation=Quaternion.AngleAxis(rightSwing,right)*rightArm.rotation;
         }
         if(resisting)
@@ -543,7 +624,9 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         if(pointTarget!=null)
         {
             Vector3 dir=Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized;
-            Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,rightArm.position+dir*Height*0.27f-Vector3.up*Height*0.10f,pointProgress),Vector3.down);
+            // Keep the elbow below the chest and the wrist near its neutral
+            // angle while presenting the baton toward the crowd.
+            Solve(rightArm,rightElbow,rightHand,Vector3.Lerp(rightHand.position,rightArm.position+dir*Height*0.16f-Vector3.up*Height*0.24f,pointProgress),Vector3.down);
         }
         if(police && batonVisible && !strike && pointTarget==null)
         {
@@ -553,9 +636,9 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Vector3 hold=arm.position-Vector3.up*Height*0.30f+side*Height*0.09f+Forward*Height*0.055f;
             if(relaxedPoliceWalk)
             {
-                float handSwing=WalkFootOffset(phase+(batonInLeftHand?0f:Mathf.PI));
+                float handSwing=Mathf.Cos(phase+(batonInLeftHand?0f:Mathf.PI));
                 hold=arm.position-Vector3.up*Height*0.30f+side*Height*0.045f
-                    +Forward*Height*(0.025f-handSwing*0.065f*locomotionWeight);
+                    +Forward*Height*(0.025f-handSwing*0.055f*locomotionWeight);
             }
             Solve(arm,elbow,hand,hold,-Forward+side*0.4f);
         }
@@ -604,6 +687,18 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             }
             if(blend>=1f){blendRotations=null;blendPositions=null;}
         }
+        // The source wrists retain the pose used when the rig was initialized.
+        // Align free hands with the forearms and face the palms toward the
+        // thighs, including the woman after release and both departing police.
+        foreach(bool left in new[]{true,false})
+        {
+            bool held=gripPartner!=null&&gripWithLeft==left;
+            bool protecting=resisting&&gripWithLeft!=left;
+            bool batonHand=police&&batonVisible&&batonInLeftHand==left;
+            if(held||protecting||batonHand)continue;
+            Transform hand=left?leftHand:rightHand,elbow=left?leftElbow:rightElbow;
+            OrientHand(left,hand.position-elbow.position,left?right:-right);
+        }
         UpdateBaton();
         foreach(var mesh in gripMeshes)
         {
@@ -631,13 +726,13 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         if(kicking && foot==rightFoot)
         {
             Vector3 rest=target;
-            Vector3 windup=rest-Forward*Height*0.065f+Vector3.up*Height*0.07f;
+            Vector3 windup=rest+Forward*Height*0.025f+Vector3.up*Height*0.18f;
             Vector3 toeOffset=(transform.rotation*rightFootRotation)*Vector3.Scale(rightToeLocal,foot.lossyScale);
             Vector3 contact=kickContact-toeOffset;
-            if(kickProgress<0.28f)target=Vector3.Lerp(rest,windup,Mathf.SmoothStep(0,1,kickProgress/0.28f));
-            else if(kickProgress<0.55f)target=Vector3.Lerp(windup,contact,Mathf.SmoothStep(0,1,(kickProgress-0.28f)/0.27f));
-            else if(kickProgress<0.75f)target=contact;
-            else target=Vector3.Lerp(contact,rest,Mathf.SmoothStep(0,1,(kickProgress-0.75f)/0.25f));
+            if(kickProgress<0.32f)target=Vector3.Lerp(rest,windup,Mathf.SmoothStep(0,1,kickProgress/0.32f));
+            else if(kickProgress<0.46f)target=Vector3.Lerp(windup,contact,Mathf.SmoothStep(0,1,(kickProgress-0.32f)/0.14f));
+            else if(kickProgress<0.62f)target=contact;
+            else target=Vector3.Lerp(contact,rest,Mathf.SmoothStep(0,1,(kickProgress-0.62f)/0.38f));
         }
         if(strugglingInPlace && !frozen)
         {
@@ -723,12 +818,21 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         Vector3 direction=strike?Vector3.Slerp(Vector3.up,Forward,Mathf.SmoothStep(0,1,(strikeProgress-0.42f)/0.30f)):(Vector3.down+Forward*0.25f+side*0.55f).normalized;
         if(relaxedPoliceWalk && !strike)
             direction=(Vector3.down+side*0.18f+Forward*(0.08f-WalkFootOffset(phase+(batonInLeftHand?0f:Mathf.PI))*0.16f*locomotionWeight)).normalized;
-        if(pointTarget!=null)direction=Vector3.Slerp(Vector3.down,Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized,pointProgress);
+        if(pointTarget!=null)direction=Vector3.Slerp(Vector3.down,(Vector3.ProjectOnPlane(pointTarget.position-transform.position,Vector3.up).normalized+Vector3.up*0.5f).normalized,pointProgress);
         Transform batonHand=batonInLeftHand?leftHand:rightHand;
         // The wrist pivot is behind the palm. Put the handle through the palm,
         // orient the knuckles to it, then close the fingers around the wood.
-        Vector3 fingers=Vector3.Cross(direction,side).normalized;
-        OrientHand(batonInLeftHand,fingers,Vector3.Cross(fingers,direction));
+        Transform elbow=batonInLeftHand?leftElbow:rightElbow;
+        Vector3 forearm=(batonHand.position-elbow.position).normalized;
+        Vector3 fingers=Vector3.ProjectOnPlane(forearm,direction).normalized;
+        if(fingers.sqrMagnitude<0.01f)fingers=Forward;
+        // Choose the wrist direction nearest the forearm. The old fixed cross
+        // product turned the hanging fist back toward the elbow, especially
+        // with the baton in the left hand. Limit wrist deviation and let the
+        // baton angle follow the resulting grip.
+        fingers=Vector3.RotateTowards(forearm,fingers,(pointTarget!=null?35f:50f)*Mathf.Deg2Rad,0f).normalized;
+        direction=Vector3.ProjectOnPlane(direction,fingers).normalized;
+        OrientHand(batonInLeftHand,fingers,Vector3.Cross(fingers,direction)*(batonInLeftHand?-1f:1f));
         CurlHand(batonInLeftHand,1f);
         Vector3 palm=batonHand.TransformPoint(ClosedPalmCenter(batonInLeftHand));
         baton.transform.SetPositionAndRotation(palm+direction*Height*0.13f,Quaternion.FromToRotation(Vector3.up,direction));

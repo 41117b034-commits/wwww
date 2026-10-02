@@ -99,9 +99,22 @@ public partial class Chapter1PerformanceController
         Vector3 side=Vector3.Cross(Vector3.up,approach);
         var props=new List<Transform>();
         foreach(var prop in incidentGroundWineProps)if(prop!=null&&prop.gameObject.activeInHierarchy)props.Add(prop);
-        props.Sort((a,b)=>Vector3.Dot(a.position,approach).CompareTo(Vector3.Dot(b.position,approach)));
+        if(props.Count==0)yield break;
+        // Strike the large jar once. All four nearby props react to the same
+        // impact frame, rather than making the officer kick each cup in turn.
+        Transform impactProp=null;
+        Bounds impactBounds=default;
+        float largest=0f;
+        foreach(var prop in props)
+        {
+            if(!TryGetVisibleBounds(prop,out Bounds candidate))continue;
+            float volume=candidate.size.x*candidate.size.y*candidate.size.z;
+            if(volume<=largest)continue;
+            largest=volume;impactProp=prop;impactBounds=candidate;
+        }
+        if(impactProp==null)yield break;
         SetWeddingDramaBeat("police-wine-approach");
-        ShowLine("旁白","警察踢倒擺在地上的酒。",24f);
+        ShowLine("旁白","警察踢倒擺在地上的酒。",9f);
         Vector3 focus=primaryPoliceActor.position+approach*height*0.35f;
         if(TryGetIncidentSurfaceY(focus,out float floor))focus.y=floor;
         // The full figure and the grounded props stay in the same frame, so
@@ -109,71 +122,71 @@ public partial class Chapter1PerformanceController
         yield return WeddingCameraTo(focus-approach*height*0.75f+side*height*2.05f+Vector3.up*height*0.85f,
             focus+Vector3.up*height*0.46f,50f,0.65f);
         var falls=new List<Coroutine>();
-        int wineIndex=0;
-        foreach(var prop in props)
+        float radius=Mathf.Abs(approach.x)*impactBounds.extents.x+Mathf.Abs(approach.z)*impactBounds.extents.z;
+        Vector3 contact=impactBounds.center-approach*radius;
+        contact.y=impactBounds.min.y+height*0.12f;
+        Vector3 destination=contact-approach*height*0.28f-side*height*0.075f;
+        destination.y=primaryPoliceActor.position.y;
+        Vector3 start=primaryPoliceActor.position;
+        Quaternion from=primaryPoliceActor.rotation;
+        rig.Face(destination-start);
+        Quaternion facing=primaryPoliceActor.rotation;
+        primaryPoliceActor.rotation=from;
+        for(float elapsed=0f;elapsed<0.35f;elapsed+=Time.deltaTime)
         {
-            wineIndex++;
-            if(!TryGetVisibleBounds(prop,out Bounds bounds))continue;
-            float radius=Mathf.Abs(approach.x)*bounds.extents.x+Mathf.Abs(approach.z)*bounds.extents.z;
-            Vector3 contact=bounds.center-approach*radius;
-            contact.y=bounds.min.y+height*0.055f;
-            Vector3 destination=contact-approach*height*0.23f-side*height*0.075f;
-            destination.y=primaryPoliceActor.position.y;
-            Vector3 start=primaryPoliceActor.position;
-            Quaternion from=primaryPoliceActor.rotation;
-            rig.Face(destination-start);
-            Quaternion facing=primaryPoliceActor.rotation;
-            primaryPoliceActor.rotation=from;
-            for(float elapsed=0f;elapsed<0.35f;elapsed+=Time.deltaTime)
-            {
-                primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.35f));
-                yield return null;
-            }
-            float duration=Mathf.Max(0.5f,Vector3.ProjectOnPlane(destination-start,Vector3.up).magnitude/(height*0.32f));
-            rig.walking=true;
-            for(float elapsed=0f;elapsed<duration;elapsed+=Time.deltaTime)
-            {
-                PlaceDoorwayActor(rig,Vector3.Lerp(start,destination,WatchWalkProgress(Mathf.Clamp01(elapsed/duration))));
-                yield return null;
-            }
-            PlaceDoorwayActor(rig,destination);
-            rig.walking=false;
-            from=primaryPoliceActor.rotation;
-            rig.Face(approach);
-            facing=primaryPoliceActor.rotation;
-            primaryPoliceActor.rotation=from;
-            for(float elapsed=0f;elapsed<0.30f;elapsed+=Time.deltaTime)
-            {
-                primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.30f));
-                yield return null;
-            }
-            primaryPoliceActor.rotation=facing;
-            yield return new WaitForSeconds(0.18f);
-            SetWeddingDramaBeat("police-wine-kick-"+wineIndex);
-            rig.kickContact=contact;
-            rig.kicking=true;
-            bool hit=false;
-            const float kickSeconds=1.05f;
-            for(float elapsed=0f;elapsed<kickSeconds;elapsed+=Time.deltaTime)
-            {
-                rig.kickProgress=Mathf.Clamp01(elapsed/kickSeconds);
-                // LateUpdate has solved the previous frame's leg. Trigger the
-                // fall from the visible toe contact, never before the swing.
-                if(!hit&&rig.kickProgress>=0.55f&&Vector3.Distance(rig.KickToePosition,contact)<height*0.008f)
-                {
-                    hit=true;
-                    PlayPoliceEventClip(cupCrashClip);
-                    falls.Add(StartCoroutine(ToppleGroundWine(prop,approach,height)));
-                    Debug.Log("[Wedding Wine Kick] Contact: "+prop.name+" toe distance="+Vector3.Distance(rig.KickToePosition,contact).ToString("F3"));
-                    SetWeddingDramaBeat("police-wine-contact-"+wineIndex);
-                }
-                yield return null;
-            }
-            rig.kicking=false;
-            rig.kickProgress=0f;
-            if(!hit)Debug.LogError("[Wedding Wine Kick] Boot did not reach "+prop.name);
-            yield return new WaitForSeconds(0.25f);
+            primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.35f));
+            yield return null;
         }
+        float duration=Mathf.Max(0.5f,Vector3.ProjectOnPlane(destination-start,Vector3.up).magnitude/(height*0.32f));
+        rig.walking=true;
+        for(float elapsed=0f;elapsed<duration;elapsed+=Time.deltaTime)
+        {
+            PlaceDoorwayActor(rig,Vector3.Lerp(start,destination,WatchWalkProgress(Mathf.Clamp01(elapsed/duration))));
+            yield return null;
+        }
+        PlaceDoorwayActor(rig,destination);
+        rig.walking=false;
+        from=primaryPoliceActor.rotation;
+        rig.Face(approach);
+        facing=primaryPoliceActor.rotation;
+        primaryPoliceActor.rotation=from;
+        for(float elapsed=0f;elapsed<0.30f;elapsed+=Time.deltaTime)
+        {
+            primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.30f));
+            yield return null;
+        }
+        primaryPoliceActor.rotation=facing;
+        yield return new WaitForSeconds(0.18f);
+        SetWeddingDramaBeat("police-wine-kick");
+        rig.kickContact=contact;
+        rig.kicking=true;
+        bool hit=false;
+        const float kickSeconds=1.05f;
+        for(float elapsed=0f;elapsed<kickSeconds;elapsed+=Time.deltaTime)
+        {
+            float progress=Mathf.Clamp01(elapsed/kickSeconds);
+            rig.kickProgress=!hit&&progress>=0.46f?0.52f:progress;
+            // Let this frame's IK reach the impact pose before reading the
+            // toe; preserve that pose even if a slow frame skips its time.
+            yield return new WaitForEndOfFrame();
+            if(!hit&&rig.kickProgress>=0.46f&&Vector3.Distance(rig.KickToePosition,contact)<height*0.012f)
+            {
+                hit=true;
+                PlayPoliceEventClip(cupCrashClip);
+                foreach(var prop in props)
+                {
+                    float spread=Vector3.Dot(prop.position-impactBounds.center,side)/height;
+                    Vector3 fallDirection=(approach+side*Mathf.Clamp(spread*0.4f,-0.16f,0.16f)).normalized;
+                    falls.Add(StartCoroutine(ToppleGroundWine(prop,fallDirection,height)));
+                }
+                Debug.Log("[Wedding Wine Kick] Single impact: "+props.Count+" props; toe distance="+Vector3.Distance(rig.KickToePosition,contact).ToString("F3"));
+                SetWeddingDramaBeat("police-wine-contact");
+            }
+        }
+        rig.kicking=false;
+        rig.kickProgress=0f;
+        if(!hit)Debug.LogError("[Wedding Wine Kick] Boot did not reach "+impactProp.name);
+        yield return new WaitForSeconds(0.25f);
         foreach(var fall in falls)yield return fall;
         SetWeddingDramaBeat("police-wine-toppled");
         yield return new WaitForSeconds(0.7f);
@@ -192,19 +205,19 @@ public partial class Chapter1PerformanceController
         Vector3 pivot=bounds.center+direction*radius;
         pivot.y=bounds.min.y;
         Vector3 axis=Vector3.Cross(Vector3.up,direction);
-        const float seconds=0.85f;
+        const float seconds=0.62f;
         for(float elapsed=0f;elapsed<seconds;elapsed+=Time.deltaTime)
         {
             float t=Mathf.Clamp01(elapsed/seconds);
-            float angle=t<0.8f?Mathf.Lerp(0f,96f,Mathf.Pow(t/0.8f,1.6f))
+            float angle=t<0.8f?Mathf.Lerp(0f,96f,Mathf.Pow(t/0.8f,0.75f))
                 :Mathf.Lerp(96f,90f,Mathf.SmoothStep(0,1,(t-0.8f)/0.2f));
             Quaternion turn=Quaternion.AngleAxis(angle,axis);
-            prop.SetPositionAndRotation(pivot+turn*(start-pivot)+direction*height*0.075f*t,turn*rotation);
+            prop.SetPositionAndRotation(pivot+turn*(start-pivot)+direction*height*0.12f*t,turn*rotation);
             SetWineOnGround(prop);
             yield return null;
         }
         Quaternion final=Quaternion.AngleAxis(90f,axis);
-        prop.SetPositionAndRotation(pivot+final*(start-pivot)+direction*height*0.075f,final*rotation);
+        prop.SetPositionAndRotation(pivot+final*(start-pivot)+direction*height*0.12f,final*rotation);
         SetWineOnGround(prop);
     }
 
