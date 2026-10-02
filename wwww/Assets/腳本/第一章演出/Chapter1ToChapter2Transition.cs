@@ -212,6 +212,8 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
             "[Chapter1 Transition] 已成功進入："
             + scene.name);
 
+        FixChapter2CameraAfterLoad(scene);
+
         transitionStarted = false;
 
         if (transitionRoot != null)
@@ -221,6 +223,107 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
 
             transitionRoot = null;
             fadeGroup = null;
+        }
+    }
+
+    private static void FixChapter2CameraAfterLoad(Scene loadedScene)
+    {
+        Camera[] cameras =
+            UnityEngine.Object.FindObjectsByType<Camera>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+
+        Camera chapter2Camera = null;
+
+        // 優先找「第二章場景本身」裡的 Main Camera。
+        for (int i = 0; i < cameras.Length; i++)
+        {
+            Camera cam = cameras[i];
+
+            if (cam == null)
+                continue;
+
+            if (cam.gameObject.scene != loadedScene)
+                continue;
+
+            if (cam.gameObject.name == "Main Camera"
+                || cam.CompareTag("MainCamera"))
+            {
+                chapter2Camera = cam;
+                break;
+            }
+        }
+
+        // 如果沒有符合名稱，再退而求其次使用第二章裡第一台 Camera。
+        if (chapter2Camera == null)
+        {
+            for (int i = 0; i < cameras.Length; i++)
+            {
+                Camera cam = cameras[i];
+
+                if (cam != null
+                    && cam.gameObject.scene == loadedScene)
+                {
+                    chapter2Camera = cam;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < cameras.Length; i++)
+        {
+            Camera cam = cameras[i];
+
+            if (cam == null)
+                continue;
+
+            bool isChapter2Camera =
+                cam == chapter2Camera;
+
+            // 只要不是第二章要使用的 Camera，
+            // 尤其是 DontDestroyOnLoad 留下來的第一章 Camera，
+            // 全部關掉，避免它蓋掉第二章畫面。
+            if (!isChapter2Camera)
+            {
+                if (cam.enabled)
+                {
+                    UnityEngine.Debug.Log(
+                        "[Chapter1 Transition] 關閉舊 Camera："
+                        + cam.gameObject.name
+                        + " / Scene="
+                        + cam.gameObject.scene.name);
+
+                    cam.enabled = false;
+                }
+
+                AudioListener oldListener =
+                    cam.GetComponent<AudioListener>();
+
+                if (oldListener != null)
+                    oldListener.enabled = false;
+            }
+        }
+
+        if (chapter2Camera != null)
+        {
+            chapter2Camera.enabled = true;
+
+            AudioListener listener =
+                chapter2Camera.GetComponent<AudioListener>();
+
+            if (listener != null)
+                listener.enabled = true;
+
+            UnityEngine.Debug.Log(
+                "[Chapter1 Transition] 第二章使用 Camera："
+                + chapter2Camera.gameObject.name
+                + " / Scene="
+                + chapter2Camera.gameObject.scene.name);
+        }
+        else
+        {
+            UnityEngine.Debug.LogError(
+                "[Chapter1 Transition] 第二章找不到可用 Camera。");
         }
     }
 }
