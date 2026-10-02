@@ -1,5 +1,5 @@
 {
-    "playing": false,
+    "playing": true,
     "paused": false,
     "compiling": false,
     "completed": false,
@@ -11,7 +11,7 @@
     "clip": "",
     "subtitle": "",
     "subtitleAlpha": 0.0,
-    "time": 5.761980056762695,
+    "time": 0.0,
     "doorOpen": 0.0,
     "clipLength": 0.0,
     "audioVolume": 0.0,
@@ -36,7 +36,7 @@
             "name": "賽德克帥哥",
             "position": {
                 "x": 3678.5,
-                "y": -5814.0,
+                "y": -5817.01513671875,
                 "z": -159.35000610351563
             },
             "forward": {
@@ -104,7 +104,7 @@
             "name": "部落女姓2",
             "position": {
                 "x": 3673.9189453125,
-                "y": -5814.0,
+                "y": -5818.74951171875,
                 "z": -150.37474060058595
             },
             "forward": {

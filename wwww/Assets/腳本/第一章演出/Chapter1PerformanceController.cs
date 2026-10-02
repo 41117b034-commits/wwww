@@ -849,6 +849,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     private bool storyStarted;
     private bool waitingForChoice;
     private bool chapterCompleted;
+    private bool chapter2TransitionStarted;
     private bool freeExplorationUnlocked;
     private bool explorationTimerRunning;
     private bool explorationTimerFinished;
@@ -12840,31 +12841,15 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         SaveChapterResult();
         chapterCompleted = true;
         yield return new WaitForSeconds(3f);
-        yield return Fade(0f, 1f, 1.5f);
+
         cinematicStoryPlaying = false;
         ReleaseEndingCameraLock();
 
-        // 你的 Build Profiles 中第二章固定是 Build Index 7。
-        // 這裡不再依賴 Inspector 布林值，也不再停止 Play Mode。
-        yield return new WaitForSecondsRealtime(0.25f);
-
-        const int chapter2BuildIndex = 7;
-
-        if (chapter2BuildIndex
-            < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
-        {
-            Debug.Log(
-                "[Chapter1] 第一章結束，切換到第二章 Build Index 7。");
-
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                chapter2BuildIndex);
-
-            yield break;
-        }
-
-        Debug.LogError(
-            "[Chapter1] Build Index 7 不存在。"
-            + "請確認第二章仍在 Build Profiles 的索引 7。");
+        // 把轉場交給獨立、DontDestroyOnLoad 的物件處理。
+        // 即使 Chapter1PerformanceController 的 coroutine 被停止/物件被清理，
+        // 轉場仍會繼續完成。
+        Chapter1ToChapter2Transition.BeginTransition();
+        yield break;
     }
 
     private IEnumerator CinematicCupCloseUpAndShoveVillagerFallback()
@@ -15289,11 +15274,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void StopChapterPlayMode()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        // Silent Watch partial 會從這裡要求結束章節。
+        // 不再停止 Editor Play Mode，也不在本 Controller 上跑轉場 coroutine。
+        Chapter1ToChapter2Transition.BeginTransition();
     }
 
     private void PlayAnimatorStateIfAvailable(Transform actor, string stateName)
