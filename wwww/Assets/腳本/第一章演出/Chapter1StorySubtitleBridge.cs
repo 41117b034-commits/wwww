@@ -11,7 +11,7 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
     public Camera vrCamera;
 
     [Header("Subtitle Filter")]
-    [Tooltip("只顯示指定的五句警察劇情字幕。")]
+    [Tooltip("勾選後顯示開場兩句旁白＋指定的五句警察劇情字幕。")]
     public bool onlyFivePoliceLines = true;
 
     [Header("VR Subtitle Position")]
@@ -49,8 +49,12 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
 
     public void ShowFromStory(string speaker, string line, float seconds)
     {
-        if (onlyFivePoliceLines && !IsWantedPoliceLine(line))
+        if (onlyFivePoliceLines
+            && !IsOpeningNarrationLine(line)
+            && !IsWantedPoliceLine(line))
+        {
             return;
+        }
 
         EnsureUI();
 
@@ -75,6 +79,12 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
             HideAfter(Mathf.Max(0.5f, seconds)));
     }
 
+    private bool IsOpeningNarrationLine(string line)
+    {
+        return line == "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。"
+            || line == "你睜開眼，看見族人圍著火堆歌舞。今晚本該只是祝福新人的夜晚。";
+    }
+
     private bool IsWantedPoliceLine(string line)
     {
         return line == "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？"
@@ -86,6 +96,9 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
 
     private string NormalizeSpeaker(string speaker, string line)
     {
+        if (IsOpeningNarrationLine(line))
+            return "";
+
         if (line == "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？"
             || line == "都給我安靜。你們最好記住自己的身分。")
             return "日警";
@@ -100,6 +113,15 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
             return "玩家";
 
         return speaker;
+    }
+
+    [ContextMenu("Test Opening Subtitle")]
+    public void TestOpeningSubtitle()
+    {
+        ShowFromStory(
+            "字幕",
+            "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。",
+            4f);
     }
 
     [ContextMenu("Test Subtitle")]
