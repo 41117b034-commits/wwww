@@ -314,7 +314,7 @@ public partial class Chapter1PerformanceController
         SetWeddingDramaBeat("watch-police-regroup");
         // The released woman stays outside the hut. The officers walk back to
         // the open courtyard; none of the actors are teleported to the ending.
-        yield return WalkWatchPaths(first, firstPath, second, secondPath, crowd, 0.65f);
+        yield return WalkWatchPaths(first, firstPath, second, secondPath, crowd, 0.46f);
         Vector3 cameraPosition = cameraGround;
         if (TryGetIncidentSurfaceY(cameraPosition, out float floor)) cameraPosition.y = floor;
         cameraPosition += Vector3.up * doorwayHeight * 0.94f;
@@ -326,8 +326,8 @@ public partial class Chapter1PerformanceController
         var leaveFirst = new List<Vector3> { first.transform.position, exit - right * doorwayHeight * 0.29f };
         var leaveSecond = new List<Vector3> { second.transform.position, exit + right * doorwayHeight * 0.29f - direction * doorwayHeight * 0.35f };
         ShowLine("", "警察們揚長而去，族人望著他們下山的背影。",
-            WatchWalkDuration(WatchPathLength(leaveFirst), WatchPathLength(leaveSecond), 0.42f) + 2f);
-        yield return WalkWatchPaths(first, leaveFirst, second, leaveSecond, crowd, 0.42f);
+            WatchWalkDuration(WatchPathLength(leaveFirst), WatchPathLength(leaveSecond), 0.34f) + 2f);
+        yield return WalkWatchPaths(first, leaveFirst, second, leaveSecond, crowd, 0.34f);
         SetWeddingDramaBeat("watch-departure-tableau");
         ShowLine("", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。",
             incidentDepartureHoldSeconds + 0.5f);

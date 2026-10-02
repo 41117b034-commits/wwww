@@ -1,8 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-09-26。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-02。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新變更：2026-09-26 已修正警察入場左側兩名族人穿越、門口選項期間的女性掙扎，以及警察離去步態；實際驗證與限制見文末「入場隱藏、選項掙扎與離場步態」。
+最新變更：2026-10-02 依使用者要求，恢復被還原的踢酒、握棍、女性手腳與警察離場修正，重新在目前 Unity 專案驗證。詳細變更與測試見文末「恢復踢酒與人物動作」。
 
 ## 專案位置
 
@@ -198,3 +198,27 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 測試暫時關閉 PlayerPrefs 寫入；未變更使用者進度。測試後已退出 Play Mode，臨時驗證腳本及 meta 移出 Assets，存於上述備份的 `verification-tools/`。
 - 未使用實體 VR 頭戴裝置，未逐項重玩婚禮送酒、食物及舞蹈互動；本次未執行 Git commit／push。仍以單檔 100,000,000 bytes 為上限，原門洞模型保持 81,700,300 bytes。
 - 移除測試工具後完成最後腳本編譯並回到 Edit Mode。真正的上一層 Git 儲存庫待提交共 6 檔，最大為 `Chapter1PerformanceController.cs` 的 586,000 bytes（0.586 MB），全部小於限制；`git diff --check` 通過，大小清單存於 `file-size-audit.json`。
+
+## 恢復踢酒與人物動作（2026-10-02）
+
+- 使用者表示在 GitHub 操作時誤刪修改，要求依五張截圖重做。實際確認目前演出已退回舊版，但 `_CodexBackups/motion_second_pass_20261002/` 保留今天的修正副本。本次先備份現況，再只恢復相關差異；保留現有的第二章轉場、VR 字幕橋接與字型修改，未重設 Git 或整個專案。
+- 在 Unity Editor 內重新擺放並儲存 `酒杯`、`酒杯 (1)`、`無蓋酒甕 (1)`、`無蓋酒甕 (2)`。四件道具預設就在火堆旁、警察前方，底部貼地；`incidentGroundWineProps` 引用已存進 `第一章新版警察.unity`。沿用原有酒杯取物來源，沒有另造大型模型。
+- `Chapter1PerformanceController.Confrontation.cs` 恢復走近、右腳踢擊與酒倒地流程。字幕精確改成「警察踢倒擺在地上的酒。」；鏡頭拉寬以容納警察全身及酒。翻倒與聲音等待腳尖進入接觸範圍後才觸發，恢復後另將觸發容差由身高的 3.5% 收緊為 0.8%。
+- `Chapter1IncidentRig.cs` 恢復掌心、鞋底與骨架校正；警棍從掌心握持，無手指骨頭的警察模型使用執行時網格握拳，結束後清理，沒有把網格寫成新資產。警察及女性 FBX 的 meta 僅開啟 Read/Write，原 FBX 未改写。
+- 女性空手改成靠近被抓手腕的保護動作，手掌跟隨前臂；進門前清除舊指向、對話及推擠姿勢，進屋、出屋與選項掙扎使用同一套可達抓腕位置。降低手腳擺動，保留原地小幅掙扎。
+- 警察離場恢復左右腿長及髖骨水平校正、平滑踏地與抬腳曲線、較慢的行走速度及擺臂；`Chapter1PerformanceController.cs` 排除舊貼地元件覆蓋 IncidentRig 鞋底高度的情況。該主檔只新增這項判斷，保留目前第二章轉場程式。
+- `Chapter1PerformanceController.Doorway.cs` 補上門口專用 OnGUI 的 fallback 字幕繪製，使屋內慘叫旁白、離場字幕與結尾旁白在沒有 DialogueUI 的目前場景仍可見；選項期間保留原本選單。
+
+### 本次實際驗證與檔案大小
+
+- Unity 6000.0.58f1 成功編譯。`watch-manual/` 為實際 P、2 按鍵完整重播；之後調整踢擊容差、鏡頭與離場字幕，再以同一劇情／選項入口執行最終回歸。
+- 最終 `regression-watch/` 完成四件酒翻倒、關門等待 5.006 秒、屋內音效、拖出女性與離去構圖，結果 `beat=watch-complete`、`completed=true`，Error／Exception／Assert 為 0。查看連續引擎截圖確認新字幕、女性手腳與警察交替踏步；離場字幕及結尾旁白均實際可見。
+- 最終離場每位警察各 47 筆樣本，左右整腿長度最大差約 0.00102 場景單位，左右髖骨高度差不超過 0.00049。女性選項期間與釋放後的根位置最大位移均為 0；詳細結果在 `regression-watch/motion-metrics.json`。
+- 初輪曾出現兩次 Unity 編輯器 TextCore 字型 Assert，呼叫堆疊來自 `UnityEditor.AppStatusBar.DrawStatusText` 的字型圖集建立；後續兩輪觀望未再出現。編譯仍有專案原有 obsolete API／未使用欄位警告，不宣稱整個專案零警告。
+- 備份、當次測試工具、事件紀錄、量測與截圖放在 `_CodexBackups/recovered_motion_20261002/`，由資料夾自身 `.gitignore` 排除提交。測試關閉章節結果 PlayerPrefs 寫入。
+- 以較嚴格的 100,000,000 bytes 檢查正式資產及待提交檔案。門洞模型仍為 81,700,300 bytes（81.70 MB），所有 `Assets`／`Packages`／`ProjectSettings` 檔案均低於上限；本次場景及程式修改均小於 1 MB。未做 Git commit／push。
+- 本次未使用實體 VR 頭戴裝置，未逐項重玩送酒、食物與舞蹈任務；未驗證第二章內容或整段跨章轉場。
+- 最終 `regression-intervene/` 以既有劇情／選項入口跑到揮棍命中與倒地，倒地約三秒後得到 `completed=true`、`knockedOut=true`，Error／Exception／Assert 為 0。驗證工具在取得完成結果後退出 Play Mode；目前主程式會提出第二章轉場要求，這次沒有把跨章載入當作驗證目標，也沒有還原成舊版退出程式。
+- 測試後已退出 Play Mode。把原本留在 `Assets/Editor`、每次播放都會寫入舊驗證目錄的臨時 `Chapter1WatchProbe.cs` 及 meta 移出 Assets，最新驗證版本存於本次備份的 `verification-tools/`，開始前版本也有備份；正式播放不再自動產生這些測試 JSON／截圖。
+- 收尾再次 `git diff --check` 通過；上一層實際儲存庫的待提交現存檔案最大為既有字型變更 2,279,112 bytes，本次場景 783,279 bytes。已確認新備份目錄由 Git ignore 排除。
+- 移出工具後完成最後編譯、重新載入已儲存的第一章場景；Unity 留在 Scene／Edit Mode，該次收尾 Console 畫面為 0 Error、0 Warning。

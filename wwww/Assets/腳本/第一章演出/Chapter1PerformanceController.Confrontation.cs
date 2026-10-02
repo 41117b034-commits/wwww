@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public partial class Chapter1PerformanceController
@@ -10,6 +11,8 @@ public partial class Chapter1PerformanceController
     private Vector3 weddingDramaCenter;
     private float weddingDramaHeight;
     private string weddingDramaBeat;
+    [Tooltip("放在火堆旁、由警察踢倒的酒甕與竹杯。場景預先擺放，劇情不會搬移道具。")]
+    public Transform[] incidentGroundWineProps;
 
     private void SetWeddingDramaBeat(string beat)
     {
@@ -75,25 +78,140 @@ public partial class Chapter1PerformanceController
 
     private IEnumerator WeddingCupAndConfrontation()
     {
-        if (ceremonyCup != null)
-        {
-            Vector3 cup = ceremonyCup.position;
-            float height = Mathf.Max(1.7f, weddingDramaHeight);
-            yield return WeddingCameraTo(cup + new Vector3(-0.19f, 0.20f, -0.45f) * height,
-                cup, 42f, 0.65f);
-            ShowLine("旁白", "日警的手掃向桌邊，將酒杯打落。", 2f);
-            yield return new WaitForSeconds(0.55f);
-            PlayPoliceEventClip(cupCrashClip);
-            if (ceremonyCupRigidbody != null)
-            {
-                ceremonyCupRigidbody.isKinematic = false;
-                ceremonyCupRigidbody.useGravity = true;
-                ceremonyCupRigidbody.AddForce(Vector3.right * 1.6f + Vector3.up * 0.55f, ForceMode.Impulse);
-            }
-            else ceremonyCup.Rotate(Vector3.forward, 78f, Space.Self);
-            yield return new WaitForSeconds(0.85f);
-        }
+        yield return WeddingKickGroundWine();
         yield return WeddingLeaderConfrontation();
+    }
+
+    private IEnumerator WeddingKickGroundWine()
+    {
+        if(primaryPoliceActor==null||incidentGroundWineProps==null||incidentGroundWineProps.Length==0)
+        {
+            Debug.LogError("[Wedding Confrontation] Ground wine props are missing.");
+            yield break;
+        }
+        Chapter1IncidentRig rig=PrepareDoorwayRig(primaryPoliceActor,true);
+        rig.ClearInteractionPose();
+        rig.batonVisible=true;
+        rig.batonInLeftHand=false;
+        rig.smoothLocomotion=true;
+        float height=rig.Height;
+        Vector3 approach=Vector3.ProjectOnPlane(weddingDramaCenter-primaryPoliceActor.position,Vector3.up).normalized;
+        Vector3 side=Vector3.Cross(Vector3.up,approach);
+        var props=new List<Transform>();
+        foreach(var prop in incidentGroundWineProps)if(prop!=null&&prop.gameObject.activeInHierarchy)props.Add(prop);
+        props.Sort((a,b)=>Vector3.Dot(a.position,approach).CompareTo(Vector3.Dot(b.position,approach)));
+        SetWeddingDramaBeat("police-wine-approach");
+        ShowLine("旁白","警察踢倒擺在地上的酒。",24f);
+        Vector3 focus=primaryPoliceActor.position+approach*height*0.35f;
+        if(TryGetIncidentSurfaceY(focus,out float floor))focus.y=floor;
+        // The full figure and the grounded props stay in the same frame, so
+        // the approach and the boot making contact are both visible.
+        yield return WeddingCameraTo(focus-approach*height*0.75f+side*height*2.05f+Vector3.up*height*0.85f,
+            focus+Vector3.up*height*0.46f,50f,0.65f);
+        var falls=new List<Coroutine>();
+        int wineIndex=0;
+        foreach(var prop in props)
+        {
+            wineIndex++;
+            if(!TryGetVisibleBounds(prop,out Bounds bounds))continue;
+            float radius=Mathf.Abs(approach.x)*bounds.extents.x+Mathf.Abs(approach.z)*bounds.extents.z;
+            Vector3 contact=bounds.center-approach*radius;
+            contact.y=bounds.min.y+height*0.055f;
+            Vector3 destination=contact-approach*height*0.23f-side*height*0.075f;
+            destination.y=primaryPoliceActor.position.y;
+            Vector3 start=primaryPoliceActor.position;
+            Quaternion from=primaryPoliceActor.rotation;
+            rig.Face(destination-start);
+            Quaternion facing=primaryPoliceActor.rotation;
+            primaryPoliceActor.rotation=from;
+            for(float elapsed=0f;elapsed<0.35f;elapsed+=Time.deltaTime)
+            {
+                primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.35f));
+                yield return null;
+            }
+            float duration=Mathf.Max(0.5f,Vector3.ProjectOnPlane(destination-start,Vector3.up).magnitude/(height*0.32f));
+            rig.walking=true;
+            for(float elapsed=0f;elapsed<duration;elapsed+=Time.deltaTime)
+            {
+                PlaceDoorwayActor(rig,Vector3.Lerp(start,destination,WatchWalkProgress(Mathf.Clamp01(elapsed/duration))));
+                yield return null;
+            }
+            PlaceDoorwayActor(rig,destination);
+            rig.walking=false;
+            from=primaryPoliceActor.rotation;
+            rig.Face(approach);
+            facing=primaryPoliceActor.rotation;
+            primaryPoliceActor.rotation=from;
+            for(float elapsed=0f;elapsed<0.30f;elapsed+=Time.deltaTime)
+            {
+                primaryPoliceActor.rotation=Quaternion.Slerp(from,facing,Mathf.SmoothStep(0,1,elapsed/0.30f));
+                yield return null;
+            }
+            primaryPoliceActor.rotation=facing;
+            yield return new WaitForSeconds(0.18f);
+            SetWeddingDramaBeat("police-wine-kick-"+wineIndex);
+            rig.kickContact=contact;
+            rig.kicking=true;
+            bool hit=false;
+            const float kickSeconds=1.05f;
+            for(float elapsed=0f;elapsed<kickSeconds;elapsed+=Time.deltaTime)
+            {
+                rig.kickProgress=Mathf.Clamp01(elapsed/kickSeconds);
+                // LateUpdate has solved the previous frame's leg. Trigger the
+                // fall from the visible toe contact, never before the swing.
+                if(!hit&&rig.kickProgress>=0.55f&&Vector3.Distance(rig.KickToePosition,contact)<height*0.008f)
+                {
+                    hit=true;
+                    PlayPoliceEventClip(cupCrashClip);
+                    falls.Add(StartCoroutine(ToppleGroundWine(prop,approach,height)));
+                    Debug.Log("[Wedding Wine Kick] Contact: "+prop.name+" toe distance="+Vector3.Distance(rig.KickToePosition,contact).ToString("F3"));
+                    SetWeddingDramaBeat("police-wine-contact-"+wineIndex);
+                }
+                yield return null;
+            }
+            rig.kicking=false;
+            rig.kickProgress=0f;
+            if(!hit)Debug.LogError("[Wedding Wine Kick] Boot did not reach "+prop.name);
+            yield return new WaitForSeconds(0.25f);
+        }
+        foreach(var fall in falls)yield return fall;
+        SetWeddingDramaBeat("police-wine-toppled");
+        yield return new WaitForSeconds(0.7f);
+    }
+
+    private IEnumerator ToppleGroundWine(Transform prop,Vector3 direction,float height)
+    {
+        if(!TryGetVisibleBounds(prop,out Bounds bounds))yield break;
+        // Kinematic choreography also supports the original concave jar
+        // colliders, without replacing or duplicating the imported meshes.
+        Rigidbody body=prop.GetComponent<Rigidbody>();
+        if(body!=null){body.isKinematic=true;body.useGravity=false;}
+        Vector3 start=prop.position;
+        Quaternion rotation=prop.rotation;
+        float radius=Mathf.Abs(direction.x)*bounds.extents.x+Mathf.Abs(direction.z)*bounds.extents.z;
+        Vector3 pivot=bounds.center+direction*radius;
+        pivot.y=bounds.min.y;
+        Vector3 axis=Vector3.Cross(Vector3.up,direction);
+        const float seconds=0.85f;
+        for(float elapsed=0f;elapsed<seconds;elapsed+=Time.deltaTime)
+        {
+            float t=Mathf.Clamp01(elapsed/seconds);
+            float angle=t<0.8f?Mathf.Lerp(0f,96f,Mathf.Pow(t/0.8f,1.6f))
+                :Mathf.Lerp(96f,90f,Mathf.SmoothStep(0,1,(t-0.8f)/0.2f));
+            Quaternion turn=Quaternion.AngleAxis(angle,axis);
+            prop.SetPositionAndRotation(pivot+turn*(start-pivot)+direction*height*0.075f*t,turn*rotation);
+            SetWineOnGround(prop);
+            yield return null;
+        }
+        Quaternion final=Quaternion.AngleAxis(90f,axis);
+        prop.SetPositionAndRotation(pivot+final*(start-pivot)+direction*height*0.075f,final*rotation);
+        SetWineOnGround(prop);
+    }
+
+    private void SetWineOnGround(Transform prop)
+    {
+        if(TryGetVisibleBounds(prop,out Bounds bounds)&&TryGetIncidentSurfaceY(prop.position,out float ground))
+            prop.position+=Vector3.up*(ground+0.02f-bounds.min.y);
     }
 
     private IEnumerator WeddingLeaderConfrontation()

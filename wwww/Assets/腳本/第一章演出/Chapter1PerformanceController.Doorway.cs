@@ -101,6 +101,9 @@ public partial class Chapter1PerformanceController
         RestoreIncidentShotOccluders();
         doorwayOfficer=PrepareDoorwayRig(officer,true);
         doorwayVictim=PrepareDoorwayRig(femaleVillagerActor,false);
+        doorwayOfficer.ClearInteractionPose();
+        doorwayVictim.ClearInteractionPose();
+        doorwayOfficer.smoothLocomotion=doorwayVictim.smoothLocomotion=true;
         doorwayHeight=Mathf.Max(doorwayOfficer.Height,doorwayVictim.Height);
         doorwayOut=Vector3.ProjectOnPlane(incidentDoorOutward,Vector3.up).normalized;
         doorwayRight=Vector3.Cross(Vector3.up,-doorwayOut).normalized;
@@ -130,7 +133,7 @@ public partial class Chapter1PerformanceController
         ShowLine("旁白","警察抓住女性族人的手腕，強行把她拉向木屋門口。",incidentDoorDragSeconds);
         yield return new WaitForSeconds(0.35f);
         doorwayOfficer.walking=doorwayVictim.walking=true;
-        doorwayVictim.strideScale=0.65f;
+        doorwayVictim.strideScale=0.78f;
         float elapsed=0;
         while(elapsed<incidentDoorDragSeconds)
         {
@@ -264,6 +267,13 @@ public partial class Chapter1PerformanceController
     }
     void DrawDoorwayHud()
     {
+        // The staged doorway owns OnGUI through both ending branches. Keep
+        // narration visible when this scene uses the fallback subtitle HUD.
+        if(!waitingForChoice && showFallbackHud && dialogueUI==null && GameLanguageSettings.SubtitlesEnabled)
+        {
+            EnsureHudStyles();
+            DrawFallbackDialogue();
+        }
         if(doorwayVignetteAmount>0)
         {
             if(doorwayVignette==null)

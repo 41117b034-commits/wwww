@@ -14252,6 +14252,16 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         grounder.Configure(animator, guidedGroundLayers);
+        Chapter1IncidentRig incidentRig = actor.GetComponent<Chapter1IncidentRig>();
+        if (incidentRig != null && incidentRig.isActiveAndEnabled && incidentRig.Height > 0f)
+        {
+            // The incident rig accounts for the actual shoe soles. The older
+            // ankle-based correction would overwrite that height each frame.
+            grounder.enabled = false;
+            if (snapImmediately && TryGetIncidentSurfaceY(actor.position, out float incidentGround))
+                incidentRig.Ground(incidentGround);
+            return grounder;
+        }
         grounder.footClearance = 0.018f;
         grounder.hardSnapThreshold = 0.08f;
         grounder.followSpeed = 32f;
