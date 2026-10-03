@@ -15284,8 +15284,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void StopChapterPlayMode()
     {
-        // Silent Watch partial 會從這裡要求結束章節。
-        // 不再停止 Editor Play Mode，也不在本 Controller 上跑轉場 coroutine。
+        // Both doorway choices share the fade. In the Editor it stops Play
+        // Mode after the black frame; builds retain their chapter transition.
         Chapter1ToChapter2Transition.BeginTransition();
     }
 

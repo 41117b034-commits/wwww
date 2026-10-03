@@ -560,7 +560,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             float effort=Mathf.Sin(Mathf.PI*kickProgress);
             hips.position+=(-right*Height*0.025f-Vector3.up*Height*0.025f)*effort;
             var spine=B(HumanBodyBones.Spine);
-            if(spine!=null)spine.rotation=Quaternion.AngleAxis(-9f*effort,right)*spine.rotation;
+            if(spine!=null)spine.rotation=Quaternion.AngleAxis(-5f*effort,right)*spine.rotation;
         }
         if(strugglingInPlace && !frozen)
         {
@@ -642,6 +642,19 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             }
             Solve(arm,elbow,hand,hold,-Forward+side*0.4f);
         }
+        if(police && relaxedPoliceWalk && gripPartner==null && !strike && pointTarget==null)
+        {
+            // Solve the free arm too: the imported idle pose places its wrist
+            // against the hip even when the shoulder is swung for locomotion.
+            bool left=!batonInLeftHand;
+            Transform arm=left?leftArm:rightArm, elbow=left?leftElbow:rightElbow, hand=left?leftHand:rightHand;
+            Vector3 side=left?-right:right;
+            float length=Vector3.Distance(arm.position,elbow.position)+Vector3.Distance(elbow.position,hand.position);
+            float swing=Mathf.Cos(phase+(left?0f:Mathf.PI))*locomotionWeight;
+            Vector3 target=arm.position-Vector3.up*length*0.91f+side*Height*0.065f
+                +Forward*Height*(0.025f-swing*0.065f);
+            Solve(arm,elbow,hand,target,-Forward+side*0.65f);
+        }
         if(strike)
         {
             Transform arm=batonInLeftHand?leftArm:rightArm,elbow=batonInLeftHand?leftElbow:rightElbow,hand=batonInLeftHand?leftHand:rightHand;
@@ -709,6 +722,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     void ApplyLeg(Transform thigh,Transform calf,Transform foot,Vector3 ankle,Quaternion rotation,float p)
     {
         Vector3 target=transform.TransformPoint(ankle);
+        Quaternion footRotation=transform.rotation*rotation;
         if(pushing && pushWeight > 0f)
         {
             if(foot == leftFoot) target = Vector3.Lerp(target, pushRearAnkle, pushWeight);
@@ -726,8 +740,13 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         if(kicking && foot==rightFoot)
         {
             Vector3 rest=target;
-            Vector3 windup=rest+Forward*Height*0.025f+Vector3.up*Height*0.18f;
-            Vector3 toeOffset=(transform.rotation*rightFootRotation)*Vector3.Scale(rightToeLocal,foot.lossyScale);
+            // A low forward kick: keep the knee in the forward plane and let
+            // the ankle extend slightly instead of holding a rigid flat boot.
+            float extension=Mathf.SmoothStep(0f,1f,Mathf.InverseLerp(0.30f,0.46f,kickProgress))
+                *(1f-Mathf.SmoothStep(0f,1f,Mathf.InverseLerp(0.62f,1f,kickProgress)));
+            footRotation=Quaternion.AngleAxis(10f*extension,Vector3.Cross(Vector3.up,Forward))*footRotation;
+            Vector3 windup=rest-Forward*Height*0.015f+Vector3.up*Height*0.105f;
+            Vector3 toeOffset=footRotation*Vector3.Scale(rightToeLocal,foot.lossyScale);
             Vector3 contact=kickContact-toeOffset;
             if(kickProgress<0.32f)target=Vector3.Lerp(rest,windup,Mathf.SmoothStep(0,1,kickProgress/0.32f));
             else if(kickProgress<0.46f)target=Vector3.Lerp(windup,contact,Mathf.SmoothStep(0,1,(kickProgress-0.32f)/0.14f));
@@ -754,7 +773,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             target+=(Forward*offset+Vector3.up*lift)*stumbleWeight;
         }
         Solve(thigh,calf,foot,target,Forward);
-        foot.rotation=transform.rotation*rotation;
+        foot.rotation=footRotation;
         if(relaxedPoliceWalk && locomotionWeight>0f)
         {
             float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);

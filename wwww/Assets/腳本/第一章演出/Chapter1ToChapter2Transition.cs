@@ -26,6 +26,14 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
     private const int FadeMilliseconds = 1500;
     private const int HoldMilliseconds = 350;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetTransition()
+    {
+        transitionStarted = false;
+        transitionRoot = null;
+        fadeGroup = null;
+    }
+
     public static void BeginTransition()
     {
         if (transitionStarted)
@@ -35,6 +43,7 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
             return;
         }
 
+        if (!Application.isPlaying) return;
         transitionStarted = true;
 
         BuildFadeCanvas();
@@ -111,12 +120,14 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
     {
         try
         {
+            GameObject activeTransition = transitionRoot;
             Stopwatch timer = Stopwatch.StartNew();
             bool halfwayLogged = false;
 
             while (timer.ElapsedMilliseconds
                    < FadeMilliseconds)
             {
+                if (!Application.isPlaying || activeTransition == null) return;
                 float progress =
                     Mathf.Clamp01(
                         timer.ElapsedMilliseconds
@@ -148,13 +159,10 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
             UnityEngine.Debug.Log(
                 "[Chapter1 Transition] 淡黑完成。");
 
-            await Task.Delay(
-                HoldMilliseconds);
+            await Task.Delay(HoldMilliseconds);
 
-            UnityEngine.Debug.Log(
-                "[Chapter1 Transition] 準備載入第二章。");
-
-            LoadChapter2();
+            if (!Application.isPlaying || activeTransition == null) return;
+            FinishTransition();
         }
         catch (Exception ex)
         {
@@ -164,21 +172,14 @@ public class Chapter1ToChapter2Transition : MonoBehaviour
         }
     }
 
-    private static void LoadChapter2()
+    private static void FinishTransition()
     {
+#if UNITY_EDITOR
+        UnityEngine.Debug.Log("[Chapter1 Ending] Black screen complete; stopping Play Mode.");
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
-
-#if UNITY_EDITOR
-        UnityEngine.Debug.Log(
-            "[Chapter1 Transition] Editor 載入："
-            + Chapter2EditorPath);
-
-        EditorSceneManager.LoadSceneInPlayMode(
-            Chapter2EditorPath,
-            new LoadSceneParameters(
-                LoadSceneMode.Single));
-#else
         if (Application.CanStreamedLevelBeLoaded(
                 Chapter2SceneName))
         {

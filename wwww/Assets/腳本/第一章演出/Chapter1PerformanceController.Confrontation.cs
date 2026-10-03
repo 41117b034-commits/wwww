@@ -13,6 +13,7 @@ public partial class Chapter1PerformanceController
     private string weddingDramaBeat;
     [Tooltip("放在火堆旁、由警察踢倒的酒甕與竹杯。場景預先擺放，劇情不會搬移道具。")]
     public Transform[] incidentGroundWineProps;
+    private readonly Dictionary<Transform, Vector3[]> wineSupportVertices = new Dictionary<Transform, Vector3[]>();
 
     private void SetWeddingDramaBeat(string beat)
     {
@@ -95,11 +96,19 @@ public partial class Chapter1PerformanceController
         rig.batonInLeftHand=false;
         rig.smoothLocomotion=true;
         float height=rig.Height;
-        Vector3 approach=Vector3.ProjectOnPlane(weddingDramaCenter-primaryPoliceActor.position,Vector3.up).normalized;
-        Vector3 side=Vector3.Cross(Vector3.up,approach);
         var props=new List<Transform>();
         foreach(var prop in incidentGroundWineProps)if(prop!=null&&prop.gameObject.activeInHierarchy)props.Add(prop);
         if(props.Count==0)yield break;
+        // Aim along the outside of the pit, with a slight outward component.
+        // Kicking toward the wedding centre used to roll the jars into the fire.
+        Vector3 wineCenter=Vector3.zero;
+        foreach(var prop in props){SetWineOnGround(prop);wineCenter+=prop.position;}
+        wineCenter/=props.Count;
+        Vector3 away=Vector3.ProjectOnPlane(wineCenter-GetFireCenterPosition(),Vector3.up).normalized;
+        Vector3 tangent=Vector3.Cross(Vector3.up,away);
+        if(Vector3.Dot(tangent,wineCenter-primaryPoliceActor.position)<0f)tangent=-tangent;
+        Vector3 approach=(tangent+away*0.35f).normalized;
+        Vector3 side=Vector3.Cross(Vector3.up,approach);
         // Strike the large jar once. All four nearby props react to the same
         // impact frame, rather than making the officer kick each cup in turn.
         Transform impactProp=null;
@@ -115,7 +124,7 @@ public partial class Chapter1PerformanceController
         if(impactProp==null)yield break;
         SetWeddingDramaBeat("police-wine-approach");
         ShowLine("旁白","警察踢倒擺在地上的酒。",9f);
-        Vector3 focus=primaryPoliceActor.position+approach*height*0.35f;
+        Vector3 focus=wineCenter-approach*height*0.30f;
         if(TryGetIncidentSurfaceY(focus,out float floor))focus.y=floor;
         // The full figure and the grounded props stay in the same frame, so
         // the approach and the boot making contact are both visible.
@@ -125,7 +134,23 @@ public partial class Chapter1PerformanceController
         float radius=Mathf.Abs(approach.x)*impactBounds.extents.x+Mathf.Abs(approach.z)*impactBounds.extents.z;
         Vector3 contact=impactBounds.center-approach*radius;
         contact.y=impactBounds.min.y+height*0.12f;
-        Vector3 destination=contact-approach*height*0.28f-side*height*0.075f;
+        // A diagonal ray reaches the curved jar itself; the bounding box can
+        // put the boot visibly outside the surface even at zero toe error.
+        Physics.SyncTransforms();
+        Vector3 rayOrigin=impactBounds.center-approach*(radius+height);
+        rayOrigin.y=contact.y;
+        Ray contactRay=new Ray(rayOrigin,approach);
+        float nearest=height+radius*2f;
+        foreach(var collider in impactProp.GetComponentsInChildren<Collider>())
+        {
+            if(collider.enabled && collider.Raycast(contactRay,out RaycastHit hitInfo,nearest))
+            {
+                nearest=hitInfo.distance;
+                contact=hitInfo.point;
+            }
+        }
+        // Leave room for the shin to extend ahead of the knee at contact.
+        Vector3 destination=contact-approach*height*0.48f-side*height*0.075f;
         destination.y=primaryPoliceActor.position.y;
         Vector3 start=primaryPoliceActor.position;
         Quaternion from=primaryPoliceActor.rotation;
@@ -212,19 +237,86 @@ public partial class Chapter1PerformanceController
             float angle=t<0.8f?Mathf.Lerp(0f,96f,Mathf.Pow(t/0.8f,0.75f))
                 :Mathf.Lerp(96f,90f,Mathf.SmoothStep(0,1,(t-0.8f)/0.2f));
             Quaternion turn=Quaternion.AngleAxis(angle,axis);
-            prop.SetPositionAndRotation(pivot+turn*(start-pivot)+direction*height*0.12f*t,turn*rotation);
+            prop.SetPositionAndRotation(pivot+turn*(start-pivot)+direction*height*0.20f*t,turn*rotation);
             SetWineOnGround(prop);
             yield return null;
         }
         Quaternion final=Quaternion.AngleAxis(90f,axis);
-        prop.SetPositionAndRotation(pivot+final*(start-pivot)+direction*height*0.12f,final*rotation);
+        prop.SetPositionAndRotation(pivot+final*(start-pivot)+direction*height*0.20f,final*rotation);
         SetWineOnGround(prop);
     }
 
     private void SetWineOnGround(Transform prop)
     {
-        if(TryGetVisibleBounds(prop,out Bounds bounds)&&TryGetIncidentSurfaceY(prop.position,out float ground))
+        if(!wineSupportVertices.TryGetValue(prop,out Vector3[] points))
+        {
+            var support=new List<Vector3>();
+            foreach(var filter in prop.GetComponentsInChildren<MeshFilter>())
+            {
+                var mesh=filter.sharedMesh;
+                if(mesh==null||!mesh.isReadable)continue;
+                foreach(var vertex in BuildWineSupportEnvelope(mesh))
+                    support.Add(prop.InverseTransformPoint(filter.transform.TransformPoint(vertex)));
+            }
+            points=support.ToArray();
+            wineSupportVertices[prop]=points;
+        }
+        // Use the actual surface against the terrain. A rotated cylinder's
+        // bounding box has empty corners below its skin, making it hover.
+        Terrain groundTerrain=null;
+        foreach(var terrain in Terrain.activeTerrains)
+        {
+            if(terrain.terrainData==null)continue;
+            Vector3 local=prop.position-terrain.transform.position, size=terrain.terrainData.size;
+            if(local.x>=0f&&local.z>=0f&&local.x<=size.x&&local.z<=size.z){groundTerrain=terrain;break;}
+        }
+        if(points.Length>0&&groundTerrain!=null)
+        {
+            float clearance=float.PositiveInfinity;
+            foreach(var local in points)
+            {
+                Vector3 world=prop.TransformPoint(local);
+                float ground=groundTerrain.SampleHeight(world)+groundTerrain.transform.position.y;
+                clearance=Mathf.Min(clearance,world.y-ground);
+            }
+            prop.position+=Vector3.up*(0.02f-clearance);
+        }
+        else if(TryGetVisibleBounds(prop,out Bounds bounds)&&TryGetIncidentSurfaceY(bounds.center,out float ground))
             prop.position+=Vector3.up*(ground+0.02f-bounds.min.y);
+    }
+
+    // The imported jars contain over a million vertices each. Keep the outer
+    // points of a small grid along all three axes, once per prop, so each frame
+    // grounds the curved surface without millions of terrain queries.
+    private static IEnumerable<Vector3> BuildWineSupportEnvelope(Mesh mesh)
+    {
+        const int grid = 20;
+        Vector3[] vertices = mesh.vertices;
+        if (vertices.Length <= grid * grid * 6) return vertices;
+        int[] minima = new int[grid * grid * 3];
+        int[] maxima = new int[minima.Length];
+        for (int i = 0; i < minima.Length; i++) minima[i] = maxima[i] = -1;
+        Bounds bounds = mesh.bounds;
+        Vector3 min = bounds.min, size = bounds.size;
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            Vector3 v = vertices[i];
+            int x = Mathf.Clamp((int)((v.x - min.x) / Mathf.Max(size.x, 0.0001f) * grid), 0, grid - 1);
+            int y = Mathf.Clamp((int)((v.y - min.y) / Mathf.Max(size.y, 0.0001f) * grid), 0, grid - 1);
+            int z = Mathf.Clamp((int)((v.z - min.z) / Mathf.Max(size.z, 0.0001f) * grid), 0, grid - 1);
+            for (int axis = 0; axis < 3; axis++)
+            {
+                int cell = axis * grid * grid + (axis == 0 ? y * grid + z : axis == 1 ? x * grid + z : x * grid + y);
+                if (minima[cell] < 0 || v[axis] < vertices[minima[cell]][axis]) minima[cell] = i;
+                if (maxima[cell] < 0 || v[axis] > vertices[maxima[cell]][axis]) maxima[cell] = i;
+            }
+        }
+        var indices = new HashSet<int>();
+        foreach (int i in minima) if (i >= 0) indices.Add(i);
+        foreach (int i in maxima) if (i >= 0) indices.Add(i);
+        var support = new List<Vector3>(indices.Count);
+        foreach (int i in indices) support.Add(vertices[i]);
+        return support;
     }
 
     private IEnumerator WeddingLeaderConfrontation()
