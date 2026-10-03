@@ -2,7 +2,7 @@
 
 更新日期：2026-10-03。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-03 接續「修正警察踢酒與行走姿勢」對話完成收尾核對；2026-10-02 的修正及兩分支測試均已完成，修改已存在本機提交 `3d63c23`。本次未重跑 Play Mode，實際核對範圍見文末「踢酒與行走修正收尾核對」。
+最新狀態：2026-10-03 接續「修改」對話最後四張圖的新要求，完成最新握棍、單次踹倒四件酒、女性腳掌與警察步態修正的兩分支 Play Mode 驗證，並移出臨時測試工具。動作程式已存在使用者的本機提交 `586a4ad`；本次測試及跨章載入時另發現的角色錯誤，見文末「單次踹酒與手腳修正最終驗證」。
 
 ## 專案位置
 
@@ -232,3 +232,17 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 本次透過 Unity 視窗實際確認目前為 `第一章新版警察` Scene／Edit Mode，Console 畫面顯示 0 Error、0 Warning；`Assets/Editor/Chapter1WatchProbe.cs` 及其 meta 均已不存在，不會自動啟動舊驗證工具。
 - 本次重新掃描 `Assets`、`Packages`、`ProjectSettings` 共 2,958 個檔案，沒有任何檔案達到 100,000,000 bytes。最大為既有石盤圖片 87,096,360 bytes（87.10 MB），門洞模型仍為 81,700,300 bytes（81.70 MB）。
 - 踢酒與人物姿勢這次需求已完成。實體 VR、婚禮任務逐項重玩、第二章內容與跨章轉場仍未於本次驗證。
+
+## 單次踹酒與手腳修正最終驗證（2026-10-03）
+
+- 接續「修改」（`01a0fd99-e0c5-7682-8187-2a1d173f1a73`）最後一輪，使用者要求修正握棍手勢、一次大力踹倒四件酒、女性歪腳及兩名警察的手腳與離場步態。前一節的完成核對早於這些新要求，不能代表這一版已測完。
+- 讀取原對話與目前程式後確認：最新 `Chapter1IncidentRig.cs`、`Chapter1PerformanceController.Confrontation.cs` 已存在本機提交 `586a4ad`（2026-10-03 01:59:08 +08:00）。前次中斷前又降低持棍手、調整警棍朝向、限制指向時手腕折角並修正握拳網格法線；該最後版本尚未完整回歸。本次保留此版本，未重寫已完成的場景與動作。
+- 最終演出使用一次蓄力抬膝與快速前踹，在腳尖接觸同一幀啟動四件酒的翻倒；腳掌根據實際網格鞋底和腳趾方向校正。握棍沿用掌心定位與執行時握拳；空手沿前臂方向自然垂下；離場步伐的支撐段依角色位移推進相位，減少腳底滑動。
+- 本次在 Unity 6000.0.58f1 的 `第一章新版警察` 實際 Play → P → 2 跑完觀望，`resumed-watch/verified-result.json` 為 `beat=watch-complete`、`completed=true`、`errors=[]`。單次接觸紀錄為 `Single impact: 4 props; toe distance=0.000`；四件酒在同一筆樣本開始旋轉，最終各翻倒約 90 度。關門等待實測 5.069 秒。
+- 本次目視核對引擎截圖的握棍、抬膝踹酒、門口掙扎、進出屋、女性放手站姿與警察離去連續畫面。觀望離場兩位警察各 47 筆樣本，左右腿長最大差小於 0.001 場景單位，腳尖相對行進方向偏角小於 6 度；女性釋放後 156 筆樣本根位置位移為 0、腳底保持水平，空手手腕與前臂對齊。詳細量測在 `resumed-watch/motion-metrics.json`。
+- 本次另外用同一劇情及選項入口重播「上前阻止」，紀錄揮棍命中與倒地畫面；`resumed-intervene/verified-result.json` 為 `completed=true`、`knockedOut=true`、`errors=[]`。這些無錯誤結果僅涵蓋第一章分支完成前，不代表第二章或整個專案沒有問題。
+- 第一章完成後，既有轉場自動載入 `第二章`；隨後記錄到錯誤：`[Chapter1] Could not replace wedding dancer 賽德克青年 because Humanoid donor 賽德克中年(2) was not available. The original actor was kept.` 原演員保留，第二章內容尚未驗證；此問題在本次動作修改範圍外，另列待辦。收尾前 Console 計數為 1 Error、24 Warnings（含跨章錯誤與原有警告），不宣稱全專案零錯誤或零警告。
+- 原始檔備份及本輪測試來源 SHA-256 存在 `_CodexBackups/motion_refine_20261003/resumed-20261003/`；本輪資料、截圖與量測為 `_CodexBackups/motion_refine_20261003/resumed-watch/`、`resumed-intervene/`。這些路徑均由 `motion_refine_20261003/.gitignore` 排除提交。
+- 已退出 Play Mode 並恢復第一章。將已被前次提交帶入的臨時 `Assets/Editor/Chapter1WatchProbe.cs` 與 meta 移至 `_CodexBackups/motion_refine_20261003/verification-tools/`，正式播放不再安裝測試指令輪詢與截圖／JSON 採樣。兩輪測試停用第一章結果 PlayerPrefs 寫入。
+- 本次掃描正式資產，所有檔案均低於 100,000,000 bytes；最大仍為石盤圖片 87,096,360 bytes，門洞模型 81,700,300 bytes。未執行 Git commit／push；未使用實體 VR 頭戴裝置，未逐項重玩婚禮任務。第二章缺少角色的替換錯誤仍待後續處理。
+- 移出工具後已執行 Unity Refresh，腳本編譯 ExitCode 0、程序集成功重新載入；收尾日誌存於 `resumed-20261003/final-compile-log.txt`。兩份正式動作腳本的 SHA-256 與測試開始前完全一致；`git diff --check` 通過。本次待提交僅刪除臨時 Probe 及 meta、更新本交接檔，動作修正仍在既有提交中。
