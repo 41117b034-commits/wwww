@@ -17,13 +17,15 @@ public sealed class Chapter2Controller : MonoBehaviour
     public Light sun, fireLight;
     public AudioSource ambience, effects, fireAudio;
     public AudioClip forestAudio, nightAudio, chopAudio, threatAudio;
+    public Chapter2RouteGuide routeGuide;
+    public Collider trunkSurface;
     [Header("Replace this clip with the final opening film")]
     public VideoClip openingFilm;
     [Min(1)] public float videoPrepareTimeout = 12;
     public bool stopEditorAfterEnding = true;
     public bool saveResult = true;
     [Header("Interaction")]
-    public float interactionDistance = 5.5f;
+    public float interactionDistance = .7f;
     public float rhythmPeriod = 2.6f;
     public float lineSeconds = 4.5f;
     public Stage CurrentStage { get; private set; }
@@ -35,6 +37,12 @@ public sealed class Chapter2Controller : MonoBehaviour
     public bool VideoPlayed { get; private set; }
     public bool VideoFinished { get; private set; }
     public bool Completed => CurrentStage == Stage.Complete;
+    public bool AtTree => Vector3.ProjectOnPlane(player.transform.position-treeApproach.position,Vector3.up).magnitude<=interactionDistance;
+    public Vector3 WorkerDestination(int index)
+    {
+        Vector3[] offsets={new Vector3(-1.8f,0,-2.1f),new Vector3(2.3f,0,-2.4f),new Vector3(-2.9f,0,-1.3f)};
+        var p=sacredTree.position+offsets[index%offsets.Length];p.y=workers[index].transform.position.y;return p;
+    }
     public float RhythmPhase => Mathf.PingPong((Time.time-chopStarted)/rhythmPeriod,1);
     public event Action<Stage> StageChanged;
     VideoPlayer video;
@@ -57,6 +65,7 @@ public sealed class Chapter2Controller : MonoBehaviour
         player.canMove=false;player.canLook=false;
         dayGroup.SetActive(true);nightGroup.SetActive(false);fallenStump.SetActive(false);axe.SetActive(false);
         ambience.clip=forestAudio;ambience.loop=true;ambience.Play();
+        if(routeGuide){routeGuide.chapter=this;player.routeGuide=routeGuide;}
         flow=StartCoroutine(Run());
     }
     void SetStage(Stage value)
@@ -87,10 +96,17 @@ public sealed class Chapter2Controller : MonoBehaviour
     }
     public void SelectA() { Choose(0); }
     public void SelectB() { Choose(1); }
+    public bool TryGetChopContact(out RaycastHit contact)
+    {
+        contact=default;
+        Vector3 origin=player.view.transform.position;origin.y=sacredTree.position.y+1.15f;
+        Vector3 inward=sacredTree.position+Vector3.up*1.15f-origin;
+        return trunkSurface&&trunkSurface.Raycast(new Ray(origin,inward.normalized),out contact,2.15f);
+    }
     public void Choose(int choice)
     {
         if(choice<0 || choice>1 || !readyToChoose) return;
-        if(CurrentStage==Stage.TreeChoice && Vector3.Distance(player.transform.position,treeApproach.position)<=interactionDistance)
+        if(CurrentStage==Stage.TreeChoice && AtTree)
         { TreeDecision=choice;readyToChoose=false;ui.HideChoices(); }
         else if(CurrentStage==Stage.Vote)
         { MeetingDecision=choice;readyToChoose=false;ui.HideChoices(); }
@@ -98,19 +114,19 @@ public sealed class Chapter2Controller : MonoBehaviour
     public bool TryChop()
     {
         if(CurrentStage!=Stage.Chopping || !canChop || Time.time<nextCut) return false;
-        if(Vector3.Distance(player.transform.position,treeApproach.position)>interactionDistance)
+        var tool=axe.GetComponent<Chapter2Axe>();
+        if(!tool||tool.IsSwinging)return false;
+        if(!AtTree)
         { ui.hint.text="靠近巨木前的斧痕，再進行砍伐。";return false; }
         Vector3 direction=sacredTree.position+Vector3.up*1.2f-player.view.transform.position;
-        if(Vector3.Angle(player.view.transform.forward,direction)>65)
+        if(Vector3.Angle(player.view.transform.forward,direction)>40)
         { ui.hint.text="面向巨木的樹幹，再按 E／右手扳機。";return false; }
         ui.hint.text="游標進入綠色區域時，按 E／空白鍵／右手扳機。避免傷及木材。";
-        nextCut=Time.time+.55f;StartCoroutine(SwingAxe());
+        if(!TryGetChopContact(out RaycastHit contact))
+        {ui.hint.text="再靠近樹幹正面的黃色位置，讓斧刃能碰到木頭。";return false;}
+        nextCut=Time.time+.85f;
         float phase=RhythmPhase;
-        if(phase>=.32f && phase<=.68f)
-        { ValidCuts++;ui.Line("伐木", "落點準確。放穩斧頭，等待下一次時機。"); }
-        else
-        { FailedCuts++;Integrity=Mathf.Max(0,Integrity-20);ui.Line("伐木", "木材受到損傷。等游標進入綠色區域，再落斧。"); }
-        if(chopAudio) effects.PlayOneShot(chopAudio,.7f);
+        StartCoroutine(SwingAxe(tool,contact,phase>=.32f&&phase<=.68f));
         return true;
     }
     IEnumerator Run()
@@ -131,12 +147,15 @@ public sealed class Chapter2Controller : MonoBehaviour
         {
             // The escort waits when the player falls behind.
             Vector3 relative=player.transform.position-workers[0].transform.position;
-            if(relative.magnitude<9 || relative.z>0) progress+=Time.deltaTime/10;
-            for(int i=0;i<workers.Length;i++) workers[i].transform.position=Vector3.Lerp(starts[i],new Vector3(-2.8f-i*1.05f,starts[i].y,8-i*.8f),Mathf.Clamp01(progress));
+            if(relative.magnitude<6.5f)progress+=Time.deltaTime/15;
+            ui.objective.text=relative.magnitude>=6.5f?"族人正在等你，沿黃色箭頭跟上":"跟著黃色箭頭，前往巨木";
+            for(int i=0;i<workers.Length;i++)workers[i].transform.position=Vector3.Lerp(starts[i],WorkerDestination(i),Mathf.Clamp01(progress));
             yield return null;
         }
-        while(Vector3.Distance(player.transform.position,treeApproach.position)>interactionDistance)
-        { ui.objective.text="走近巨木前的族人";yield return null; }
+        for(int i=0;i<workers.Length;i++)workers[i].Face(sacredTree.position);
+        if(routeGuide)routeGuide.EscortArrived=true;
+        while(!AtTree)
+        { ui.objective.text="沿黃色箭頭走到樹幹正前方";ui.hint.text="走到巨木前的黃色標記，才會進入伐木抉擇。";yield return null; }
         player.canMove=false;
         yield return Say(officer,"日本警察","不准拖曳木材！到巨木前，照命令砍伐！");
         yield return Say(workers[0],"族人","這棵巨木是我們的守護者……真的要砍下去嗎？");
@@ -254,6 +273,9 @@ public sealed class Chapter2Controller : MonoBehaviour
     IEnumerator Fell()
     {
         SetStage(Stage.Chopping);canChop=true;player.canMove=true;axe.SetActive(true);chopStarted=Time.time;
+        if(TryGetChopContact(out RaycastHit focus))player.FocusOn(focus.point);
+        ui.Line("伐木","握穩木柄斧。等游標進入綠色區域，再朝樹幹落斧。");
+        ui.SetMeter(RhythmPhase,ValidCuts,Integrity);
         ui.objective.text="對準樹幹，小心落斧";ui.meterPanel.SetActive(true);
         ui.hint.text="游標進入綠色區域時，按 E／空白鍵／右手扳機。避免傷及木材。";
         while(ValidCuts<5)
@@ -276,12 +298,15 @@ public sealed class Chapter2Controller : MonoBehaviour
         fallenStump.SetActive(true);
         yield return Say(workers[0],"族人","命令完成了。可是，我們該怎麼面對祖靈？",5);
     }
-    IEnumerator SwingAxe()
+    IEnumerator SwingAxe(Chapter2Axe tool,RaycastHit contact,bool accurate)
     {
-        Quaternion start=axe.transform.localRotation;
-        for(float t=0;t<1;t+=Time.deltaTime/.45f)
-        { axe.transform.localRotation=start*Quaternion.Euler(-55*Mathf.Sin(t*Mathf.PI),0,0);yield return null; }
-        axe.transform.localRotation=start;
+        player.canMove=false;
+        yield return tool.Swing(contact,()=>{
+            if(accurate){ValidCuts++;ui.Line("伐木","斧刃切進樹皮，木屑飛散。放穩斧頭，等待下一次時機。");}
+            else{FailedCuts++;Integrity=Mathf.Max(0,Integrity-20);ui.Line("伐木","落斧偏了，木材受到損傷。等游標進入綠色區域，再落斧。");}
+            if(chopAudio)effects.PlayOneShot(chopAudio,.7f);
+        });
+        if(CurrentStage==Stage.Chopping&&canChop)player.canMove=true;
     }
     IEnumerator Say(Chapter2Actor actor,string name,string words,float seconds=0)
     {

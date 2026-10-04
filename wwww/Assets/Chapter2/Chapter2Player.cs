@@ -11,6 +11,7 @@ public sealed class Chapter2Player : MonoBehaviour
     public bool canMove;
     public bool canLook = true;
     public float speed = 2.6f;
+    public Chapter2RouteGuide routeGuide;
     public bool IsVR { get; private set; }
     public bool PrimaryPressed { get; private set; }
     public bool SecondaryPressed { get; private set; }
@@ -68,7 +69,14 @@ public sealed class Chapter2Player : MonoBehaviour
         Vector3 velocity = (forward * move.y + Vector3.Cross(Vector3.up, forward) * move.x);
         velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
         gravity = motor.isGrounded ? -1 : Mathf.Max(-15, gravity - 15 * Time.deltaTime);
-        velocity.y = gravity; motor.Move(velocity * Time.deltaTime);
+        velocity.y = gravity; Move(velocity * Time.deltaTime);
+    }
+    public void Move(Vector3 motion)
+    {
+        if(!motor||!motor.enabled||!canMove)return;
+        Vector3 next=transform.position+motion;
+        if(routeGuide)next=routeGuide.Constrain(transform.position,next);
+        motor.Move(next-transform.position);
     }
     public void Warp(Vector3 position, Vector3 lookAt)
     {
@@ -79,5 +87,13 @@ public sealed class Chapter2Player : MonoBehaviour
         if (!IsVR) { pitch = 0; view.transform.localPosition = new Vector3(0,1.65f,0); view.transform.localRotation = Quaternion.identity; }
         gravity = 0;
         if (motor) motor.enabled = true;
+    }
+    public void FocusOn(Vector3 target)
+    {
+        if(IsVR)return;
+        Vector3 direction=target-view.transform.position;
+        transform.rotation=Quaternion.LookRotation(Vector3.ProjectOnPlane(direction,Vector3.up));
+        pitch=-Mathf.Atan2(direction.y,new Vector2(direction.x,direction.z).magnitude)*Mathf.Rad2Deg;
+        view.transform.localRotation=Quaternion.Euler(pitch,0,0);
     }
 }

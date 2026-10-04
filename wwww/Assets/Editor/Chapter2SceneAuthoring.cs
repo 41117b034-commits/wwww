@@ -134,6 +134,7 @@ public static class Chapter2SceneAuthoring
         controller.fireAudio=Audio(controller.campfire,"Fire crackle",.25f);controller.fireAudio.clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/音樂/營火.mp3");controller.fireAudio.loop=true;controller.fireAudio.spatialBlend=.7f;
         controller.forestAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_morning.wav");controller.nightAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_night.wav");controller.chopAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/axe_impact.wav");controller.threatAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/rifle_report.wav");
         controller.openingFilm=AssetDatabase.LoadAssetAtPath<VideoClip>(Root+"Media/Chapter2_Opening.mp4");
+        Chapter2InteractionAuthoring.Apply(controller);
         foreach(var lod in UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None))if(lod.gameObject.scene==target)lod.RecalculateBounds();
         foreach(var root in target.GetRootGameObjects())foreach(var t in root.GetComponentsInChildren<Transform>(true))GameObjectUtility.RemoveMonoBehavioursWithMissingScript(t.gameObject);
         EditorSceneManager.CloseScene(source,true);
