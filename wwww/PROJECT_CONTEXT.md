@@ -1,8 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-03。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-04。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-03 接續「修改」對話最後四張圖的新要求，完成最新握棍、單次踹倒四件酒、女性腳掌與警察步態修正的兩分支 Play Mode 驗證，並移出臨時測試工具。動作程式已存在使用者的本機提交 `586a4ad`；本次測試及跨章載入時另發現的角色錯誤，見文末「單次踹酒與手腳修正最終驗證」。
+最新狀態：2026-10-04 接續踢酒角度、酒桶貼地及遠離火堆、離場右手與黑幕退出要求，完成目前版本的實際 P → 2、P → 1 驗證。兩條分支都在全黑後自動退出 Editor Play Mode，未載入第二章；臨時驗證工具已移出 Assets。詳見文末「踢酒、酒桶與黑幕退出接續收尾」。
 
 ## 專案位置
 
@@ -246,3 +246,26 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 已退出 Play Mode 並恢復第一章。將已被前次提交帶入的臨時 `Assets/Editor/Chapter1WatchProbe.cs` 與 meta 移至 `_CodexBackups/motion_refine_20261003/verification-tools/`，正式播放不再安裝測試指令輪詢與截圖／JSON 採樣。兩輪測試停用第一章結果 PlayerPrefs 寫入。
 - 本次掃描正式資產，所有檔案均低於 100,000,000 bytes；最大仍為石盤圖片 87,096,360 bytes，門洞模型 81,700,300 bytes。未執行 Git commit／push；未使用實體 VR 頭戴裝置，未逐項重玩婚禮任務。第二章缺少角色的替換錯誤仍待後續處理。
 - 移出工具後已執行 Unity Refresh，腳本編譯 ExitCode 0、程序集成功重新載入；收尾日誌存於 `resumed-20261003/final-compile-log.txt`。兩份正式動作腳本的 SHA-256 與測試開始前完全一致；`git diff --check` 通過。本次待提交僅刪除臨時 Probe 及 meta、更新本交接檔，動作修正仍在既有提交中。
+
+## 踢酒、酒桶與黑幕退出接續收尾（2026-10-04）
+
+- 使用者要求接續兩張截圖的未完工作：踢酒腳角度自然、兩個酒桶落地且遠離火堆、警察離場右手離開身體，以及兩個選項都在全黑後結束 Play Mode。
+- 接手時正式修改已在目前檔案中，且四份相關程式與場景的 SHA-256 均符合 `_CodexBackups/kick_grounding_20261003/verified-source-hashes.json`。該資料夾實際還有 10 月 3 日晚間的兩分支退出紀錄，早期交接尚未涵蓋。本次保留這些正式修改，重新播放驗證、移出殘留 Probe 並補齊交接；沒有重寫已完成的動作。
+- `Chapter1IncidentRig.cs` 使用較低的向前踢擊，抬腳蓄力與腳掌角度降低，接觸時保留小腿向前伸展空間；離場空手以獨立手臂目標和擺動計算，右手不再貼著腰側。
+- `Chapter1PerformanceController.Confrontation.cs` 沿火堆外側並略向外踢倒四件酒，以模型表面支撐點對地形計算高度，避免旋轉後的包圍盒空角造成酒桶懸空。場景內的四件道具亦已往火堆外移；保留原角色、背景及「警察踢倒擺在地上的酒。」字幕。
+- `Chapter1ToChapter2Transition.cs` 在 Editor 中完成淡黑及短暫黑幕停留後設定 `EditorApplication.isPlaying=false`；建置版保留第二章載入分支，本次未測建置版。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1，場景 `Assets/Scenes/第一章新版警察.unity`。先完成腳本重新載入，再以實際鍵盤 P → 2 跑完觀望、另開一輪以 P → 1 跑完阻止。第二輪另在踢中瞬間暫停目視腿部角度，再恢復播放。
+- 觀望：`watch-complete`、`completed=true`、`knockedOut=false`；阻止：完成揮棍與倒地，`completed=true`、`knockedOut=true`。兩輪均記錄 `black-screen.json` 的 `endingAlpha=1`、實際全黑截圖、正式程式的 `Black screen complete; stopping Play Mode.`，以及 `returned-to-edit.json` 的 `playing=false`，場景仍是第一章。Probe 未代為停止這兩輪播放。
+- 兩輪 Error／Exception／Assert 均為 0；測試後 Console 計數為 0 Error、14 Warnings，不能稱全專案零警告。測試期間暫停章節結果 PlayerPrefs 寫入；未重玩婚禮送酒、食物與舞蹈任務，未使用實體 VR。
+- 本輪觀望單次碰撞同時踢動 4 件酒，腳尖到接觸點誤差約 0.000245 場景單位。核對踢擊、倒下後、離場連續引擎截圖與第二輪接觸停格。
+- 倒地後完整模型所有頂點的地形最小間隙：兩個酒杯約 0.0201、0.0198，兩個酒甕約 0.0184、0.0162 場景單位。兩酒甕中心到火堆／舞圈中心的水平距離分別由 21.856、21.753 增為 25.726、25.199；畫面中已在火堆外側地面。
+- 離場兩名警察各 46 筆樣本，右手相對右肩沿角色外側的距離至少約 0.869 場景單位；前後擺幅約 1.738、1.715。目視可見手與身體之間的空隙及自然擺動。
+- 本輪截圖、事件、完整頂點量測與來源雜湊存於 `_CodexBackups/kick_grounding_20261004/`，其中 `watch-manual/`、`intervene-manual/` 為兩輪實測；`watch-motion-summary.json` 為摘要。測試前後五個正式檔案雜湊一致。
+- 已自動退出 Play Mode，將 `Assets/Editor/Chapter1WatchProbe.cs` 和 meta 移至該備份下的 `verification-tools/`；正式遊戲不再輪詢測試命令或輸出測試截圖。備份由自身 `.gitignore` 排除提交。
+- 正式資產大小掃描未發現達到 100,000,000 bytes 的檔案；最大石盤圖片 87,096,360 bytes，門洞模型 81,700,300 bytes。本次未 commit／push，沒有修改 Git 的 safe.directory 設定。
+- 此次指定的第一章要求已完成；先前第二章角色 donor 缺失問題未處理或重測，Editor 現在於第一章黑幕後結束，這兩輪沒有進入第二章。
+
+- 移出 Probe 後 Unity 已完成最後程序集重編譯（Assembly-CSharp-Editor.dll 已更新），Console 畫面為 0 Error、0 Warning、0 Log；回到 Scene／Edit Mode。這是清理後的編譯狀態，不抹除上述播放期間的 14 項警告。
