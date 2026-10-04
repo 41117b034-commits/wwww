@@ -103,6 +103,7 @@ public sealed class Chapter2Controller : MonoBehaviour
         Vector3 direction=sacredTree.position+Vector3.up*1.2f-player.view.transform.position;
         if(Vector3.Angle(player.view.transform.forward,direction)>65)
         { ui.hint.text="面向巨木的樹幹，再按 E／右手扳機。";return false; }
+        ui.hint.text="游標進入綠色區域時，按 E／空白鍵／右手扳機。避免傷及木材。";
         nextCut=Time.time+.55f;StartCoroutine(SwingAxe());
         float phase=RhythmPhase;
         if(phase>=.32f && phase<=.68f)
@@ -199,10 +200,13 @@ public sealed class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Intro()
     {
-        if(openingFilm)
+        // Retain the selected clip while the decoder prepares it. Inspector changes
+        // to the source field must not invalidate an already running introduction.
+        var clip=openingFilm;
+        if(clip)
         {
-            video=gameObject.AddComponent<VideoPlayer>();video.playOnAwake=false;video.isLooping=false;video.clip=openingFilm;
-            if(openingFilm.audioTrackCount>0){video.audioOutputMode=VideoAudioOutputMode.AudioSource;video.controlledAudioTrackCount=1;video.SetTargetAudioSource(0,effects);}
+            video=gameObject.AddComponent<VideoPlayer>();video.playOnAwake=false;video.isLooping=false;video.clip=clip;
+            if(clip.audioTrackCount>0){video.audioOutputMode=VideoAudioOutputMode.AudioSource;video.controlledAudioTrackCount=1;video.SetTargetAudioSource(0,effects);}
             else video.audioOutputMode=VideoAudioOutputMode.None;
             video.renderMode=VideoRenderMode.RenderTexture;videoTexture=new RenderTexture(1280,720,0);videoTexture.Create();video.targetTexture=videoTexture;
             ui.videoImage.texture=videoTexture;ui.videoImage.gameObject.SetActive(true);
@@ -213,7 +217,7 @@ public sealed class Chapter2Controller : MonoBehaviour
             {
                 video.Play();VideoPlayed=true;
                 // Start and finish watchdogs cover decoder failures without trapping the player.
-                float deadline=Time.realtimeSinceStartup+(float)openingFilm.length+8;
+                float deadline=Time.realtimeSinceStartup+(float)clip.length+8;
                 while(!videoEnded && !videoError && !skip && Time.realtimeSinceStartup<deadline) yield return null;
                 VideoFinished=videoEnded;
             }

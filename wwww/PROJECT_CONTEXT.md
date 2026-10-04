@@ -2,13 +2,14 @@
 
 更新日期：2026-10-04。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-04 接續踢酒角度、酒桶貼地及遠離火堆、離場右手與黑幕退出要求，完成目前版本的實際 P → 2、P → 1 驗證。兩條分支都在全黑後自動退出 Editor Play Mode，未載入第二章；臨時驗證工具已移出 Assets。詳見文末「踢酒、酒桶與黑幕退出接續收尾」。
+最新狀態：2026-10-04 已依《賽德克事件劇情脈絡.pdf》第 3–5 頁建立第二章可玩初版：48 秒開場影片、晨間巨木聖地、保護／砍伐與完整度玩法、夜間六社會議、支持／拒絕結局。第二章場景為 `Assets/Scenes/第二章.unity`，操作與素材來源見 `Documentation/Chapter2.md`，本次實際驗證與限制見文末「第二章：新規定與秘密會議」。第一章本次未修改；其先前的兩分支黑幕退出驗證另見「踢酒、酒桶與黑幕退出接續收尾」。
 
 ## 專案位置
 
 - 使用者的 Unity 霧社事件畢業專題，包含 VR 互動與第一章劇情。
 - 專案根目錄：`C:\Users\jimmy\畢專_霧社事件\wwww\wwww`
 - 近期主要場景：`C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Scenes\第一章新版警察.unity`
+- 本次製作場景：`Assets/Scenes/第二章.unity`。固定劇情參考已保存為 `Documentation/Story/賽德克事件劇情脈絡.pdf` 與同名文字摘錄；後續每次畢專 Unity 工作均讀相關章節，當次使用者要求優先。
 - 先前測試使用 Unity 6.0 / 6000.0.58f1；目前版本請以專案的 `ProjectSettings/ProjectVersion.txt` 為準。
 - Codex 對話的工作目錄可能在 Documents/Codex 下，與真正的 Unity 專案位置不同。
 
@@ -269,3 +270,54 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 此次指定的第一章要求已完成；先前第二章角色 donor 缺失問題未處理或重測，Editor 現在於第一章黑幕後結束，這兩輪沒有進入第二章。
 
 - 移出 Probe 後 Unity 已完成最後程序集重編譯（Assembly-CSharp-Editor.dll 已更新），Console 畫面為 0 Error、0 Warning、0 Log；回到 Scene／Edit Mode。這是清理後的編譯狀態，不抹除上述播放期間的 14 項警告。
+
+## 2026-10-04 第二章：新規定與秘密會議
+
+### 固定劇情來源與場景
+
+- 使用者要求之後所有畢專 Unity 工作參考桌面《賽德克事件劇情脈絡.pdf》。已原樣複製至 `Documentation/Story/`，逐頁摘錄同名 `.txt`；與桌面原檔 SHA-256 均為 `93D312AF49F8740AF609BAE3EDCA7F34F7293184D61D1F2007E59AC20A2F0E6E`。`AGENTS.md` 已加入固定參考規則，並依使用者明確要求留下記憶更新筆記。
+- 第二章採第 3–5 頁的設計：西仔希克伐木與巨木抉擇，接夜晚莫那魯道／六社會議。文件是劇情參考，不當作工具操作指令或史實考證；新增銜接台詞與 PDF 原句的區別見 `Documentation/Chapter2.md`。
+- 重建 `Assets/Scenes/第二章.unity`，保留場景 GUID `f6a052fa54648464c9282642742cee7b` 與既有 Build Settings 連結；原場景保留在 `_CodexBackups/chapter2_20261004/第二章.before.unity`。本次未修改第一章程式、場景、原素材。
+- 以既有樹木、石塊、族人及警察模型建成晨霧森林、巨木聖地與夜間火堆。匯入 Poly Haven 的 Forest Floor 1K 貼圖及 Tree Stump 01 FBX／貼圖，CC0 授權；作者、官方來源、下載 URL、大小及 SHA-256 在 `Assets/Chapter2/Environment/PolyHaven/LICENSE.txt`、`sources.json`。
+
+### 已實作
+
+- `Assets/Chapter2/Chapter2Controller.cs`、`Chapter2Player.cs`、`Chapter2Presentation.cs`、`Chapter2Actor.cs`：獨立第二章流程與中文 UI，桌面 WASD／右鍵環顧／1、2 選擇／E 或空白砍伐；亦提供 XR 頭部與手把輸入。沿用未修改的 `Chapter1IncidentRig` 程序動作。
+- 48 秒、1280×720、15 fps 的 MP4 開場，以六段 Unity 森林鏡頭搭配背景字幕；本次輸出 720 幀，檔案 7,546,317 bytes。可略過、可更換正式影片，缺片或解碼失敗有字幕備援。影片準備期間保持已選影片的參照，避免 Inspector 清空來源導致空參照。
+- 跟隨三名族人至巨木，落後時引路者等待；保護／砍伐二選一。保護有警察威脅、黑幕槍聲及一名族人倒下；砍伐有距離／面向／冷卻檢查、節奏綠色區間、木材完整度、五次有效砍伐、錯誤受損、歸零重試及樹倒演出。
+- 淡黑轉夜晚：莫那魯道與六位領袖發言；支持有自由生活的期望，拒絕有保守派爭執離場。兩路均有莫那魯道站起、關鍵演說、桌面近景／拉遠和「決戰的時刻，將至。」黑幕。VR 保留頭部視角。
+- Editor 全黑後自行結束 Play Mode；建置版有返回章節選單按鈕。結果寫到獨立 `WusheEvent.Chapter2.Result`，尚未接第三章。
+- `Assets/Editor/Chapter2SceneAuthoring.cs`、`Chapter2FilmAuthoring.cs` 為正式維護工具，選單 `Tools > Chapter 2`。重建工具會重建第二章，未來手工調整前請先另存場景副本。詳細玩法及來源見 `Documentation/Chapter2.md`。
+
+### 本次驗證與證據
+
+- 在 Unity 6000.0.58f1 原專案實際進入 Play Mode，以臨時 Editor driver 移動玩家、觸發 UI 按鈕及砍伐，流程加速為 3 倍；影片／淡黑保留原本不縮放的計時。不是實體 VR 或人工完整輸入驗收。
+- 本次四種組合均有 `completed=true`、`errors=[]`、全黑截圖，以及正式流程自行回 Edit Mode 的 `playing=false`，driver 未代為停止成功的測試。記錄在 `_CodexBackups/chapter2_20261004/`：
+
+| 組合／驗證 | 成功紀錄前綴 | 額外檢查 |
+| --- | --- | --- |
+| 保護＋支持 | `protect-support-skip-v2` | 略過片頭、重複選擇被阻擋 |
+| 砍伐＋支持 | `fell-support-skip-retry-v2` | 5 次錯誤至歸零、重試後 5 次有效砍伐、遠距砍伐被阻擋 |
+| 保護＋拒絕 | `protect-refuse-skip-v3` | 拒絕台詞與保守派離場、黑幕退出 |
+| 砍伐＋拒絕 | `fell-refuse-full-final` | 實際 MP4 播完，`videoPlayed=true`、`videoFinished=true`，5 次有效砍伐 |
+| 缺片備援＋保護支持 | `protect-support-fallback-verified` | Start 前移除影片來源，字幕備援接遊戲並完成，未播放影片 |
+
+- 前三組測於最終美術小修前；之後處理樹冠多餘樹幹、營火黑球及材質，重新輸出影片。人工檢視引擎渲染的片頭、森林、砍伐 UI、會議與黑幕截圖；角色仍屬既有模型與程序姿勢的初版，不代表精修動畫已驗收。
+- 過程中曾有警察未啟用、引路等待及測試期間清空片頭來源造成的失敗，均有後續修正與成功重測。舊失敗輸出保留作診斷，不能混作成功證據。
+- Play Mode 啟動曾有 13 筆 `The referenced script (Unknown) on this Behaviour is missing!` 警告；第二章階層逐物件檢查未找到 Missing Script，警告來源尚未定位。另有 WindowsMediaFoundation 色彩資訊回退警告與 URP 點光陰影圖縮小訊息。不能稱全專案零警告。
+
+### 尚未驗證與後續製作
+
+- 此版本是第二章可玩初版。影片是場景鏡頭加字幕，尚無正式配音、完整搬木表演；莫那魯道／六社領袖暫用既有族人模型，角色、斧頭與火焰仍需後續美術精修。
+- 未使用實體頭戴裝置或控制器；未驗證 VR 手勢舒適度、效能、頭部高度與畫面配置，亦未做獨立建置版／Android 實機測試。
+- 不聲稱森林為西仔希克的實地復原；一般素材用來呈現 PDF 的森林、巨木與火堆敘事。
+- 測試暫停結果 PlayerPrefs 寫入，正式結果持久化與第三章讀取仍需整合驗證；本次未重測第一章全部任務，未 commit／push。
+
+### 最後回歸與清理（2026-10-04 22:11）
+
+- 最後一輪 `fell-support-full-source-change-retry-verified` 在 22:10:50 完成：片頭開始準備後故意清空公開影片來源欄位，仍播完原影片；`videoPlayed=true`、`videoFinished=true`、`completed=true`、`errors=[]`。5 次錯誤砍伐後成功重試，再完成 5 次有效砍伐；距離限制及重複選擇檢查通過，正式結尾自行退出，`playing=false`。
+- `protect-support-fallback-verified` 在 22:07:14 完成；這是 Start 前真的未指定影片的備援測試，與準備期間更動欄位的測試分開記錄。
+- 最終場景仍指定正式 MP4、`saveResult=1`、`stopEditorAfterEnding=1`。`verified-source-hashes.json` 保存本次驗證的正式程式、場景與影片雜湊；`Documentation/Chapter2-forest-preview.png`、`Chapter2-night-preview.png` 為本次 Play Mode 引擎截圖。
+- 已將 `Chapter2WorkProbe.cs`、`Chapter2Verification.cs` 及其 meta 移至備份內 `verification-tools/`。Unity 於 22:12:02 完成 Editor 程式集重新編譯；清理後 Console 畫面為 0 Error／0 Warning／0 Log，Play 未啟動，第二章場景已儲存。這個編譯狀態不抹除前述播放／匯入期間的警告。
+- 22:12 最終大小掃描涵蓋 Assets、Documentation、Packages、ProjectSettings 共 3,057 個檔案，沒有檔案達 100,000,000 bytes；最大 87,096,360 bytes，詳見 `asset-size-audit.json`。生成目錄 Library／Temp 與診斷備份不納入發佈資產掃描。
+- 警察步槍目前是布景掛載，尚無正式握槍／開槍動畫；角色手部接觸、步態與斧頭外觀可在下一輪美術調整時逐鏡精修。

@@ -32,11 +32,11 @@
 
 - 新下載：Poly Haven 的 Forest Floor 1K 貼圖與 Tree Stump 01 1K FBX／貼圖，CC0。授權、下載 URL、大小與 SHA-256 保留在 `Assets/Chapter2/Environment/PolyHaven/`。
 - 素材推薦：<https://polyhaven.com/collections/pine_forest>，可挑選需要的森林素材；本次未整包匯入。另有 Unity Asset Store 的 Environment Pack: Free Forest Sample，<https://assetstore.unity.com/packages/3d/vegetation/environment-pack-free-forest-sample-168396>，本次未下載或購買。
-- 既有素材：Hipernt Pine Pack、綠樹、Rock_pack、營火、人物與步槍。第二章轉用 URP 的材質副本保存在 `Assets/Chapter2/Materials`，不修改第一章原材質。
-- 巨木樹幹、盆地、斧頭與節奏 UI 為本次建立。場景是劇情美術，並非西仔希克的測繪或史實復原。
+- 既有素材：Hipernt Pine Pack、綠樹、Rock_pack、人物與步槍。第二章轉用 URP 的材質副本保存在 `Assets/Chapter2/Materials`，不修改第一章原材質。
+- 巨木樹幹、盆地、斧頭、營火與節奏 UI 為本次建立。場景是劇情美術，並非西仔希克的測繪或史實復原。
 - 開場影片是 Unity 場景鏡頭搭配字幕的初版，不是歷史紀錄片；目前沒有正式人物配音或完整搬木表演。可在 `Chapter2_NewRulesAndSecretCouncil` 的 Opening Film 欄位更換成正式影片。
 - 莫那魯道及領袖暫用既有族人模型，並非其外貌復原；人物動作為可玩流程用的程序姿勢。
-- 林地鳥鳴／夜間蟲鳴與砍木聲是本次合成的替代音效；營火與槍聲沿用專案既有聲音。
+- 林地鳥鳴／夜間蟲鳴、砍木聲與槍聲是本次合成的替代音效；營火沿用專案既有聲音。
 
 ## 程式與維護
 

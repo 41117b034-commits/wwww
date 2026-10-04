@@ -69,6 +69,10 @@ public static class Chapter2SceneAuthoring
         }
         var crown=Model("Assets/Hipernt/Pine Pack/Prefabs/Pine2.prefab","Giant tree canopy",hero,hero.position+new Vector3(0,9,0),23);
         crown.transform.localScale=Vector3.Scale(crown.transform.localScale,new Vector3(1.5f,1,1.5f));
+        // Reuse foliage only: the source tree trunk would otherwise float above our authored trunk.
+        var crownFilter=crown.GetComponentInChildren<MeshFilter>();var crownRenderer=crownFilter.GetComponent<Renderer>();
+        int foliage=Array.FindIndex(crownRenderer.sharedMaterials,m=>m.name.StartsWith("Branch",StringComparison.Ordinal));
+        if(foliage>=0){var mesh=UnityEngine.Object.Instantiate(crownFilter.sharedMesh);int[] triangles=mesh.GetTriangles(foliage);mesh.subMeshCount=1;mesh.SetTriangles(triangles,0);mesh.name="GiantCanopy";crownFilter.sharedMesh=SaveMesh(mesh,Root+"Geometry/GiantCanopy.asset");crownRenderer.sharedMaterials=new[]{crownRenderer.sharedMaterials[foliage]};}
         var treeCollision=hero.gameObject.AddComponent<CapsuleCollider>();treeCollision.center=new Vector3(0,10,0);treeCollision.height=20;treeCollision.radius=1.5f;
         Material stumpMat=Mat("Poly Haven stump",Color.white,AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"Environment/PolyHaven/tree_stump_01_diff_1k.jpg"));Normal(stumpMat,Root+"Environment/PolyHaven/tree_stump_01_nor_gl_1k.jpg");
         for(int i=0;i<7;i++)
@@ -101,7 +105,12 @@ public static class Chapter2SceneAuthoring
         var rifle=Model("Assets/物品/38式步槍/38式步槍.fbx","督工步槍",controller.officer.transform,controller.officer.transform.position+new Vector3(.28f,1.0f,.12f),.95f);
         rifle.transform.rotation=Quaternion.Euler(80,0,0);
         controller.nightGroup=new GameObject("Night · secret council");
-        controller.campfire=Model("Assets/物品/營火/營火.fbx","Council campfire",controller.nightGroup.transform,Vector3.zero,.6f).transform;
+        controller.campfire=new GameObject("Council campfire").transform;controller.campfire.SetParent(controller.nightGroup.transform,false);
+        var emberMaterial=Mat("Embers",new Color(.35f,.045f,.005f));emberMaterial.SetColor("_EmissionColor",new Color(2.5f,.16f,.005f));emberMaterial.EnableKeyword("_EMISSION");
+        Primitive("Ember bed",PrimitiveType.Sphere,controller.campfire,new Vector3(0,.055f,0),new Vector3(.85f,.10f,.75f),emberMaterial);
+        var charredWood=Mat("Charred firewood",new Color(.09f,.035f,.012f));
+        for(int i=0;i<5;i++){float a=i*36;var log=Primitive("Firewood",PrimitiveType.Cylinder,controller.campfire,new Vector3(0,.16f+i*.013f,0),new Vector3(.14f,.55f,.14f),charredWood);log.transform.localRotation=Quaternion.Euler(90,a,0);}
+        for(int i=0;i<11;i++){float a=i*Mathf.PI*2/11;var stone=Model("Assets/Rock_pack/prefab/Rock_0"+(1+i%4)+".prefab","Fire ring stone",controller.campfire,new Vector3(Mathf.Sin(a)*.65f,0,Mathf.Cos(a)*.65f),.16f+(i%3)*.025f);stone.transform.Rotate(0,i*47,0);}
         var fire=new GameObject("Firelight").AddComponent<Light>();fire.transform.SetParent(controller.nightGroup.transform);fire.transform.position=new Vector3(0,1,0);fire.type=LightType.Point;fire.range=15;fire.intensity=4;fire.color=new Color(1,.5f,.19f);fire.shadows=LightShadows.Soft;controller.fireLight=fire;
         Fire(controller.nightGroup.transform);
         controller.mona=Actor(originals,"賽德克中年(2)","莫那魯道 · 暫用既有人物",controller.nightGroup.transform,new Vector3(0,0,3.1f),false);controller.mona.seated=true;
@@ -123,7 +132,7 @@ public static class Chapter2SceneAuthoring
         controller.axe.SetActive(false);
         controller.ambience=Audio(controller.transform,"Forest ambience",.35f);controller.effects=Audio(controller.transform,"Story effects",.7f);
         controller.fireAudio=Audio(controller.campfire,"Fire crackle",.25f);controller.fireAudio.clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/音樂/營火.mp3");controller.fireAudio.loop=true;controller.fireAudio.spatialBlend=.7f;
-        controller.forestAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_morning.wav");controller.nightAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_night.wav");controller.chopAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/axe_impact.wav");controller.threatAudio=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Resources/Chapter1Voice/13_gunshot.wav");
+        controller.forestAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_morning.wav");controller.nightAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/forest_night.wav");controller.chopAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/axe_impact.wav");controller.threatAudio=AssetDatabase.LoadAssetAtPath<AudioClip>(Root+"Audio/rifle_report.wav");
         controller.openingFilm=AssetDatabase.LoadAssetAtPath<VideoClip>(Root+"Media/Chapter2_Opening.mp4");
         foreach(var lod in UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsSortMode.None))if(lod.gameObject.scene==target)lod.RecalculateBounds();
         foreach(var root in target.GetRootGameObjects())foreach(var t in root.GetComponentsInChildren<Transform>(true))GameObjectUtility.RemoveMonoBehavioursWithMissingScript(t.gameObject);
@@ -156,7 +165,9 @@ public static class Chapter2SceneAuthoring
             rightArm.rotation=Quaternion.FromToRotation(rightHand.position-rightArm.position,Vector3.down+forward*.13f)*rightArm.rotation;
             actor.transform.rotation=Quaternion.FromToRotation(forward,a.facing)*actor.transform.rotation;
         }
-        if(animator)animator.enabled=false;
+        // Chapter 2 drives bones itself. Do not retain the donor's unused animation graph
+        // or its old state-machine behaviours when copying the character.
+        if(animator){animator.runtimeAnimatorController=null;animator.enabled=false;}
         foreach(var renderer in actor.GetComponentsInChildren<SkinnedMeshRenderer>())renderer.updateWhenOffscreen=true;
         return a;
     }
@@ -223,12 +234,12 @@ public static class Chapter2SceneAuthoring
     static void Fire(Transform parent)
     {
         var g=new GameObject("Council flame");g.transform.SetParent(parent,false);g.transform.localPosition=Vector3.up*.4f;
-        var p=g.AddComponent<ParticleSystem>();var main=p.main;main.startLifetime=.65f;main.startSpeed=.8f;main.startSize=.22f;main.startColor=new Color(1,.38f,.05f,.8f);main.maxParticles=60;
-        var emission=p.emission;emission.rateOverTime=35;var shape=p.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.radius=.24f;shape.angle=12;shape.rotation=new Vector3(-90,0,0);
+        var p=g.AddComponent<ParticleSystem>();var main=p.main;main.startLifetime=1.1f;main.startSpeed=1f;main.startSize=.35f;main.startColor=new Color(1,.55f,.12f,.9f);main.maxParticles=90;
+        var emission=p.emission;emission.rateOverTime=65;var shape=p.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.radius=.24f;shape.angle=12;shape.rotation=new Vector3(-90,0,0);
         var col=p.colorOverLifetime;col.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(new Color(1,.6f,.12f),0),new GradientColorKey(new Color(.9f,.15f,.02f),1)},new[]{new GradientAlphaKey(.8f,0),new GradientAlphaKey(0,1)});col.color=gradient;
-        var texture=new Texture2D(32,32,TextureFormat.RGBA32,false);
+        var texture=new Texture2D(32,32,TextureFormat.RGBA32,false){name="FlameSoft"};
         for(int y=0;y<32;y++)for(int x=0;x<32;x++){float d=Vector2.Distance(new Vector2(x,y),new Vector2(15.5f,15.5f))/15.5f;texture.SetPixel(x,y,new Color(1,1,1,Mathf.Pow(Mathf.Clamp01(1-d),2)));}texture.Apply();
         string path=Root+"Materials/FlameSoft.asset";var existing=AssetDatabase.LoadAssetAtPath<Texture2D>(path);if(existing){EditorUtility.CopySerialized(texture,existing);UnityEngine.Object.DestroyImmediate(texture);texture=existing;}else AssetDatabase.CreateAsset(texture,path);
-        var material=Mat("Fire particles",new Color(1,.5f,.08f));material.shader=Shader.Find("Universal Render Pipeline/Particles/Unlit");material.SetTexture("_BaseMap",texture);material.SetFloat("_Surface",1);material.SetFloat("_Blend",2);material.SetFloat("_SrcBlend",5);material.SetFloat("_DstBlend",1);material.SetFloat("_ZWrite",0);material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");material.renderQueue=3000;g.GetComponent<ParticleSystemRenderer>().sharedMaterial=material;
+        var material=Mat("Fire particles",Color.white);material.shader=Shader.Find("Universal Render Pipeline/Particles/Unlit");material.SetTexture("_BaseMap",texture);material.SetFloat("_Surface",1);material.SetFloat("_Blend",2);material.SetFloat("_SrcBlend",5);material.SetFloat("_DstBlend",1);material.SetFloat("_ZWrite",0);material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");material.renderQueue=3000;g.GetComponent<ParticleSystemRenderer>().sharedMaterial=material;
     }
 }
