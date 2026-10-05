@@ -11133,6 +11133,7 @@ GameObject:
   - component: {fileID: 1160666539}
   - component: {fileID: 1160666541}
   - component: {fileID: 1160666540}
+  - component: {fileID: 1160666542}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Player
@@ -11252,6 +11253,23 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &1160666542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160666535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91fb55be4d592354eb4b78759e411bff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  handsRoot: {fileID: 0}
+  hideWhenLookingDownDot: 0.52
+  showAgainDot: 0.38
+  rendererOnly: 1
 --- !u!1001 &1163690313
 PrefabInstance:
   m_ObjectHideFlags: 0
