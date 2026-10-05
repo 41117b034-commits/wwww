@@ -1,0 +1,271 @@
+2026-10-05T12:28:57 Log [Chapter2] Stage=Intro
+2026-10-05T12:28:59 Log [Chapter2] Stage=Follow
+2026-10-05T12:29:20 Log [Chapter2] Stage=TreeChoice
+2026-10-05T12:29:21 Log [Chapter2] Stage=Consequence
+2026-10-05T12:29:42 Log [Chapter2] Stage=Meeting
+2026-10-05T12:29:42 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-05T12:29:54 Log [Chapter2] Stage=Vote
+2026-10-05T12:29:55 Log [Chapter2] Stage=Ending
+2026-10-05T12:30:10 Log [Chapter2] Stage=Complete
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1181,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3397,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3502,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4065,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7354,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15608,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15613,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15618,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15623,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-05T12:33:16 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1181,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3397,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3502,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4065,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7354,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15608,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15613,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15618,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15623,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-05T12:34:39 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-05T12:34:55 Error Problem detected while opening the Scene file: 'Assets/Scenes/點選介面 備份.unity'.
+Check the following logs for more details.
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'Global (Missing Prefab with guid: 047d05b007fe673408954aea465b4b30)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'SatelliteShot (Missing Prefab with guid: 04a340464487e4a03b3225dd0fb88e01)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'Valley (Missing Prefab with guid: 3d2422e4019c11948b6cfd8a1fe9e232)'
+2026-10-05T12:34:55 Error Prefab instance problem: 'Rock_Overgrown_B (Missing Prefab with guid: 5e1b58f75618fc340baeccee09741a0e)'. 2 instances are missing the same Prefab Asset with guid 5e1b58f75618fc340baeccee09741a0e.
+2026-10-05T12:34:55 Error Prefab instance problem: 'Rock_D (Missing Prefab with guid: 6a8a77a07da1ab74bb3d34fe70501b7d)'. 5 instances are missing the same Prefab Asset with guid 6a8a77a07da1ab74bb3d34fe70501b7d.
+2026-10-05T12:34:55 Error Prefab instance problem: 'Rock_Overgrown_A (Missing Prefab with guid: 957579ed33eb22040bb203c8100f624f)'. 14 instances are missing the same Prefab Asset with guid 957579ed33eb22040bb203c8100f624f.
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'OxbowShot (Missing Prefab with guid: a0e93c0dd1c8f414d9b3df8d239794ce)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'GulleyShot (Missing Prefab with guid: a6a134db39c954e45b14678328cb897b)'
+2026-10-05T12:34:55 Error Prefab instance problem: 'Rock_Overgrown_D (Missing Prefab with guid: a93f80d252523a14d9206681c7713ce8)'. 24 instances are missing the same Prefab Asset with guid a93f80d252523a14d9206681c7713ce8.
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'Lake (Missing Prefab with guid: b47483c1fe9f22546bca092055b64778)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'SkyboxMountains (Missing Prefab with guid: bafa13e7f7584804785c3f212ae0bf27)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'TreePanningShot (Missing Prefab with guid: bbdac3f1c1cbe8c42a6770126147d794)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'ForestShot (Missing Prefab with guid: c06880acad686418fa27ce1fb2a02e57)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'GladeShot (Missing Prefab with guid: c49f73229e44c4a5da13603f9754593b)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'Gulley (Missing Prefab with guid: c7439120b060b624592b9301b7050780)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'MorningSun (Missing Prefab with guid: d52abfc05749c4eeb92e7e9896a576c8)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'LakeShot (Missing Prefab with guid: e94e2b0bf3dc14d12922aa5beba76208)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'TerrainProxy (Missing Prefab with guid: f011986bc36690b4d934f2708930e3a1)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'WaterPlane (Missing Prefab with guid: f0702830c1970764693293a91df9e61c)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'ValleyShot (Missing Prefab with guid: f16496cae10264a26a76646fd4d9d155)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'MainLightProbes (Missing Prefab with guid: f4e4d8517c45a1a4390ceaa4221bd34e)'
+2026-10-05T12:34:55 Error Prefab instance problem. Missing Prefab Asset: 'TerrainHigh (Missing Prefab with guid: f514be6126461c64eab6f02358f894f3)'
+2026-10-05T12:34:55 Error Prefab instance problem: 'Rock_Overgrown_C (Missing Prefab with guid: f611d77947a7ec74692548d60ef94887)'. 4 instances are missing the same Prefab Asset with guid f611d77947a7ec74692548d60ef94887.
+2026-10-05T12:35:00 Error Problem detected while opening the Scene file: 'Assets/Scenes/第一章新版 1_找回備份.unity'.
+Check the following logs for more details.
+2026-10-05T12:35:00 Error Prefab instance problem: '部落女姓2 (Missing Prefab with guid: 141b679349b32d04a9eeaf249763e6f1)'. 2 instances are missing the same Prefab Asset with guid 141b679349b32d04a9eeaf249763e6f1.
+2026-10-05T12:35:00 Error Prefab instance problem. Missing Prefab Asset: 'tripo_convert_6a19b776-afef-4cc4-a098-2ee04a24de6f (Missing Prefab with guid: 9d0166c14fba62248a7363cb01fa0118)'
+2026-10-05T12:35:05 Warning Couldn't create a Convex Mesh from source mesh, within the maximum polygons limit (256). The partial hull will be used. Consider simplifying your mesh. Source mesh name: StoneBig
+2026-10-05T12:35:10 Warning The tree Pine1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Pine2 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Pine3 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Pine4 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Pine5 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Pine6 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Plant1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree Plant2 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:10 Warning The tree PlantFlower must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:18 Warning Couldn't create a Convex Mesh from source mesh, within the maximum polygons limit (256). The partial hull will be used. Consider simplifying your mesh. Source mesh name: StoneBig
+2026-10-05T12:35:18 Warning Please remove the CanvasRenderer component from the [TextMeshPro - Prefab 1] GameObject as this component is no longer necessary.
+2026-10-05T12:35:19 Warning Please remove the CanvasRenderer component from the [TextMeshPro - Prefab 2] GameObject as this component is no longer necessary.
+2026-10-05T12:35:29 Error Problem detected while opening the Scene file: 'Assets/Scenes/點選介面 備份.unity'.
+Check the following logs for more details.
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'Global (Missing Prefab with guid: 047d05b007fe673408954aea465b4b30)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'SatelliteShot (Missing Prefab with guid: 04a340464487e4a03b3225dd0fb88e01)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'Valley (Missing Prefab with guid: 3d2422e4019c11948b6cfd8a1fe9e232)'
+2026-10-05T12:35:29 Error Prefab instance problem: 'Rock_Overgrown_B (Missing Prefab with guid: 5e1b58f75618fc340baeccee09741a0e)'. 2 instances are missing the same Prefab Asset with guid 5e1b58f75618fc340baeccee09741a0e.
+2026-10-05T12:35:29 Error Prefab instance problem: 'Rock_D (Missing Prefab with guid: 6a8a77a07da1ab74bb3d34fe70501b7d)'. 5 instances are missing the same Prefab Asset with guid 6a8a77a07da1ab74bb3d34fe70501b7d.
+2026-10-05T12:35:29 Error Prefab instance problem: 'Rock_Overgrown_A (Missing Prefab with guid: 957579ed33eb22040bb203c8100f624f)'. 14 instances are missing the same Prefab Asset with guid 957579ed33eb22040bb203c8100f624f.
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'OxbowShot (Missing Prefab with guid: a0e93c0dd1c8f414d9b3df8d239794ce)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'GulleyShot (Missing Prefab with guid: a6a134db39c954e45b14678328cb897b)'
+2026-10-05T12:35:29 Error Prefab instance problem: 'Rock_Overgrown_D (Missing Prefab with guid: a93f80d252523a14d9206681c7713ce8)'. 24 instances are missing the same Prefab Asset with guid a93f80d252523a14d9206681c7713ce8.
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'Lake (Missing Prefab with guid: b47483c1fe9f22546bca092055b64778)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'SkyboxMountains (Missing Prefab with guid: bafa13e7f7584804785c3f212ae0bf27)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'TreePanningShot (Missing Prefab with guid: bbdac3f1c1cbe8c42a6770126147d794)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'ForestShot (Missing Prefab with guid: c06880acad686418fa27ce1fb2a02e57)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'GladeShot (Missing Prefab with guid: c49f73229e44c4a5da13603f9754593b)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'Gulley (Missing Prefab with guid: c7439120b060b624592b9301b7050780)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'MorningSun (Missing Prefab with guid: d52abfc05749c4eeb92e7e9896a576c8)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'LakeShot (Missing Prefab with guid: e94e2b0bf3dc14d12922aa5beba76208)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'TerrainProxy (Missing Prefab with guid: f011986bc36690b4d934f2708930e3a1)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'WaterPlane (Missing Prefab with guid: f0702830c1970764693293a91df9e61c)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'ValleyShot (Missing Prefab with guid: f16496cae10264a26a76646fd4d9d155)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'MainLightProbes (Missing Prefab with guid: f4e4d8517c45a1a4390ceaa4221bd34e)'
+2026-10-05T12:35:29 Error Prefab instance problem. Missing Prefab Asset: 'TerrainHigh (Missing Prefab with guid: f514be6126461c64eab6f02358f894f3)'
+2026-10-05T12:35:29 Error Prefab instance problem: 'Rock_Overgrown_C (Missing Prefab with guid: f611d77947a7ec74692548d60ef94887)'. 4 instances are missing the same Prefab Asset with guid f611d77947a7ec74692548d60ef94887.
+2026-10-05T12:35:35 Error Problem detected while opening the Scene file: 'Assets/Scenes/第一章新版 1_找回備份.unity'.
+Check the following logs for more details.
+2026-10-05T12:35:35 Error Prefab instance problem: '部落女姓2 (1) (Missing Prefab with guid: 141b679349b32d04a9eeaf249763e6f1)'. 2 instances are missing the same Prefab Asset with guid 141b679349b32d04a9eeaf249763e6f1.
+2026-10-05T12:35:35 Error Prefab instance problem. Missing Prefab Asset: 'tripo_convert_6a19b776-afef-4cc4-a098-2ee04a24de6f (Missing Prefab with guid: 9d0166c14fba62248a7363cb01fa0118)'
+2026-10-05T12:35:39 Warning Couldn't create a Convex Mesh from source mesh, within the maximum polygons limit (256). The partial hull will be used. Consider simplifying your mesh. Source mesh name: StoneBig
+2026-10-05T12:35:44 Warning The tree Pine1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Pine2 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Pine3 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Pine4 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Pine5 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Pine6 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Plant1 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree Plant2 must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:44 Warning The tree PlantFlower must use the Nature/Soft Occlusion shader. Otherwise billboarding/lighting will not work correctly.
+2026-10-05T12:35:51 Warning Couldn't create a Convex Mesh from source mesh, within the maximum polygons limit (256). The partial hull will be used. Consider simplifying your mesh. Source mesh name: StoneBig
+2026-10-05T12:35:51 Warning Please remove the CanvasRenderer component from the [TextMeshPro - Prefab 1] GameObject as this component is no longer necessary.
+2026-10-05T12:35:52 Warning Please remove the CanvasRenderer component from the [TextMeshPro - Prefab 2] GameObject as this component is no longer necessary.
+2026-10-05T12:35:55 Exception MissingReferenceException: The object of type 'Chapter2Actor' has been destroyed but you are still trying to access it.
+Your script should either check if it is null or you should not destroy the object.
+UnityEngine.Object+MarshalledUnityObject.TryThrowEditorNullExceptionObject (UnityEngine.Object unityObj, System.String parameterName) (at <25ce29052dfe4e49a635a42f7798806b>:0)
+UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) (at <25ce29052dfe4e49a635a42f7798806b>:0)
+UnityEngine.Component.get_gameObject () (at <25ce29052dfe4e49a635a42f7798806b>:0)
+Chapter2WorkProbe.BakeGrief () (at Assets/Editor/Chapter2WorkProbe.cs:59)
+Chapter2WorkProbe.Tick () (at Assets/Editor/Chapter2WorkProbe.cs:23)
+UnityEngine.Debug:LogException(Exception)
+Chapter2WorkProbe:Tick() (at Assets/Editor/Chapter2WorkProbe.cs:32)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions()
+2026-10-05T12:37:39 Error You may not pass in objects that are already persistent
+2026-10-05T12:37:41 Error You may not pass in objects that are already persistent
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-05T12:37:44 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1181,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3397,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3502,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4065,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7354,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15608,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15613,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15618,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15623,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-05T12:37:44 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-05T12:38:21 Warning Main Object Name 'tripo_node_3a511942-mesh(Clone)' does not match filename 'tripo_node_3a511942-mesh'
+2026-10-05T12:38:23 Warning Main Object Name 'tripo_node_ecb91fad-mesh(Clone)' does not match filename 'tripo_node_ecb91fad-mesh'
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:38:30 Log [Chapter2] Stage=Intro
+2026-10-05T12:38:33 Log [Chapter2] Stage=Follow
+2026-10-05T12:38:54 Log [Chapter2] Stage=TreeChoice
+2026-10-05T12:38:54 Log [Chapter2] Stage=Consequence
+2026-10-05T12:38:54 Warning [Chapter2] Missing grief hand pose for tripo_node_3a511942
+2026-10-05T12:38:54 Warning [Chapter2] Missing grief hand pose for tripo_node_ecb91fad
+2026-10-05T12:39:16 Log [Chapter2] Stage=Meeting
+2026-10-05T12:39:16 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-05T12:39:28 Log [Chapter2] Stage=Vote
+2026-10-05T12:39:28 Log [Chapter2] Stage=Ending
+2026-10-05T12:39:43 Log [Chapter2] Stage=Complete
+2026-10-05T12:40:26 Warning Main Object Name 'tripo_node_3a511942-mesh(Clone)(Clone)' does not match filename 'tripo_node_3a511942-mesh'
+2026-10-05T12:40:27 Warning Main Object Name 'tripo_node_ecb91fad-mesh(Clone)(Clone)' does not match filename 'tripo_node_ecb91fad-mesh'
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:48 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:40:49 Log [Chapter2] Stage=Intro
+2026-10-05T12:40:51 Log [Chapter2] Stage=Follow
+2026-10-05T12:41:12 Log [Chapter2] Stage=TreeChoice
+2026-10-05T12:41:13 Log [Chapter2] Stage=Consequence
+2026-10-05T12:41:34 Log [Chapter2] Stage=Meeting
+2026-10-05T12:41:34 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-05T12:41:47 Log [Chapter2] Stage=Vote
+2026-10-05T12:41:48 Log [Chapter2] Stage=Ending
+2026-10-05T12:42:02 Log [Chapter2] Stage=Complete
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-05T12:43:36 Log [Chapter2] Stage=Intro
+2026-10-05T12:43:39 Log [Chapter2] Stage=Follow
+2026-10-05T12:44:00 Log [Chapter2] Stage=TreeChoice
+2026-10-05T12:44:01 Log [Chapter2] Stage=Chopping
+2026-10-05T12:44:07 Log [Chapter2] Stage=Consequence
+2026-10-05T12:44:16 Log [Chapter2] Stage=Meeting
+2026-10-05T12:44:16 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-05T12:44:29 Log [Chapter2] Stage=Vote
+2026-10-05T12:44:29 Log [Chapter2] Stage=Ending
+2026-10-05T12:44:40 Log [Chapter2] Stage=Complete

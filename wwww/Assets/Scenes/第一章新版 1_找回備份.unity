@@ -6801,6 +6801,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4f1f9f47bae09941a8b3764c648de30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leaderApproachSeconds: 4.4
+  leaderQuestionSeconds: 2.8
+  weddingSpeakerCameraSeconds: 0.8
+  incidentGroundWineProps: []
+  incidentDoorPosition: {x: 3686, y: -5826.4, z: -63}
+  incidentDoorOutward: {x: 0, y: 0, z: -1}
+  incidentDoorDragSeconds: 5.5
+  incidentKnockoutHoldSeconds: 3
+  incidentHutDoor: {fileID: 0}
+  incidentDoorSwingSeconds: 0.85
+  incidentEnterHutSeconds: 3.6
+  incidentDepartureHoldSeconds: 6
   playerController: {fileID: 0}
   characterController: {fileID: 0}
   danceTimeline: {fileID: 0}
@@ -6828,18 +6840,53 @@ MonoBehaviour:
   weddingCrowdStepFrequency: 2.2
   weddingCrowdRadialStepDistance: 0.12
   weddingCrowdSwayDegrees: 5
+  normalizeNamedAddedDancerHeight: 1
+  namedAddedDancerHeightRatio: 1
+  normalizeWeddingNpcProportions: 1
+  minimumWeddingNpcHeightRatio: 0.9
+  maximumWeddingNpcHeightRatio: 1.1
+  maximumWeddingNpcScaleCorrection: 16
+  fallbackChildHeightRatio: 0.72
+  weddingReservedPlayerSlots: 1
+  autoFitWeddingCircleToArmReach: 0
+  weddingNeighborSpacingArmMultiplier: 1.7
+  minimumWeddingCircleRadius: 12.5
+  minimumWeddingNeighborSpacing: 6.35
+  weddingCircleRadius: 18.5
+  weddingCircleTempoBpm: 88
+  weddingCircleDegreesPerBeat: 1.65
   dialogueUI: {fileID: 0}
   choiceUI: {fileID: 0}
   fadeCanvas: {fileID: 0}
   weddingAmbience: {fileID: 0}
+  weddingVocals: {fileID: 0}
   tensionAmbience: {fileID: 0}
   heartbeatAudio: {fileID: 0}
+  weddingMusicVolume: 0.002
+  weddingVocalsVolume: 0.22
+  lockWeddingMusicVolumeUntilPolice: 1
+  lockWeddingVocalsVolumeUntilPolice: 1
+  hardCutWeddingAudioOnPolice: 1
+  receiverThanksVoice: {fileID: 0}
+  maleReceiverThanksVoice: {fileID: 0}
+  femaleReceiverThanksVoice: {fileID: 0}
+  wineReceiverThanksVoice: {fileID: 0}
+  foodReceiverThanksVoice: {fileID: 0}
+  receiverThanksVoiceVolume: 1
+  receiverThanksSpatialBlend: 0.35
+  receiverThanksMinDistance: 4
+  receiverThanksMaxDistance: 28
+  femaleThankYouTargets: []
+  maleThankYouTargets: []
+  autoDetectReceiverGenderByName: 1
+  useStoryMusicCrossfade: 1
+  storyMusicCrossfadeSeconds: 1.6
+  tensionMusicTargetVolume: 0.12
   narrationAudio: {fileID: 995566608}
   introVoice1: {fileID: 8300000, guid: 93a10ef5466c75440b5af199daabeea6, type: 3}
   introVoice2: {fileID: 8300000, guid: 847d45c53231af140bfa0d32a2fb0e7e, type: 3}
   narrationVolume: 1
   introLineGap: 0.35
-  playStoryNarration: 1
   wineTargetCount: 3
   foodTargetCount: 2
   requireWineAndFoodBeforeDance: 1
@@ -6854,9 +6901,18 @@ MonoBehaviour:
   autoFindMissingReferences: 1
   requireWineBeforeDance: 0
   allowChoiceHotkeys: 1
+  allowVRChoiceButtons: 1
+  vrChoiceHand: 5
   showFallbackHud: 1
   lockPlayerDuringPoliceEntrance: 0
   defaultDialogueSeconds: 3
+  autoPlayCinematicStoryAfterWeddingTasks: 1
+  showCinematicLetterbox: 0
+  cinematicLetterboxHeightRatio: 0.11
+  cinematicPreRollSeconds: 0.65
+  cinematicSilenceBeatSeconds: 0.55
+  cinematicExtraShotHoldSeconds: 0.18
+  hideGameplayHudDuringCinematic: 1
   useExplorationTimer: 1
   explorationDurationSeconds: 30
   showExplorationTimer: 1
@@ -6886,6 +6942,104 @@ MonoBehaviour:
   interactionArcHeight: 1.15
   heldPropScale: 0.28
   lockPlayerDuringInteractionAnimation: 0
+  manualWalkForItemTasks: 1
+  focusCameraOnReceiverDialogue: 1
+  receiverDialoguePanSeconds: 0.38
+  receiverDialogueHoldSeconds: 3
+  receiverDialogueReturnSeconds: 0.3
+  receiverFallbackFaceHeight: 1.55
+  receiverDialogueCameraDistance: 2.4
+  receiverDialogueUpperBodyBottomRatio: 0.4
+  receiverDialogueFramePadding: 1.3
+  receiverDialogueMaxCameraDistance: 8
+  hidePlayerHandsDuringReceiverDialogue: 1
+  playerHandsRoot: {fileID: 0}
+  playerHandsObjectName: Hands_Rigged
+  hidePlayerHandsByRendererOnly: 1
+  shrinkPlayerHandsDuringDance: 1
+  dancePlayerHandsScaleMultiplier: 0.58
+  raisePlayerViewDuringDance: 1
+  dancePlayerViewHeightOffset: 1.65
+  playReceiverThankYouMotion: 1
+  preferAnimatorThankYouMotion: 1
+  receiverThankYouMotionSeconds: 1.05
+  receiverThankYouNodDegrees: 11
+  receiverThankYouHandLiftDegrees: 18
+  receiverThankYouNodCount: 1
+  receiverThankYouReturnStateName: Idle
+  foodReceiverPreferCelebrateMotion: 1
+  forceFoodReceiverCelebration: 1
+  debugFoodReceiverCelebration: 1
+  foodReceiverCelebrateMotionSeconds: 1.25
+  preferAnimatorCelebrateMotionForFood: 1
+  foodReceiverCelebrateHandLiftDegrees: 28
+  foodReceiverCelebrateBounceHeight: 0.08
+  foodReceiverCelebrateBodySwayDegrees: 7
+  foodReceiverCelebrateScalePulse: 0.035
+  foodReceiverCelebrateNodCount: 2
+  faceReceiverTowardPlayerOnDelivery: 1
+  receiverTurnToPlayerSeconds: 0.32
+  receiverFacePlayerHoldSeconds: 4.2
+  keepReceiverFacingPlayerDuringDialogue: 1
+  keepReceiverFacingPlayerAfterDelivery: 1
+  receiverVisualForwardYawOffset: 0
+  autoDetectReceiverForwardFromShoulders: 1
+  receiverReverseFacingTargets: []
+  useNaturalReceiverGesture: 1
+  foodReceiverCustomAnimationState: 
+  useGenderSpecificReceiverAnimation: 1
+  maleReceiverCustomAnimationState: "\u7537\u751F\u52D5\u4F5C"
+  femaleReceiverCustomAnimationState: "\u5973\u751F\u52D5\u4F5C"
+  useSameReceiverAnimationForAllNPCs: 0
+  allReceiverCustomAnimationState: "\u6253\u62DB\u547C"
+  wineReceiverCustomAnimationState: 
+  useFoodReceiverCustomAnimationStateWhenSeparated: 1
+  receiverCustomAnimationSeconds: 1.8
+  fallbackToNaturalReceiverGesture: 1
+  naturalReceiverGestureSeconds: 1.7
+  naturalReceiverChestBowDegrees: 6
+  naturalReceiverHeadNodDegrees: 10
+  naturalReceiverArmForwardDegrees: 18
+  naturalReceiverForearmDegrees: 14
+  usePhysicalWeddingDelivery: 1
+  physicalInteractKey: 101
+  physicalInteractGamepadKey: 330
+  physicalCancelKey: 113
+  physicalPickupRange: 3.2
+  physicalDeliveryRange: 2.25
+  physicalGiveSeconds: 0.45
+  winePickupPoint: {fileID: 0}
+  foodPickupPoint: {fileID: 0}
+  preserveAuthoredWeddingPropPlacement: 0
+  carryHoldPoint: {fileID: 0}
+  foodCarryTemplate: {fileID: 0}
+  foodPickupObjectName: "\u70E4\u9B5A"
+  wineDeliveryTargets: []
+  foodDeliveryTargets: []
+  carryHoldLocalEuler: {x: 0, y: 0, z: 0}
+  showDeliveryTargetMarker: 1
+  deliveryTargetMarkerPrefab: {fileID: 0}
+  deliveryTargetMarkerHeight: 2.35
+  deliveryTargetMarkerScale: 0.42
+  deliveryTargetMarkerBobHeight: 0.16
+  deliveryTargetMarkerSpinSpeed: 110
+  pulseDeliveryTargetMarker: 1
+  deliveryTargetMarkerColor: {r: 1, g: 0.78, b: 0.05, a: 1}
+  showDeliveryTargetNameAndDistance: 1
+  showDeliveryGroundArrows: 0
+  deliveryGroundArrowMaxCount: 12
+  deliveryGroundArrowSpacing: 2.2
+  deliveryGroundArrowStartDistance: 1.2
+  deliveryGroundArrowEndDistance: 1.1
+  deliveryGroundArrowHeight: 0.08
+  deliveryGroundArrowSize: 1.05
+  deliveryGroundArrowRefreshSeconds: 0.12
+  deliveryGroundArrowPulseAmount: 0.1
+  deliveryGroundArrowPulseSpeed: 4.5
+  deliveryGroundArrowColor: {r: 1, g: 0.82, b: 0.02, a: 1}
+  keepDeliveryTargetsStationary: 1
+  detachDeliveryTargetsFromDancePivot: 1
+  deliveryTargetIdleStateName: Idle
   guidePlayerDuringItemInteractions: 1
   guidedWalkToPickupSeconds: 1.15
   guidedWalkToReceiverSeconds: 1.65
@@ -6905,27 +7059,34 @@ MonoBehaviour:
   carriedPropViewDownOffset: 0.05
   winePropColor: {r: 0.45, g: 0.12, b: 0.08, a: 1}
   foodPropColor: {r: 0.95, g: 0.58, b: 0.18, a: 1}
+  newPoliceSceneFoodViewDistance: 1.65
+  newPoliceSceneFoodViewRightOffset: 0.3
+  newPoliceSceneFoodViewDownOffset: 0.13
+  newPoliceSceneFoodTargetSize: 0.72
+  showPickupLocationGuidance: 1
+  pickupLocationRefreshSeconds: 0.15
+  pickupLocationMarkerHeight: 1.65
+  pickupLocationMarkerBobHeight: 0.12
+  pickupLocationMarkerSpinSpeed: 80
+  winePickupLocationColor: {r: 1, g: 0.28, b: 0.06, a: 1}
+  foodPickupLocationColor: {r: 0.72, g: 1, b: 0.12, a: 1}
   wineBottleTemplate: {fileID: 0}
   wineBottleObjectName: "\u9152\u74F6"
   hideWineBottleSourceWhileCarried: 1
   wineBottleTargetSize: 0.65
   wineBottleHeldEulerOffset: {x: 0, y: 0, z: 0}
-  orderedWineReceiverNames:
-  - "\u63A5\u91521"
-  - "\u63A5\u91522"
-  - "\u63A5\u91523"
-  arrangeNamedWineReceiversOnStart: 1
-  normalizeNamedWineReceiverScale: 1
-  namedWineReceiverRadius: 7.2
-  namedWineReceiverGroundClearance: 0.03
-  fallbackWeddingCharacterHeight: 1.72
   animatePoliceEntranceWithoutTimeline: 1
   policeEntranceTarget: {fileID: 0}
   policeEntranceDistance: 12
   policeEntranceDuration: 4
   rotatePoliceTowardPath: 1
-  placePoliceEntranceInPlayerView: 1
-  policeEntranceEndRadius: 4.5
+  animatePoliceRunBones: 1
+  newPoliceSceneRunDuration: 2.8
+  policeRunCadence: 2.45
+  policeRunLegSwing: 0.62
+  policeRunKneeBend: 0.55
+  policeRunArmSwing: 0.58
+  policeRunForwardLeanDegrees: 9
   primaryPoliceObjectName: "\u8B66\u5BDF"
   primaryPoliceActor: {fileID: 0}
   secondaryPoliceActor: {fileID: 0}
@@ -6936,6 +7097,61 @@ MonoBehaviour:
   witnessRunDistance: 9
   witnessRunSeconds: 1.5
   witnessLookAtHeight: 1.35
+  usePoliceCinematicCamera: 1
+  policeCameraPanSeconds: 0.85
+  policeCameraHoldSeconds: 0.2
+  policeCameraLookHeight: 1.35
+  forceVisiblePoliceEntranceShot: 1
+  policeVisibleShotLeadDistance: 4.8
+  policeVisibleShotSideOffset: 3
+  policeVisibleShotHeight: 2.65
+  policeVisibleShotLookHeight: 1.25
+  policeVisibleShotBlendSeconds: 0.42
+  policeVisibleShotEndHoldSeconds: 0.9
+  usePoliceEntranceAerialIntro: 1
+  usePoliceEntranceTrackingCamera: 0
+  policeAerialHeight: 9.5
+  policeAerialBackOffset: 4.2
+  policeAerialSideOffset: 1.8
+  policeAerialLookHeight: 1.2
+  policeAerialBlendSeconds: 0.9
+  policeAerialFollowStrength: 0.38
+  usePoliceAerialDescent: 1
+  policeAerialEndHeight: 4.8
+  policeAerialEndBackOffset: 2.6
+  policeAerialDescentStartNormalized: 0.28
+  usePoliceFrontReveal: 1
+  policeFrontRevealDistance: 2.15
+  policeFrontRevealHeight: 1.55
+  policeFrontRevealSideOffset: 0.35
+  policeFrontRevealMoveSeconds: 0.72
+  policeFrontRevealHoldSeconds: 0.22
+  policeFrontRevealReturnSeconds: 0.42
+  policeTrackingSideOffset: 3.6
+  policeTrackingBackOffset: 4.6
+  policeTrackingHeight: 1.75
+  policeTrackingBlendSeconds: 0.45
+  returnCameraAfterPoliceEntrance: 1
+  policeTrackingReturnSeconds: 0.7
+  preferAnimatorWalkForPoliceEntrance: 1
+  useProceduralPoliceWalkFallback: 1
+  policeSecondarySpeedScale: 0.94
+  policeNaturalLateralDrift: 0.08
+  policeWalkCadence: 1.75
+  policeWalkLegSwing: 0.33
+  policeWalkKneeBend: 0.26
+  policeWalkArmSwing: 0.28
+  policeWalkForwardLeanDegrees: 3.5
+  policeSecondWalkAnimationPhase: 0.43
+  policeFirstWalkAnimatorSpeed: 1
+  policeSecondWalkAnimatorSpeed: 0.96
+  useCeremonyCupCloseUp: 1
+  cupCloseUpDistance: 0.72
+  cupCloseUpHeight: 0.24
+  cupCloseUpMoveSeconds: 0.38
+  cupCloseUpBeforeImpactSeconds: 0.18
+  cupCloseUpAfterImpactSeconds: 0.85
+  cupCloseUpReturnSeconds: 0.42
   groomActor: {fileID: 0}
   shovedVillagerActor: {fileID: 0}
   femaleVillagerActor: {fileID: 0}
@@ -6947,18 +7163,60 @@ MonoBehaviour:
   casualtyVillagers: []
   useFallbackIncidentAnimation: 1
   policeApproachWomanSeconds: 1.1
+  harassmentHoldSeconds: 1.25
+  harassmentCornerDistanceFromFire: 70
+  harassmentCornerTravelSeconds: 8
   dragToHutSeconds: 2.4
+  policeBatonStrikeSeconds: 1.35
   policeExitSeconds: 4
   shoveDistance: 0.9
   fallbackFallAngle: 78
   policeWalkStateName: Walk
   policeIdleStateName: Idle
   villagerFallStateName: Fall
+  policeApproachPlayerSeconds: 2.4
+  knockoutCameraFallSeconds: 0.9
+  knockoutCameraHeightAboveGround: 0.28
+  knockoutCameraRollDegrees: 78
+  knockoutDizzyRotationDegreesPerSecond: 180
+  knockoutDizzyScreenWidthRatio: 0.17
+  knockoutDizzyResourcePath: Chapter1UI/KnockoutDizzy
+  policeJogToWomanSeconds: 1.65
+  struggleBeforeChoiceSeconds: 3
+  minimumSlowDragToHutSeconds: 5.5
+  hutInteriorHoldSeconds: 5
+  hutScreamDelaySeconds: 0.8
+  dragVictimBackOutSeconds: 3.2
+  minimumPoliceExitSeconds: 8
+  frameHarassmentFromOutsideCrowd: 1
+  incidentCameraMinimumDistance: 5.5
+  incidentCameraSideRatio: 0.65
+  incidentCameraHeightRatio: 0.7
+  followPoliceBacksDuringExit: 1
+  policeExitCameraBackDistance: 5.2
+  policeExitCameraHeight: 2.2
+  policeExitCameraSideOffset: 0.45
+  policeExitCameraLookAhead: 2.2
+  distantHarassmentFieldOfView: 20
+  stopPlayModeAfterChapterEnding: 1
+  loadChapter2AfterEnding: 1
+  chapter2SceneName: 
+  chapter2LoadDelaySeconds: 0.25
+  showSkipToIncidentButton: 1
+  skipToIncidentKey: 112
   policeEventAudio: {fileID: 0}
   cupCrashClip: {fileID: 0}
   struggleClip: {fileID: 0}
   gunshotClip: {fileID: 0}
   painfulCryClip: {fileID: 0}
+  policeDialogueAudio: {fileID: 0}
+  policeDialogueVolume: 1
+  policeInsultVoice: {fileID: 0}
+  groomReplyVoice: {fileID: 0}
+  groomReplyVolumeScale: 1.4
+  femaleResistVoice: {fileID: 0}
+  playerInterveneVoice: {fileID: 0}
+  policeWatchCommandVoice: {fileID: 0}
   saveResultToPlayerPrefs: 1
   conflictChoicePrefsKey: Chapter1_ConflictChoice
   peopleInjuredPrefsKey: Chapter1_PeopleInjured
@@ -17577,6 +17835,19 @@ MonoBehaviour:
   openDuration: 2.5
   extraOpenDistance: 60
   hideCanvasAfterOpen: 1
+  firstPeekOpenness: 0.24
+  firstPeekDuration: 0.52
+  firstPeekHold: 0.12
+  firstCloseDuration: 0.2
+  closedHold: 0.14
+  secondOpenOpenness: 0.7
+  secondOpenDuration: 0.68
+  secondOpenHold: 0.24
+  blinkClosedOpenness: 0.08
+  blinkCloseDuration: 0.14
+  blinkOpenDuration: 0.22
+  blinkHold: 0.1
+  finalOpenDuration: 0.62
 --- !u!114 &1913783454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17591,8 +17862,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapterController: {fileID: 995566606}
   eyeOpenEffect: {fileID: 1913783453}
+  playerCamera: {fileID: 0}
+  cameraOffsetRoot: {fileID: 0}
+  introHandsRoot: {fileID: 0}
   fallbackDelay: 4.35
   extraDelay: 0
+  useNaturalWakeUp: 1
+  pauseAfterEyesOpen: 0.25
+  hideHandsUntilEyesOpen: 1
+  cameraLooksAtHands: 1
+  lookDownDegrees: 15
+  cameraLookDownSeconds: 0.85
+  cameraReturnSeconds: 0.7
+  handsForwardDistance: 0.42
+  handsVerticalOffset: -0.14
+  hiddenDownDistance: 0.55
+  autoFitHandsSize: 1
+  targetHandsMaxSize: 0.65
+  minAutoScaleMultiplier: 0.001
+  maxAutoScaleMultiplier: 1000
+  handRaiseSeconds: 0.95
+  inspectHoldSeconds: 0.55
+  inspectMoveSeconds: 1.3
+  inspectCloserDistance: 0
+  inspectEulerOffset: {x: 0, y: 0, z: 0}
+  playFingerFlexWhileInspecting: 1
+  leftFingerBoneRoot: {fileID: 0}
+  rightFingerBoneRoot: {fileID: 0}
+  almostFistAmount: 0.18
+  fingerCloseSeconds: 0.85
+  fingerHoldSeconds: 0.08
+  fingerOpenSeconds: 1.05
+  rightHandFingerDelay: 0.06
+  fingerCurlVariation: 0.01
+  relaxedPauseSeconds: 0.2
+  fingerGestureWristEuler: {x: 0, y: 0, z: 0}
+  fingerCurlAxis: 0
+  leftFingerCurlDegrees: 8
+  rightFingerCurlDegrees: 8
+  minimumFingerBoneDepth: 2
+  debugFingerFlexWithL: 1
+  settleSeconds: 0.35
+  retractHandsAfterInspect: 1
+  retractHandsSeconds: 0.75
+  retractDownDistance: 0.75
+  retractBackDistance: 0.12
+  forceHandRenderersVisible: 1
+  updateSkinnedMeshWhenOffscreen: 1
+  hideHandsAfterSequence: 1
+  debugReplayWithK: 1
 --- !u!1 &1918062739 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ce1a1bd23a0ebc04281d944c0d01c418, type: 3}

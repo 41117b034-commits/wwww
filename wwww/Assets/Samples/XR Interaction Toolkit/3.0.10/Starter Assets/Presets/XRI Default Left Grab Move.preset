@@ -161,6 +161,10 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: m_GrabMoveInput.m_ManualQueueWasCompletedThisFrame
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: m_GrabMoveInput.m_ManualQueueValue
     value: 0
     objectReference: {fileID: 0}
@@ -209,3 +213,8 @@ Preset:
     value: 
     objectReference: {fileID: 0}
   m_ExcludedProperties: []
+  m_CoupledType:
+    m_NativeTypeID: 0
+    m_ManagedTypePPtr: {fileID: 0}
+    m_ManagedTypeFallback: 
+  m_CoupledProperties: []

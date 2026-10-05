@@ -2,7 +2,7 @@
 
 更新日期：2026-10-05。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-05 已接續「規劃第二章場景與玩法」中斷工作，完成六項回饋：縮窄右側範圍、族人面向玩家介紹後轉身帶路、公尺標示、說話者全身鏡頭、砍伐後退 0.7 公尺、保護巨樹時可見的舉槍／開槍／族人倒地。修正後步槍配置已儲存到第二章場景；本輪保護＋拒絕、砍伐＋支持（含完整度歸零重試）均重新跑完並自行退出 Play Mode，詳見文末 2026-10-05 接續收尾。既有 48 秒開場、晨間森林、伐木完整度與夜間六社會議保留。場景為 `Assets/Scenes/第二章.unity`，操作及來源見 `Documentation/Chapter2.md`。第一章場景和共用 `Chapter1IncidentRig.cs` 雜湊與本輪開始前相同。未測實體 VR；播放仍有既有警告，不能宣稱全專案零警告。
+最新狀態：2026-10-05 第二章「保護巨樹」新增槍聲後兩位族人的悲憤反應：錯開轉身看倒地同伴、握緊雙拳、前傾又忍住及低頭持續到淡黑。正式保護＋拒絕分支已以最終握拳資產重跑，近景與全景皆檢查；砍伐＋支持也已跑完並自行退出，清理結果見文末本輪紀錄。既有六項畫面回饋、48 秒開場、森林、伐木完整度及夜間會議保留。場景仍為 `Assets/Scenes/第二章.unity`；第一章／第二章場景、共用動作骨架及原角色 FBX 匯入設定核對未變。本輪未做實體 VR 或獨立建置驗證。
 
 ## 專案位置
 
@@ -388,3 +388,30 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 已將 `Assets/Editor/Chapter2WorkProbe.cs`、`Chapter2Verification.cs` 及其 meta 移入本輪備份的 `verification-tools/`，正式 Assets 不再包含命令輪詢或驗證 driver。來源雜湊保存於 `verified-source-hashes.json`。
 - 本次正式資產大小掃描含 Assets／Documentation／Packages／ProjectSettings，共 3,128 檔；沒有單檔達 100,000,000 bytes，最大為 87,096,360 bytes。詳見 `asset-size-audit.json`；生成目錄與歷史診斷備份不列入發佈資產統計。
 - 清理後於 2026-10-05 09:18 完成 Editor 程式集重新編譯；實際查看編輯器 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景標題沒有未儲存標記。此為最後編譯狀態，不抹除前述播放期間的警告。
+
+
+## 2026-10-05 第二章槍聲後兩位族人的壓抑悲憤反應
+
+### 本次正式修改
+
+- 使用者要求：保護巨樹、槍聲與一名族人倒地後，另外兩位族人轉身望向他、握拳，呈現生氣卻無能為力。已先讀 AGENTS、本交接檔及固定劇情參考第 3–5 頁。
+- `Chapter2Controller.Protect()` 僅為 workers[1]、workers[2] 準備 `Chapter2GriefReaction`，在實際 `rifle.Fire()`／`BeginFall()` 後觸發。兩人相差 0.18 秒受驚，約 1.65 秒完成轉向、約 2.45 秒收緊雙拳；肩背緊繃、一次欲上前又忍住的前傾、低頭望向受擊者，持續到白天淡黑。原場景、鏡頭、角色位置、槍聲及台詞保留。
+- `Chapter2GriefReaction.cs` 在共用骨架和 Chapter2Actor 之後施加姿势，避免動作每幀被重設。`Chapter2GriefHandPose.cs` 與 `Assets/Chapter2/Resources/GriefHands/` 保存兩個專用握拳 blend shape 與手掌方向；處理模型缺少完整手指骨架的情況，沒有新增面部表情骨架。
+- 握拳網格是第二章專用壓縮二進位副本，分別 33,269,200、36,541,964 bytes；不要將它們轉為大型文字資產。模型 FBX 與原匯入 meta 最終已還原；原第一章、第二章場景及共用 `Chapter1IncidentRig.cs` SHA-256 與本輪開始時相同。沒有改動 Chapter2Actor 或第一章程式。
+
+### 本輪實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode，臨時 driver 走正式移動、選項與砍伐入口。略過片頭；跟隨 2 倍、槍聲後 1 倍、夜間 3 倍。未使用實體 VR，亦非全程人工鍵盤驗收。
+- 最終 `protect-refuse-grief-v3`：兩位族人的 turn=1、fists=1、面向倒地者的水平 dot=1；各自 `Chapter2 clenched fists=100`，只有兩個反應元件。實際檢查轉身、雙人全景、兩位各別近景與槍放下後仍維持姿勢的引擎截圖；1 次開槍、倒地完成，夜間拒絕分支及黑幕正常，`completed=true`、`errors=[]`，正式結尾自行退出，`playing=false`。
+- 最終 `fell-support-grief-regression`：5 次有效砍伐、遠距／背向／揮砍中重複輸入拒絕檢查通過；反應元件數為 0。支持分支及黑幕正常，`completed=true`、`errors=[]`、`playing=false`。本輪未重做完整度歸零重試、另兩個會議組合、完整 MP4 播放或獨立建置測試。
+- v1 的近景仍張手；v2 資產引用失效，均是診斷版本，不能作最終握拳證據。最終以 v3 及砍伐回歸為準。證據在 `_CodexBackups/chapter2_grief_20261005/`，正式预覽為 `Documentation/Chapter2-grief-preview.png`、`Chapter2-grief-male-preview.png`、`Chapter2-grief-female-preview.png`。
+- 資產製作途中曾切換序列化格式而觸發全資產重存，已切回原設定並改用單檔二進位匯出；第一章／第二章場景和共用骨架核對原雜湊一致。掃描時顯示舊示例場景 Missing Prefab 錯誤，不能與最終兩輪 runtime 的 `errors=[]` 混為同一結論。正式播放仍出現先前已記錄的 Missing Script 警告及 URP 陰影圖縮小訊息；未宣稱全專案零警告。
+- 測試停用 PlayerPrefs 結果寫入，原場景 `saveResult=1`、`stopEditorAfterEnding=1` 保持原值。未 commit／push。
+
+
+### 本輪最後清理
+
+- `Chapter2WorkProbe.cs`、`Chapter2Verification.cs` 與其 meta 已移至證據資料夾的 `verification-tools/`；正式 Assets 不保留測試命令輪詢。握拳資產製作用程式副本保存在 `Chapter2GriefReaction.baking.cs`，正式 runtime 只讀取已產生的資產。
+- 12:46:51 完成清理後 Editor 程式集編譯；12:47 實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景沒有未儲存標記。此編譯狀態不抹除前述資產製作與播放中的警告／診斷錯誤。
+- 編輯器序列化模式的執行中值確認為 ForceText，磁碟 `ProjectSettings/EditorSettings.asset` 已恢復文字格式及 `m_SerializationMode: 2`。兩份握拳 mesh 仍保留單檔二進位壓縮格式。
+- 最後掃描 Assets／Documentation／Packages／ProjectSettings 共 3,185 個檔案，沒有檔案達 100,000,000 bytes；最大 87,096,360 bytes。`asset-size-audit.json`、`verified-source-hashes.json`、`unchanged-originals.json` 保存大小與本輪來源核對。未將生成目錄或歷史備份計入發佈資產。

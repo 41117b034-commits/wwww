@@ -1,0 +1,2 @@
+Assets/Chapter2/Resources/GriefHands\tripo_node_3a511942-mesh.asset shapes=1 readable=False size=33269200
+Assets/Chapter2/Resources/GriefHands\tripo_node_ecb91fad-mesh.asset shapes=1 readable=False size=36541964

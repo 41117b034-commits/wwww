@@ -1,0 +1,68 @@
+Assets/Scenes/第二章.unity dirty=False playing=False
+Chapter2_NewRulesAndSecretCouncil | pos=(0.00, 0.00, 0.00) | size=(0.00, 0.00, 0.00) | Chapter2Controller,Chapter2RouteGuide
+Forest ground | pos=(0.00, 0.00, 0.00) | size=(160.00, 13.46, 160.00) | 
+Forest · sacred grove | pos=(0.00, 0.00, 0.00) | size=(141.54, 26.85, 135.99) | 
+Mossy rocks and forest floor | pos=(0.00, 0.00, 0.00) | size=(57.29, 1.08, 58.09) | 
+Sacred giant tree · 西仔希克 | pos=(0.00, 0.00, 12.00) | size=(18.88, 32.59, 18.31) | 
+Felled sacred stump | pos=(0.00, 0.47, 12.00) | size=(0.81, 0.90, 0.32) | 
+Sacred ground marker | pos=(-6.30, 0.93, 7.80) | size=(1.85, 1.35, 2.29) | 
+Giant tree interaction point | pos=(0.00, 0.00, 8.60) | size=(0.00, 0.00, 0.00) | 
+Chapter2_Player | pos=(0.00, 0.08, -17.00) | size=(0.00, 0.00, 0.00) | Chapter2Player
+Chapter2_HUD | pos=(0.00, 1.73, -16.50) | size=(0.00, 0.00, 0.00) | CanvasScaler,GraphicRaycaster,Chapter2Presentation
+EventSystem | pos=(0.00, 0.00, 0.00) | size=(0.00, 0.00, 0.00) | EventSystem,InputSystemUIInputModule
+Early morning sun | pos=(0.00, 0.00, 0.00) | size=(0.00, 0.00, 0.00) | 
+Morning · forced logging | pos=(0.00, 0.00, 0.00) | size=(8.17, 1.93, 19.93) | 
+Night · secret council | pos=(0.00, 0.00, 0.00) | size=(10.20, 1.72, 5.09) | 
+Council player position | pos=(0.00, 0.05, -4.80) | size=(0.00, 0.00, 0.00) | 
+
+ACTOR 六社領袖 3 human=True
+MESH tripo_node_ecb91fad path=Assets/人/部落女/部落女性2/部落女姓2.fbx readable=False vertices=1236694
+mixamorig:LeftShoulder,mixamorig:Spine2,mixamorig:LeftUpLeg,mixamorig:LeftLeg,mixamorig:LeftFoot,mixamorig:LeftToeBase,mixamorig:RightLeg,mixamorig:RightFoot,mixamorig:RightToeBase,mixamorig:Neck,mixamorig:Head,mixamorig:RightUpLeg,mixamorig:RightShoulder,mixamorig:RightArm,mixamorig:RightForeArm,mixamorig:RightHand,mixamorig:RightHandIndex1,mixamorig:RightHandIndex2,mixamorig:LeftHand,mixamorig:LeftArm,mixamorig:LeftForeArm,mixamorig:LeftHandIndex1,mixamorig:LeftHandIndex2,mixamorig:Spine1,mixamorig:Spine,mixamorig:Hips,mixamorig:LeftHandThumb1,mixamorig:RightHandThumb1,mixamorig:LeftHandIndex3,mixamorig:RightHandIndex3,mixamorig:RightHandThumb2,mixamorig:LeftHandThumb2,mixamorig:RightHandThumb3,mixamorig:LeftHandThumb3
+
+ACTOR 督工警察 human=True
+MESH tripo_node_b2cbe21f path=Assets/人/警察/警察.fbx readable=True vertices=767047
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 六社領袖 1 human=True
+MESH tripo_node_4931ae9c path=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx readable=False vertices=992033
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 保守派族人 0 human=True
+MESH tripo_node_4931ae9c path=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx readable=False vertices=992033
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 六社領袖 5 human=True
+MESH tripo_node_3a511942 path=Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx readable=False vertices=1029551
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 保守派族人 1 human=True
+MESH tripo_node_3a511942 path=Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx readable=False vertices=1029551
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 六社領袖 2 human=True
+MESH tripo_node_3a511942 path=Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx readable=False vertices=1029551
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 族人 1 human=True
+MESH tripo_node_4931ae9c path=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx readable=False vertices=992033
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 族人 2 human=True
+MESH tripo_node_3a511942 path=Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx readable=False vertices=1029551
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 族人 3 human=True
+MESH tripo_node_ecb91fad path=Assets/人/部落女/部落女性2/部落女姓2.fbx readable=False vertices=1236694
+mixamorig:LeftShoulder,mixamorig:Spine2,mixamorig:LeftUpLeg,mixamorig:LeftLeg,mixamorig:LeftFoot,mixamorig:LeftToeBase,mixamorig:RightLeg,mixamorig:RightFoot,mixamorig:RightToeBase,mixamorig:Neck,mixamorig:Head,mixamorig:RightUpLeg,mixamorig:RightShoulder,mixamorig:RightArm,mixamorig:RightForeArm,mixamorig:RightHand,mixamorig:RightHandIndex1,mixamorig:RightHandIndex2,mixamorig:LeftHand,mixamorig:LeftArm,mixamorig:LeftForeArm,mixamorig:LeftHandIndex1,mixamorig:LeftHandIndex2,mixamorig:Spine1,mixamorig:Spine,mixamorig:Hips,mixamorig:LeftHandThumb1,mixamorig:RightHandThumb1,mixamorig:LeftHandIndex3,mixamorig:RightHandIndex3,mixamorig:RightHandThumb2,mixamorig:LeftHandThumb2,mixamorig:RightHandThumb3,mixamorig:LeftHandThumb3
+
+ACTOR 莫那魯道 · 暫用既有人物 human=True
+MESH tripo_node_4931ae9c path=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx readable=False vertices=992033
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 六社領袖 4 human=True
+MESH tripo_node_4931ae9c path=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx readable=False vertices=992033
+Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+
+ACTOR 六社領袖 6 human=True
+MESH tripo_node_ecb91fad path=Assets/人/部落女/部落女性2/部落女姓2.fbx readable=False vertices=1236694
+mixamorig:LeftShoulder,mixamorig:Spine2,mixamorig:LeftUpLeg,mixamorig:LeftLeg,mixamorig:LeftFoot,mixamorig:LeftToeBase,mixamorig:RightLeg,mixamorig:RightFoot,mixamorig:RightToeBase,mixamorig:Neck,mixamorig:Head,mixamorig:RightUpLeg,mixamorig:RightShoulder,mixamorig:RightArm,mixamorig:RightForeArm,mixamorig:RightHand,mixamorig:RightHandIndex1,mixamorig:RightHandIndex2,mixamorig:LeftHand,mixamorig:LeftArm,mixamorig:LeftForeArm,mixamorig:LeftHandIndex1,mixamorig:LeftHandIndex2,mixamorig:Spine1,mixamorig:Spine,mixamorig:Hips,mixamorig:LeftHandThumb1,mixamorig:RightHandThumb1,mixamorig:LeftHandIndex3,mixamorig:RightHandIndex3,mixamorig:RightHandThumb2,mixamorig:LeftHandThumb2,mixamorig:RightHandThumb3,mixamorig:LeftHandThumb3

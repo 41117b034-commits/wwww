@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "8E37B18FB2B5A5621975E0AF865C8646CE6519FC7028B682DFC4EA60196E8F0B",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C5C46A5723EA2D27198587A0A0443CB6EA21B4F23962D81118992FB512FDAA71",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第一章新版警察.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "DAC5138B7992F6A1DBEA5DF273483346CBD88942AB2A3DC0DB4D0A60D7E613AA",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\第一章演出\\Chapter1IncidentRig.cs"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "75E3DA1F68404A438A14F7BE52674D462E05872E7F77B1A152ED8C2613B5B00F",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C226A9ABAB34191FE8EA6F5E6164449C63A8E50C7806B0808CA58640B533F6ED",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2GriefReaction.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C974D98481A18FABF510E56CC9787C7CCC739562FA33B7702206C9A03BC9B273",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2GriefHandPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "29B3878CA435A335906514526E2A233B5D7522AE17EC7937A59FD84B8C98AA76",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_3a511942-mesh.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D7DB633A8C22DBFADCD0FFF9116BB5737644E8233C0630837E312D4F7192DA44",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_3a511942-mesh.asset.meta"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "159887C413D488E2BAF7C64511E0F19C82D9CC3E864ABED612D11F3CD81DCF25",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_3a511942.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9818D0C80290F6D7A3ED80E2D6F1C882AE2E46B6ADB38A9B2F2BF0C142C3F0C9",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_3a511942.asset.meta"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "E6BCD41061D25BC15EDD260A346F25431633861A89F7534F12FBC798445FF851",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_ecb91fad-mesh.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "7DA5F9A3741DE28FEA9CB05497084CC428BAE0C1AD56216C294B1AB74CAD3547",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_ecb91fad-mesh.asset.meta"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "65254BFE0081F27FEFB7AF549988FE52FC9FB418900254AA16934EC6C1E82F06",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_ecb91fad.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "74EC3854B2E3A30E3F507E9AC8A2C5793DDF3372F1D064D6F15293B0CF5A7F44",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\GriefHands\\tripo_node_ecb91fad.asset.meta"
+  }
+]

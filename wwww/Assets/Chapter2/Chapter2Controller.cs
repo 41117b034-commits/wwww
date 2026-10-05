@@ -263,6 +263,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     IEnumerator Protect()
     {
         SetStage(Stage.Consequence);ui.objective.text="保護巨樹";ui.hint.text="";
+        // Prepare the hand meshes before the threat, keeping the gunshot frame smooth.
+        for(int i=1;i<workers.Length;i++)
+            workers[i].gameObject.AddComponent<Chapter2GriefReaction>().Prepare();
         // The villager steps between the officer and the tree before the threat.
         var start=workers[0].transform.position;
         var block=new Vector3(-1.7f,start.y,7.4f);
@@ -283,6 +286,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         rifle.Fire();
         if(threatAudio) effects.PlayOneShot(threatAudio,.45f);
         workers[0].BeginFall(officer.transform.position);
+        for(int i=1;i<workers.Length;i++)
+            workers[i].GetComponent<Chapter2GriefReaction>().Begin(workers[0],.16f+(i-1)*.18f);
         yield return new WaitForSeconds(2.8f);
         for(float t=0;t<1;t+=Time.deltaTime/1.5f){rifle.aim=1-Mathf.SmoothStep(0,1,t);yield return null;}
         rifle.aim=0;

@@ -623,10 +623,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5f0c23c369ced4280fb03468feb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  left: {fileID: 0}
-  top: {fileID: 0}
-  right: {fileID: 0}
-  bottom: {fileID: 0}
 --- !u!154 &82234954
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -931,10 +927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5f0c23c369ced4280fb03468feb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  left: {fileID: 0}
-  top: {fileID: 0}
-  right: {fileID: 0}
-  bottom: {fileID: 0}
 --- !u!1 &1243739569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,10 +1033,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5f0c23c369ced4280fb03468feb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  left: {fileID: 0}
-  top: {fileID: 0}
-  right: {fileID: 0}
-  bottom: {fileID: 0}
 --- !u!1 &1505510674
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,10 +1139,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5f0c23c369ced4280fb03468feb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  left: {fileID: 0}
-  top: {fileID: 0}
-  right: {fileID: 0}
-  bottom: {fileID: 0}
 --- !u!1 &1584230666
 GameObject:
   m_ObjectHideFlags: 0
@@ -1261,10 +1245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5f0c23c369ced4280fb03468feb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  left: {fileID: 0}
-  top: {fileID: 0}
-  right: {fileID: 0}
-  bottom: {fileID: 0}
 --- !u!1 &1846769710
 GameObject:
   m_ObjectHideFlags: 0

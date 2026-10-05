@@ -1,0 +1,4 @@
+族人 2 turn=1 fists=1 facingDot=1 position=(2.30, 0.02, 9.60)
+tripo_node_3a511942 bones=41 shapes=0
+族人 3 turn=1 fists=1 facingDot=1 position=(-2.90, -0.03, 10.70)
+tripo_node_ecb91fad bones=34 shapes=0
