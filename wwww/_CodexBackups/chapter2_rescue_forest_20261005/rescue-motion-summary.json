@@ -1,0 +1,18 @@
+{
+  "worker2": {
+    "displacement": 3.5756118357562245,
+    "maxSampledSpeed": 3.908644966511334,
+    "finalXZ": [
+      -1.05,
+      8.35
+    ]
+  },
+  "worker3": {
+    "displacement": 2.2141589825484522,
+    "maxSampledSpeed": 3.2659991498342684,
+    "finalXZ": [
+      -2.65,
+      8.5
+    ]
+  }
+}
