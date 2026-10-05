@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 // The same yellow, three-part arrow language as Chapter 1, scoped to Chapter 2.
 public sealed class Chapter2RouteGuide : MonoBehaviour
@@ -6,13 +7,17 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
     public Chapter2Controller chapter;
     public Material yellow;
     public bool EscortArrived { get; set; }
+    public bool GuidanceEnabled { get; set; } = true;
+    public float leftBoundary = -3.2f, rightBoundary = .65f;
+    public Text distanceLabel;
+    public float DistanceMetres { get; private set; }
     public int VisibleArrows { get; private set; }
     public bool RouteBlocked { get; private set; }
     Transform[] arrows;
     Transform marker;
     Material ownedMaterial;
     public Vector3 Target => EscortArrived ? chapter.treeApproach.position : chapter.workers[0].transform.position;
-    bool Following => chapter && chapter.CurrentStage==Chapter2Controller.Stage.Follow;
+    bool Following => chapter && GuidanceEnabled && chapter.CurrentStage==Chapter2Controller.Stage.Follow;
     void Start()
     {
         if(!yellow){ownedMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));ownedMaterial.color=new Color(1,.82f,.02f);yellow=ownedMaterial;}
@@ -33,6 +38,16 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
         bool show=Following || (chapter.CurrentStage==Chapter2Controller.Stage.Chopping&&!chapter.AtTree);
         Vector3 from=chapter.player.transform.position,to=Target;from.y=to.y=0;
         Vector3 direction=to-from;float distance=direction.magnitude;direction=direction.normalized;
+        DistanceMetres=distance;
+        if(distanceLabel)
+        {
+            distanceLabel.gameObject.SetActive(show);
+            distanceLabel.text=(EscortArrived?"前往巨木":"跟隨族人")+$"  {distance:0.0} 公尺";
+            Vector3 point=chapter.player.view.WorldToViewportPoint(to+Vector3.up*(EscortArrived?.9f:2.5f));
+            if(point.z<0)point.x=point.x<.5f?.9f:.1f;
+            var anchor=new Vector2(Mathf.Clamp(point.x,.15f,.85f),Mathf.Clamp(point.y,.34f,.77f));
+            distanceLabel.rectTransform.anchorMin=distanceLabel.rectTransform.anchorMax=anchor;
+        }
         VisibleArrows=show?Mathf.Clamp(Mathf.CeilToInt((distance-.8f)/1.7f),0,arrows.Length):0;
         for(int i=0;i<arrows.Length;i++)
         {
@@ -56,7 +71,7 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
         if(!Following)return proposed;
         // A walking corridor, not camera control: players can still turn and look around.
         float furthest=EscortArrived?chapter.treeApproach.position.z+.65f:chapter.workers[0].transform.position.z+1.1f;
-        var limited=proposed;limited.x=Mathf.Clamp(limited.x,-3.2f,3.2f);limited.z=Mathf.Clamp(limited.z,-18,furthest);
+        var limited=proposed;limited.x=Mathf.Clamp(limited.x,leftBoundary,rightBoundary);limited.z=Mathf.Clamp(limited.z,-18,furthest);
         RouteBlocked=(limited-proposed).sqrMagnitude>.000001f;
         if(RouteBlocked)chapter.ui.hint.text="請留在隊伍的小徑上，沿黃色箭頭跟上族人。";
         return limited;

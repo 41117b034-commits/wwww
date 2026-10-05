@@ -19,7 +19,7 @@ public static class Chapter2InteractionAuthoring
     }
     public static void Apply(Chapter2Controller c)
     {
-        c.interactionDistance=.7f;c.treeApproach.position=c.sacredTree.position+new Vector3(0,0,-2.7f);
+        c.interactionDistance=.5f;c.treeApproach.position=c.sacredTree.position+new Vector3(0,0,-3.4f);
         var stone=c.gameObject.scene.GetRootGameObjects().FirstOrDefault(g=>g.name=="Sacred ground marker");
         if(stone)stone.transform.position=new Vector3(-6.3f,stone.transform.position.y,7.8f);
         var trunk=c.sacredTree.Find("Ancient trunk");
@@ -36,6 +36,19 @@ public static class Chapter2InteractionAuthoring
         guide.chapter=c;guide.yellow=Material("Guidance yellow",new Color(1,.82f,.02f),0,.2f);
         guide.yellow.shader=Shader.Find("Universal Render Pipeline/Unlit");guide.yellow.color=new Color(1,.82f,.02f);
         c.routeGuide=guide;c.player.routeGuide=guide;
+        guide.leftBoundary=-3.2f;guide.rightBoundary=.65f;
+        if(!guide.distanceLabel)
+        {
+            var label=new GameObject("Follow distance in metres",typeof(RectTransform),typeof(UnityEngine.UI.Text),typeof(UnityEngine.UI.Outline));
+            label.transform.SetParent(c.ui.canvas.transform,false);
+            label.transform.SetSiblingIndex(c.ui.fade.transform.GetSiblingIndex());
+            var text=label.GetComponent<UnityEngine.UI.Text>();text.font=c.ui.font;text.fontSize=28;
+            text.color=new Color(1,.86f,.12f);text.alignment=TextAnchor.MiddleCenter;text.raycastTarget=false;
+            text.rectTransform.sizeDelta=new Vector2(340,48);text.rectTransform.anchoredPosition=Vector2.zero;
+            var outline=label.GetComponent<UnityEngine.UI.Outline>();outline.effectColor=new Color(.035f,.04f,.01f,1);outline.effectDistance=new Vector2(2,-2);
+            guide.distanceLabel=text;label.SetActive(false);
+        }
+        Chapter2RifleAuthoring.Apply(c.officer);
         if(c.axe)UnityEngine.Object.DestroyImmediate(c.axe);
         var axe=new GameObject("Player logging axe · wooden haft and forged edge");axe.transform.SetParent(c.player.view.transform,false);
         axe.transform.localPosition=new Vector3(.40f,-.56f,1.05f);axe.transform.localRotation=Quaternion.Euler(0,15,-20);

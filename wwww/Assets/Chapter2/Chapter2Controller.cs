@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
-public sealed class Chapter2Controller : MonoBehaviour
+public sealed partial class Chapter2Controller : MonoBehaviour
 {
     public enum Stage { Intro, Follow, TreeChoice, Chopping, Consequence, Meeting, Vote, Ending, Complete }
     [Header("Scene references")]
@@ -101,12 +101,12 @@ public sealed class Chapter2Controller : MonoBehaviour
         contact=default;
         Vector3 origin=player.view.transform.position;origin.y=sacredTree.position.y+1.15f;
         Vector3 inward=sacredTree.position+Vector3.up*1.15f-origin;
-        return trunkSurface&&trunkSurface.Raycast(new Ray(origin,inward.normalized),out contact,2.15f);
+        return trunkSurface&&trunkSurface.Raycast(new Ray(origin,inward.normalized),out contact,2.9f);
     }
     public void Choose(int choice)
     {
         if(choice<0 || choice>1 || !readyToChoose) return;
-        if(CurrentStage==Stage.TreeChoice && AtTree)
+        if(CurrentStage==Stage.TreeChoice && routeGuide.EscortArrived)
         { TreeDecision=choice;readyToChoose=false;ui.HideChoices(); }
         else if(CurrentStage==Stage.Vote)
         { MeetingDecision=choice;readyToChoose=false;ui.HideChoices(); }
@@ -135,11 +135,11 @@ public sealed class Chapter2Controller : MonoBehaviour
         yield return Intro();
         ui.videoImage.gameObject.SetActive(false); ui.fade.color=Color.black;
         player.Warp(new Vector3(0,.08f,-17),sacredTree.position);
-        player.canMove=true;player.canLook=true;
+        player.canMove=false;player.canLook=false;
         SetStage(Stage.Follow);ui.objective.text="跟隨族人，前往巨木";
         ui.hint.text="WASD 移動・按住滑鼠右鍵環顧  |  VR 左搖桿移動、右搖桿轉向";
         yield return Fade(0,1.2f);
-        ui.Line("族人", "前面就是西仔希克。這片森林，守護著我們的生活。");
+        yield return IntroduceForest();
         Vector3[] starts=new Vector3[workers.Length];
         for(int i=0;i<workers.Length;i++) starts[i]=workers[i].transform.position;
         float progress=0;
@@ -157,8 +157,13 @@ public sealed class Chapter2Controller : MonoBehaviour
         while(!AtTree)
         { ui.objective.text="沿黃色箭頭走到樹幹正前方";ui.hint.text="走到巨木前的黃色標記，才會進入伐木抉擇。";yield return null; }
         player.canMove=false;
+        routeGuide.GuidanceEnabled=false;
+        ui.hint.text="";ui.objective.text="聆聽警察與族人的對話";
+        yield return FrameSpeaker(officer);
         yield return Say(officer,"日本警察","不准拖曳木材！到巨木前，照命令砍伐！");
+        yield return FrameSpeaker(workers[0]);
         yield return Say(workers[0],"族人","這棵巨木是我們的守護者……真的要砍下去嗎？");
+        yield return FrameConfrontation();
         SetStage(Stage.TreeChoice);ui.objective.text="面對聖地的抉擇";
         ui.hint.text="按 1／右手主按鈕，或按 2／左手主按鈕";
         ui.Choices("你要如何回應伐木命令？","1  保護巨樹","2  砍伐巨樹");readyToChoose=true;
@@ -258,20 +263,34 @@ public sealed class Chapter2Controller : MonoBehaviour
     IEnumerator Protect()
     {
         SetStage(Stage.Consequence);ui.objective.text="保護巨樹";ui.hint.text="";
+        // The villager steps between the officer and the tree before the threat.
+        var start=workers[0].transform.position;
+        var block=new Vector3(-1.7f,start.y,7.4f);
+        for(float t=0;t<1;t+=Time.deltaTime/1.8f)
+        {workers[0].transform.position=Vector3.Lerp(start,block,t);yield return null;}
+        workers[0].transform.position=block;
+        yield return CameraShot(new Vector3(.5f,1.65f,2.9f),new Vector3(.5f,.85f,7.4f),.65f);
+        CameraBeat="shooting";
         workers[0].Face(officer.transform.position);officer.Face(workers[0].transform.position);
         yield return Say(workers[0],"族人","別碰它！這是我們的聖地。",4);
-        officer.Rig.pointTarget=workers[0].transform;officer.Rig.pointProgress=1;
+        var rifle=officer.GetComponent<Chapter2Rifle>();
+        rifle.target=workers[0];
+        for(float t=0;t<1;t+=Time.deltaTime/1.3f){rifle.aim=Mathf.SmoothStep(0,1,t);yield return null;}
+        rifle.aim=1;
         yield return Say(officer,"日本警察","退開！誰敢違抗命令？",4);
-        yield return Fade(1,.25f);
+        ui.Line("族人","這是祖靈守護的地方……我們不能退。 ");
+        yield return new WaitForSeconds(1.2f);
+        rifle.Fire();
         if(threatAudio) effects.PlayOneShot(threatAudio,.45f);
-        workers[0].fallen=true;
-        yield return new WaitForSeconds(.7f);
-        officer.Rig.pointProgress=0;
-        yield return Fade(0,1);
+        workers[0].BeginFall(officer.transform.position);
+        yield return new WaitForSeconds(2.8f);
+        for(float t=0;t<1;t+=Time.deltaTime/1.5f){rifle.aim=1-Mathf.SmoothStep(0,1,t);yield return null;}
+        rifle.aim=0;
         yield return Say(null,"族人","槍聲過後，一名阻擋警察的族人倒下。巨木保住了，悲憤卻留在每個人心中。",7);
     }
     IEnumerator Fell()
     {
+        yield return RestoreChoppingView();
         SetStage(Stage.Chopping);canChop=true;player.canMove=true;axe.SetActive(true);chopStarted=Time.time;
         if(TryGetChopContact(out RaycastHit focus))player.FocusOn(focus.point);
         ui.Line("伐木","握穩木柄斧。等游標進入綠色區域，再朝樹幹落斧。");
@@ -283,19 +302,24 @@ public sealed class Chapter2Controller : MonoBehaviour
             if(Integrity<=0)
             {
                 canChop=false;player.canMove=false;ui.meterPanel.SetActive(false);
+                axe.SetActive(false);yield return FrameSpeaker(officer);
                 yield return Say(officer,"日本警察","木材不能再受損！放慢動作，重新找準落點。",4);
+                yield return RestoreChoppingView();axe.SetActive(true);
                 Integrity=100;ValidCuts=0;chopStarted=Time.time;canChop=true;player.canMove=true;ui.meterPanel.SetActive(true);
             }
             yield return null;
         }
         SetStage(Stage.Consequence);canChop=false;player.canMove=false;ui.meterPanel.SetActive(false);ui.hint.text="";
         axe.SetActive(false);ui.objective.text="巨木倒下";
+        yield return FrameSpeaker(workers[0]);
         yield return Say(workers[0],"族人","退後……它要倒下了。",3);
+        yield return CameraShot(new Vector3(1,2.2f,2),sacredTree.position+Vector3.up*4,.8f);
         foreach(var c in sacredTree.GetComponentsInChildren<Collider>()) c.enabled=false;
         Quaternion start=sacredTree.rotation;
         for(float t=0;t<1;t+=Time.deltaTime/4)
         { sacredTree.rotation=Quaternion.AngleAxis(82*t*t,Vector3.right)*start;yield return null; }
         fallenStump.SetActive(true);
+        yield return FrameSpeaker(workers[0]);
         yield return Say(workers[0],"族人","命令完成了。可是，我們該怎麼面對祖靈？",5);
     }
     IEnumerator SwingAxe(Chapter2Axe tool,RaycastHit contact,bool accurate)
@@ -310,7 +334,7 @@ public sealed class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Say(Chapter2Actor actor,string name,string words,float seconds=0)
     {
-        ui.Line(name,words);if(actor) {actor.speaking=true;if(actor.Rig) actor.Rig.conversationTarget=player.transform;}
+        ui.Line(name,words);if(actor) {actor.speaking=true;if(actor.Rig) actor.Rig.conversationTarget=player.view.transform;}
         yield return new WaitForSeconds(seconds>0?seconds:lineSeconds);
         if(actor) actor.speaking=false;
     }

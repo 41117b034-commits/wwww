@@ -9,6 +9,14 @@ public sealed class Chapter2Actor : MonoBehaviour
     public bool speaking;
     public Vector3 facing = Vector3.back;
     public Chapter1IncidentRig Rig { get; private set; }
+    public float FallProgress { get; private set; }
+    public float FallenLowestPoint { get; private set; }
+    float fallStarted;
+    Vector3 fallDirection;
+    SkinnedMeshRenderer[] skins;
+    Mesh fallMesh;
+    readonly System.Collections.Generic.List<Vector3> fallVertices=new System.Collections.Generic.List<Vector3>();
+    float finalLift=-1;
     Vector3 previous;
     Transform leftThigh,rightThigh,leftKnee,rightKnee,leftFoot,rightFoot;
     void Start()
@@ -25,14 +33,15 @@ public sealed class Chapter2Actor : MonoBehaviour
         leftFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftFoot,"L_Foot","LeftFoot");
         rightFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightFoot,"R_Foot","RightFoot");
         previous = transform.position;
+        skins=GetComponentsInChildren<SkinnedMeshRenderer>();
     }
     void Update()
     {
         if (!Rig) return;
         Vector3 delta = Vector3.ProjectOnPlane(transform.position-previous,Vector3.up);
-        Rig.walking = delta.magnitude > 0.0005f;
+        Rig.walking = !fallen && delta.magnitude > 0.0005f;
         if (Rig.walking) Rig.Face(delta);
-        Rig.speakingWeight = speaking ? 0.65f : 0;
+        Rig.speakingWeight = speaking && !fallen ? 0.65f : 0;
         if (!fallen) Rig.Ground(0);
         previous = transform.position;
     }
@@ -46,8 +55,43 @@ public sealed class Chapter2Actor : MonoBehaviour
             Chapter1IncidentRig.Solve(leftThigh,leftKnee,leftFoot,l,Rig.Forward);
             Chapter1IncidentRig.Solve(rightThigh,rightKnee,rightFoot,r,Rig.Forward);
         }
-        if (fallen) { Rig.Hips.position+=Vector3.down*.7f;Rig.Hips.rotation = Quaternion.AngleAxis(80, transform.forward) * Rig.Hips.rotation; }
+        if (fallen) PoseFall();
         if (speaking && Rig.Head) Rig.Head.rotation = Quaternion.AngleAxis(Mathf.Sin(Time.time*2.1f)*3, transform.right)*Rig.Head.rotation;
     }
     public void Face(Vector3 point) { facing = point-transform.position; if(Rig) Rig.Face(facing); }
+    public void BeginFall(Vector3 source)
+    {
+        if(fallen)return;
+        fallDirection=Vector3.ProjectOnPlane(transform.position-source,Vector3.up).normalized;
+        fallen=true;speaking=false;fallStarted=Time.time;
+        Rig.pointTarget=null;Rig.conversationTarget=null;
+        fallMesh=new Mesh();
+    }
+    void PoseFall()
+    {
+        FallProgress=Mathf.Clamp01((Time.time-fallStarted)/1.9f);
+        float drop=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,1,FallProgress));
+        Vector3 axis=Vector3.Cross(Vector3.up,fallDirection);
+        float flinch=Mathf.Sin(Mathf.Clamp01(FallProgress/.24f)*Mathf.PI)*10;
+        Rig.Hips.position+=fallDirection*(.48f*drop)+Vector3.down*(.72f*drop);
+        Rig.Hips.rotation=Quaternion.AngleAxis(88*drop+flinch,axis)*Rig.Hips.rotation;
+        // Bend knees during the collapse, then keep the whole skin above the floor.
+        float bend=Mathf.Sin(drop*Mathf.PI);
+        if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(-8*drop-20*bend,axis)*leftKnee.rotation;
+        if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(-16*drop-25*bend,axis)*rightKnee.rotation;
+        if(FallProgress>=1&&finalLift>=0){Rig.Hips.position+=Vector3.up*finalLift;return;}
+        if(!fallMesh)fallMesh=new Mesh();
+        float low=float.PositiveInfinity;
+        foreach(var skin in skins)
+        {
+            skin.BakeMesh(fallMesh);
+            fallMesh.GetVertices(fallVertices);
+            foreach(var vertex in fallVertices)low=Mathf.Min(low,skin.transform.TransformPoint(vertex).y);
+        }
+        float lift=Mathf.Max(0,.025f-low);
+        Rig.Hips.position+=Vector3.up*lift;
+        FallenLowestPoint=low+lift;
+        if(FallProgress>=1)finalLift=lift;
+    }
+    void OnDestroy(){if(fallMesh)Destroy(fallMesh);}
 }

@@ -1,8 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-04。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-05。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-04 第二章已追加黃色跟隨箭頭／路徑範圍、樹幹前互動位置、木柄伐木斧與實際接觸效果，並修正巨木樹皮不顯示，詳見文末本輪紀錄。先前已依《賽德克事件劇情脈絡.pdf》第 3–5 頁建立第二章可玩初版：48 秒開場影片、晨間巨木聖地、保護／砍伐與完整度玩法、夜間六社會議、支持／拒絕結局。第二章場景為 `Assets/Scenes/第二章.unity`，操作與素材來源見 `Documentation/Chapter2.md`，本次實際驗證與限制見文末「第二章：新規定與秘密會議」。第一章本次未修改；其先前的兩分支黑幕退出驗證另見「踢酒、酒桶與黑幕退出接續收尾」。
+最新狀態：2026-10-05 已接續「規劃第二章場景與玩法」中斷工作，完成六項回饋：縮窄右側範圍、族人面向玩家介紹後轉身帶路、公尺標示、說話者全身鏡頭、砍伐後退 0.7 公尺、保護巨樹時可見的舉槍／開槍／族人倒地。修正後步槍配置已儲存到第二章場景；本輪保護＋拒絕、砍伐＋支持（含完整度歸零重試）均重新跑完並自行退出 Play Mode，詳見文末 2026-10-05 接續收尾。既有 48 秒開場、晨間森林、伐木完整度與夜間六社會議保留。場景為 `Assets/Scenes/第二章.unity`，操作及來源見 `Documentation/Chapter2.md`。第一章場景和共用 `Chapter1IncidentRig.cs` 雜湊與本輪開始前相同。未測實體 VR；播放仍有既有警告，不能宣稱全專案零警告。
 
 ## 專案位置
 
@@ -351,3 +351,40 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 臨時驗證程式及 meta 已移到本輪備份的 `verification-tools/`，正式遊戲不再輪詢命令或輸出驗證截圖。清理前場景檢查為 `dirty=false`、`playing=false`，階層沒有 Missing Script。
 - 最後正式資產掃描包含 Assets／Documentation／Packages／ProjectSettings 共 3,077 檔，無檔案達 100,000,000 bytes；最大仍為 87,096,360 bytes。來源雜湊與 `asset-size-audit.json` 保存在本輪備份。
 - 清理後 Unity Editor 程式集於 23:35:03 完成重新編譯，Console 畫面為 0 Error／0 Warning／0 Log，Play 未啟動；這是最後編譯狀態，不能抹除播放／影片匯入期間已有的警告。
+
+## 2026-10-05 第二章六項畫面回饋：接續中斷工作並收尾
+
+### 範圍與正式修改
+
+- 接續對話「規劃第二章場景與玩法」（`01a1063c-2ddd-78c1-933c-6501273751bd`）最後六張截圖的要求。重新讀取 AGENTS、此交接檔及劇情參考第 3–5 頁；沿用原專案與既有第二章修改。
+- 右側跟隨界線收至 x=0.65，左側仍為 -3.2；保留不超前及落後等待。黃色菱形與地面箭頭旁增加即時公尺文字，抵達後改顯示前往巨木的距離。
+- 引路族人先面向玩家、站定介紹，約 1.2 秒轉身指向巨木，邀請跟隨後才開始行走。介紹時暫停移動，結束後交還操作。
+- 警察與族人說話時各有容納全身的鏡頭，再回到對峙構圖；新增 `Chapter2Controller.Performance.cs` 管理這些鏡頭及伐木視角還原。
+- 巨木操作點從 (0,0,9.3) 後移到 (0,0,8.6)，拉遠 0.7 公尺；操作半徑為 0.5。玩家本體與攝影機一起還原到操作點，斧頭仍以 MeshCollider 實際接觸點揮砍。
+- 保護分支中，族人走到警察前面阻擋，鏡頭保持兩人同框；警察舉槍、瞄準、開槍，短暫槍口閃光／槍聲／後座後族人後仰倒地，之後才淡黑轉夜間。`Chapter2Rifle.cs` 管理持槍及開槍，`Chapter2Actor.cs` 加入約 1.9 秒倒地與蒙皮最低點接地校正。
+- 上次 v1 已跑過流程，但步槍前後方向仍有問題；這次在 Unity 套用並儲存 `Chapter2RifleAuthoring` 的 modelVersion=2，再用最終場景重測。舊 v1 畫面不作最終握槍驗收依據。
+- 正式第二章場景為 `Assets/Scenes/第二章.unity`，仍有 `saveResult=1`、`stopEditorAfterEnding=1`。第一章場景與共用 `Chapter1IncidentRig.cs` 雜湊均與本輪開始前的 `chapter1-before.json` 相同。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode。臨時 driver 呼叫正式移動、UI 選項與砍伐入口，白天為 2 倍速、會議為 3 倍速；本輪略過片頭。不是全程人工鍵盤驗收、不是實體 VR 測試，也未重新播放驗證 48 秒 MP4。
+- `protect-refuse-resume-v2` 與 `fell-support-retry-resume-v2` 均 `completed=true`、`errors=[]`，各自有黑幕截圖和 `returned-to-edit.json` 的 `playing=false`。成功測試由正式章節結尾自行退出，driver 未代停。
+- 兩輪均檢查介紹時面向玩家且站定、左／右／前方界線、右界線仍看得到引路者、公尺文字及警察／族人全身入鏡，結果皆通過。另實際查看引擎截圖核對介紹、轉身、跟隨與兩段全身對話。
+- 保護輪：警察與受擊族人均在鏡頭內，1 次開槍、倒地完成；槍口方向誤差約 0.205 度，左右握點距離約 0.048／0.032 公尺，倒地皮膚最低點 y 約 0.025。這些是程序量測；另逐張核對瞄準、開槍、倒下中途和躺地畫面，不宣稱為精細手指動畫。
+- 砍伐輪：遠距、背對與揮砍中重複輸入均被拒絕；5 次失誤使完整度歸零，重試後完成 5 次有效砍伐，共 10 次接觸。操作點到樹幹接觸距離約 1.735 公尺，斧刃最大接觸誤差約 0.000000359 公尺。查看抬斧、接觸、收回畫面，確認拉遠後仍有木屑與斧痕。
+- 本輪沒有重跑其餘兩種會議組合；沿用先前分支設計，不能把前一輪四組證據列為這次全組回歸。測試暫停 PlayerPrefs 寫入，正式場景設定保持啟用。
+- 播放仍有既有 Missing Script 警告及 URP 點光陰影圖縮小訊息。場景逐物件檢查沒有 Missing Script，`scene-inspection.txt` 為 `dirty=False playing=False`；警告來源仍未定位，不能宣稱全專案零警告。
+- 本輪啟動額外 Unity 程序出現應用程式錯誤；已關閉失敗訊息，恢復並確認既有編輯器可正常執行完整兩輪。此啟動問題與章節 runtime 的 `errors=[]` 分開記錄。
+- 證據存於 `_CodexBackups/chapter2_performance_20261005/`。更新預覽：`Documentation/Chapter2-follow-preview.png`、`Chapter2-axe-preview.png`；新增 `Chapter2-introduction-preview.png`、`Chapter2-shooting-preview.png`、`Chapter2-fall-preview.png`。均為 Unity 引擎輸出。
+
+### 後續限制
+
+- 這六項回饋已完成場景套用與本輪桌面流程／畫面驗證。既有美術、程序人物動作與替代音效仍沿用初版；未新增正式配音或搬木影片表演。
+- 尚未使用實體 VR 頭戴裝置與手把；未做獨立建置／Android 實機測試。XR 鏡頭採淡黑移動原點、保留頭部追蹤，舒適度仍需實機確認。
+- 第三章結果讀取、正式 PlayerPrefs 整合，以及既有 Missing Script 警告仍不在此次六項修改範圍。未 commit／push。
+
+### 清理及大小稽核
+
+- 已將 `Assets/Editor/Chapter2WorkProbe.cs`、`Chapter2Verification.cs` 及其 meta 移入本輪備份的 `verification-tools/`，正式 Assets 不再包含命令輪詢或驗證 driver。來源雜湊保存於 `verified-source-hashes.json`。
+- 本次正式資產大小掃描含 Assets／Documentation／Packages／ProjectSettings，共 3,128 檔；沒有單檔達 100,000,000 bytes，最大為 87,096,360 bytes。詳見 `asset-size-audit.json`；生成目錄與歷史診斷備份不列入發佈資產統計。
+- 清理後於 2026-10-05 09:18 完成 Editor 程式集重新編譯；實際查看編輯器 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景標題沒有未儲存標記。此為最後編譯狀態，不抹除前述播放期間的警告。
