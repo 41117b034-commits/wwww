@@ -1,0 +1,47 @@
+{
+  "files": 3226,
+  "limitBytes": 100000000,
+  "oversized": [],
+  "largest": [
+    [
+      87096360,
+      "Assets\\物品\\石盤\\source\\Stone Plate (W318)\\Stone Plate (W318)_1.jpg"
+    ],
+    [
+      81700300,
+      "Assets\\Models\\Chapter1Doorway\\IncidentHutOpening.asset"
+    ],
+    [
+      72809056,
+      "Assets\\人\\部落女\\部落女性2\\部落女姓2.fbx"
+    ],
+    [
+      67138583,
+      "Assets\\物品\\籃子\\textures\\Wicker_basket_02_basecolor2.png"
+    ],
+    [
+      67138583,
+      "Assets\\物品\\籃子\\textures\\Wicker_basket_01_basecolor2.png"
+    ],
+    [
+      66026860,
+      "Assets\\人\\畢專 賽德克青年\\原住民青年5\\tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx"
+    ],
+    [
+      64550588,
+      "Assets\\人\\畢專 賽德克青年\\長老\\tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx"
+    ],
+    [
+      64519164,
+      "Assets\\人\\部落女\\部落女性1\\部落女性1.fbx"
+    ],
+    [
+      64381516,
+      "Assets\\人\\畢專 賽德克青年\\原住民青年2\\tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx"
+    ],
+    [
+      63713964,
+      "Assets\\人\\畢專 賽德克青年\\ancient+robe+character+3d+model\\tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx"
+    ]
+  ]
+}

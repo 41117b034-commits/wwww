@@ -287,8 +287,11 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if(threatAudio) effects.PlayOneShot(threatAudio,.45f);
         workers[0].BeginFall(officer.transform.position);
         for(int i=1;i<workers.Length;i++)
-            workers[i].GetComponent<Chapter2GriefReaction>().Begin(workers[0],.16f+(i-1)*.18f);
-        yield return new WaitForSeconds(2.8f);
+        {
+            Vector3 beside=workers[0].transform.position+new Vector3(i==1?.65f:-.95f,0,i==1?.95f:1.1f);
+            workers[i].GetComponent<Chapter2GriefReaction>().Begin(workers[0],.12f+(i-1)*.2f,beside);
+        }
+        yield return new WaitForSeconds(3.8f);
         for(float t=0;t<1;t+=Time.deltaTime/1.5f){rifle.aim=1-Mathf.SmoothStep(0,1,t);yield return null;}
         rifle.aim=0;
         yield return Say(null,"族人","槍聲過後，一名阻擋警察的族人倒下。巨木保住了，悲憤卻留在每個人心中。",7);

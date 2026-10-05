@@ -1,0 +1,50 @@
+[
+  {
+    "sha256": "8C4090BF8EE0F9CD6876F68120A9073D6878CD976A24C09738DC7932F475F18E",
+    "page": "https://polyhaven.com/a/forest_floor",
+    "license": "CC0-1.0",
+    "file": "forest_floor_diff_4k.jpg",
+    "bytes": 22010589,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/forest_floor/forest_floor_diff_4k.jpg"
+  },
+  {
+    "sha256": "EABC57EFD42EE4D7D5746489AD92D8151A229605CE622148E44033E1EF4A34E5",
+    "page": "https://polyhaven.com/a/forest_floor",
+    "license": "CC0-1.0",
+    "file": "forest_floor_nor_gl_4k.jpg",
+    "bytes": 18436512,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/forest_floor/forest_floor_nor_gl_4k.jpg"
+  },
+  {
+    "sha256": "B74B5F6D512E89AAC448C14E12D3EE4866A79B72D0A435E4BF90C3C34F10DA9D",
+    "page": "https://polyhaven.com/a/forest_floor",
+    "license": "CC0-1.0",
+    "file": "forest_floor_ao_4k.jpg",
+    "bytes": 10408416,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/forest_floor/forest_floor_ao_4k.jpg"
+  },
+  {
+    "sha256": "741F333AB9F8A0996D8A53905B5AC792FAB77D7CCB8CAC5FBAED8C99B9F6ABD5",
+    "page": "https://polyhaven.com/a/pine_bark",
+    "license": "CC0-1.0",
+    "file": "pine_bark_diff_2k.jpg",
+    "bytes": 3167561,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_diff_2k.jpg"
+  },
+  {
+    "sha256": "E91D024441A698523472EF2001BE2EADE2F73005D798466C7ACD3EC5D585667F",
+    "page": "https://polyhaven.com/a/pine_bark",
+    "license": "CC0-1.0",
+    "file": "pine_bark_nor_gl_2k.jpg",
+    "bytes": 4637035,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_nor_gl_2k.jpg"
+  },
+  {
+    "sha256": "C76F03E24DE9F5BB826676B0C34BFA49E5D1CA240166A2811D2D3874D47D21BD",
+    "page": "https://polyhaven.com/a/pine_bark",
+    "license": "CC0-1.0",
+    "file": "pine_bark_ao_2k.jpg",
+    "bytes": 2874296,
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/pine_bark/pine_bark_ao_2k.jpg"
+  }
+]

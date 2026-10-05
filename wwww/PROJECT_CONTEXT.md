@@ -2,7 +2,7 @@
 
 更新日期：2026-10-05。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-05 第二章「保護巨樹」新增槍聲後兩位族人的悲憤反應：錯開轉身看倒地同伴、握緊雙拳、前傾又忍住及低頭持續到淡黑。正式保護＋拒絕分支已以最終握拳資產重跑，近景與全景皆檢查；砍伐＋支持也已跑完並自行退出，清理結果見文末本輪紀錄。既有六項畫面回饋、48 秒開場、森林、伐木完整度及夜間會議保留。場景仍為 `Assets/Scenes/第二章.unity`；第一章／第二章場景、共用動作骨架及原角色 FBX 匯入設定核對未變。本輪未做實體 VR 或獨立建置驗證。
+最新狀態：2026-10-05 第二章「保護巨樹」槍聲後，兩位族人已改為受驚、慌張奔向中槍同伴，抵達後俯身伸手查看；取代上輪原地微微前傾的反應。白天跟隨森林新增 4K 地面、2K 樹皮、法線／遮蔽細節、路旁小植被與白天畫質設定，Game View 設為 Full HD。原場景 `Assets/Scenes/第二章.unity` 已儲存；保護＋拒絕、砍伐＋支持皆完成本輪桌面流程與引擎畫面檢查，正式結尾自行退出 Play Mode。第一章場景、共用骨架和全域 QualitySettings 雜湊未變。最後清理、既有警告及未測實體 VR／獨立建置的限制見文末最新紀錄。
 
 ## 專案位置
 
@@ -415,3 +415,34 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 12:46:51 完成清理後 Editor 程式集編譯；12:47 實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景沒有未儲存標記。此編譯狀態不抹除前述資產製作與播放中的警告／診斷錯誤。
 - 編輯器序列化模式的執行中值確認為 ForceText，磁碟 `ProjectSettings/EditorSettings.asset` 已恢復文字格式及 `m_SerializationMode: 2`。兩份握拳 mesh 仍保留單檔二進位壓縮格式。
 - 最後掃描 Assets／Documentation／Packages／ProjectSettings 共 3,185 個檔案，沒有檔案達 100,000,000 bytes；最大 87,096,360 bytes。`asset-size-audit.json`、`verified-source-hashes.json`、`unchanged-originals.json` 保存大小與本輪來源核對。未將生成目錄或歷史備份計入發佈資產。
+
+
+## 2026-10-05 第二章族人奔向倒地同伴與白天森林畫質提升
+
+### 本次正式修改
+
+- 依使用者本次要求，將上一輪微微前傾改成明顯的慌張奔跑；先讀取本交接檔、AGENTS 與固定劇情參考第 3–5 頁，直接修改原專案。
+- `Chapter2GriefReaction.cs`：兩人槍響後錯開受驚，沿不同弧線跑向倒地同伴；增加明顯抬腿、擺臂、身體前傾與上下起伏，抵達後減速、俯身、伸手與低頭查看。保留第二章專用手部資產；奔跑時握拳、抵達時放鬆。沒有修改共用 `Chapter1IncidentRig.cs`。
+- `Chapter2Controller.Protect()` 在真正開槍及開始倒地後啟動兩人的演出，落點分開放在傷者旁，保留玩家看見倒地者的空間；轉夜間前的等待延長一秒。
+- `Chapter2ForestDetailAuthoring.cs` 的 Tools / Chapter 2 / Improve Morning Forest Detail 已套用並儲存第二章場景。地面沿用原森林落葉圖樣，升級為 4096×4096 的 diffuse／normal／AO；主要樹皮改為 2048×2048 pine bark 的三張貼圖。樹葉與胡桃木紋使用第二章專用副本，改善匯入品質及可用的法線貼圖，啟用 Trilinear／16 倍異向性過濾；沒有改動原始素材。
+- 地面及巨木網格補上切線以正確呈現法線。道路兩側新增 100 株小型既有植物、無碰撞體，隨白天群組隱藏；保持原樹木、石頭、人物與路線布局。第二章共用樹材質也會顯示於夜間，夜間燈光與流程保留。
+- `Chapter2ForestDetail.cs` 在白天啟用專用地面與暫時 URP 副本：桌面主光陰影 4096、4 層 cascade、渲染比例至少 1、High SMAA；切夜間／退出時還原地面、攝影機設定及原管線。XR 分支使用較低陰影解析度並保留其抗鋸齒設定，但尚未實機驗證。
+- Unity Game View 從會放大低解析度的 Aspect 預覽改為 Full HD (1920×1080)，採符合視窗大小的縮放。新增高解析素材來源為 Poly Haven CC0：[forest_floor](https://polyhaven.com/a/forest_floor)、[pine_bark](https://polyhaven.com/a/pine_bark)；來源、大小與校驗值保存在 `Assets/Chapter2/Environment/PolyHaven/detail-sources.json`。
+- 最新預覽為 `Documentation/Chapter2-follow-preview.png`、`Chapter2-rescue-running-preview.png`、`Chapter2-rescue-preview.png`。既有 grief 預覽屬上一輪原地反應，不代表最新動作。片頭影片未重錄。
+
+### 本輪實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode；臨時 driver 經正式移動、UI 選項與砍伐入口執行。略過片頭，跟隨 2 倍、槍聲後 1 倍、會議 3 倍速度；另人工檢視引擎截圖及 Unity 畫面，不宣稱全程人工鍵盤或實體 VR 驗收。
+- 最終 `protect-refuse-rescue-v2`：`completed=true`、`errors=[]`、`rescueArrived=true`，1 次槍響、倒地完成、2 名反應者。兩人位移約 3.58／2.21 公尺，取樣最高速度約 3.91／3.27 公尺每秒；最小間距約 1.61 公尺，最後面向傷者。查看奔跑中與抵達後畫面，未見兩人互相穿身，傷者保持可見。資料量測與畫面檢查分開記錄。
+- 白天 runtime 確認 `renderScale=1`、主光陰影 4096、SMAA、postProcessing=True、地面貼圖 4096、地面切線 14641、路旁植物 100。v1 為畫質套用前動作診斷，最終畫質與流程以 v2 為準。
+- `fell-support-rescue-regression`：`completed=true`、`errors=[]`，5 次有效砍伐與 5 次接觸；遠距、背向與揮砍中重複輸入均被拒絕。此分支沒有開槍或啟動傷者反應。斧刃最大接觸誤差約 0.000000359 公尺，另查看接觸畫面。
+- 兩輪都通過介紹時面向玩家／站定、跟隨界線、引路者可見及全身對話構圖檢查；`nightPipelineRestored=true`。均抵達各自夜間結尾、黑幕後由正式流程自行退出，`returned-to-edit.json` 均 `playing=false`、`completed=true`，driver 未代停。
+- 測試暫停 PlayerPrefs 寫入；正式場景仍為 `saveResult=1`、`stopEditorAfterEnding=1`、`interactionDistance=0.5`、`rightBoundary=0.65`。未重做完整度歸零重試、另外兩個會議组合、完整 MP4 播放、独立建置或實體 VR／效能測試。
+- 播放期間仍見既有 Missing Script 警告及 URP 點光陰影圖縮小訊息；沒有將 `errors=[]` 解讀成全專案零警告。新增高解析貼圖與陰影會增加渲染負擔，VR 實機的幀率仍待確認。
+
+### 最後清理與保存
+
+- 證據及原始備份：`_CodexBackups/chapter2_rescue_forest_20261005/`。臨時 `Chapter2WorkProbe.cs`、`Chapter2Verification.cs` 和 meta 均已移到其 `verification-tools/`，正式 Assets 不保留命令輪詢或測試 driver。
+- 清理前編輯器檢查為 `playing=False dirty=False pipeline=PC_PipelineAsset`。清理後已完成重新編譯，20:35 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景無未儲存標記；此最終狀態不抹除播放期間的既有警告。
+- 第一章場景、共用 `Chapter1IncidentRig.cs` 與 `ProjectSettings/QualitySettings.asset` SHA-256 均與本輪開始前一致，見 `unchanged-originals.json`；修改來源校驗值存於 `verified-source-hashes.json`。
+- 正式檔案掃描含 Assets／Documentation／Packages／ProjectSettings 共 3,226 檔，無檔案達 100,000,000 bytes；最大 87,096,360 bytes。`asset-size-audit.json` 保留結果，生成目錄及歷史備份不計入發佈資產。未 commit／push。
