@@ -160,7 +160,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         routeGuide.GuidanceEnabled=false;
         ui.hint.text="";ui.objective.text="聆聽警察與族人的對話";
         yield return FrameSpeaker(officer);
-        yield return Say(officer,"日本警察","不准拖曳木材！到巨木前，照命令砍伐！");
+        yield return Say(officer,"日本警察","把這些樹都砍了。");
         yield return FrameSpeaker(workers[0]);
         yield return Say(workers[0],"族人","這棵巨木是我們的守護者……真的要砍下去嗎？");
         yield return FrameConfrontation();
@@ -266,16 +266,22 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         // Prepare the hand meshes before the threat, keeping the gunshot frame smooth.
         for(int i=1;i<workers.Length;i++)
             workers[i].gameObject.AddComponent<Chapter2GriefReaction>().Prepare();
-        // The villager steps between the officer and the tree before the threat.
+        // Speak while approaching, then hold a close confrontation at the rifle's reach.
         var start=workers[0].transform.position;
-        var block=new Vector3(-1.7f,start.y,7.4f);
-        for(float t=0;t<1;t+=Time.deltaTime/1.8f)
-        {workers[0].transform.position=Vector3.Lerp(start,block,t);yield return null;}
+        var block=officer.transform.position+new Vector3(-1.7f,0,.15f);block.y=start.y;
+        yield return CameraShot(new Vector3(1.1f,1.65f,2.5f),new Vector3(1.1f,.85f,7.4f),.65f);
+        CameraBeat="blocking";
+        ui.Line("族人","別碰它！這是我們的聖地。");
+        workers[0].speaking=true;workers[0].Rig.conversationTarget=officer.Rig.Head;
+        for(float t=0;t<1;t+=Time.deltaTime/2.1f)
+        {
+            workers[0].transform.position=Vector3.Lerp(start,block,Mathf.SmoothStep(0,1,t));
+            officer.Face(workers[0].transform.position);yield return null;
+        }
         workers[0].transform.position=block;
-        yield return CameraShot(new Vector3(.5f,1.65f,2.9f),new Vector3(.5f,.85f,7.4f),.65f);
         CameraBeat="shooting";
         workers[0].Face(officer.transform.position);officer.Face(workers[0].transform.position);
-        yield return Say(workers[0],"族人","別碰它！這是我們的聖地。",4);
+        yield return new WaitForSeconds(2.2f);workers[0].speaking=false;workers[0].Rig.conversationTarget=null;
         var rifle=officer.GetComponent<Chapter2Rifle>();
         rifle.target=workers[0];
         for(float t=0;t<1;t+=Time.deltaTime/1.3f){rifle.aim=Mathf.SmoothStep(0,1,t);yield return null;}
@@ -291,10 +297,12 @@ public sealed partial class Chapter2Controller : MonoBehaviour
             Vector3 beside=workers[0].transform.position+new Vector3(i==1?.65f:-.95f,0,i==1?.95f:1.1f);
             workers[i].GetComponent<Chapter2GriefReaction>().Begin(workers[0],.12f+(i-1)*.2f,beside);
         }
-        yield return new WaitForSeconds(3.8f);
+        yield return new WaitForSeconds(.35f);
+        ui.Line("族人","槍聲過後，一名阻擋警察的族人倒下。巨木保住了，悲憤卻留在每個人心中。");
+        yield return new WaitForSeconds(3.45f);
         for(float t=0;t<1;t+=Time.deltaTime/1.5f){rifle.aim=1-Mathf.SmoothStep(0,1,t);yield return null;}
         rifle.aim=0;
-        yield return Say(null,"族人","槍聲過後，一名阻擋警察的族人倒下。巨木保住了，悲憤卻留在每個人心中。",7);
+        yield return new WaitForSeconds(2.5f);
     }
     IEnumerator Fell()
     {
@@ -319,14 +327,17 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         }
         SetStage(Stage.Consequence);canChop=false;player.canMove=false;ui.meterPanel.SetActive(false);ui.hint.text="";
         axe.SetActive(false);ui.objective.text="巨木倒下";
-        yield return FrameSpeaker(workers[0]);
-        yield return Say(workers[0],"族人","退後……它要倒下了。",3);
-        yield return CameraShot(new Vector3(1,2.2f,2),sacredTree.position+Vector3.up*4,.8f);
+        yield return FallingTreeWarning();
         foreach(var c in sacredTree.GetComponentsInChildren<Collider>()) c.enabled=false;
         Quaternion start=sacredTree.rotation;
+        Vector3 axis=Vector3.Cross(Vector3.up,TreeFallDirection).normalized;
         for(float t=0;t<1;t+=Time.deltaTime/4)
-        { sacredTree.rotation=Quaternion.AngleAxis(82*t*t,Vector3.right)*start;yield return null; }
+        { TreeFallProgress=t;sacredTree.rotation=Quaternion.AngleAxis(82*t*t,axis)*start;yield return null; }
+        sacredTree.rotation=Quaternion.AngleAxis(82,axis)*start;TreeFallProgress=1;
         fallenStump.SetActive(true);
+        yield return new WaitForSeconds(.6f);
+        foreach(var worker in workers)worker.GetComponent<Chapter2StartleReaction>().Release();
+        yield return new WaitForSeconds(.65f);
         yield return FrameSpeaker(workers[0]);
         yield return Say(workers[0],"族人","命令完成了。可是，我們該怎麼面對祖靈？",5);
     }
@@ -355,6 +366,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     public void SetNight()
     {
+        // The forward-fallen tree overlaps the separate night meeting set.
+        // Remove it under the transition's black screen before revealing the council.
+        if(TreeDecision==1){sacredTree.gameObject.SetActive(false);fallenStump.SetActive(false);}
         dayGroup.SetActive(false);nightGroup.SetActive(true);sun.color=new Color(.38f,.5f,.78f);sun.intensity=.25f;sun.transform.rotation=Quaternion.Euler(35,-40,0);
         RenderSettings.ambientLight=new Color(.12f,.17f,.24f);RenderSettings.ambientIntensity=.45f;RenderSettings.fogColor=new Color(.025f,.04f,.065f);RenderSettings.fogDensity=.018f;
         player.view.backgroundColor=RenderSettings.fogColor;fireLight.gameObject.SetActive(true);

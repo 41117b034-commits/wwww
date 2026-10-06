@@ -1,0 +1,106 @@
+2026-10-06T21:43:28 Log Clearing [STKAITI SDF] dynamic font asset data.
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:10:39 Log [Chapter2] Stage=Intro
+2026-10-06T22:10:43 Log [Chapter2] Stage=Follow
+2026-10-06T22:11:05 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:11:06 Log [Chapter2] Stage=Consequence
+2026-10-06T22:11:27 Log [Chapter2] Stage=Meeting
+2026-10-06T22:11:28 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:11:40 Log [Chapter2] Stage=Vote
+2026-10-06T22:11:41 Log [Chapter2] Stage=Ending
+2026-10-06T22:11:55 Log [Chapter2] Stage=Complete
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:12:42 Log [Chapter2] Stage=Intro
+2026-10-06T22:12:45 Log [Chapter2] Stage=Follow
+2026-10-06T22:13:07 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:13:08 Log [Chapter2] Stage=Chopping
+2026-10-06T22:13:15 Log [Chapter2] Stage=Consequence
+2026-10-06T22:13:15 Error Not allowed to access vertices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+2026-10-06T22:13:15 Error Not allowed to access vertices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+2026-10-06T22:13:15 Error Not allowed to access vertices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+2026-10-06T22:13:34 Log [Chapter2] Stage=Meeting
+2026-10-06T22:13:34 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:13:47 Log [Chapter2] Stage=Vote
+2026-10-06T22:13:47 Log [Chapter2] Stage=Ending
+2026-10-06T22:13:59 Log [Chapter2] Stage=Complete
+2026-10-06T22:17:21 Log [Chapter2] Fear face assets baked in Edit Mode.
+2026-10-06T22:18:13 Log [Chapter2] Stage=Intro
+2026-10-06T22:18:16 Log [Chapter2] Stage=Follow
+2026-10-06T22:18:38 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:18:39 Log [Chapter2] Stage=Chopping
+2026-10-06T22:18:46 Log [Chapter2] Stage=Consequence
+2026-10-06T22:19:08 Log [Chapter2] Stage=Meeting
+2026-10-06T22:19:08 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:19:21 Log [Chapter2] Stage=Vote
+2026-10-06T22:19:21 Log [Chapter2] Stage=Ending
+2026-10-06T22:19:33 Log [Chapter2] Stage=Complete
+2026-10-06T22:21:59 Log [Chapter2] Fear mesh tripo_node_4931ae9c vertices=992033 changed=19851 maxLocalDelta=0.009878124 bytes=35986544
+2026-10-06T22:22:00 Log [Chapter2] Fear mesh tripo_node_3a511942 vertices=1029551 changed=17416 maxLocalDelta=0.01009197 bytes=37152576
+2026-10-06T22:22:01 Log [Chapter2] Fear mesh tripo_node_ecb91fad vertices=1236694 changed=25332 maxLocalDelta=0.009325747 bytes=41549076
+2026-10-06T22:22:01 Log [Chapter2] Fear face assets baked in Edit Mode.
+2026-10-06T22:22:43 Log [Chapter2] Stage=Intro
+2026-10-06T22:22:46 Log [Chapter2] Stage=Follow
+2026-10-06T22:23:07 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:23:08 Log [Chapter2] Stage=Chopping
+2026-10-06T22:23:15 Log [Chapter2] Stage=Consequence
+2026-10-06T22:23:37 Log [Chapter2] Stage=Meeting
+2026-10-06T22:23:37 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:23:50 Log [Chapter2] Stage=Vote
+2026-10-06T22:23:50 Log [Chapter2] Stage=Ending
+2026-10-06T22:24:01 Log [Chapter2] Stage=Complete
+2026-10-06T22:26:00 Log [Chapter2] Stage=Intro
+2026-10-06T22:26:03 Log [Chapter2] Stage=Follow
+2026-10-06T22:26:25 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:26:26 Log [Chapter2] Stage=Chopping
+2026-10-06T22:26:33 Log [Chapter2] Stage=Consequence
+2026-10-06T22:26:53 Log [Chapter2] Stage=Meeting
+2026-10-06T22:26:53 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:27:05 Log [Chapter2] Stage=Vote
+2026-10-06T22:27:06 Log [Chapter2] Stage=Ending
+2026-10-06T22:27:17 Log [Chapter2] Stage=Complete
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-06T22:38:15 Log [Chapter2] Stage=Intro
+2026-10-06T22:38:18 Log [Chapter2] Stage=Follow
+2026-10-06T22:38:39 Log [Chapter2] Stage=TreeChoice
+2026-10-06T22:38:40 Log [Chapter2] Stage=Consequence
+2026-10-06T22:39:01 Log [Chapter2] Stage=Meeting
+2026-10-06T22:39:01 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-06T22:39:14 Log [Chapter2] Stage=Vote
+2026-10-06T22:39:14 Log [Chapter2] Stage=Ending
+2026-10-06T22:39:29 Log [Chapter2] Stage=Complete

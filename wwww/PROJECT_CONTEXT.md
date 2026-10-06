@@ -2,7 +2,7 @@
 
 更新日期：2026-10-06。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-06 第二章保護巨樹後的兩位族人，抵達傷者旁的姿勢已改為更低、前後錯腳的下蹲，一手扶膝、一手低伸查看；保留上一輪奔跑路線及森林畫質。最終 protect-refuse-crouch-v3 已完成本輪流程／近景檢查，結尾自行退出 Play Mode。此次只改 Chapter2GriefReaction.cs 的抵達姿勢，兩章場景、控制流程與共用骨架雜湊未變。新近景為 Documentation/Chapter2-crouch-preview.png；砍伐分支的完整回歸仍屬 2026-10-05 證據，未在本輪重跑。
+最新狀態：2026-10-06 已接續「查明訊息重新連線失敗原因」最後四張截圖的第二章修改：警察字幕改為「把這些樹都砍了。」、族人走到警察前約 1.7 公尺阻擋、兩人奔向倒地同伴、槍擊字幕提早；砍樹時三人受驚退三步，巨木朝玩家原位置倒下，淡黑轉夜間時隱藏倒木以免擋住會議。最終 protect-refuse-four-final 與 fell-support-four-final 均完成、errors=[]，黑幕後自行退出 Play Mode；證據在 _CodexBackups/chapter2_four_revisions_20261006/。
 
 ## 專案位置
 
@@ -460,3 +460,27 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 原始程式、v3 測試輸出及來源雜湊保存於 `_CodexBackups/chapter2_crouch_20261006/`；兩章場景、Chapter2Controller.cs 與 Chapter1IncidentRig.cs 核對未變。清理前檢查 `playing=False dirty=False pipeline=PC_PipelineAsset`。
 - 臨時 Chapter2WorkProbe.cs／Chapter2Verification.cs 與 meta 已移至本輪備份的 verification-tools；正式 Assets 不保留測試輪詢。正式檔案大小掃描含 Assets／Documentation／Packages／ProjectSettings 共 3,235 檔，沒有檔案達 100,000,000 bytes，最大 87,096,360 bytes。未 commit／push。
 - 21:05 清理後已完成重新編譯，實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景沒有未儲存標記。這是最後編譯狀態，不抹除播放中的既有警告。
+
+
+## 2026-10-06 接續第二章四張截圖修改並完成驗證
+
+- 接續對話「查明訊息重新連線失敗原因」（01a10bf5-645f-7c73-94bd-6cf248041603）最後尚未完成的 Unity 修改；本次範圍為四張截圖，沒有重新處理較早的 Codex 連線診斷。已讀 AGENTS、本檔與劇情參考第 3–5 頁。
+- `Chapter2Controller.cs`：警察字幕為「把這些樹都砍了。」；族人說「別碰它！這是我們的聖地。」時，用 2.1 秒走到警察前約 1.7 公尺，再對峙與被射擊。兩名同伴的新目的地跟隨阻擋者位置，沿用既有奔跑及低蹲查看動作。
+- 槍後敘述從原約 5.3 秒延後顯示改為等待 0.35 秒即顯示，與倒地過程重疊；本輪有截圖負載的 driver 實測延遲約 0.67 秒，不將設定秒數誤稱為量測結果。
+- `Chapter2Controller.Performance.cs`、新增 `Chapter2StartleReaction.cs`：砍伐完成後，警告字幕開始時三人依序縮身、抬手、仰頭，交錯後退三步，約 1.15 公尺；腳部使用落腳點及抬腳軌跡。依鏡頭切換前的玩家實際位置計算倒樹方向，倒下後再接族人台詞。
+- 新增三個 `Resources/FearFaces/` 專用表情網格，抬眉眼、嘴部下沉，配合驚嚇動作；没有修改原模型 FBX、原匯入設定或共用骨架。新增 `Assets/Editor/Chapter2FearFaceAuthoring.cs`，Tools / Chapter 2 / Bake Fear Faces 在 Edit Mode 製作二進位資產，正式 runtime 只載入資產，不在播放時製作。三檔大小分別為 35,986,544、37,152,576、41,549,076 bytes，使用 Low mesh compression，勿整批重存成大型文字資產。
+- 發現巨木改向玩家倒後會延伸進夜間會議區，已在 `SetNight()` 的淡黑期間隱藏砍倒的巨木與殘樁；保護分支保留站立巨木。夜間人物、火堆與字幕均經截圖確認不受遮擋。
+
+### 本輪實際驗證與限制
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode，臨時 driver 經正式移動、UI 選項、揮砍入口，略過片頭；白天 2 倍、槍響後／砍樹後 1 倍、會議 3 倍。另逐張人工檢查引擎截圖與 Unity 畫面；不是全程人工鍵盤或實體 VR 驗收。
+- 最終 `protect-refuse-four-final`：`completed=true`、`errors=[]`，新字幕正確；阻擋距離 1.7066 公尺、槍後字幕延遲約 0.67 秒、1 次槍響、倒地完成、兩位同伴抵達、兩人最小間距約 1.6077 公尺。實際核對近距對峙、早出字幕、跑向傷者與低蹲畫面。
+- 最終 `fell-support-four-final`：`completed=true`、`errors=[]`，5 次有效砍伐／接觸，遠距、背向、揮砍中重複輸入皆被拒絕；三人各 3 步、位移約 1.15 公尺。倒向與事先保留的玩家方向 dot=1，倒樹軸與該方向 dot=1；已查看三步分時畫面、倒下中途與夜間畫面，`nightTreeCleared=true`。
+- 兩輪皆通過開場面向／站定、左右與前界線、引路者可見、全身說話構圖；夜間還原原管線；各自抵達黑幕後由正式流程自行退出，兩份 returned-to-edit.json 皆 `playing=false, completed=true`，driver 未代停。
+- v1 砍樹輪因 runtime 讀取不可讀模型而產生錯誤；v2 雖無 runtime 錯誤，但高壓縮表面粗糙，且同幀表情截圖重用了渲染快取，均不是最終表情驗收。v3 改用 Low compression，暫停動作並跨幀拍攝各角色 0／100 左右權重近景，確認三人眉眼／嘴部實際變化；原姿勢、攝影機與 UI 均還原。正式 final 兩輪沒有這段表情診斷暫停。
+- 播放仍有既有 Missing Script 警告與 URP 點光陰影圖缩小訊息；資產製作中有已修正的編譯／模型讀取診斷錯誤，不能與最終 `errors=[]` 混為全專案零警告。本輪未測完整度歸零重試、另外兩個會議組合、完整 MP4、獨立建置或實體 VR。
+- 測試關閉 PlayerPrefs 寫入；磁碟場景仍 `saveResult=1`、`stopEditorAfterEnding=1`、`interactionDistance=0.5`、`rightBoundary=0.65`。兩章場景、`Chapter1IncidentRig.cs`、`Chapter2GriefReaction.cs` 均與上次中斷前原始雜湊一致。
+- 新預覽：`Documentation/Chapter2-close-confrontation-preview.png`、`Chapter2-early-caption-preview.png`、`Chapter2-startle-preview.png`、`Chapter2-fall-toward-player-preview.png`、`Chapter2-fear-face-preview.png`；更新 rescue／crouch 預覽。表情與蹲姿近景是驗證攝影機畫面，未替換正式構圖。
+- 臨時 Chapter2WorkProbe.cs／Chapter2Verification.cs 及 meta 已移至本輪備份的 verification-tools；正式 Assets 不保留輪詢／測試 driver。原始檔、各輪診斷、最終結果、來源差異、雜湊保存在本輪備份。清理前 `playing=False dirty=False pipeline=PC_PipelineAsset`。未 commit／push。
+- 最後正式檔案大小掃描 Assets／Documentation／Packages／ProjectSettings 共 3251 檔，達 100,000,000 bytes 的檔案共 0 個，最大 87,096,360 bytes；生成目錄與歷史備份不列入發佈資產。
+- 2026-10-06 23:05 清理後重新編譯完成，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景標題無未儲存標記。這是最後編譯狀態，不抹除前述播放警告與診斷版本錯誤。

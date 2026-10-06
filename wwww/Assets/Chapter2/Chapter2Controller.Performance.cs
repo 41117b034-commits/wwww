@@ -5,6 +5,24 @@ public sealed partial class Chapter2Controller
 {
     public bool Introducing { get; private set; }
     public string CameraBeat { get; private set; } = "gameplay";
+    public Vector3 TreeFallDirection { get; private set; }
+    public float TreeFallProgress { get; private set; }
+
+    IEnumerator FallingTreeWarning()
+    {
+        // Retain the player's actual position when choosing the fall direction.
+        TreeFallDirection=Vector3.ProjectOnPlane(player.transform.position-sacredTree.position,Vector3.up).normalized;
+        if(TreeFallDirection.sqrMagnitude<.01f)TreeFallDirection=Vector3.back;
+        foreach(var worker in workers)worker.gameObject.AddComponent<Chapter2StartleReaction>().Prepare();
+        yield return CameraShot(new Vector3(0,1.95f,3.3f),new Vector3(0,1.05f,9.5f),.7f);
+        CameraBeat="tree-warning";
+        ui.Line("族人","退後……它要倒下了。");
+        for(int i=0;i<workers.Length;i++)workers[i].GetComponent<Chapter2StartleReaction>().Begin(sacredTree,i);
+        yield return new WaitForSeconds(2.25f);
+        // Show the tree coming into the foreground while retaining room beside the trunk.
+        yield return CameraShot(new Vector3(4.6f,2.6f,2.8f),sacredTree.position+Vector3.up*3.2f,.7f);
+        CameraBeat="tree-falling";
+    }
 
     IEnumerator IntroduceForest()
     {

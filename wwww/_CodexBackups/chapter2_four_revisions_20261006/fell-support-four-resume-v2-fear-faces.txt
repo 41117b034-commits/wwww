@@ -1,0 +1,3 @@
+0 mesh=tripo_node_4931ae9c fearShape=0 weight=100 bones=41
+1 mesh=tripo_node_3a511942 fearShape=0 weight=100 bones=41
+2 mesh=tripo_node_ecb91fad fearShape=0 weight=97.52241 bones=34
