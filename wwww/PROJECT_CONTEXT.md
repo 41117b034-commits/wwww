@@ -1,8 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-05。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-06。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-05 第二章「保護巨樹」槍聲後，兩位族人已改為受驚、慌張奔向中槍同伴，抵達後俯身伸手查看；取代上輪原地微微前傾的反應。白天跟隨森林新增 4K 地面、2K 樹皮、法線／遮蔽細節、路旁小植被與白天畫質設定，Game View 設為 Full HD。原場景 `Assets/Scenes/第二章.unity` 已儲存；保護＋拒絕、砍伐＋支持皆完成本輪桌面流程與引擎畫面檢查，正式結尾自行退出 Play Mode。第一章場景、共用骨架和全域 QualitySettings 雜湊未變。最後清理、既有警告及未測實體 VR／獨立建置的限制見文末最新紀錄。
+最新狀態：2026-10-06 第二章保護巨樹後的兩位族人，抵達傷者旁的姿勢已改為更低、前後錯腳的下蹲，一手扶膝、一手低伸查看；保留上一輪奔跑路線及森林畫質。最終 protect-refuse-crouch-v3 已完成本輪流程／近景檢查，結尾自行退出 Play Mode。此次只改 Chapter2GriefReaction.cs 的抵達姿勢，兩章場景、控制流程與共用骨架雜湊未變。新近景為 Documentation/Chapter2-crouch-preview.png；砍伐分支的完整回歸仍屬 2026-10-05 證據，未在本輪重跑。
 
 ## 專案位置
 
@@ -446,3 +446,17 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 清理前編輯器檢查為 `playing=False dirty=False pipeline=PC_PipelineAsset`。清理後已完成重新編譯，20:35 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景無未儲存標記；此最終狀態不抹除播放期間的既有警告。
 - 第一章場景、共用 `Chapter1IncidentRig.cs` 與 `ProjectSettings/QualitySettings.asset` SHA-256 均與本輪開始前一致，見 `unchanged-originals.json`；修改來源校驗值存於 `verified-source-hashes.json`。
 - 正式檔案掃描含 Assets／Documentation／Packages／ProjectSettings 共 3,226 檔，無檔案達 100,000,000 bytes；最大 87,096,360 bytes。`asset-size-audit.json` 保留結果，生成目錄及歷史備份不計入發佈資產。未 commit／push。
+
+
+## 2026-10-06 第二章兩位族人的低蹲姿勢修正
+
+- 使用者指出上一版蹲姿像坐馬桶，希望蹲低且自然。依本次截圖調整 `Assets/Chapter2/Chapter2GriefReaction.cs` 的抵達後姿勢；先讀 AGENTS、本檔與劇情參考第 3–5 頁。
+- 骨盆下降量從身高的 10.5% 加深至 29%，兩人比舊版低約 27～28 公分，重心略後移；兩腳小幅前後錯開、膝蓋向前外側彎曲、腳尖微外開。上身前傾至約 34 度，抵達後約 1.05 秒平順沉下，保留原奔跑演出。
+- 手部改為一手扶膝、另一手低伸向同伴方向，掌面朝下並保留手肘彎曲，避免兩手同高懸在胸前。沒有改動角色模型或共用第一章骨架。
+- Unity 6000.0.58f1 原專案 Editor Play Mode：最終 `protect-refuse-crouch-v3` 跑完保護＋拒絕，`completed=true`、`errors=[]`、`rescueArrived=true`，1 次槍響、2 名反應者、倒地完成；夜间還原原管線，黑幕後正式流程自行退出，`returned-to-edit.json` 為 `playing=false, completed=true`。
+- 臨時 driver 透過正式移動和 UI 選項執行，略過片頭，跟隨 2 倍、槍後 1 倍、會議 3 倍。實際查看跑停後沉下的分時截圖、兩名族人近景、最後全景及 Unity 播放畫面。骨盆高度約 y=0.44／0.33，腳骨高度皆約 y=0.06；角色更低、雙腳保持地面接觸、傷者可見。量測只支持骨架位置，視覺自然度另以引擎畫面檢查。
+- 預覽：更新 `Documentation/Chapter2-rescue-preview.png`（正式遊戲鏡頭），新增 `Documentation/Chapter2-crouch-preview.png`（驗證時移近攝影機、暫時隱藏 UI 的引擎近景；已還原攝影機與 UI，沒有改正式構圖）。v1／v2 為手部高度調整前的診斷版本，最終以 v3 為準。
+- 本輪只修改保護分支專用反應元件，沒有重跑砍伐分支、另一個會議結尾、48 秒片頭影片、獨立建置或實體 VR。上輪砍伐測試仍屬歷史證據。播放有既有 Missing Script 警告及 URP 點光陰影圖縮小訊息，未宣稱全專案零警告。
+- 原始程式、v3 測試輸出及來源雜湊保存於 `_CodexBackups/chapter2_crouch_20261006/`；兩章場景、Chapter2Controller.cs 與 Chapter1IncidentRig.cs 核對未變。清理前檢查 `playing=False dirty=False pipeline=PC_PipelineAsset`。
+- 臨時 Chapter2WorkProbe.cs／Chapter2Verification.cs 與 meta 已移至本輪備份的 verification-tools；正式 Assets 不保留測試輪詢。正式檔案大小掃描含 Assets／Documentation／Packages／ProjectSettings 共 3,235 檔，沒有檔案達 100,000,000 bytes，最大 87,096,360 bytes。未 commit／push。
+- 21:05 清理後已完成重新編譯，實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動、場景沒有未儲存標記。這是最後編譯狀態，不抹除播放中的既有警告。

@@ -1,0 +1,22 @@
+族人 2 height=1.510445 hips=(-1.02, 0.44, 8.35) head=(-1.20, 0.91, 8.11) turn=1 fists=0.08 facingDot=0.9999999 position=(-1.05, 0.02, 8.35)
+thighs0=(-0.93, 0.44, 8.29)
+thighs1=(-1.12, 0.44, 8.41)
+knees0=(-1.03, 0.25, 7.93)
+knees1=(-1.43, 0.37, 8.15)
+feet0=(-0.90, 0.06, 8.28)
+feet1=(-1.21, 0.06, 8.34)
+hands0=(-1.34, 0.75, 7.87)
+hands1=(-1.41, 0.45, 8.18)
+tripo_node_3a511942 bones=41 shapes=1
+Chapter2 clenched fists=8
+族人 3 height=1.443478 hips=(-2.68, 0.33, 8.53) head=(-2.49, 0.86, 8.31) turn=1 fists=0.08 facingDot=1 position=(-2.65, -0.03, 8.50)
+thighs0=(-2.62, 0.27, 8.58)
+thighs1=(-2.73, 0.27, 8.49)
+knees0=(-2.34, 0.28, 8.39)
+knees1=(-2.62, 0.13, 8.21)
+feet0=(-2.53, 0.06, 8.52)
+feet1=(-2.76, 0.06, 8.47)
+hands0=(-2.36, 0.35, 8.41)
+hands1=(-2.49, 0.63, 7.99)
+tripo_node_ecb91fad bones=34 shapes=1
+Chapter2 clenched fists=8

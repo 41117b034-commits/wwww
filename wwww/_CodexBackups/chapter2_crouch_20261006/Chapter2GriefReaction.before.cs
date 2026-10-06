@@ -98,23 +98,18 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
         var rig=actor.Rig;
         Vector3 forward=rig.Forward,right=Vector3.Cross(Vector3.up,forward);
         float flinch=Mathf.Sin(Mathf.Clamp01(elapsed/.55f)*Mathf.PI);
-        float aid=Arrived?Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-arrivedAt)/1.05f)):0;
-        int reachingHand=Destination.x>Casualty.transform.position.x?0:1;
+        float aid=Arrived?Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-arrivedAt)/.7f)):0;
         for(int i=0;i<2;i++)if(feet[i]){footPositions[i]=feet[i].position;footRotations[i]=feet[i].rotation;}
-        // Settle over planted feet, with the pelvis close to the heels instead of a high half-sit.
-        rig.Hips.position+=Vector3.up*rig.Height*((-.025f+.012f*Mathf.Cos(runPhase*2))*runWeight-.29f*aid)
-            -forward*rig.Height*.03f*aid;
-        if(spine)spine.rotation=Quaternion.AngleAxis(-7*flinch+15*runWeight+34*aid+Mathf.Sin(elapsed*3)*.35f*aid,right)*spine.rotation;
+        rig.Hips.position+=Vector3.up*rig.Height*((-.025f+.012f*Mathf.Cos(runPhase*2))*runWeight-.105f*aid);
+        if(spine)spine.rotation=Quaternion.AngleAxis(-7*flinch+15*runWeight+24*aid+Mathf.Sin(elapsed*5)*.5f*aid,right)*spine.rotation;
         for(int i=0;i<2;i++)
         {
             if(!thighs[i]||!knees[i]||!feet[i])continue;
             float phase=runPhase+i*Mathf.PI;
             Vector3 target=footPositions[i]+forward*(Mathf.Sin(phase)*rig.Height*.20f*runWeight)
                 +Vector3.up*(Mathf.Max(0,Mathf.Cos(phase))*rig.Height*.13f*runWeight);
-            Vector3 side=right*(i==0?-1:1);
-            target+=(forward*(i==reachingHand?-.035f:.045f)+side*.022f)*rig.Height*aid;
-            Chapter1IncidentRig.Solve(thighs[i],knees[i],feet[i],target,forward+side*.28f*aid);
-            feet[i].rotation=Quaternion.AngleAxis((i==0?-8:8)*aid,Vector3.up)*footRotations[i];
+            Chapter1IncidentRig.Solve(thighs[i],knees[i],feet[i],target,forward);
+            feet[i].rotation=footRotations[i];
         }
         for(int i=0;i<2;i++)
         {
@@ -122,27 +117,12 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
             Vector3 side=right*(i==0?-1:1);
             float swing=Mathf.Sin(runPhase+i*Mathf.PI);
             Vector3 target=rig.Hips.position+side*rig.Height*.17f
-                +forward*rig.Height*(.12f+.16f*swing*runWeight)
-                +Vector3.up*rig.Height*(.12f*runWeight+.09f*flinch);
-            if(aid>0)
-            {
-                // One hand steadies the body on a knee; the other checks on the casualty.
-                Vector3 resting=knees[i]?knees[i].position+Vector3.up*rig.Height*.025f-forward*rig.Height*.015f:target;
-                Vector3 aidTarget=resting;
-                if(i==reachingHand)
-                {
-                    // Keep the gesture low and within reach while facing the casualty.
-                    aidTarget=rig.Hips.position+(forward*.32f+side*.04f)*rig.Height;
-                    aidTarget.y=Mathf.Min(footPositions[0].y,footPositions[1].y)+rig.Height*.16f;
-                    float reach=(Vector3.Distance(arms[i].position,elbows[i].position)+Vector3.Distance(elbows[i].position,hands[i].position))*.9f;
-                    aidTarget=arms[i].position+Vector3.ClampMagnitude(aidTarget-arms[i].position,reach);
-                }
-                target=Vector3.Lerp(target,aidTarget,aid);
-            }
+                +forward*rig.Height*(.12f+.16f*swing*runWeight+.18f*aid)
+                +Vector3.up*rig.Height*(.12f*runWeight+.09f*flinch-.015f*aid);
             float weight=Mathf.Max(Mathf.Max(runWeight,aid),flinch*.75f);
             Chapter1IncidentRig.Solve(arms[i],elbows[i],hands[i],Vector3.Lerp(hands[i].position,target,weight),side-forward*.25f);
             Vector3 along=(hands[i].position-elbows[i].position).normalized;
-            Vector3 palm=Vector3.ProjectOnPlane(Vector3.Slerp(-side,Vector3.down,aid),along).normalized;
+            Vector3 palm=Vector3.ProjectOnPlane(-side,along).normalized;
             if(palm.sqrMagnitude>.001f)
                 hands[i].rotation=Quaternion.Slerp(hands[i].rotation,Quaternion.LookRotation(along,palm)*Quaternion.Inverse(palms[i]),weight);
         }
