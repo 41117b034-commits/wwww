@@ -5531,7 +5531,7 @@ MonoBehaviour:
   groundRayDistance: 40
   randomTiltDegrees: 12
   randomYawDegrees: 80
-  autoRemoveBrokenObject: 1
+  autoRemoveBrokenObject: 0
   brokenObjectLifetime: 6
   debugLog: 1
 --- !u!1 &522825118 stripped
