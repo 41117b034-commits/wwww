@@ -25,6 +25,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     public bool stopEditorAfterEnding = true;
     public bool saveResult = true;
     [Header("Interaction")]
+    [Min(.1f)] public float treeArrivalDistance = 1.5f;
     public float interactionDistance = .7f;
     public float rhythmPeriod = 2.6f;
     public float lineSeconds = 4.5f;
@@ -37,7 +38,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     public bool VideoPlayed { get; private set; }
     public bool VideoFinished { get; private set; }
     public bool Completed => CurrentStage == Stage.Complete;
-    public bool AtTree => Vector3.ProjectOnPlane(player.transform.position-treeApproach.position,Vector3.up).magnitude<=interactionDistance;
+    public float TreeDistance => Vector3.ProjectOnPlane(player.transform.position-treeApproach.position,Vector3.up).magnitude;
+    public bool ArrivedAtTree => TreeDistance < treeArrivalDistance;
+    public bool AtTree => TreeDistance <= interactionDistance;
     public Vector3 WorkerDestination(int index)
     {
         Vector3[] offsets={new Vector3(-1.8f,0,-2.1f),new Vector3(2.3f,0,-2.4f),new Vector3(-2.9f,0,-1.3f)};
@@ -154,8 +157,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         }
         for(int i=0;i<workers.Length;i++)workers[i].Face(sacredTree.position);
         if(routeGuide)routeGuide.EscortArrived=true;
-        while(!AtTree)
-        { ui.objective.text="沿黃色箭頭走到樹幹正前方";ui.hint.text="走到巨木前的黃色標記，才會進入伐木抉擇。";yield return null; }
+        while(!ArrivedAtTree)
+        { ui.objective.text="沿黃色箭頭走近巨木";ui.hint.text=$"距離黃色標記小於 {treeArrivalDistance:0.0} 公尺，就會自動進入劇情。";yield return null; }
         player.canMove=false;
         routeGuide.GuidanceEnabled=false;
         ui.hint.text="";ui.objective.text="聆聽警察與族人的對話";
@@ -266,6 +269,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         // Prepare the hand meshes before the threat, keeping the gunshot frame smooth.
         for(int i=1;i<workers.Length;i++)
             workers[i].gameObject.AddComponent<Chapter2GriefReaction>().Prepare();
+        var blocking=workers[0].gameObject.AddComponent<Chapter2BlockingPose>();
+        blocking.Prepare();
         // Speak while approaching, then hold a close confrontation at the rifle's reach.
         var start=workers[0].transform.position;
         var block=officer.transform.position+new Vector3(-1.7f,0,.15f);block.y=start.y;
@@ -279,6 +284,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
             officer.Face(workers[0].transform.position);yield return null;
         }
         workers[0].transform.position=block;
+        blocking.Raise();
         CameraBeat="shooting";
         workers[0].Face(officer.transform.position);officer.Face(workers[0].transform.position);
         yield return new WaitForSeconds(2.2f);workers[0].speaking=false;workers[0].Rig.conversationTarget=null;
@@ -292,17 +298,30 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         rifle.Fire();
         if(threatAudio) effects.PlayOneShot(threatAudio,.45f);
         workers[0].BeginFall(officer.transform.position);
+        CameraBeat="shot-lowering";
+        // Lower immediately while the casualty collapses; witnesses wait for the fall.
+        for(float t=0;t<1;t+=Time.deltaTime/.42f)
+        {
+            rifle.aim=1-Mathf.SmoothStep(0,1,t);rifle.lowered=Mathf.SmoothStep(0,1,t);
+            yield return null;
+        }
+        rifle.aim=0;rifle.lowered=1;
+        ui.Line("族人","槍聲過後，一名阻擋警察的族人倒下。同伴急忙上前查看。");
+        while(workers[0].FallProgress<1)yield return null;
+        CameraBeat="rescue";
         for(int i=1;i<workers.Length;i++)
         {
             Vector3 beside=workers[0].transform.position+new Vector3(i==1?.65f:-.95f,0,i==1?.95f:1.1f);
             workers[i].GetComponent<Chapter2GriefReaction>().Begin(workers[0],.12f+(i-1)*.2f,beside);
         }
-        yield return new WaitForSeconds(.35f);
-        ui.Line("族人","槍聲過後，一名阻擋警察的族人倒下。巨木保住了，悲憤卻留在每個人心中。");
-        yield return new WaitForSeconds(3.45f);
-        for(float t=0;t<1;t+=Time.deltaTime/1.5f){rifle.aim=1-Mathf.SmoothStep(0,1,t);yield return null;}
-        rifle.aim=0;
-        yield return new WaitForSeconds(2.5f);
+        foreach(var worker in workers)
+        {
+            var reaction=worker.GetComponent<Chapter2GriefReaction>();
+            if(reaction)while(!reaction.Examining)yield return null;
+        }
+        CameraBeat="checking-casualty";
+        yield return new WaitForSeconds(2.2f);
+        yield return OrderSurvivorsToTrees(rifle);
     }
     IEnumerator Fell()
     {

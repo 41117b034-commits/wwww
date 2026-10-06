@@ -5523,6 +5523,7 @@ MonoBehaviour:
   videoPrepareTimeout: 12
   stopEditorAfterEnding: 1
   saveResult: 1
+  treeArrivalDistance: 1.5
   interactionDistance: 0.5
   rhythmPeriod: 2.6
   lineSeconds: 4.5
@@ -17053,6 +17054,8 @@ MonoBehaviour:
   modelVersion: 2
   target: {fileID: 0}
   aim: 0
+  lowered: 0
+  aimTarget: {fileID: 0}
 --- !u!1 &736995233
 GameObject:
   m_ObjectHideFlags: 0

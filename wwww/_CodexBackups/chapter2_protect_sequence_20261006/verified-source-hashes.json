@@ -1,0 +1,32 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F6DBD7F2AFBB20341CF21AFE0CC15069BC61CCE0072A3068EC79F6ED72404A4F",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C316EE7E79066B8827AB22F56CE9F4929881AFCEE26ECC09692470601BFD4813",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.ProtectAftermath.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F031E60B13E7E2C9C0FFDA3E7C8FEC56304ED5D7AE8A78F097B12C7A40F3C6B4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2BlockingPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "5AF365C28525FE83E78B68DACE92D6F486B653D83E1E850CB44027CA47E46355",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2GriefReaction.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1D4AF84A75E4241F2324A3EDB615928161172D5EFD0D2C5EC50CAE3BFE798B15",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Rifle.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D9FF3EB56C9BAE584B4368816889B7426A187AB824B53BB019CFD6AE2D0E5735",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  }
+]

@@ -9,6 +9,8 @@ public sealed class Chapter2Rifle : MonoBehaviour
     public int modelVersion;
     public Chapter2Actor target;
     [Range(0,1)] public float aim;
+    [Range(0,1)] public float lowered;
+    public Transform aimTarget;
     public int Shots { get; private set; }
     public float RightGripError { get; private set; }
     public float LeftGripError { get; private set; }
@@ -38,8 +40,9 @@ public sealed class Chapter2Rifle : MonoBehaviour
         float since=Time.time-firedAt;
         float recoil=since<.28f?Mathf.Sin(Mathf.Clamp01(since/.28f)*Mathf.PI):0;
         Vector3 stock=Vector3.Lerp(rig.Hips.position+right*.18f+Vector3.up*.02f,ra.position-right*.08f-forward*.10f-Vector3.up*.08f,aim);
-        Vector3 destination=target?target.transform.position+Vector3.up*1.17f:stock+forward*4;
-        Vector3 direction=Vector3.Slerp((forward*.5f+Vector3.up*.85f).normalized,(destination-stock).normalized,aim);
+        Vector3 destination=aimTarget?aimTarget.position:target?target.transform.position+Vector3.up*1.17f:stock+forward*4;
+        Vector3 restDirection=Vector3.Slerp((forward*.5f+Vector3.up*.85f).normalized,(forward*.7f-Vector3.up*.65f).normalized,lowered);
+        Vector3 direction=Vector3.Slerp(restDirection,(destination-stock).normalized,aim);
         stock-=direction*(recoil*.055f);
         weapon.SetPositionAndRotation(stock,Quaternion.LookRotation(direction,Vector3.up)*Quaternion.Euler(-recoil*3,0,0));
         Grip(rig.RightHand,ra,re,rightPalm,weapon.TransformPoint(new Vector3(0,-.045f,.24f)),right-Vector3.up*.7f,false);

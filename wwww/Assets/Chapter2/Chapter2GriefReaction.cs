@@ -11,6 +11,8 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
     public Chapter2Actor Casualty { get; private set; }
     public float RunProgress { get; private set; }
     public bool Arrived { get; private set; }
+    public bool Examining => Arrived && Time.time-arrivedAt>=1.05f;
+    public bool Standing { get; private set; }
     public Vector3 Destination { get; private set; }
     Chapter2Actor actor;
     Transform spine;
@@ -24,6 +26,7 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
     readonly Quaternion[] footRotations=new Quaternion[2];
     float runDuration,runWeight,runPhase,arrivedAt;
     float began;
+    float standAt=-1;
     bool active;
 
     sealed class FistMesh
@@ -69,9 +72,21 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
         active=true;
     }
 
+    public void StandUp(float delay)
+    {
+        if(!Arrived)return;
+        standAt=Time.time+delay;Standing=false;
+    }
+
     void Update()
     {
         if(!active || !Casualty || actor.fallen)return;
+        if(standAt>=0 && Time.time>=standAt+1.4f)
+        {
+            active=false;Standing=true;FistWeight=0;
+            foreach(var mesh in meshes)if(mesh.renderer)mesh.renderer.SetBlendShapeWeight(mesh.index,0);
+            return;
+        }
         float elapsed=Time.time-began;
         TurnProgress=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.08f,.48f,elapsed));
         RunProgress=Mathf.Clamp01((elapsed-.48f)/runDuration);
@@ -99,6 +114,8 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
         Vector3 forward=rig.Forward,right=Vector3.Cross(Vector3.up,forward);
         float flinch=Mathf.Sin(Mathf.Clamp01(elapsed/.55f)*Mathf.PI);
         float aid=Arrived?Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-arrivedAt)/1.05f)):0;
+        float standing=standAt>=0?Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-standAt)/1.4f)):0;
+        aid*=1-standing;
         int reachingHand=Destination.x>Casualty.transform.position.x?0:1;
         for(int i=0;i<2;i++)if(feet[i]){footPositions[i]=feet[i].position;footRotations[i]=feet[i].rotation;}
         // Settle over planted feet, with the pelvis close to the heels instead of a high half-sit.
@@ -150,7 +167,7 @@ public sealed class Chapter2GriefReaction : MonoBehaviour
         {
             Vector3 toward=(Casualty.Rig.Hips.position-rig.Head.position).normalized;
             Vector3 gaze=Vector3.RotateTowards(forward,toward,38*Mathf.Deg2Rad,0);
-            rig.Head.rotation=Quaternion.Slerp(Quaternion.identity,Quaternion.FromToRotation(forward,gaze),TurnProgress)*rig.Head.rotation;
+            rig.Head.rotation=Quaternion.Slerp(Quaternion.identity,Quaternion.FromToRotation(forward,gaze),TurnProgress*(1-standing))*rig.Head.rotation;
         }
         foreach(var mesh in meshes)mesh.renderer.SetBlendShapeWeight(mesh.index,FistWeight*100);
     }

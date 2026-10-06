@@ -1,8 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-06。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-06 已接續「查明訊息重新連線失敗原因」最後四張截圖的第二章修改：警察字幕改為「把這些樹都砍了。」、族人走到警察前約 1.7 公尺阻擋、兩人奔向倒地同伴、槍擊字幕提早；砍樹時三人受驚退三步，巨木朝玩家原位置倒下，淡黑轉夜間時隱藏倒木以免擋住會議。最終 protect-refuse-four-final 與 fell-support-four-final 均完成、errors=[]，黑幕後自行退出 Play Mode；證據在 _CodexBackups/chapter2_four_revisions_20261006/。
+最新狀態：2026-10-07 已完成第二章三張截圖要求：距離巨木黃標小於 1.5 公尺自動進入劇情；阻擋者雙手抬起、掌心朝警察；槍響即開始收槍，待倒地與兩人跑近蹲下查看後，再舉槍命令「給我去砍樹」，兩人默默起身、走到樹旁，才淡黑轉入夜間會議。最終 protect-refuse-sequence-final 與 fell-support-sequence-regression 均完成、errors=[]，結尾黑幕後自行退出 Play Mode；證據在 _CodexBackups/chapter2_protect_sequence_20261006/。詳見文末本輪紀錄。
 
 ## 專案位置
 
@@ -484,3 +484,30 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 臨時 Chapter2WorkProbe.cs／Chapter2Verification.cs 及 meta 已移至本輪備份的 verification-tools；正式 Assets 不保留輪詢／測試 driver。原始檔、各輪診斷、最終結果、來源差異、雜湊保存在本輪備份。清理前 `playing=False dirty=False pipeline=PC_PipelineAsset`。未 commit／push。
 - 最後正式檔案大小掃描 Assets／Documentation／Packages／ProjectSettings 共 3251 檔，達 100,000,000 bytes 的檔案共 0 個，最大 87,096,360 bytes；生成目錄與歷史備份不列入發佈資產。
 - 2026-10-06 23:05 清理後重新編譯完成，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景標題無未儲存標記。這是最後編譯狀態，不抹除前述播放警告與診斷版本錯誤。
+
+## 2026-10-07 第二章抵達距離、雙手阻擋與槍後強迫伐木
+
+- 本輪由 10/06 晚間開始，依使用者三張截圖直接修改原專案。已讀 AGENTS、本檔與劇情參考第 3–5 頁；當次要求優先於舊版「巨木保住了」的字幕敘述。
+- `Chapter2Controller.cs` 新增 `treeArrivalDistance=1.5` 與平面距離判斷，場景已儲存此值。隊伍抵達後，玩家到黃色標記小於 1.5 公尺便自動進入對話；提示同步說明範圍。實際砍伐仍沿用 `interactionDistance=0.5`、面向檢查及樹幹接觸檢查。
+- 新增 `Chapter2BlockingPose.cs`：族人走到警察前約 1.7 公尺後，雙手在約 0.65 秒內抬起，張開掌心朝警察；雙手高度略錯開，使側面鏡頭中兩手都可分辨。倒地時停止套用阻擋姿勢。從共用骨架完成的手部朝向取得校正，不新增大型網格或修改原模型。
+- `Chapter2Rifle.cs` 新增槍口向下的收槍姿勢與動態瞄準點。槍響後立即開始約 0.42 秒收槍；倒地完成後才讓兩位族人奔向同伴，保留既有低蹲查看動作。
+- `Chapter2GriefReaction.cs` 增加查看完成與站起狀態；兩人完全蹲下後留 2.2 秒查看，警察再舉槍，依序指向兩人的胸部高度，字幕為「日本警察：給我去砍樹」。之後字幕清空，兩人略微錯開，以約 1.4 秒平順站起、轉向，再沿分開的弧線走到巨木兩側。
+- 新增 `Chapter2Controller.ProtectAftermath.cs` 管理上述命令、起身、回到樹邊的段落；兩人抵達後停留 1.2 秒，才使用正式流程的淡出轉夜間。保留原角色、森林、倒地者與對峙鏡頭；沒有新增實際砍伐演出或額外槍響。
+
+### 本輪實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode。臨時 driver 經正式移動、UI 選項、砍伐入口執行，略過片頭；跟隨 2 倍、槍後／倒樹 1 倍、會議 3 倍。另逐張查看引擎截圖及 Unity 播放畫面，並非全程人工鍵盤或實體 VR 驗收。
+- 最終 `protect-refuse-sequence-final`：`completed=true`、`errors=[]`。1.51／1.50 公尺均不算抵達，從 1.51 前進 0.02 公尺後，在實測 1.49000025 公尺自動进入正式對話。最終砍伐回歸也通過相同邊界檢查。
+- 保護分支確認雙手抬起、1 次槍響、倒地完成後才開始救援、兩人查看後才收到命令、完整站起後才行走、兩人抵達後才淡出。槍口收下的取樣時間約為槍響後 0.67 秒，含截圖負載；0.42 秒是設定時長，並非此輪實測。收下時槍方向 y 約 -0.68。最小兩人間距約 1.608 公尺。
+- 最終畫面已核對雙手阻擋、瞄準、立即收槍、奔向傷者、低蹲查看、命令字幕、走回樹木及抵達後構圖。v1 是雙手重疊較多的診斷版本，正式以 final 為準。
+- `fell-support-sequence-regression`：`completed=true`、`errors=[]`，5 次有效砍伐與 5 次接觸，遠距／背向／重複揮砍均被拒絕。三人後退各 3 步，倒樹方向與玩家方向 dot=1，夜間倒木已隱藏，另查看斧刃接觸及夜間會議畫面。
+- 兩輪夜間都還原原渲染管線，正式結尾自行退出 Play Mode，兩份 returned-to-edit.json 皆 `playing=false, completed=true`，driver 未代停。測試關閉 PlayerPrefs 寫入；正式場景保留 `saveResult=1`、`stopEditorAfterEnding=1`。
+- 播放仍見既有 Missing Script 警告與 URP 點光陰影圖縮小訊息。本輪未測實體 VR、獨立建置、完整片頭影片、完整度歸零重試或其餘兩個夜間組合；不將先前測試算成本輪驗證。
+
+### 保存與清理
+
+- 備份、兩輪最終報告、診斷 v1、逐段截圖、序列 CSV 及來源雜湊：`_CodexBackups/chapter2_protect_sequence_20261006/`。臨時 Chapter2WorkProbe／Chapter2Verification 與 meta 已移至其 verification-tools；正式 Assets 不保留輪詢及 driver。
+- 第一章場景與共用 `Chapter1IncidentRig.cs` 雜湊核對未變，見 unchanged-originals.json。清理前場景 `playing=False dirty=False pipeline=PC_PipelineAsset`。第二章場景序列化差異僅新增抵達半徑及步槍兩個預設欄位。未 commit／push。
+- 更新 `Documentation/Chapter2-close-confrontation-preview.png`、`Chapter2-rescue-preview.png`；新增 `Chapter2-arrival-distance-preview.png`、`Chapter2-forced-logging-order-preview.png`、`Chapter2-survivors-return-preview.png`，均為本輪正式遊戲鏡頭的引擎截圖。
+- 清理後已重新編譯，2026-10-07 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景標題無未儲存標記；這是清理後狀態，不抹除播放期間的既有警告。
+- 正式 Assets／Documentation／Packages／ProjectSettings 共 3,258 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳細結果在 asset-size-audit.json。測試後所有正式來源雜湊仍與驗證時相同。
