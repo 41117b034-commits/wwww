@@ -5508,37 +5508,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brokenPrefab: {fileID: 919132149155446097, guid: f705a10c7f1a80e48ae5f7c353039acd, type: 3}
-  autoMatchBrokenSizeToIntact: 1
-  brokenScaleMultiplier: 1.12
-  alignBrokenBoundsCenter: 1
-  alignBrokenBottom: 1
-  brokenVerticalOffset: -0.5
+  largestShardToJarRatio: 0.45
+  brokenScaleMultiplier: 0.9
   breakWhenTilted: 1
-  breakTiltAngle: 60
+  breakTiltAngle: 55
   breakOnCollision: 1
-  minimumImpactSpeed: 1.2
+  minimumImpactSpeed: 0.5
   armDelay: 1
   breakClip: {fileID: 8300000, guid: 32735926de963fe449676aae114c6dc4, type: 3}
   breakVolume: 1.48
-  spatialBlend: 0.8
-  audioMinDistance: 3
-  audioMaxDistance: 25
-  pushFragments: 1
-  fragmentForce: 0.7
-  fragmentUpForce: 0
-  fragmentTorque: 1.2
-  forceEveryFragmentToGround: 1
-  groundRayStartHeight: 3
-  groundRayDistance: 12
-  fragmentGroundClearance: 0.015
+  spatialBlend: 0.35
+  audioMinDistance: 5
+  audioMaxDistance: 30
+  preservePrefabLayout: 1
+  extraScatter: 0.18
+  groundYOffset: -0.02
+  useIntactJarBottomAsGround: 1
   groundLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  secondGroundSnap: 1
-  secondGroundSnapDelay: 0.08
+  groundRayStartHeight: 8
+  groundRayDistance: 40
+  randomTiltDegrees: 12
+  randomYawDegrees: 80
   autoRemoveBrokenObject: 1
-  brokenObjectLifetime: 5
-  destroyIntactObject: 1
+  brokenObjectLifetime: 6
   debugLog: 1
 --- !u!1 &522825118 stripped
 GameObject:
@@ -9652,12 +9646,54 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 833f5b7f700835b449f87f787321992f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 709640403}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 833f5b7f700835b449f87f787321992f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 948050844}
   m_SourcePrefab: {fileID: 100100000, guid: 833f5b7f700835b449f87f787321992f, type: 3}
 --- !u!4 &948050841 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 833f5b7f700835b449f87f787321992f, type: 3}
   m_PrefabInstance: {fileID: 948050840}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &948050844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709640399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5647322bb52d664594f6a8264cfca92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brokenPrefab: {fileID: 919132149155446097, guid: f705a10c7f1a80e48ae5f7c353039acd, type: 3}
+  largestShardToJarRatio: 0.45
+  brokenScaleMultiplier: 0.9
+  breakWhenTilted: 1
+  breakTiltAngle: 55
+  breakOnCollision: 1
+  minimumImpactSpeed: 0.5
+  armDelay: 1
+  breakClip: {fileID: 0}
+  breakVolume: 1.6
+  spatialBlend: 0.35
+  audioMinDistance: 5
+  audioMaxDistance: 30
+  preservePrefabLayout: 1
+  extraScatter: 0.18
+  groundYOffset: -0.02
+  useIntactJarBottomAsGround: 1
+  groundLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  groundRayStartHeight: 8
+  groundRayDistance: 40
+  randomTiltDegrees: 12
+  randomYawDegrees: 80
+  autoRemoveBrokenObject: 1
+  brokenObjectLifetime: 6
+  debugLog: 1
 --- !u!1 &950609649 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1507406190022473441, guid: 0fb3019f4ef6c594fbc83ea7f80bce07, type: 3}
