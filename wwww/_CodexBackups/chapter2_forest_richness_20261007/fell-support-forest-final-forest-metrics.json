@@ -1,0 +1,33 @@
+{
+    "label": "fell-support-forest-final",
+    "nightGround": "Layered woodland earth",
+    "names": [
+        "林間族人 1",
+        "林間族人 2",
+        "林間族人 3",
+        "樹旁巡察警察 1",
+        "樹旁巡察警察 2"
+    ],
+    "shaderErrors": [],
+    "npcCount": 5,
+    "triangles": 76885664,
+    "batches": 1110,
+    "trips": [
+        4,
+        4,
+        4,
+        4,
+        4
+    ],
+    "maxTravel": [
+        1.2748972177505494,
+        1.2747761011123658,
+        1.2796595096588135,
+        1.2766609191894532,
+        1.2766609191894532
+    ],
+    "minFootY": 0.04979036748409271,
+    "maxFootY": 0.08084233850240708,
+    "minimumPlayerSeparation": 6.1038970947265629,
+    "hiddenAtNight": true
+}

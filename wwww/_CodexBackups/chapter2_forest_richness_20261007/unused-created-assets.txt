@@ -1,0 +1,18 @@
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\0305c8ec_BlackWalnutTree_Bark_Normal.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\22eeb839_GroundBrown.tif
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\39723109_bark_normal.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\5eabe88b_BlackWalnutTree_Bark_BaseMap.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\677211ae_Grass2.tif
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\6ce6c819_GroundN.tif
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\6fd8debb_bark01.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\7af33345_bark.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\9b201250_pine branch_Normal.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\a361304e_pine branch.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\a5064b7f_bark01_normal.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\a5baa5ec_BlackWalnutTree_Spring_BaseMap.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Textures\f7b6af4f_BlackWalnutTree_Spring_Normal.png
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Materials\Woodland Bark.mat
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Materials\Woodland Bark1.mat
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Materials\Woodland BlackwalnutBark.mat
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Materials\Woodland BlackwalnutSpring.mat
+C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Chapter2\Environment\RichForest\Materials\Woodland Branch.mat

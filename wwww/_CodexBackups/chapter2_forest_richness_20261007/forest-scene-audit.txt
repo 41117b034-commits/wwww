@@ -1,0 +1,16 @@
+Chapter2_NewRulesAndSecretCouncil vertices=0 renderers=0
+Forest ground vertices=14641 renderers=1
+Forest · sacred grove vertices=513333 renderers=130
+Mossy rocks and forest floor vertices=168625 renderers=46
+Sacred giant tree · 西仔希克 vertices=4132 renderers=9
+Felled sacred stump vertices=22472 renderers=1
+Sacred ground marker vertices=102 renderers=1
+Giant tree interaction point vertices=0 renderers=0
+Chapter2_Player vertices=196 renderers=4
+Chapter2_HUD vertices=0 renderers=0
+EventSystem vertices=0 renderers=0
+Early morning sun vertices=0 renderers=0
+Morning · forced logging vertices=10165422 renderers=111
+Night · secret council vertices=9534971 renderers=34
+Council player position vertices=0 renderers=0
+Forest enrichment · layered woodland vertices=410483 renderers=886

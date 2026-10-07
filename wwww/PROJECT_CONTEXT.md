@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 已完成使用者兩張截圖的續修：護樹者改成張臂橫擋、重心前傾與寬站姿，雙手不再舉在頭旁；兩名族人保留蹲下查看，接著站起、只走兩三步就漸隱，不再等走回樹邊。新增短步行的交替落腳、擺臂與連續重心移動。最終 protect-refuse-shield-final 與 fell-support-shield-regression 均 completed=true、errors=[]，正式結尾自行退出 Play Mode。證據在 _CodexBackups/chapter2_shield_shortwalk_20261007/；文末記載本輪驗證範圍。
+最新狀態：2026-10-07 已完成第二章森林豐富化：新增 38 棵樹、草叢／灌木／野花、樹根與碎石，地面改為泥土、落葉、苔草混合材質；新增 3 位族人及 2 位警察在樹旁約 1.3 公尺內巡走。protect-refuse-forest-final 與 fell-support-forest-final 均 completed=true、errors=[]，結尾自行退出 Play Mode，新增 NPC 夜間全部隱藏。另已重載場景播放並檢查地面、花草與 NPC 近景。證據在 _CodexBackups/chapter2_forest_richness_20261007/；文末記載本輪範圍。
 
 ## 專案位置
 
@@ -536,3 +536,31 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 兩章場景、共用 Chapter1IncidentRig、Chapter2Controller、Chapter2Rifle、Chapter2GriefReaction 均與接手前原始雜湊一致；最後播放後再次核對三個修改／新增的正式腳本仍為已驗證版本。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
 - 清理後重新編譯完成，2026-10-07 13:34 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景標題無未儲存標記；這是清理後狀態，不抹除播放期間的既有警告。
 - 最後正式檔案大小掃描 Assets／Documentation／Packages／ProjectSettings 共 3,261 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見本輪 asset-size-audit.json。
+
+## 2026-10-07 第二章森林、寫實地面與樹旁活動 NPC
+
+- 依使用者開場「聆聽族人介紹聖地」截圖直接修改原專案。已讀 AGENTS、本檔與固定劇情參考第 3–5 頁；本輪只處理場景豐富化，不重做既有劇情動作。
+- `Assets/Scenes/第二章.unity` 新增 `Forest enrichment · layered woodland`：38 棵不同高度樹木、327 叢細草、368 叢低矮植物、46 叢白色野花、35 叢灌木、61 組小石、8 組樹根、3 段枯木。中央跟隨通道、巨木演出區及營火會議區留空；樹根依地面碰撞高度放置。原森林、巨木、主要人物與攝影機保留。
+- 新增 `Chapter2ForestRichnessAuthoring.cs`，選單 Tools / Chapter 2 / Enrich Forest and Background NPCs 可重建本輪具名群組；不重建整個章節。新材質與貼圖在 `Assets/Chapter2/Environment/RichForest/`，使用 scoped 複本，不改第一章共用來源匯入設定。
+- `Shaders/ForestGroundBlend.shader` 與 `Layered woodland earth.mat`：泥土小徑、落葉、苔草依世界座標柔和混合，使用法線、AO 與粗糙度；新泥土採 Poly Haven Brown Mud 2K CC0 材質，來源與授權保存在 `RichForest/ASSET_SOURCES.txt`。原有 4K 落葉貼圖保留 4K 匯入；不是單純提高解析度。此地面也用於夜間，會正常接收營火光。
+- `Chapter2AmbientNPC.cs`：用現有角色增加 3 位族人、2 位警察，具名群組 `Background people · local patrols` 位於白天群組內。每人停留、轉身、沿約 1.275 公尺短路線往返，活動相位錯開；進入主線選擇後停下朝向巨木，隨白天群組在夜間隱藏。背景警察不複製主線步槍及槍口特效，不加入劇情 workers／leaders 陣列。
+- `Chapter2UnderstoryInstances.cs`：播放時將重複草葉與植物改成 GPU instancing 批次繪製，Edit Mode 仍保留可直接編輯的個別物件；停用時恢復原 renderer。背景高面數人物取消多層陰影重複繪製，主線人物陰影不變。此為降低額外負載，未做 VR 幀率或獨立建置效能承諾。
+
+### 本輪實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode。先拍攝修改前 baseline，再檢查 v1／v2 診斷版本；v1 泥土偏黑，v2 草葉 GPU 網格快取未更新，均已修正，正式以 forest-final 與 v3 畫面為準。曾修正臨時 Metrics 工具存取 internal 骨架 helper 的編譯錯誤；不能把此診斷版本混入最後通過結果。
+- 正式 driver 經既有移動、UI 選項與砍伐入口執行；略過片頭、跟隨 2 倍、槍後及倒樹 1 倍、夜間 3 倍。另逐張查看引擎截圖與 Unity 播放畫面，並非全程人工鍵盤或實體 VR 驗收。
+- `protect-refuse-forest-final`：completed=true、errors=[]；開場面向／站定、左右與前界線、主要說話人物全身可見均通過。1 次槍響，查看了對峙、救援、短步離開與夜間會議畫面。夜間原管線還原，正式流程自行退出，returned-to-edit 為 playing=false、completed=true。
+- `fell-support-forest-final`：completed=true、errors=[]；5 次有效砍伐／5 次接觸，倒木方向與玩家方向 dot=1、nightTreeCleared=true、nightPipelineRestored=true。已查看倒木中段及夜間會議畫面，正式流程自行退出，returned-to-edit 為 playing=false、completed=true。
+- 兩輪環境 Metrics：5 位 NPC 均完成至少 4 段短程行走；最大距離起點約 1.275–1.280 公尺，與跟隨中的玩家最小平面距離約 6.10 公尺。夜間 hiddenAtNight=true，shaderErrors=[]。腳部記錄是骨骼取樣，沒有把它稱為網格鞋底精密接地量測。UnityStats 含額外截圖渲染，不作為穩定 FPS 或正式效能測試。
+- 清理未引用的新素材後，重新載入磁碟場景並另開一次 Play Mode 查看開場／等待跟隨畫面；透過臨時檢查攝影機拍攝泥土、野花、樹旁 NPC 近景，拍後還原正式攝影機與 UI。這些近景是驗證視角，未改正式鏡頭。此輪最後由檢查工具手動停止；與兩輪正式結尾自停分開記錄。
+- 播放仍有既有 Missing Script 警告與 URP 點光陰影圖縮小訊息；編譯可能顯示既有第一章未使用欄位警告。未測實體 VR、獨立建置、另外兩個會議組合、完整度歸零重試；原片頭 MP4 未重新錄製。
+
+### 保存與清理
+
+- 原始場景／交接檔備份、修改前後截圖、兩輪結果、NPC／shader Metrics、來源雜湊及大小稽核在 `_CodexBackups/chapter2_forest_richness_20261007/`。未引用的本輪新增素材移入其中 `unused-created-assets`，保留可還原副本。
+- 新預覽在 Documentation：`Chapter2-enriched-forest-preview.png` 為正式開場鏡頭；`Chapter2-forest-ground-preview.png`、`Chapter2-forest-flowers-preview.png`、`Chapter2-background-npcs-preview.png` 為本輪引擎近景。
+- 第一章場景、Chapter2Controller、Performance、ProtectAftermath 及共用 Chapter1IncidentRig 與接手前雜湊一致。第二章場景及本輪正式程式與兩條最終驗證時雜湊一致，見 final-source-comparison.json。未 commit／push。
+- 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2ForestMetrics、Chapter2ForestReview 及 meta 已全部移入本輪備份的 verification-tools，正式 Assets 不保留測試／輪詢工具。清理前狀態 playing=False、dirty=False、pipeline=PC_PipelineAsset。
+- 清理後重新編譯完成，2026-10-07 實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景無未儲存標記；這是清理後狀態，不抹除播放期間與診斷版的既有警告／已修正錯誤。
+- 最後正式 Assets／Documentation／Packages／ProjectSettings 共 3,354 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見 asset-size-audit.json。新環境檔案雜湊另存 final-environment-hashes.json。

@@ -1,0 +1,318 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\ASSET_SOURCES.txt",
+    "Hash": "73B46C60CBA7B9C1F677517A8D20CFBB1D68B56862A79D78F1D406B4EB433F40"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\ASSET_SOURCES.txt.meta",
+    "Hash": "8F31457B4C7E59E15510943A929DB45AE9A547E7B0D6D770172C34B07EC12AF7"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Geometry.meta",
+    "Hash": "577EA40F8F2295F1AC804F12D5E973B72DE6947201D3FC2B58A42F7E282B15B7"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials.meta",
+    "Hash": "805D2567D34903A5F29FF28F5490FE07E80B46379C8EFD8D644F08F14FCEBF85"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures.meta",
+    "Hash": "13BA54376DD09CE45188FA2C11B76485591AAB898B8CAC125113561D37D9F530"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Geometry\\FineGrass.asset",
+    "Hash": "E64A60754116EAC14B284028182BBA89CD2D6AAEA9613CEEB057C63978906C6C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Geometry\\FineGrass.asset.meta",
+    "Hash": "1556821B009A5F268B611F1997398A2F7B7A8E28348C377274F185276D887FF0"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Fine forest grass.mat",
+    "Hash": "9C96DDDB7BB7012D41B9B6F3BE6C86D335F3FD4D453E21C135E134B2C6168259"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Fine forest grass.mat.meta",
+    "Hash": "339F10E3463F772032ECC52F75797AEDDC901146C0D80FF6AACB64B2315CF259"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Layered woodland earth.mat",
+    "Hash": "F21BFEFE23884BEA1CC1AD3E997B91A75D78CF9735F74ED09DF7B4D61D2775F3"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Layered woodland earth.mat.meta",
+    "Hash": "74AF81DDFFDC729CCC2E5368606EF90E2BE5F23F604A39BBF454F5AE314F513C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Flower.mat",
+    "Hash": "B157341282CE7F4B26F5C7A752E294FADC45AEE525DD06A087BEFBA92671594C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Flower.mat.meta",
+    "Hash": "432CA1286430AD22FB000EDDEDD5215C43A0AD2FD8E6F11DDBCEB15FAE6EECCB"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Leaf.mat",
+    "Hash": "14F90AFF47DF60E6A817FD17B3BAD717EBFD06F0C61AF85A54C3F394BD0601CD"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Leaf.mat.meta",
+    "Hash": "CE30604D81CD8C2A41784F0DD288DF93CA8CEFC3981919B2B143A87DF46171A4"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_01.mat",
+    "Hash": "7E9E1F2424E90728C0F58537A0A6A933ADDB8983A840AFCF27A74269B95C37A8"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_01.mat.meta",
+    "Hash": "6B11B2779000A73E5B8E51FFF6BDB344284CAAA22C7FCD3F2414F9BEC39AF656"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_02.mat",
+    "Hash": "E1E2378BC806C304EF7E12699BC93CD4AB339BEC9187E8A588FD951D4B8E883D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_02.mat.meta",
+    "Hash": "2F1F787B0B723BADAD92057B5CBB52C55441356A098AF66D5F94795E905AD0A7"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_03.mat",
+    "Hash": "74F428F767BA5FCAA2A30B903201033362985F18FDF1CEF0DC563DA10DCA8E73"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_03.mat.meta",
+    "Hash": "4B2F6018DABB512D9E78EC5A5A904154ED3BA0D0597019194C79E3DCF6E6DA30"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_04.mat",
+    "Hash": "0A092C93260C323D2599D4C41BB2050CF497C26B027323ED09CD6FC33512766F"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland map_rock_04.mat.meta",
+    "Hash": "0B30275CA21E7E1F25575968B93B6B0054D047E5CCDB74BC6D5465939EFA301B"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Plant.mat",
+    "Hash": "E769470B42190C5FE282E2795B15FA0D0F02E3830A36C44D46747CF1D7E3BB78"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Plant.mat.meta",
+    "Hash": "431594235BC8E957AA62E941232442DA95051EAA9A17CE32542A8CE0ED838CE0"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland TreeBrunches.mat",
+    "Hash": "C64E6A141675B87B98C5486C9BBED84BBE576A2A183B746BDAEC8FF45731D9F7"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland TreeBrunches.mat.meta",
+    "Hash": "91BB1EC0F1C9A1DBDF4761A70F7A3DD9E732C0F414713DEECBC8F6B662C30CD6"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Trees.mat",
+    "Hash": "505265B9456E145ADD570B7BE64DB4CDC45BFF86E406E6F8D969C2E2059A408D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Materials\\Woodland Trees.mat.meta",
+    "Hash": "B018FCF55281892512F39BC19EFFA82E50693A845558B08F73282E0A3D35105E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\10750933_Rock_03_normal.jpg",
+    "Hash": "AA292D418CDFE54BCCC06CE101F38C72AE138CB98B9F758C88022ADB726AF0D4"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\10750933_Rock_03_normal.jpg.meta",
+    "Hash": "D3022B4ACCF2FC38D47374D09AFBC8329D42315F14673790F686C439D1515447"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\20c16369_plant05_normal.png",
+    "Hash": "99A050F7BA7CF9BD1186CC87FEDDD81F3579F025B7AF4F83BBA9309BFB7C2908"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\20c16369_plant05_normal.png.meta",
+    "Hash": "3BCE51288C4AF94742431E0F87DC667B37E41085E385172509EB9996DD35FCBB"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\21c7dde3_leaf daisy_normal.png",
+    "Hash": "642632EC33381958B8390F0138D138ED0252A9BC2F0592BAACF8E896A757BC7C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\21c7dde3_leaf daisy_normal.png.meta",
+    "Hash": "6E9DBF26085A29F40134C911C86374438CD98EF66EEDDA01800DB6DFFC32799E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\22b8ab0c_TreeBrunches.tif",
+    "Hash": "F4599B72890EB36E2CFA70D2982B6B29F5634BF70A07EDDF09A2362BDEB5B014"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\22b8ab0c_TreeBrunches.tif.meta",
+    "Hash": "7EC1562B591CE028E2EF9CEC70EAB477313417D4C81D5A3FC9DAC3C1726C379E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\3934284c_forest_floor_2_normal.png",
+    "Hash": "AAEEE10C238361F0A8EE3AC1ABEEA23FFD9072EF74CDA1FAA3F8F36FC78CF89D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\3934284c_forest_floor_2_normal.png.meta",
+    "Hash": "1607D58031F37309C1C51E872410C7D7CF12AA98FC3105583A3A241874B4B04E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\3e3d7fe4_rock_02_diffuse.jpg",
+    "Hash": "E471C6234C99905E26C31BBB8D5F1158DFF245D8D89180B350B9F14F78EA3C8E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\3e3d7fe4_rock_02_diffuse.jpg.meta",
+    "Hash": "26D7EE649BE4B93271191D74D666F51E04C1B6FDE6A05A9319DCBD550E7DCA84"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\404007a4_rock_02_normal.jpg",
+    "Hash": "59DA0F09C832C9812599A4726EBB600E0EFC488C02B5B2CF4005EC5A3F37C7B1"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\404007a4_rock_02_normal.jpg.meta",
+    "Hash": "A498BA4F11D35A35A1422110DA6C636F307BAB76DD3A5E9A82A7A34520C16378"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\4cd0514b_flower daisy.png",
+    "Hash": "0944469058AC9CE3113481CDEF094FFBEF91FF26C563B484F829F62C5ABE586B"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\4cd0514b_flower daisy.png.meta",
+    "Hash": "412E318ADAEAC687CDF8FDA8FD8C156C8592B4459665776752AAA1D5EE806085"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\60c62414_Rock_04_diffuse.jpg",
+    "Hash": "B36AB1F0F7F006D21C5231F2652D3C37CCF876E8342DE9FCFA91B69D89276869"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\60c62414_Rock_04_diffuse.jpg.meta",
+    "Hash": "1128A4373A8E4819663BB3CB1C97DBCE0E6782F93DE766059F8AF3B63DE853DA"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\62405375_rock_03_diffuse.jpg",
+    "Hash": "FED4D57394681A03226E05EF64FD0F4FD5BF862EFA7E6A029389B849D17014A5"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\62405375_rock_03_diffuse.jpg.meta",
+    "Hash": "EAF03A59BB2078584E751A938C684F54EF42851693E6A36E09551311A79F48AE"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\6d259800_rock_01_diffuse.jpg",
+    "Hash": "DCB12AC7BC212B9423E501B11891D49E97E374A0981268D74E312724AC803138"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\6d259800_rock_01_diffuse.jpg.meta",
+    "Hash": "CE9C9999BDDF3C096A7290A86AD33388057F196D2A57C8CDA3A2124154217D07"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\6da71603_forest_floor_ao_4k.jpg",
+    "Hash": "B74B5F6D512E89AAC448C14E12D3EE4866A79B72D0A435E4BF90C3C34F10DA9D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\6da71603_forest_floor_ao_4k.jpg.meta",
+    "Hash": "12B5EED46C23874EDB2A59DEB5BD42BD0CB9A67EE68F23C103E0D6CF5D087898"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\7fcc3b19_flower daisy_normal.png",
+    "Hash": "2A93867B1643296F8EE8ABC1F0674330D1AAF22F33CD2CD11C973A283CC4DDDF"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\7fcc3b19_flower daisy_normal.png.meta",
+    "Hash": "B24D8BA0FF52659415F736490FBF44E802D364021BF6DFFD3BDFB9C2BD17E661"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\8afa4e67_rock_01_normal.jpg",
+    "Hash": "C29ADA3204FDBFB4C02765B7E3DEF00572A09278BC15C0B4ED78471A490D1B5D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\8afa4e67_rock_01_normal.jpg.meta",
+    "Hash": "8A54D6CBDDD02D5DE396243E5C28DC21D079F69D16C11194D689BC73CA7C7EC8"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\a754a222_forest_floor_nor_gl_4k.jpg",
+    "Hash": "EABC57EFD42EE4D7D5746489AD92D8151A229605CE622148E44033E1EF4A34E5"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\a754a222_forest_floor_nor_gl_4k.jpg.meta",
+    "Hash": "E4DC2C36B8641DF85C3DBE6B7BE7D1494AEA8B9F9EF6E513CD55E4E341C9B997"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\ac5cb009_plant05.png",
+    "Hash": "59AD6E2F09CB81B7F3B15D79F5011688DF8769A788B98B14EBDC3EB6DB43EFCD"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\ac5cb009_plant05.png.meta",
+    "Hash": "725D495A9BE0D0A572B36E119993868A828022E1A6064AA63D50A93B3B66C47D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\b2f20f95_forest_floor_diff_4k.jpg",
+    "Hash": "8C4090BF8EE0F9CD6876F68120A9073D6878CD976A24C09738DC7932F475F18E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\b2f20f95_forest_floor_diff_4k.jpg.meta",
+    "Hash": "0B165B93A4B6DD4D4FDED93A39B72F57ED13491FD5384B841131AC5036EBCC37"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\b46c71a0_Rock_04_normal.jpg",
+    "Hash": "F23B210A792D38719AFA8E6FF8422B726CE85DB695906AEBC296258322BA28BC"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\b46c71a0_Rock_04_normal.jpg.meta",
+    "Hash": "958CABA8142850FCEAAA78631ADA9A48F1DEEA16716694B122FD481261320D33"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\bf2d3c1b_leaf daisy.png",
+    "Hash": "79245DA3E908D79CE93B41C2B79B5BB69F7A1778BDAFE3363DA558C2DCF3A0C2"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\bf2d3c1b_leaf daisy.png.meta",
+    "Hash": "3F5307001C012B40937328BA461208FE521033AEA8D1B88024BE18AD7A9D336B"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_ao_2k.jpg",
+    "Hash": "A4A261F00BB6B2FD7816CF4762C3E614D624830C0FF19E28F8BDCDEA45AE7DB6"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_ao_2k.jpg.meta",
+    "Hash": "79998D31EF3FD33761388CC8C913AB4997544755C11567E56B54355E322A4FEB"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_diff_2k.jpg",
+    "Hash": "726A0F5222FDF8B2BCDBEC56FEE8EA55150C217EAB35A893AD5831F28CEE3A5F"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_diff_2k.jpg.meta",
+    "Hash": "785D42E4A8B363234B88DF63B93602F5507F5571CD01FC82D87AD14968BDA30B"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_nor_gl_2k.jpg",
+    "Hash": "A3DF5F6F7493A1762626C6D0D47872D969744A49931DE50FE79F71A5EAE8F857"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_nor_gl_2k.jpg.meta",
+    "Hash": "427A199F938142D19A434F7495C4B0C1EE679394C2C20C8DECFC27933F2A84A0"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_rough_2k.jpg",
+    "Hash": "7F37ED5A6D6D6206EA263DF37393715883B491A2DFF1C8CFA67239922DB29EE4"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\brown_mud_rough_2k.jpg.meta",
+    "Hash": "6533B6297CED75B18D482BB302526BD14C29174D4BB56E3DC25DED658FA68F7A"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\c51ed114_Trees.tif",
+    "Hash": "4133582758D8A1F8C762457154968B220AA7F6B12F106973ACB18481BCC5C062"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\c51ed114_Trees.tif.meta",
+    "Hash": "74EBC5DC94CC7D8694B8788FC7A1BEBE6CE9179638A874B1207647024782AE1E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\cd0dea62_forest_floor_2.jpg",
+    "Hash": "D3AC3BDDEED5D728FD1CDF2972449DD313CB24463170E8773A0AB5FF6F7CB19E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Environment\\RichForest\\Textures\\cd0dea62_forest_floor_2.jpg.meta",
+    "Hash": "E620DFE5A0CD4BDF09231896959CD720FF94BF885AA9FE319E4D3F5885E58527"
+  }
+]

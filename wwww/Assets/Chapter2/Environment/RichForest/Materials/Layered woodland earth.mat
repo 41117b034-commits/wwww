@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Layered woodland earth
+  m_Shader: {fileID: 4800000, guid: c1aa624bb307d6f4aab0c0b5748d4286, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: ce0bfac085af0c042a1ead67d654172c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LeafAO:
+        m_Texture: {fileID: 2800000, guid: 3007e9963a205aa41b642be0bfce2ec3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LeafNormal:
+        m_Texture: {fileID: 2800000, guid: aa640b2322e77c24899e53fc02f00ba8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MossMap:
+        m_Texture: {fileID: 2800000, guid: 24081e91e4ad3bd42a0c4a55d01d5817, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MossNormal:
+        m_Texture: {fileID: 2800000, guid: 110d3912ef8fbca459f284d671c89170, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SoilAO:
+        m_Texture: {fileID: 2800000, guid: cfdfbdd530f17f94b90fd87c2a3fb28d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SoilMap:
+        m_Texture: {fileID: 2800000, guid: 83a1ca601e4cd284cbf1f1c20c2b6cf9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SoilNormal:
+        m_Texture: {fileID: 2800000, guid: 6a261276717d7c04f8a96164c91fbe8e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SoilRoughness:
+        m_Texture: {fileID: 2800000, guid: bd49d9fbb567e804eabd7f0da5b3d48b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _LeafScale: 2.25
+    - _MossScale: 1.65
+    - _NormalStrength: 0.8
+    - _SoilScale: 2.3
+    m_Colors:
+    - _LeafTint: {r: 0.8, g: 0.78, b: 0.7, a: 1}
+    - _MossTint: {r: 0.62, g: 0.67, b: 0.49, a: 1}
+    - _SoilTint: {r: 0.96, g: 0.91, b: 0.81, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

@@ -1,0 +1,33 @@
+{
+    "label": "forest-v3-baseline",
+    "nightGround": "",
+    "names": [
+        "林間族人 1",
+        "林間族人 2",
+        "林間族人 3",
+        "樹旁巡察警察 1",
+        "樹旁巡察警察 2"
+    ],
+    "shaderErrors": [],
+    "npcCount": 5,
+    "triangles": 45895547,
+    "batches": 1264,
+    "trips": [
+        1,
+        1,
+        1,
+        1,
+        1
+    ],
+    "maxTravel": [
+        1.2748972177505494,
+        1.2747761011123658,
+        1.2796595096588135,
+        1.2766609191894532,
+        1.2766609191894532
+    ],
+    "minFootY": 0.049793802201747897,
+    "maxFootY": 0.0808173343539238,
+    "minimumPlayerSeparation": 13.112589836120606,
+    "hiddenAtNight": false
+}

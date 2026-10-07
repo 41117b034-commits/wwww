@@ -1,0 +1,1 @@
+pipeline=Chapter2 morning detail (runtime) renderScale=1 shadowMap=4096 AA=SubpixelMorphologicalAntiAliasing postProcessing=True ground=Layered woodland earth map=2048 tangents=14641 plants=100

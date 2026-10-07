@@ -1,0 +1,178 @@
+Assets/Chapter2/Environment/RichForest/Textures/60c62414_Rock_04_diffuse.jpg
+Assets/GreenForest/Nature/Foliage/Root3.FBX
+Assets/Chapter2/Environment/RichForest/Materials/Woodland Plant.mat
+Assets/Chapter2/Environment/RichForest/Materials/Woodland Flower.mat
+Assets/GreenForest/Textures/Trees.tif
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Materials/BlackwalnutSpring.mat
+Assets/Chapter2/Materials/BlackwalnutBark_b07b2282.mat
+Assets/Rock_pack/rock_02/Materials/default.mat
+Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbm/ancientrobefigure3dmodel_basecolor.JPEG
+Assets/Chapter2/Environment/RichForest/Textures/cd0dea62_forest_floor_2.jpg
+Assets/Hipernt/Pine Pack/Textures/leaf daisy.png
+Assets/Chapter2/Chapter2Actor.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/Chapter2/Materials/Fire particles.mat
+Assets/GreenForest/Materials/Trees.mat
+Assets/Hipernt/Pine Pack/Models/Pine6.fbx
+Assets/Chapter2/Audio/axe_impact.wav
+Assets/Chapter2/Environment/RichForest/Textures/404007a4_rock_02_normal.jpg
+Assets/Chapter2/Environment/RichForest/Textures/20c16369_plant05_normal.png
+Assets/Chapter2/Environment/RichForest/Materials/Woodland map_rock_02.mat
+Assets/Chapter2/Environment/RichForest/Textures/brown_mud_nor_gl_2k.jpg
+Assets/Chapter2/Environment/RichForest/Materials/Woodland TreeBrunches.mat
+Assets/Chapter2/Chapter2RouteGuide.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/CanvasScaler.cs
+Assets/Chapter2/Materials/Bark_80692e77.mat
+Assets/Hipernt/Pine Pack/Models/Pine2.fbx
+Assets/Chapter2/Environment/RichForest/Textures/3e3d7fe4_rock_02_diffuse.jpg
+Assets/Chapter2/Materials/Axe sharpened edge.mat
+Assets/Chapter2/Chapter2AmbientNPC.cs
+Assets/Chapter2/Materials/Guidance yellow.mat
+Assets/Hipernt/Pine Pack/Textures/plant05_normal.png
+Assets/GreenForest/Textures/TreeBrunches.tif
+Assets/Hipernt/Pine Pack/Textures/pine branch.png
+Assets/Hipernt/Pine Pack/Textures/flower daisy.png
+Assets/Chapter2/Environment/RichForest/Geometry/FineGrass.asset
+Assets/Chapter2/Environment/PolyHaven/tree_stump_01_diff_1k.jpg
+Assets/Chapter2/Environment/RichForest/Materials/Layered woodland earth.mat
+Assets/Chapter2/Chapter2UnderstoryInstances.cs
+Assets/Hipernt/Pine Pack/Materials/Flower.mat
+Packages/com.unity.inputsystem/InputSystem/Actions/InputActionAsset.cs
+Assets/Chapter2/Environment/RichForest/Textures/10750933_Rock_03_normal.jpg
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Bark_Normal.png
+Assets/Chapter2/Environment/RichForest/Textures/ac5cb009_plant05.png
+Assets/物品/38式步槍/38式步槍.fbx
+Assets/Chapter2/Environment/RichForest/Textures/62405375_rock_03_diffuse.jpg
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/VertexModifiers/Outline.cs
+Assets/Chapter2/Environment/RichForest/Textures/6da71603_forest_floor_ao_4k.jpg
+Assets/Chapter2/Materials/tripo_mat_f23edb27_3cd6d4d6.mat
+Assets/Rock_pack/Rock_04/Materials/Rock_01_diffuse.mat
+Assets/物品/38式步槍/tripo_convert_f23edb27-4276-43fd-bf9f-3916b575959f.fbm/bolt-actionrifle3dmodel_basecolor.JPEG
+Packages/com.unity.inputsystem/InputSystem/Editor/Icons/InputSystemUIInputModule@64.png
+Assets/Rock_pack/Rock_01/rock_01_diffuse.jpg
+Assets/Rock_pack/Rock_01/rock_01.FBX
+Assets/Chapter2/Environment/RichForest/Materials/Woodland map_rock_04.mat
+Assets/Hipernt/Pine Pack/Materials/Leaf.mat
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Bark_MaskMap.png
+Assets/人/警察/警察.fbx
+Assets/Chapter2/Materials/TreeBark_eda26554.mat
+Assets/Chapter2/Environment/RichForest/Textures/brown_mud_diff_2k.jpg
+Assets/Chapter2/Materials/Rifle flash.mat
+Assets/Hipernt/Pine Pack/Models/Pine1.fbx
+Assets/Rock_pack/rock_02/Rock_02.FBX
+Assets/Chapter2/Materials/map_rock_02_ffd02ffe.mat
+Packages/com.unity.inputsystem/InputSystem/Actions/InputActionReference.cs
+Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbm/ancientrobecharacter3dmodel_normal.JPEG
+Assets/Chapter2/Materials/Fresh cut wood.mat
+Assets/Chapter2/Environment/Detail/plant05.png
+Assets/Chapter2/Materials/Charred firewood.mat
+Assets/Chapter2/Environment/Detail/plant05_normal.png
+Assets/Chapter2/Environment/RichForest/Textures/7fcc3b19_flower daisy_normal.png
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Spring_BaseMap.png
+Assets/Rock_pack/Rock_03/Materials/Material #25.mat
+Assets/Chapter2/Chapter2ForestDetail.cs
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Spring_Normal.png
+Assets/Chapter2/Environment/RichForest/Textures/b46c71a0_Rock_04_normal.jpg
+Assets/GreenForest/Nature/Foliage/Root4.FBX
+Assets/Chapter2/Geometry/ForestGround.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Text.cs
+Assets/人/部落女/部落女性2/tripo_convert_ecb91fad-cbe9-4040-b0b0-bea4ab74dd38.fbm/traditionalattire3dmodel_basecolor.JPEG
+Assets/Rock_pack/Rock_01/Materials/colormap.mat
+Assets/Hipernt/Pine Pack/Textures/plant05.png
+Assets/Chapter2/Materials/Branch_d9d9eecd.mat
+Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs
+Assets/Chapter2/Materials/Axe wood.mat
+Assets/Chapter2/Environment/RichForest/Materials/Fine forest grass.mat
+Assets/Chapter2/Materials/Embers.mat
+Assets/Chapter2/Environment/RichForest/Materials/Woodland map_rock_03.mat
+Assets/Chapter2/Geometry/GiantTrunk.asset
+Assets/Chapter2/Environment/Detail/pine branch.png
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Meshes/BlackWalnutTree_Spring.fbx
+Assets/Chapter2/Media/Chapter2_Opening.mp4
+Assets/Chapter2/Environment/RichForest/Textures/21c7dde3_leaf daisy_normal.png
+Assets/Chapter2/Environment/Detail/pine branch_Normal.png
+Assets/Chapter2/Environment/RichForest/Textures/brown_mud_rough_2k.jpg
+Assets/Chapter2/Environment/PolyHaven/pine_bark_nor_gl_2k.jpg
+Assets/GreenForest/Nature/Foliage/Root2.FBX
+Assets/中文字體/STKAITI.TTF
+Assets/Chapter2/Environment/RichForest/Textures/6d259800_rock_01_diffuse.jpg
+Assets/Chapter2/Audio/rifle_report.wav
+Assets/音樂/營火.mp3
+Assets/Chapter2/Environment/RichForest/Textures/22b8ab0c_TreeBrunches.tif
+Assets/GreenForest/Materials/TreeBrunches.mat
+Assets/Chapter2/Environment/RichForest/Textures/3934284c_forest_floor_2_normal.png
+Assets/Chapter2/Geometry/GiantCanopy.asset
+Assets/GreenForest/Nature/Foliage/Root1.FBX
+Assets/Chapter2/Environment/Detail/BlackWalnutTree_Bark_Normal.png
+Assets/Scenes/第二章.unity
+Assets/Hipernt/Pine Pack/Materials/Plant.mat
+Packages/com.unity.render-pipelines.universal/Editor/AssetVersion.cs
+Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbm/ancientrobecharacter3dmodel_basecolor.JPEG
+Assets/Chapter2/Chapter2Rifle.cs
+Assets/Chapter2/Environment/RichForest/Materials/Woodland Trees.mat
+Assets/Chapter2/Environment/RichForest/Textures/b2f20f95_forest_floor_diff_4k.jpg
+Assets/Chapter2/Geometry/ForgedAxeHead.asset
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Bark_BaseMap.png
+Assets/Chapter2/Environment/RichForest/Textures/c51ed114_Trees.tif
+Assets/GreenForest/Textures/TreesN.TIF
+Assets/Chapter2/Materials/Axe forged steel.mat
+Assets/Chapter2/Materials/map_rock_01_459e9414.mat
+Assets/Chapter2/Environment/RichForest/Textures/4cd0514b_flower daisy.png
+Assets/Chapter2/Environment/RichForest/Textures/a754a222_forest_floor_nor_gl_4k.jpg
+Assets/GreenForest/Nature/Foliage/Bush.FBX
+Assets/Chapter2/Materials/BlackwalnutSpring_6b9836c2.mat
+Assets/Chapter2/Audio/forest_morning.wav
+Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+Assets/Chapter2/Environment/RichForest/Materials/Woodland Leaf.mat
+Assets/Chapter2/Environment/PolyHaven/pine_bark_diff_2k.jpg
+Assets/Chapter2/Chapter2Presentation.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/RawImage.cs
+Assets/Chapter2/Shaders/ForestGroundBlend.shader
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Textures/BlackWalnutTree_Spring_MaskMap.png
+Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbm/ancientrobefigure3dmodel_normal.JPEG
+Assets/Chapter2/Environment/PolyHaven/pine_bark_ao_2k.jpg
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs
+Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx
+Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+Assets/Chapter2/Environment/PolyHaven/tree_stump_01_1k.fbx
+Assets/Chapter2/Chapter2Axe.cs
+Assets/Chapter2/Environment/Detail/BlackWalnutTree_Bark_BaseMap.png
+Assets/Chapter2/Environment/Detail/BlackWalnutTree_Spring_BaseMap.png
+Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
+Assets/Rock_pack/rock_02/rock_02_diffuse.jpg
+Assets/Chapter2/Environment/Detail/BlackWalnutTree_Spring_Normal.png
+Assets/Hipernt/Pine Pack/Textures/flower daisy_normal.png
+Assets/Chapter2/Environment/RichForest/Textures/brown_mud_ao_2k.jpg
+Assets/Chapter2/Environment/PolyHaven/tree_stump_01_nor_gl_1k.jpg
+Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
+Assets/Chapter2/Chapter2Controller.cs
+Assets/Rock_pack/Rock_03/rock_03_diffuse.jpg
+Assets/Chapter2/Environment/RichForest/Textures/8afa4e67_rock_01_normal.jpg
+Assets/人/警察/tripo_convert_b2cbe21f-1428-41dd-9a4e-aa36e7b13b92.fbm/policeofficer3dmodel_basecolor.JPEG
+Assets/Chapter2/Audio/forest_night.wav
+Assets/Hipernt/Pine Pack/Models/Plant2.fbx
+Assets/Rock_pack/Rock_03/Rock_003.FBX
+Assets/Hipernt/Pine Pack/Models/Pine4.fbx
+Assets/Chapter2/Materials/map_rock_03_d4b8988f.mat
+Assets/Rock_pack/Rock_04/Rock_04_diffuse.jpg
+Assets/GreenForest/Nature/Foliage/CutedTree1.FBX
+Assets/Hipernt/Pine Pack/Textures/leaf daisy_normal.png
+Assets/Gwangju_3D asset/15_BlackWalnutTree/Materials/BlackwalnutBark.mat
+Assets/Chapter2/Materials/Pathside plants.mat
+Assets/Chapter2/Materials/FlameSoft.asset
+Assets/Rock_pack/Rock_04/石頭4.FBX
+Packages/com.unity.inputsystem/InputSystem/Editor/AssetImporter/InputActionImporter.cs
+Assets/Hipernt/Pine Pack/Models/Pine5.fbx
+Assets/人/警察/tripo_convert_b2cbe21f-1428-41dd-9a4e-aa36e7b13b92.fbm/policeofficer3dmodel_normal.JPEG
+Assets/Chapter2/Materials/Poly Haven stump.mat
+Assets/Chapter2/Environment/RichForest/Materials/Woodland map_rock_01.mat
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/GraphicRaycaster.cs
+Assets/Chapter2/Environment/RichForest/Textures/bf2d3c1b_leaf daisy.png
+Assets/Hipernt/Pine Pack/Models/PlantFlower.fbx
+Assets/Chapter2/Materials/Bark1_cd12061d.mat
+Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions
+Assets/Chapter2/Chapter2Player.cs
+Packages/com.unity.inputsystem/InputSystem/Plugins/UI/InputSystemUIInputModule.cs
+Assets/人/部落女/部落女性2/部落女姓2.fbx
+Assets/Hipernt/Pine Pack/Models/Pine3.fbx
+Assets/Chapter2/Materials/map_rock_04_e0ae4516.mat
