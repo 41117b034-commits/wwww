@@ -1,0 +1,30 @@
+賽德克中年(2) | root=賽德克中年(2) | human=True | Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+新郎 | root=新郎 | human=True | Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+tripo_node_4931ae9c | root=新郎 | human=False | Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+賽德克中年 | root=賽德克中年 | human=True | Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+莫那 | root=莫那 | human=True | Assets/人/畢專 賽德克青年/長老/tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx
+原住民小孩(2) | root=原住民小孩(2) | human=True | Assets/人/畢專 賽德克青年/小孩/tripo_convert_33432f6c-9a70-4319-81af-522d42ff24f9.fbx
+賽德克小孩 | root=賽德克小孩 | human=True | Assets/人/畢專 賽德克青年/小孩/tripo_convert_33432f6c-9a70-4319-81af-522d42ff24f9.fbx
+賽德克青年 | root=賽德克青年 | human=False | Assets/人/畢專 賽德克青年/賽德克青年.fbx
+部落女性1 | root=部落女性1 | human=True | Assets/人/部落女/部落女性1/部落女性1.fbx
+tripo_node_a195338d | root=部落女性1 | human=False | Assets/人/部落女/部落女性1/部落女性1.fbx
+賽德克帥哥 | root=賽德克帥哥 | human=True | Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx
+賽德克中年嗎 | root=賽德克中年嗎 | human=True | Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx
+2 | root=2 | human=True | Assets/人/畢專 賽德克青年/長老/tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx
+3 | root=3 | human=True | Assets/人/畢專 賽德克青年/賽德克青年.fbx
+4 | root=4 | human=True | Assets/人/畢專 賽德克青年/小孩/tripo_convert_33432f6c-9a70-4319-81af-522d42ff24f9.fbx
+警察 | root=警察 | human=True | Assets/人/警察/警察.fbx
+Police01_Model | root=PoliceGroup | human=True | Assets/人/警察/警察.fbx
+Police02_Model | root=PoliceGroup | human=True | Assets/人/警察/警察.fbx
+部落女姓2 | root=部落女姓2 | human=True | Assets/人/部落女/部落女性2/部落女姓2.fbx
+部落男性 | root=部落男性 | human=True | Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx
+CURRENT COUNCIL:
+六社領袖 1 | Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx
+六社領袖 2 | Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx
+六社領袖 3 | Assets/人/部落女/部落女性2/部落女姓2.fbx
+莫那魯道 · 既有長老角色 | Assets/人/畢專 賽德克青年/長老/tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx
+六社領袖 4 | Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx
+六社領袖 5 | Assets/人/畢專 賽德克青年/賽德克青年.fbx
+六社領袖 6 | Assets/人/部落女/部落女性1/部落女性1.fbx
+保守派族人 0 | Assets/人/畢專 賽德克青年/原住民青年2/tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx
+保守派族人 1 | Assets/人/日本女性/賽德克新娘/tripo_convert_880135f6-31e4-4f15-a52b-10eacb2ded41.fbx

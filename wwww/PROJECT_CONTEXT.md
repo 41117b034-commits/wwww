@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 夜間秘密會議背景 169 棵樹改為倒地，新增六堆木材；每段發言鏡頭轉到說話者正面，包含六社領袖、莫那魯道及保守派，選擇／離場時回全景。fell-support-council-final 與 protect-refuse-council-clear-speakers 均 completed=true、errors=[]，正式結尾自停；已逐張檢查人物構圖，保守派遮擋已修正。先前完成度 0→100%、連錯三次重試及左側原住民小孩保留。證據在 _CodexBackups/chapter2_logged_council_20261007/；詳見文末。
+最新狀態：2026-10-07 已接續完成秘密會議三秒開場、九人模型去重與支持起義演出。夜景淡入後先保持全景三秒，再切到首位發言者；莫那魯道在支持分支結語高舉右手，說完才回全景、六位領袖依序起身。已替換臉部異常的候選模型並修正座椅穿插。最終 fell-support-rally-final-seats 與 protect-refuse-rally-final-seats 均 completed=true、errors=[]、council failures=[]，黑幕後 playing=false。證據在 _CodexBackups/chapter2_council_rally_20261007/；詳見文末。先前砍伐完成度 0→100%、連錯三次重試及白天小孩保留。
 
 ## 專案位置
 
@@ -626,3 +626,31 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 新預覽：`Documentation/Chapter2-logged-council-preview.png`、`Chapter2-council-speaker-preview.png`、`Chapter2-council-dissent-preview.png`；玩法與維護說明同步更新於 `Documentation/Chapter2.md`。未 commit／push。
 - 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2CouncilReview 與 meta 已移入備份的 verification-tools，Assets 不保留測試輪詢工具。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset；清理後重新編譯完成，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景無未儲存標記。這是清理後狀態，不抹除播放期間既有警告。
 - 最後 Assets／Documentation／Packages／ProjectSettings 共 3,371 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見 asset-size-audit.json。
+
+## 2026-10-07 接續完成會議開場、不同人物與起義響應
+
+- 接續「修改木材砍伐进度与NPC」（01a11540-bc83-7382-bd12-fc55a35a0006）中斷的最新要求；先閱讀原對話、現行檔案與固定劇情參考第 3–5 頁。保留已做好的倒木、木材堆、砍伐完成度與連错規則。
+- 夜景完全淡入後維持營火全景三秒，此時沒有發言字幕；接著才沿火堆外圍移向莫那魯道並開始第一句。其餘發言維持逐人正面鏡頭。
+- 原九人重複使用三種模型；現在莫那魯道、六位領袖與兩位保守派共使用九種不同模型。莫那使用專案既有長老；新增 Chapter2CouncilCastAuthoring，保存 Tools / Chapter 2 / Use Distinct Council Characters 方便重建配置。原 FBX、匯入設定與第一章人物保留。
+- 前次中斷所用的賽德克青年模型，本次實播仍有臉部扭曲，靜止與還原 bind pose 也沒有消除，最終改用未在會議中使用的「日治時期長輩女」既有模型。已重新檢查發言近景，該臉部問題消除。
+- Chapter2RallyGesture 在一般骨架／坐姿層之後套用右手高舉姿勢，另一手保持低處。僅支持起義時，莫那在「我們的血，不該再白白流淌。霧社，該覺醒了！」結語使用此動作，鏡頭拉開以容納手掌。
+- 整句六秒結束後清字幕、鏡頭回全景，再啟動六位領袖依序起身（間隔 0.13 秒、每人 1.25 秒），向前移動 0.46 公尺離開木椅。兩名原本站立的旁聽者留在會場；拒絕分支保留保守派離場，不啟動舉手或集體起身。
+- Chapter2Actor 的坐姿骨盆高度改成配合 0.44 公尺高的木椅，不再對不同身形一律下移 0.38 公尺。第三位領袖的椅子縮窄並後移 0.25 公尺，消除近景裙襬穿過木椅的問題；站起後不穿椅。
+
+### 本次最終驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode。臨時 driver 經正式移動、UI 選項與斧刃接觸流程，略過片頭、跟隨使用 2 倍，後果和夜間 1 倍；逐張檢查引擎正式鏡頭截圖，另查看實際 Unity Game 視窗。不是全程人工鍵盤驗收、獨立建置或實體 VR 測試。
+- protect-refuse-rally-final-seats：completed=true、errors=[]，九個不同人物模型、11 個發言鏡頭；全景淡入後至攝影機開始位移實測約 3.177 秒，六位領袖至結尾仍 seated=true；保守派兩人的新模型發言構圖均已目視檢查。council failures=[]，正式黑幕結尾自行退出，returned-to-edit playing=false。
+- fell-support-rally-final-seats：completed=true、errors=[]，五次有效砍伐、九個不同人物模型、10 個發言鏡頭；全景至攝影機開始位移約 3.227 秒。莫那右手高於頭部約 0.351 公尺，台詞期間六位領袖保持坐姿，結束後全部完成起身；角色根位置到最近椅子中心的最小水平距離 0.46 公尺，並另外目視檢查起身中途及完成畫面。council failures=[]，黑幕後自動退出，playing=false。
+- 兩輪皆確認白天樹木直立、夜間 169 棵倒地與六堆木材，夜間還原正式渲染管線。最終來源 SHA-256 與測試前一致，見 final-source-hashes.json / final-source-comparison.json。
+- fell-support-rally-v1、resumed-v2、fell-support-rally-final 及 pose-* 是診斷／較早版本；不能取代名稱含 final-seats 的最終兩輪。前兩輪仍有臉部問題，較早 final 尚未完成第三位領袖木椅調整。
+- 播放仍有既有 Missing Script 警告與 URP 點光陰影圖縮小訊息；不宣稱全專案播放零警告。未重测完整片頭、連錯三次專項、第一章或另外兩個選擇組合。
+- 第一章場景、共用 Chapter1IncidentRig、Chapter2Presentation 及 Chapter2LoggedForest 與接手前雜湊一致，見 unchanged-after.json。未 commit / push。
+
+### 保存與交接
+
+- 證據、原始備份、最終兩輪截圖與資料：_CodexBackups/chapter2_council_rally_20261007/。原有交接文件與程式備份保留，resumed-originals 保存此次接手時仍未完成的程式。
+- Documentation/Chapter2.md 已更新玩法與維護說明。預覽更新為 Chapter2-logged-council-preview.png、Chapter2-council-speaker-preview.png、Chapter2-council-dissent-preview.png，新增 Chapter2-council-rally-preview.png 與 Chapter2-council-standing-preview.png。
+- 測試結束後檢查 playing=False、dirty=False、pipeline=PC_PipelineAsset。臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2CouncilReview、Chapter2CouncilPoseReview 與 meta 已移至本次備份目錄的 verification-tools；正式保留角色配置 authoring 和演出程式。
+- 清理後重新整理並完成 Unity 編譯，實際開啟 Console 檢查為 0 Error / 0 Warning / 0 Log；Play 未啟動，場景無未儲存標記。這是清理後狀態，播放期間的既有警告仍記錄在前述證據。
+- 最終 Assets / Documentation / Packages / ProjectSettings 共 3,377 檔；達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes，詳見 asset-size-audit.json。本次要求已完成；尚未做實體 VR 或獨立建置驗收。

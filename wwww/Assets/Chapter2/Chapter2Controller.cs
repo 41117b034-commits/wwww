@@ -177,10 +177,10 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.Line("","");ui.hint.text="";yield return new WaitForSeconds(.6f);
         SetNight();
         player.Warp(meetingSpawn.position,campfire.position);
-        player.FocusOn(campfire.position+Vector3.up*.85f);
-        player.canMove=false;player.canLook=true;
+        yield return FrameCouncilOverview(.01f);
         SetStage(Stage.Meeting);ui.chapter.text="第二章  /  夜晚的秘密會議";ui.objective.text="聆聽莫那魯道與六社領袖";
         yield return Fade(0,1.5f);
+        yield return new WaitForSeconds(3);
         yield return Say(mona,"莫那魯道","若再忍下去，族人的靈魂將被踐踏殆盡！");
         string[] speeches={"我們肩上的木材越來越重，能帶回家的工錢卻越來越少。","他們的命令已經踏進聖地，連祖靈的守護也要奪走。","我們的孩子，不該只學會在槍口前低頭。","部落之間要彼此照應，不能再讓任何一社獨自受辱。","反抗會付出代價。但沉默，也正在奪走我們的一切。","我們要奪回尊嚴。今晚，把各社的決心連在一起。"};
         for(int i=0;i<leaders.Length;i++) yield return Say(leaders[i],"六社領袖 · "+(i+1),speeches[i%speeches.Length]);
@@ -202,10 +202,12 @@ public sealed partial class Chapter2Controller : MonoBehaviour
             yield return FrameCouncilOverview();
             yield return LeaveConservatives();
         }
-        mona.seated=false;
-        yield return new WaitForSeconds(.8f);
+        mona.StandFromSeat();
+        yield return new WaitForSeconds(1.25f);
+        CouncilRally=MeetingDecision==0;
         yield return Say(mona,"莫那魯道","我們的血，不該再白白流淌。霧社，該覺醒了！",6);
         ui.Line("","");
+        if(CouncilRally)yield return CouncilStandTogether();
         if(!player.IsVR)yield return FrameCouncilOverview(5,true);
         yield return Fade(1,2);
         ui.endingPanel.SetActive(true);ui.continueButton.gameObject.SetActive(false);
@@ -372,6 +374,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if(actor&&CurrentStage>=Stage.Meeting&&nightGroup.activeInHierarchy)
         {ui.Line("","");yield return FrameCouncilSpeaker(actor);}
+        if(CouncilRally&&actor==mona)actor.gameObject.AddComponent<Chapter2RallyGesture>().Begin();
         ui.Line(name,words);if(actor) {actor.speaking=true;if(actor.Rig) actor.Rig.conversationTarget=player.view.transform;}
         yield return new WaitForSeconds(seconds>0?seconds:lineSeconds);
         if(actor) actor.speaking=false;

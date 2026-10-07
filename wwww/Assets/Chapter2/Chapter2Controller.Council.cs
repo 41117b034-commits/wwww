@@ -4,6 +4,8 @@ using UnityEngine;
 public sealed partial class Chapter2Controller
 {
     public Chapter2Actor CouncilSpeaker { get; private set; }
+    public bool CouncilRally {get;private set;}
+    public bool CouncilStandingTogether {get;private set;}
 
     IEnumerator FrameCouncilSpeaker(Chapter2Actor actor)
     {
@@ -16,17 +18,32 @@ public sealed partial class Chapter2Controller
             position=at+new Vector3(1.65f,0,-1.85f);
         position.y=at.y+(actor.seated?1.3f:1.65f);
         Vector3 target=at+Vector3.up*(actor.seated?.9f:1.15f);
+        bool rally=CouncilRally&&actor==mona;
+        if(rally){position=at+inward*3.05f+side*.3f+Vector3.up*1.65f;target=at+Vector3.up*1.3f;}
         actor.Face(position);
-        yield return CouncilCameraShot(position,target,50,.7f);
+        yield return CouncilCameraShot(position,target,rally?55:50,.7f);
         CouncilSpeaker=actor;CameraBeat="council-speaker";
     }
 
     IEnumerator FrameCouncilOverview(float seconds=.8f,bool ending=false)
     {
         CouncilSpeaker=null;ui.Line("","");
-        Vector3 position=ending?new Vector3(0,3.65f,-8):meetingSpawn.position+Vector3.up*1.65f;
+        Vector3 position=campfire.position+(ending?new Vector3(0,3.65f,-10):new Vector3(0,2.4f,-8.2f));
         yield return CouncilCameraShot(position,campfire.position+Vector3.up*.85f,64,seconds);
         CameraBeat=ending?"council-pullback":"council-overview";
+    }
+
+    IEnumerator CouncilStandTogether()
+    {
+        yield return FrameCouncilOverview(1);
+        CouncilStandingTogether=true;
+        for(int i=0;i<leaders.Length;i++)
+        {
+            leaders[i].Face(campfire.position);
+            leaders[i].StandFromSeat(i*.13f);
+        }
+        foreach(var actor in conservatives)actor.Face(mona.transform.position);
+        yield return new WaitForSeconds(3);
     }
 
     IEnumerator CouncilCameraShot(Vector3 position,Vector3 target,float fov,float seconds)

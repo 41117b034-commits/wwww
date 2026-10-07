@@ -1,0 +1,28 @@
+{
+    "trees": 169,
+    "timberStacks": 6,
+    "speakerShots": 10,
+    "daytimeUpright": true,
+    "allNightTreesHorizontal": true,
+    "complete": true,
+    "maxUprightDot": 2.682209014892578e-7,
+    "uniqueCouncilModels": 9,
+    "openingHold": 3.114208936691284,
+    "handAboveHead": 0.34111809730529787,
+    "supportersRemainSeatedDuringSpeech": true,
+    "allLeadersStanding": true,
+    "refusalStayedSeated": false,
+    "speakers": [
+        "莫那魯道|若再忍下去，族人的靈魂將被踐踏殆盡！",
+        "六社領袖 · 1|我們肩上的木材越來越重，能帶回家的工錢卻越來越少。",
+        "六社領袖 · 2|他們的命令已經踏進聖地，連祖靈的守護也要奪走。",
+        "六社領袖 · 3|我們的孩子，不該只學會在槍口前低頭。",
+        "六社領袖 · 4|部落之間要彼此照應，不能再讓任何一社獨自受辱。",
+        "六社領袖 · 5|反抗會付出代價。但沉默，也正在奪走我們的一切。",
+        "六社領袖 · 6|我們要奪回尊嚴。今晚，把各社的決心連在一起。",
+        "族人|願有一天，孩子能不再受命令與槍口擺布。願我們自由地生活。",
+        "莫那魯道|我們記住彼此今晚的決心。",
+        "莫那魯道|我們的血，不該再白白流淌。霧社，該覺醒了！"
+    ],
+    "failures": []
+}
