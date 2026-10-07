@@ -177,12 +177,14 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.Line("","");ui.hint.text="";yield return new WaitForSeconds(.6f);
         SetNight();
         player.Warp(meetingSpawn.position,campfire.position);
+        player.FocusOn(campfire.position+Vector3.up*.85f);
         player.canMove=false;player.canLook=true;
         SetStage(Stage.Meeting);ui.chapter.text="第二章  /  夜晚的秘密會議";ui.objective.text="聆聽莫那魯道與六社領袖";
         yield return Fade(0,1.5f);
         yield return Say(mona,"莫那魯道","若再忍下去，族人的靈魂將被踐踏殆盡！");
         string[] speeches={"我們肩上的木材越來越重，能帶回家的工錢卻越來越少。","他們的命令已經踏進聖地，連祖靈的守護也要奪走。","我們的孩子，不該只學會在槍口前低頭。","部落之間要彼此照應，不能再讓任何一社獨自受辱。","反抗會付出代價。但沉默，也正在奪走我們的一切。","我們要奪回尊嚴。今晚，把各社的決心連在一起。"};
         for(int i=0;i<leaders.Length;i++) yield return Say(leaders[i],"六社領袖 · "+(i+1),speeches[i%speeches.Length]);
+        yield return FrameCouncilOverview();
         SetStage(Stage.Vote);ui.objective.text="表達你的立場";ui.hint.text="1 支持／2 拒絕  |  VR 舉起右手支持，或按左手主按鈕拒絕";
         ui.Choices("你支持起義嗎？","1  舉手，支持起義","2  搖頭，拒絕起義");readyToChoose=true;
         while(MeetingDecision<0) yield return null;
@@ -197,21 +199,14 @@ public sealed partial class Chapter2Controller : MonoBehaviour
             yield return Say(conservatives[0],"保守派族人","起義會把家人也捲進去！我不能答應。",5);
             yield return Say(mona,"莫那魯道","我們已經忍受太多。這一次，我們要守住尊嚴。",5);
             yield return Say(conservatives[1],"保守派族人","既然你們已經決定，我們就先離開。",4);
+            yield return FrameCouncilOverview();
             yield return LeaveConservatives();
         }
         mona.seated=false;
         yield return new WaitForSeconds(.8f);
-        // Keep tracked head control in XR. Desktop gets a restrained close-up and pullback.
-        if(!player.IsVR) player.Warp(new Vector3(0,.05f,1.1f),mona.transform.position);
         yield return Say(mona,"莫那魯道","我們的血，不該再白白流淌。霧社，該覺醒了！",6);
         ui.Line("","");
-        if(!player.IsVR)
-        {
-            player.canLook=false;
-            Vector3 from=player.transform.position;
-            for(float t=0;t<1;t+=Time.deltaTime/5)
-            { player.transform.position=Vector3.Lerp(from,new Vector3(0,2,-8),Mathf.SmoothStep(0,1,t));player.view.transform.LookAt(campfire.position+Vector3.up);yield return null; }
-        }
+        if(!player.IsVR)yield return FrameCouncilOverview(5,true);
         yield return Fade(1,2);
         ui.endingPanel.SetActive(true);ui.continueButton.gameObject.SetActive(false);
         yield return new WaitForSeconds(3);
@@ -375,6 +370,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Say(Chapter2Actor actor,string name,string words,float seconds=0)
     {
+        if(actor&&CurrentStage>=Stage.Meeting&&nightGroup.activeInHierarchy)
+        {ui.Line("","");yield return FrameCouncilSpeaker(actor);}
         ui.Line(name,words);if(actor) {actor.speaking=true;if(actor.Rig) actor.Rig.conversationTarget=player.view.transform;}
         yield return new WaitForSeconds(seconds>0?seconds:lineSeconds);
         if(actor) actor.speaking=false;
@@ -388,10 +385,13 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     public void SetNight()
     {
-        // The forward-fallen tree overlaps the separate night meeting set.
-        // Remove it under the transition's black screen before revealing the council.
-        if(TreeDecision==1){sacredTree.gameObject.SetActive(false);fallenStump.SetActive(false);}
+        var loggedForest=GetComponent<Chapter2LoggedForest>();
+        if(loggedForest)loggedForest.ApplyNight();
+        else if(TreeDecision==1){sacredTree.gameObject.SetActive(false);fallenStump.SetActive(false);}
         dayGroup.SetActive(false);nightGroup.SetActive(true);sun.color=new Color(.38f,.5f,.78f);sun.intensity=.25f;sun.transform.rotation=Quaternion.Euler(35,-40,0);
+        mona.Face(campfire.position);
+        foreach(var leader in leaders)leader.Face(campfire.position);
+        foreach(var conservative in conservatives)conservative.Face(campfire.position);
         RenderSettings.ambientLight=new Color(.12f,.17f,.24f);RenderSettings.ambientIntensity=.45f;RenderSettings.fogColor=new Color(.025f,.04f,.065f);RenderSettings.fogDensity=.018f;
         player.view.backgroundColor=RenderSettings.fogColor;fireLight.gameObject.SetActive(true);
         ambience.clip=nightAudio;ambience.Play();if(fireAudio)fireAudio.Play();

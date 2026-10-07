@@ -1,0 +1,114 @@
+2026-10-07T16:59:56 Log [Chapter2 council] Configured 169 fallen night trees and 6 timber stacks.
+2026-10-07T17:04:49 Log [Chapter2] Stage=Intro
+2026-10-07T17:04:52 Log [Chapter2] Stage=Follow
+2026-10-07T17:05:15 Log [Chapter2] Stage=TreeChoice
+2026-10-07T17:05:16 Log [Chapter2] Stage=Chopping
+2026-10-07T17:05:23 Log [Chapter2] Stage=Consequence
+2026-10-07T17:05:44 Log [Chapter2] Stage=Meeting
+2026-10-07T17:05:44 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-07T17:06:23 Log [Chapter2] Stage=Vote
+2026-10-07T17:06:24 Log [Chapter2] Stage=Ending
+2026-10-07T17:06:54 Log [Chapter2] Stage=Complete
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1181,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3397,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3502,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4065,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7354,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15608,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15613,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15618,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15623,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-07T17:16:17 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1181,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3397,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3502,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4065,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7354,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15608,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15613,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15618,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15623,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-07T17:19:47 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-07T17:23:03 Log [Chapter2] Stage=Intro
+2026-10-07T17:23:06 Log [Chapter2] Stage=Follow
+2026-10-07T17:23:29 Log [Chapter2] Stage=TreeChoice
+2026-10-07T17:23:30 Log [Chapter2] Stage=Consequence
+2026-10-07T17:24:09 Log [Chapter2] Stage=Meeting
+2026-10-07T17:24:09 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-07T17:24:49 Log [Chapter2] Stage=Vote
+2026-10-07T17:24:50 Log [Chapter2] Stage=Ending
+2026-10-07T17:25:32 Log [Chapter2] Stage=Complete
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:29 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-07T17:28:30 Log [Chapter2] Stage=Intro
+2026-10-07T17:28:33 Log [Chapter2] Stage=Follow
+2026-10-07T17:28:56 Log [Chapter2] Stage=TreeChoice
+2026-10-07T17:28:57 Log [Chapter2] Stage=Chopping
+2026-10-07T17:29:04 Log [Chapter2] Stage=Consequence
+2026-10-07T17:29:24 Log [Chapter2] Stage=Meeting
+2026-10-07T17:29:24 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-07T17:30:04 Log [Chapter2] Stage=Vote
+2026-10-07T17:30:06 Log [Chapter2] Stage=Ending
+2026-10-07T17:30:36 Log [Chapter2] Stage=Complete
+2026-10-07T17:36:42 Log [Chapter2] Stage=Intro
+2026-10-07T17:36:46 Log [Chapter2] Stage=Follow
+2026-10-07T17:37:08 Log [Chapter2] Stage=TreeChoice
+2026-10-07T17:37:09 Log [Chapter2] Stage=Consequence
+2026-10-07T17:37:48 Log [Chapter2] Stage=Meeting
+2026-10-07T17:37:48 Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-07T17:38:28 Log [Chapter2] Stage=Vote
+2026-10-07T17:38:29 Log [Chapter2] Stage=Ending
+2026-10-07T17:39:12 Log [Chapter2] Stage=Complete

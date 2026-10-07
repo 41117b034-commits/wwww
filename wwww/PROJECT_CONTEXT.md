@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 已依使用者更正：砍伐完成度由 0% 開始，每次有效砍伐增加 20%，第五次為 100%；警告／重試只在連續砍錯三次觸發，砍中會清除連錯次數。fell-support-consecutive-three-final completed=true、errors=[]；18 次實際接觸的專項檢查 failures=[]，正式結尾自停。左側原住民小孩保留。證據在 _CodexBackups/chapter2_progress_streak_20261007/；詳見文末。
+最新狀態：2026-10-07 夜間秘密會議背景 169 棵樹改為倒地，新增六堆木材；每段發言鏡頭轉到說話者正面，包含六社領袖、莫那魯道及保守派，選擇／離場時回全景。fell-support-council-final 與 protect-refuse-council-clear-speakers 均 completed=true、errors=[]，正式結尾自停；已逐張檢查人物構圖，保守派遮擋已修正。先前完成度 0→100%、連錯三次重試及左側原住民小孩保留。證據在 _CodexBackups/chapter2_logged_council_20261007/；詳見文末。
 
 ## 專案位置
 
@@ -602,3 +602,27 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 備份、測試結果、截圖、CSV、來源比對在 `_CodexBackups/chapter2_progress_streak_20261007/`；三個正式變更檔案与測試時雜湊一致。更新 Documentation/Chapter2.md 與 Chapter2-chopping-progress-preview.png（有效 4 下、80%），新增 Chapter2-three-miss-warning-preview.png。
 - 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2StreakReview 與 meta 已移到備份的 verification-tools。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
 - 清理後重新編譯完成，實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景無未儲存標記；此為清理後狀態。正式 Assets／Documentation／Packages／ProjectSettings 共 3,362 檔，超過或等於 100,000,000 bytes 為 0，最大 87,096,360 bytes。
+
+## 2026-10-07 夜間倒木、木材堆與發言人物鏡頭
+
+- 依使用者夜間會議截圖直接修改原專案；已讀 AGENTS、本檔與固定劇情參考第 3–5 頁。夜間景觀依本次要求呈現全數倒木，保護與砍伐兩條路線皆套用；不改白天護樹的當下演出與選擇结果。
+- 新增 `Chapter2LoggedForest.cs`，在轉夜淡黑時將原森林 130 棵、補植 38 棵與巨木共 169 棵橫放，沿營火外圍錯開倒向；巨木橫置會場後方，隱藏不自然的程序根部。夜間樹木不阻擋鏡頭／離場路徑，白天仍保留原位置及站立狀態；不複製大型樹木 mesh。
+- 場景夜間群組新增六堆、共 42 根切好角材，沿用既有 Carried timber 材質。新增 `Chapter2CouncilAuthoring.cs` 與 Tools / Chapter 2 / Prepare Logged Night Council；森林重新建立後需再執行此命令更新樹木引用。既有營火、人物、地面、石頭與座位保留。
+- 新增 `Chapter2Controller.Council.cs`：每段夜間 Say 前清除上一句字幕，沿火堆外圍平滑移至說話者正面，人物朝向鏡頭；坐姿與站姿使用不同高度。保守派兩人使用斜向構圖，避免後一人被前一人遮住。六社講完、選擇立場與保守派離場時回全景，最終站立演說後保留拉遠／黑幕結尾。
+- XR 沿用既有短淡黑原點移動路徑，保留頭部追蹤；未以實體頭戴装置測試，不能把桌面畫面等同 VR 結果。`Chapter2Controller.Performance.cs` 與接手前一致。
+
+### 本輪實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode；臨時 driver 經正式移動、UI 選項及砍伐入口，略過片頭、跟隨 2 倍、後果與夜間 1 倍。逐張查看引擎正式鏡頭截圖，另查看 Unity 播放後狀態；不是全程人工鍵盤、獨立建置或實體 VR 驗收。
+- `fell-support-council-v1` 為診斷輪，發現莫那背向及巨木根部過於顯眼後修正；`protect-refuse-council-final` 發現後一名保守派被遮擋，後續針對兩名保守派改成斜向鏡頭。不能把這兩輪當最終視覺驗收。
+- `fell-support-council-final`：completed=true、errors=[]，5 次有效砍伐；夜間全部 169 棵橫倒、六堆木材，10 段發言均有對應鏡頭，council failures=[]。已逐張檢視六位領袖及支持分支人物。此輪在保守派專用角度修正之前；該最後修正只對 conservatives 陣列成員生效，支持分支不使用它。
+- `protect-refuse-council-clear-speakers`：最終來源實測 completed=true、errors=[]；11 段發言，包括兩名保守派與最後站立演說，council failures=[]。已查看兩位保守派新構圖，臉部不再互相遮擋。人物頭部在可讀視框、面朝鏡頭，並以截圖人工檢查遮擋，未單憑視框數值宣稱畫面正確。
+- 兩輪均 daytimeUpright=true、allNightTreesHorizontal=true，最大樹幹 up 與世界 up 的絕對內積約 2.68e-7；nightPipelineRestored=true，正式結尾自行停止，returned-to-edit playing=false、completed=true。測試關閉 PlayerPrefs 寫入；此輪未重測連错三次規則（先前專項證據保留）、完整片頭、另外兩個組合或第一章。
+- 播放仍有既有 Missing Script 警告與 URP 點光陰影縮小訊息；不宣稱全專案播放零警告。最終來源雜湊保存在 clear-speakers-source-hashes.json，與播放後 final-source-comparison.json 一致。
+
+### 保存
+
+- 備份、診斷與最終結果、逐人鏡頭截圖、speakers CSV、來源雜湊在 `_CodexBackups/chapter2_logged_council_20261007/`。第一章場景、共用 Chapter1IncidentRig、Chapter2Presentation 與小孩 prefab 雜湊確認未變。
+- 新預覽：`Documentation/Chapter2-logged-council-preview.png`、`Chapter2-council-speaker-preview.png`、`Chapter2-council-dissent-preview.png`；玩法與維護說明同步更新於 `Documentation/Chapter2.md`。未 commit／push。
+- 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2CouncilReview 與 meta 已移入備份的 verification-tools，Assets 不保留測試輪詢工具。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset；清理後重新編譯完成，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景無未儲存標記。這是清理後狀態，不抹除播放期間既有警告。
+- 最後 Assets／Documentation／Packages／ProjectSettings 共 3,371 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見 asset-size-audit.json。
