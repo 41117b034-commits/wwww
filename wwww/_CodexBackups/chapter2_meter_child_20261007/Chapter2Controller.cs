@@ -92,7 +92,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         }
         if(CurrentStage==Stage.Chopping)
         {
-            ui.SetMeter(RhythmPhase,ValidCuts);
+            ui.SetMeter(RhythmPhase,ValidCuts,Integrity);
             if(player.ActionPressed) TryChop();
         }
         if(CurrentStage==Stage.Complete && player.ActionPressed) ReturnToMenu();
@@ -329,7 +329,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         SetStage(Stage.Chopping);canChop=true;player.canMove=true;axe.SetActive(true);chopStarted=Time.time;
         if(TryGetChopContact(out RaycastHit focus))player.FocusOn(focus.point);
         ui.Line("伐木","握穩木柄斧。等游標進入綠色區域，再朝樹幹落斧。");
-        ui.SetMeter(RhythmPhase,ValidCuts);
+        ui.SetMeter(RhythmPhase,ValidCuts,Integrity);
         ui.objective.text="對準樹幹，小心落斧";ui.meterPanel.SetActive(true);
         ui.hint.text="游標進入綠色區域時，按 E／空白鍵／右手扳機。避免傷及木材。";
         while(ValidCuts<5)
@@ -340,8 +340,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
                 axe.SetActive(false);yield return FrameSpeaker(officer);
                 yield return Say(officer,"日本警察","木材不能再受損！放慢動作，重新找準落點。",4);
                 yield return RestoreChoppingView();axe.SetActive(true);
-                Integrity=100;ValidCuts=0;chopStarted=Time.time;canChop=true;player.canMove=true;
-                ui.SetMeter(RhythmPhase,ValidCuts);ui.meterPanel.SetActive(true);
+                Integrity=100;ValidCuts=0;chopStarted=Time.time;canChop=true;player.canMove=true;ui.meterPanel.SetActive(true);
             }
             yield return null;
         }
@@ -367,7 +366,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         yield return tool.Swing(contact,()=>{
             if(accurate){ValidCuts++;ui.Line("伐木","斧刃切進樹皮，木屑飛散。放穩斧頭，等待下一次時機。");}
             else{FailedCuts++;Integrity=Mathf.Max(0,Integrity-20);ui.Line("伐木","落斧偏了，木材受到損傷。等游標進入綠色區域，再落斧。");}
-            ui.SetMeter(RhythmPhase,ValidCuts);
             if(chopAudio)effects.PlayOneShot(chopAudio,.7f);
         });
         if(CurrentStage==Stage.Chopping&&canChop)player.canMove=true;

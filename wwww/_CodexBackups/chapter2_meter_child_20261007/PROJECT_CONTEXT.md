@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 已完成第二章「砍伐完成度」與左側小孩 NPC 修改。有效砍伐從 100% 依序減為 80／60／40／20／0%，黃色條同步縮短；林間族人 1 改為現有原住民小孩模型。最終 fell-support-retry-mixed-bars-final completed=true、errors=[]，驗證失誤不扣完成度、重試、夜間隱藏與結尾自停。證據在 _CodexBackups/chapter2_meter_child_20261007/；詳見文末。
+最新狀態：2026-10-07 已完成第二章森林豐富化：新增 38 棵樹、草叢／灌木／野花、樹根與碎石，地面改為泥土、落葉、苔草混合材質；新增 3 位族人及 2 位警察在樹旁約 1.3 公尺內巡走。protect-refuse-forest-final 與 fell-support-forest-final 均 completed=true、errors=[]，結尾自行退出 Play Mode，新增 NPC 夜間全部隱藏。另已重載場景播放並檢查地面、花草與 NPC 近景。證據在 _CodexBackups/chapter2_forest_richness_20261007/；文末記載本輪範圍。
 
 ## 專案位置
 
@@ -564,28 +564,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2ForestMetrics、Chapter2ForestReview 及 meta 已全部移入本輪備份的 verification-tools，正式 Assets 不保留測試／輪詢工具。清理前狀態 playing=False、dirty=False、pipeline=PC_PipelineAsset。
 - 清理後重新編譯完成，2026-10-07 實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景無未儲存標記；這是清理後狀態，不抹除播放期間與診斷版的既有警告／已修正錯誤。
 - 最後正式 Assets／Documentation／Packages／ProjectSettings 共 3,354 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見 asset-size-audit.json。新環境檔案雜湊另存 final-environment-hashes.json。
-
-## 2026-10-07 砍伐完成度倒數與左側原住民小孩
-
-- 依使用者兩張截圖直接修改原專案；已讀 AGENTS、本檔與固定劇情參考第 3–5 頁。本次使用者明確指定的 100→80→60→40→20→0 倒數優先於「完成度」通常遞增的語意。
-- `Chapter2Presentation.SetMeter` 改顯示「砍伐完成度」，百分比只依有效砍伐次數計算，每次減 20%。黃色條同步縮短；原 Image 沒有 sprite，僅設 fillAmount 不會縮短，已改以 RectTransform 寬度呈現。節奏綠區與白色游標不變。
-- `Chapter2Controller` 在真正斧刃接觸與重試時立即更新 UI。原 Integrity 仍作內部木材受損及重試判斷，失誤不會扣畫面的完成度；達 5 次有效砍伐正常進入倒樹演出，0% 不會觸發受損重試。
-- 第二章白天背景群組的 `林間族人 1`（起點 x=-6.3、z=-5.5）替換為 `林間原住民小孩`，來源是第一章既有 `原住民小孩(2)`，不是縮小成人。新增 `Assets/Chapter2/Characters/原住民小孩.prefab`（46,659 bytes），沿用模型與材質，authoring 網格高度 1.22 公尺；保留原活動位置、路徑與相位。
-- 新增 `Chapter2ChildNPCAuthoring.cs` 的 Tools / Chapter 2 / Replace Left Background NPC with Child，可針對此 NPC 替換。森林重建工具 `Chapter2ForestRichnessAuthoring` 也沿用該小孩，避免重建後退回重複成人。
-- 場景既有物件的差異僅為背景父物件的子引用、兩個 HUD 名稱及初始標籤；其餘為原 NPC 骨架移除與小孩骨架加入。第一章場景、共用 Chapter1IncidentRig 的雜湊確認未變。
-
-### 本輪實際驗證
-
-- Unity 6000.0.58f1 原專案 Editor Play Mode，以臨時 driver 經正式移動、UI 選項、TryChop 與斧刃接觸執行；略過片頭，白天 2 倍、倒樹 1 倍、夜間 3 倍，另逐張檢視引擎截圖。不是全程人工鍵盤或實體 VR 驗收。
-- `fell-support-retry-mixed-final` 是第一輪診斷：文字與計數正確，但截圖發現黃色條未縮短。修正條長後重播 `fell-support-retry-mixed-bars-final`，completed=true、errors=[]；有效 1–5 下分別為 80／60／40／20／0%，實際查看 60% 與 0% 畫面確認條長正確。
-- 最終輪先做 5 次失誤觸發重試，之後有效 2 下再失誤一次，顯示維持 60%，最後完成 5 下，共 11 次接觸。遠距、背向、重複揮砍拒絕檢查皆通過；重試與倒樹流程正常。CSV 保存每次有效／失誤後的文字、fillAmount 與條長 anchor。
-- 實際查看跟隨畫面，小孩外觀與其他成人可區分，骨架有效；完成 4 段短程往返，最大起點距離約 1.275 公尺。夜間 hiddenAtNight=True；夜間原渲染管線恢復，倒木隱藏。最終 returned-to-edit 為 playing=false、completed=true，由正式結尾自行退出，driver 未代停。
-- 測試關閉 PlayerPrefs 寫入，正式場景 saveResult／stopEditorAfterEnding 保持原值。播放仍見既有 Missing Script 警告及 URP 陰影圖縮小訊息；不宣稱全專案零警告。未重測保護分支、完整片頭、實體 VR 或獨立建置。
-
-### 保存與清理
-
-- 原始檔、診斷與最終結果、截圖、CSV、大小稽核、來源雜湊放在 `_CodexBackups/chapter2_meter_child_20261007/`；最後核對 6 個正式修改／新增檔案與最終測試時雜湊一致。
-- 新預覽：`Documentation/Chapter2-chopping-progress-preview.png`（有效 2 下、60%）、`Documentation/Chapter2-left-child-preview.png`。`Documentation/Chapter2.md` 已更新玩法說明。
-- 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2MeterChildReview 與 meta 已移到本輪備份的 verification-tools；正式 Assets 不保留測試 driver。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
-- 清理後已完成重新編譯，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景無未儲存標記；這是清理後狀態，不抹除播放期間既有警告。
-- 最後 Assets／Documentation／Packages／ProjectSettings 共 3,361 檔，沒有檔案達 100,000,000 bytes；最大 87,096,360 bytes，详見本輪 asset-size-audit.json。

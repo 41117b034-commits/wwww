@@ -34,15 +34,10 @@ public sealed class Chapter2Presentation : MonoBehaviour
         choicePanel.SetActive(true);
     }
     public void HideChoices() { choicePanel.SetActive(false); }
-    public void SetMeter(float phase,int hits)
+    public void SetMeter(float phase,int hits,float integrity)
     {
-        // The requested countdown tracks successful cuts, independently of wood damage.
-        int remaining=Mathf.Clamp(100-hits*20,0,100);
-        meterLabel.text=$"砍伐完成度 {remaining}%     有效砍伐 {hits} / 5";
-        meter.fillAmount=remaining/100f;
-        // This solid-color Image has no sprite, so Filled alone does not clip it.
-        var bar=meter.rectTransform;
-        bar.anchorMax=new Vector2(Mathf.Lerp(.06f,.94f,meter.fillAmount),bar.anchorMax.y);
+        meterLabel.text=$"木材完整度 {integrity:0}%     有效砍伐 {hits} / 5";
+        meter.fillAmount=integrity/100f;
         cursor.rectTransform.anchorMin=new Vector2(phase,0); cursor.rectTransform.anchorMax=new Vector2(phase,1);
     }
     public static Chapter2Presentation Build(Camera camera,Font font)
@@ -62,12 +57,12 @@ public sealed class Chapter2Presentation : MonoBehaviour
         ui.choiceTitle=ui.Label(ui.choicePanel.transform,"",31,new Vector2(.05f,.66f),new Vector2(.95f,.95f),Color.white,TextAnchor.MiddleCenter);
         ui.buttonA=ui.MakeButton(ui.choicePanel.transform,new Vector2(.045f,.13f),new Vector2(.48f,.58f),out ui.choiceA);
         ui.buttonB=ui.MakeButton(ui.choicePanel.transform,new Vector2(.52f,.13f),new Vector2(.955f,.58f),out ui.choiceB);
-        ui.meterPanel=ui.Panel(go.transform,"Chopping progress",new Vector2(.25f,.34f),new Vector2(.75f,.48f),new Color(.02f,.04f,.03f,.9f)).gameObject;
+        ui.meterPanel=ui.Panel(go.transform,"Wood integrity",new Vector2(.25f,.34f),new Vector2(.75f,.48f),new Color(.02f,.04f,.03f,.9f)).gameObject;
         ui.meterLabel=ui.Label(ui.meterPanel.transform,"",25,new Vector2(.04f,.54f),new Vector2(.96f,.94f),Color.white,TextAnchor.MiddleCenter);
         var track=ui.Panel(ui.meterPanel.transform,"Rhythm",new Vector2(.06f,.2f),new Vector2(.94f,.43f),new Color(.25f,.25f,.22f,1));
         ui.safeZone=ui.Panel(track,"Safe band",new Vector2(.32f,0),new Vector2(.68f,1),new Color(.58f,.74f,.36f,1));
         ui.cursor=ui.Panel(track,"Timing cursor",new Vector2(0,0),new Vector2(0,1),Color.white).GetComponent<Image>(); ui.cursor.rectTransform.sizeDelta=new Vector2(5,8);
-        ui.meter=ui.Panel(ui.meterPanel.transform,"Remaining cuts",new Vector2(.06f,.07f),new Vector2(.94f,.12f),new Color(.87f,.72f,.42f)).GetComponent<Image>();ui.meter.type=Image.Type.Filled;ui.meter.fillMethod=Image.FillMethod.Horizontal;
+        ui.meter=ui.Panel(ui.meterPanel.transform,"Integrity",new Vector2(.06f,.07f),new Vector2(.94f,.12f),new Color(.87f,.72f,.42f)).GetComponent<Image>();ui.meter.type=Image.Type.Filled;ui.meter.fillMethod=Image.FillMethod.Horizontal;
         var videoPanel=ui.Panel(go.transform,"Video",Vector2.zero,Vector2.one,Color.black).gameObject;Object.DestroyImmediate(videoPanel.GetComponent<Image>());
         ui.videoImage=videoPanel.AddComponent<RawImage>();ui.videoImage.color=Color.white;ui.videoImage.raycastTarget=false;
         ui.fade=ui.Panel(go.transform,"Fade",Vector2.zero,Vector2.one,new Color(0,0,0,0)).GetComponent<Image>();ui.fade.raycastTarget=false;

@@ -1,0 +1,2 @@
+name=林間原住民小孩 position=(-7.05, 0.04, -5.14) rigValid=True rigHeight=1.053152 trips=1 skin=tripo_node_33432f6c
+hiddenAtNight=True trips=4 distance=1.274889

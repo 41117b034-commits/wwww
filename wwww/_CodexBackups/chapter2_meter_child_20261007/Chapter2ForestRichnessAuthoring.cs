@@ -208,8 +208,7 @@ public static class Chapter2ForestRichnessAuthoring
         {
             bool police=i>=3;
             var source=police?c.officer:c.workers[i%c.workers.Length];
-            var model=i==0?Chapter2ChildNPCAuthoring.LoadChild():source.gameObject;
-            var g=Object.Instantiate(model,parent);g.name=i==0?Chapter2ChildNPCAuthoring.ChildName:police?"樹旁巡察警察 "+(i-2):"林間族人 "+(i+1);
+            var g=Object.Instantiate(source.gameObject,parent);g.name=police?"樹旁巡察警察 "+(i-2):"林間族人 "+(i+1);
             foreach(var b in g.GetComponentsInChildren<MonoBehaviour>(true))Object.DestroyImmediate(b);
             foreach(var col in g.GetComponentsInChildren<Collider>(true))Object.DestroyImmediate(col);
             // Ambient officers do not inherit the story rifle, muzzle flash, or targets.
