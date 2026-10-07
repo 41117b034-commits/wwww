@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 已完成使用者兩張截圖的續修：護樹者改成張臂橫擋、重心前傾與寬站姿，雙手不再舉在頭旁；兩名族人保留蹲下查看，接著站起、只走兩三步就漸隱，不再等走回樹邊。新增短步行的交替落腳、擺臂與連續重心移動。最終 protect-refuse-shield-final 與 fell-support-shield-regression 均 completed=true、errors=[]，正式結尾自行退出 Play Mode。證據在 _CodexBackups/chapter2_shield_shortwalk_20261007/；文末記載本輪驗證範圍。
+最新狀態：2026-10-07 已完成第二章三張截圖要求：距離巨木黃標小於 1.5 公尺自動進入劇情；阻擋者雙手抬起、掌心朝警察；槍響即開始收槍，待倒地與兩人跑近蹲下查看後，再舉槍命令「給我去砍樹」，兩人默默起身、走到樹旁，才淡黑轉入夜間會議。最終 protect-refuse-sequence-final 與 fell-support-sequence-regression 均完成、errors=[]，結尾黑幕後自行退出 Play Mode；證據在 _CodexBackups/chapter2_protect_sequence_20261006/。詳見文末本輪紀錄。
 
 ## 專案位置
 
@@ -511,28 +511,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 更新 `Documentation/Chapter2-close-confrontation-preview.png`、`Chapter2-rescue-preview.png`；新增 `Chapter2-arrival-distance-preview.png`、`Chapter2-forced-logging-order-preview.png`、`Chapter2-survivors-return-preview.png`，均為本輪正式遊戲鏡頭的引擎截圖。
 - 清理後已重新編譯，2026-10-07 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景標題無未儲存標記；這是清理後狀態，不抹除播放期間的既有警告。
 - 正式 Assets／Documentation／Packages／ProjectSettings 共 3,258 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳細結果在 asset-size-audit.json。測試後所有正式來源雜湊仍與驗證時相同。
-
-## 2026-10-07 護樹張臂阻擋、起身短步後漸隱（接續中斷修改）
-
-- 使用者指出上一版雙手靠近頭部像投降，且兩人走回樹邊的動作像機器人；要求改成保護樹木的阻擋姿勢，並在兩人從蹲姿站起、走兩三步時就漸隱。已讀本專案指引與固定劇情參考第 3–5 頁，沿用原場景、人物及攝影機。
-- 接手時 `Chapter2BlockingPose.cs`、`Chapter2Controller.ProtectAftermath.cs` 的修改及新增 `Chapter2ReluctantWalk.cs` 已在磁碟，尚無本版播放證據。本輪接續完成步伐銜接與驗證，未重新套回上一輪長距離回樹路線。
-- `Chapter2BlockingPose.cs`：雙臂在肩膀附近向兩側展開並略向前，雙手低於頭部；軀幹微轉、前傾，雙腳拉開並錯開前後位置，頭部保持朝警察。實際鏡頭能讀到張臂護樹的輪廓，不再把雙掌並排舉在頭旁。
-- `Chapter2ReluctantWalk.cs`：兩人完整站起後，稍微錯開轉身與起步；以交替支撐腳、低幅抬腳、擺臂及重心起伏完成三個短步。身體平移採步與步之間速度連續的曲線，修掉每次落腳都停頓的問題，手臂也漸進混合入步行姿勢。
-- `Chapter2Controller.ProtectAftermath.cs`：保留「給我去砍樹」及原本蹲下查看、1.4 秒起身；兩人各完成兩步便交給原流程做 1.6 秒漸隱，第三步接在漸隱中。總位移約 0.8 公尺，不再走到舊終點、停住 1.2 秒才淡黑。
-
-### 本輪實際驗證
-
-- Unity 6000.0.58f1 原專案 Editor Play Mode，以臨時 driver 經正式移動／UI 選項／砍伐入口測試。略過片頭，跟隨 2 倍、最終版保護與倒樹後果 1 倍、夜間會議 3 倍；另外查看 Unity 播放畫面與逐段引擎截圖。這不是全程人工操作、實體 VR 或獨立建置驗證。
-- `protect-refuse-shield-v1` 為診斷輪，完成但步間重心尚有短停；最後修改後重新執行 `protect-refuse-shield-final`，completed=true、errors=[]。雙手相距約 1.093 公尺；檢查了阻擋、警察瞄準、蹲下查看、站起中段、短步行與淡出中的實際畫面。
-- 最終保護輪：checkedBeforeOrder=true、orderWhileCrouched=true、stoodBeforeWalking=true；淡出開始取樣時兩人的 StepsCompleted 均為 2，位移約 0.689／0.590 公尺；漸隱中各完成第 3 步，最後位移各約 0.8 公尺。取樣含截圖負載，不能把取樣時間當成固定動畫時長。結果檔中的 returnedToTrees／fadedAfterReturn 是未使用的舊欄位，不作為此版驗收條件。
-- `fell-support-shield-regression`：completed=true、errors=[]，5 次有效砍伐與接觸；遠距／背向／重複揮砍防護通過；三名族人各後退 3 步，倒樹朝玩家方向 dot=1；已查看倒木與夜間會議截圖。
-- 兩輪夜間均還原 PC_PipelineAsset，正式結尾黑幕後自行退出，returned-to-edit.json 均 playing=false、completed=true，driver 未代停；PlayerPrefs 寫入在測試中關閉。播放仍有既有 Missing Script 警告及 URP 陰影圖縮小訊息，不宣稱全專案零警告。
-- 未重測完整片頭、完整度歸零重試、另兩個會議組合、第一章、實體 VR 或獨立建置；本次兩項要求已完成 Editor 層級驗證。
-
-### 保存與清理
-
-- 原始備份、最終兩輪與診斷輪結果、逐段截圖、sequence／short-walk CSV、驗證來源雜湊位於 `_CodexBackups/chapter2_shield_shortwalk_20261007/`。臨時 Chapter2WorkProbe／Chapter2Verification 及 meta 已移入其 verification-tools；正式 Assets 不保留 driver。
-- 更新 `Documentation/Chapter2-close-confrontation-preview.png`、`Chapter2-survivors-return-preview.png`（現在顯示走兩步即開始淡出），新增 `Chapter2-short-walk-fade-preview.png`。
-- 兩章場景、共用 Chapter1IncidentRig、Chapter2Controller、Chapter2Rifle、Chapter2GriefReaction 均與接手前原始雜湊一致；最後播放後再次核對三個修改／新增的正式腳本仍為已驗證版本。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
-- 清理後重新編譯完成，2026-10-07 13:34 實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動，場景標題無未儲存標記；這是清理後狀態，不抹除播放期間的既有警告。
-- 最後正式檔案大小掃描 Assets／Documentation／Packages／ProjectSettings 共 3,261 檔，達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes；詳見本輪 asset-size-audit.json。

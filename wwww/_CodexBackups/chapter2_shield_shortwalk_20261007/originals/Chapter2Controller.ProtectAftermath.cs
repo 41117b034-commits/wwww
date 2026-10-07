@@ -38,22 +38,43 @@ public sealed partial class Chapter2Controller
                 yield return null;
             }
         }
-        var walks=new Chapter2ReluctantWalk[workers.Length-1];
+        var starts=new Vector3[workers.Length];var destinations=new Vector3[workers.Length];
+        var facings=new Vector3[workers.Length];float walkDuration=0;
         for(int i=1;i<workers.Length;i++)
         {
-            Vector3 treeSide=sacredTree.position+new Vector3(i==1?2.6f:-2.7f,0,-1.65f);
-            walks[i-1]=workers[i].gameObject.AddComponent<Chapter2ReluctantWalk>();
-            walks[i-1].Begin(treeSide-workers[i].transform.position,(i-1)*.16f);
+            starts[i]=workers[i].transform.position;facings[i]=workers[i].Rig.Forward;
+            destinations[i]=sacredTree.position+new Vector3(i==1?2.6f:-2.7f,0,-1.65f);
+            destinations[i].y=starts[i].y;
+            walkDuration=Mathf.Max(walkDuration,Mathf.Max(2.6f,Vector3.Distance(starts[i],destinations[i])/.85f)+(i-1)*.25f);
         }
-        CameraBeat="survivors-short-walk";
-        while(System.Array.Exists(walks,walk=>walk.StepsCompleted<2))
+        for(float t=0;t<1;t+=Time.deltaTime/.65f)
         {
+            for(int i=1;i<workers.Length;i++)workers[i].Face(starts[i]+Vector3.Slerp(facings[i],(destinations[i]-starts[i]).normalized,Mathf.SmoothStep(0,1,t)));
+            yield return null;
+        }
+        CameraBeat="survivors-walking";
+        for(float t=0;t<walkDuration;t+=Time.deltaTime)
+        {
+            for(int i=1;i<workers.Length;i++)
+            {
+                float distance=Vector3.Distance(starts[i],destinations[i]);
+                float duration=Mathf.Max(2.6f,distance/.85f);
+                float k=Mathf.SmoothStep(0,1,Mathf.Clamp01((t-(i-1)*.25f)/duration));
+                // The arc stays in front of the trunk and behind the fallen companion.
+                Vector3 middle=Vector3.Lerp(starts[i],destinations[i],.5f);
+                middle.z=Mathf.Min(middle.z,sacredTree.position.z-2.8f);
+                workers[i].transform.position=(1-k)*(1-k)*starts[i]+2*(1-k)*k*middle+k*k*destinations[i];
+                if(k>=1)workers[i].Face(sacredTree.position);
+            }
             threat.position=(SurvivorChest(workers[1])+SurvivorChest(workers[2]))*.5f;
             officer.Face(threat.position);yield return null;
         }
-        // The next statement in Run starts fading; the third step continues under it.
-        CameraBeat="survivors-short-walk-fade";
+        for(int i=1;i<workers.Length;i++){workers[i].transform.position=destinations[i];workers[i].Face(sacredTree.position);}
+        CameraBeat="survivors-at-trees";
+        yield return new WaitForSeconds(1.2f);
+        // The main flow fades only after both survivors have returned to the trees.
     }
+
     static Vector3 SurvivorChest(Chapter2Actor actor)
     {
         return Vector3.Lerp(actor.Rig.Hips.position,actor.Rig.Head.position,.6f);
