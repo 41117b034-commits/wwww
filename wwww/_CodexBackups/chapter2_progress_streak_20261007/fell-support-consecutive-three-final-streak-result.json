@@ -1,0 +1,8 @@
+{
+    "warnings": 1,
+    "impacts": 18,
+    "initialZero": true,
+    "resetAfterWarning": true,
+    "completed": true,
+    "failures": []
+}

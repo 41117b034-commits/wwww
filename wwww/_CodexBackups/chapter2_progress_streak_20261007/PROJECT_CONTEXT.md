@@ -2,7 +2,7 @@
 
 更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-07 已依使用者更正：砍伐完成度由 0% 開始，每次有效砍伐增加 20%，第五次為 100%；警告／重試只在連續砍錯三次觸發，砍中會清除連錯次數。fell-support-consecutive-three-final completed=true、errors=[]；18 次實際接觸的專項檢查 failures=[]，正式結尾自停。左側原住民小孩保留。證據在 _CodexBackups/chapter2_progress_streak_20261007/；詳見文末。
+最新狀態：2026-10-07 已完成第二章「砍伐完成度」與左側小孩 NPC 修改。有效砍伐從 100% 依序減為 80／60／40／20／0%，黃色條同步縮短；林間族人 1 改為現有原住民小孩模型。最終 fell-support-retry-mixed-bars-final completed=true、errors=[]，驗證失誤不扣完成度、重試、夜間隱藏與結尾自停。證據在 _CodexBackups/chapter2_meter_child_20261007/；詳見文末。
 
 ## 專案位置
 
@@ -589,16 +589,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2MeterChildReview 與 meta 已移到本輪備份的 verification-tools；正式 Assets 不保留測試 driver。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
 - 清理後已完成重新編譯，實際查看 Unity Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景無未儲存標記；這是清理後狀態，不抹除播放期間既有警告。
 - 最後 Assets／Documentation／Packages／ProjectSettings 共 3,361 檔，沒有檔案達 100,000,000 bytes；最大 87,096,360 bytes，详見本輪 asset-size-audit.json。
-
-## 2026-10-07 完成度改為遞增、連續三次失誤才重試
-
-- 使用者更正上一輪倒數需求；本段取代前段的百分比與重試規則，先前倒數截圖／測試僅作歷史紀錄。本輪已重讀 AGENTS、本檔與固定劇情參考第 3–5 頁。
-- `Chapter2Presentation.SetMeter`：0 次有效砍伐為 0%，1–5 次依序 20／40／60／80／100%，黃色條同步增加，失誤不增加完成度。場景初始標籤、條長及名稱亦已儲存為新規則。
-- `Chapter2Controller` 新增 ConsecutiveFailedCuts；真正斧刃接觸判定失誤才累加，成功命中立即歸零。達 3 才觸發既有「木材不能再受損！放慢動作，重新找準落點。」及重試；重試後有效次數、連错次數和完成度均歸零。FailedCuts 仍保留總失誤統計，Integrity 仍保留原內部損傷紀錄，但不再用其歸零判斷重試。
-- 原住民小孩 prefab 與兩個 NPC／森林 authoring 腳本雜湊未變；本輪只改 Controller、Presentation 與第二章 HUD 的 4 行序列化設定。
-- Unity 6000.0.58f1 Editor Play Mode 最終 `fell-support-consecutive-three-final`：completed=true、errors=[]，夜間還原管線且倒木隱藏，正式結尾自行退出，returned-to-edit 為 playing=false、completed=true。driver 經正式移動、UI 選項、TryChop 與實際斧刃接觸；略過片頭，白天 2 倍、倒樹 1 倍、夜間 3 倍，並逐張查看引擎截圖，不是全程人工鍵盤或實體 VR。
-- 專項實測先「錯、錯、對、錯、錯、對、錯、錯、錯」：每次砍中即清除連錯，總失誤到第 5／6 次均不警告；第 9 次接觸為連錯第三次，才出現一次警告。重試歸零後再「錯、錯、對、錯、錯、對、對、對、對」，正常完成 5 次有效砍伐。全輪 18 次接觸、11 次總失誤、恰好 1 次警告，專項 streak-result.json 為 initialZero=true、resetAfterWarning=true、completed=true、failures=[]。
-- 已查看初始 0%、砍中一次 20%、連錯第三次警告、完成 100% 與黃色條畫面；完整 CSV 保留每次接觸的有效數／總失誤／連錯數／標籤／條長。遠距、背向、重複揮砍的拒絕檢查也通過。測試關閉 PlayerPrefs 寫入；未重測保護分支、完整片頭、獨立建置或實體 VR。播放保留既有 Missing Script 警告與 URP 陰影圖縮小訊息。
-- 備份、測試結果、截圖、CSV、來源比對在 `_CodexBackups/chapter2_progress_streak_20261007/`；三個正式變更檔案与測試時雜湊一致。更新 Documentation/Chapter2.md 與 Chapter2-chopping-progress-preview.png（有效 4 下、80%），新增 Chapter2-three-miss-warning-preview.png。
-- 臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2StreakReview 與 meta 已移到備份的 verification-tools。清理前 playing=False、dirty=False、pipeline=PC_PipelineAsset。未 commit／push。
-- 清理後重新編譯完成，實際查看 Console 為 0 Error／0 Warning／0 Log，Play 未啟動且場景無未儲存標記；此為清理後狀態。正式 Assets／Documentation／Packages／ProjectSettings 共 3,362 檔，超過或等於 100,000,000 bytes 為 0，最大 87,096,360 bytes。

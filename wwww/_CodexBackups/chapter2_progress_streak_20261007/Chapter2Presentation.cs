@@ -36,9 +36,10 @@ public sealed class Chapter2Presentation : MonoBehaviour
     public void HideChoices() { choicePanel.SetActive(false); }
     public void SetMeter(float phase,int hits)
     {
-        int progress=Mathf.Clamp(hits*20,0,100);
-        meterLabel.text=$"砍伐完成度 {progress}%     有效砍伐 {hits} / 5";
-        meter.fillAmount=progress/100f;
+        // The requested countdown tracks successful cuts, independently of wood damage.
+        int remaining=Mathf.Clamp(100-hits*20,0,100);
+        meterLabel.text=$"砍伐完成度 {remaining}%     有效砍伐 {hits} / 5";
+        meter.fillAmount=remaining/100f;
         // This solid-color Image has no sprite, so Filled alone does not clip it.
         var bar=meter.rectTransform;
         bar.anchorMax=new Vector2(Mathf.Lerp(.06f,.94f,meter.fillAmount),bar.anchorMax.y);
@@ -66,7 +67,7 @@ public sealed class Chapter2Presentation : MonoBehaviour
         var track=ui.Panel(ui.meterPanel.transform,"Rhythm",new Vector2(.06f,.2f),new Vector2(.94f,.43f),new Color(.25f,.25f,.22f,1));
         ui.safeZone=ui.Panel(track,"Safe band",new Vector2(.32f,0),new Vector2(.68f,1),new Color(.58f,.74f,.36f,1));
         ui.cursor=ui.Panel(track,"Timing cursor",new Vector2(0,0),new Vector2(0,1),Color.white).GetComponent<Image>(); ui.cursor.rectTransform.sizeDelta=new Vector2(5,8);
-        ui.meter=ui.Panel(ui.meterPanel.transform,"Completed cuts",new Vector2(.06f,.07f),new Vector2(.94f,.12f),new Color(.87f,.72f,.42f)).GetComponent<Image>();ui.meter.type=Image.Type.Filled;ui.meter.fillMethod=Image.FillMethod.Horizontal;
+        ui.meter=ui.Panel(ui.meterPanel.transform,"Remaining cuts",new Vector2(.06f,.07f),new Vector2(.94f,.12f),new Color(.87f,.72f,.42f)).GetComponent<Image>();ui.meter.type=Image.Type.Filled;ui.meter.fillMethod=Image.FillMethod.Horizontal;
         var videoPanel=ui.Panel(go.transform,"Video",Vector2.zero,Vector2.one,Color.black).gameObject;Object.DestroyImmediate(videoPanel.GetComponent<Image>());
         ui.videoImage=videoPanel.AddComponent<RawImage>();ui.videoImage.color=Color.white;ui.videoImage.raycastTarget=false;
         ui.fade=ui.Panel(go.transform,"Fade",Vector2.zero,Vector2.one,new Color(0,0,0,0)).GetComponent<Image>();ui.fade.raycastTarget=false;

@@ -34,7 +34,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     public int MeetingDecision { get; private set; } = -1;
     public int ValidCuts { get; private set; }
     public int FailedCuts { get; private set; }
-    public int ConsecutiveFailedCuts { get; private set; }
     public float Integrity { get; private set; } = 100;
     public bool VideoPlayed { get; private set; }
     public bool VideoFinished { get; private set; }
@@ -335,13 +334,13 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.hint.text="游標進入綠色區域時，按 E／空白鍵／右手扳機。避免傷及木材。";
         while(ValidCuts<5)
         {
-            if(ConsecutiveFailedCuts>=3)
+            if(Integrity<=0)
             {
                 canChop=false;player.canMove=false;ui.meterPanel.SetActive(false);
                 axe.SetActive(false);yield return FrameSpeaker(officer);
                 yield return Say(officer,"日本警察","木材不能再受損！放慢動作，重新找準落點。",4);
                 yield return RestoreChoppingView();axe.SetActive(true);
-                Integrity=100;ValidCuts=0;ConsecutiveFailedCuts=0;chopStarted=Time.time;canChop=true;player.canMove=true;
+                Integrity=100;ValidCuts=0;chopStarted=Time.time;canChop=true;player.canMove=true;
                 ui.SetMeter(RhythmPhase,ValidCuts);ui.meterPanel.SetActive(true);
             }
             yield return null;
@@ -366,8 +365,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         player.canMove=false;
         yield return tool.Swing(contact,()=>{
-            if(accurate){ValidCuts++;ConsecutiveFailedCuts=0;ui.Line("伐木","斧刃切進樹皮，木屑飛散。放穩斧頭，等待下一次時機。");}
-            else{FailedCuts++;ConsecutiveFailedCuts++;Integrity=Mathf.Max(0,Integrity-20);ui.Line("伐木","落斧偏了，木材受到損傷。等游標進入綠色區域，再落斧。");}
+            if(accurate){ValidCuts++;ui.Line("伐木","斧刃切進樹皮，木屑飛散。放穩斧頭，等待下一次時機。");}
+            else{FailedCuts++;Integrity=Mathf.Max(0,Integrity-20);ui.Line("伐木","落斧偏了，木材受到損傷。等游標進入綠色區域，再落斧。");}
             ui.SetMeter(RhythmPhase,ValidCuts);
             if(chopAudio)effects.PlayOneShot(chopAudio,.7f);
         });
