@@ -1,0 +1,54 @@
+莫那魯道 · 既有長老角色 scale=(1.72, 1.72, 1.72) height=1.482454 head=(0.02, 1.08, 3.11) seated=True
+mesh=Assets/人/畢專 賽德克青年/長老/tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx vertices=1014730 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 1 scale=(1.72, 1.72, 1.72) height=1.526267 head=(1.90, 1.06, 2.68) seated=True
+mesh=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx vertices=992033 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 2 scale=(1.72, 1.72, 1.72) height=1.510445 head=(3.09, 1.10, 1.11) seated=True
+mesh=Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx vertices=1029551 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 3 scale=(1.67, 1.67, 1.67) height=1.443478 head=(3.18, 1.16, -0.85) seated=True
+mesh=Assets/人/部落女/部落女性2/部落女姓2.fbx vertices=1236694 bones=mixamorig:LeftShoulder,mixamorig:Spine2,mixamorig:LeftUpLeg,mixamorig:LeftLeg,mixamorig:LeftFoot,mixamorig:LeftToeBase,mixamorig:RightLeg,mixamorig:RightFoot,mixamorig:RightToeBase,mixamorig:Neck,mixamorig:Head,mixamorig:RightUpLeg,mixamorig:RightShoulder,mixamorig:RightArm,mixamorig:RightForeArm,mixamorig:RightHand,mixamorig:RightHandIndex1,mixamorig:RightHandIndex2,mixamorig:LeftHand,mixamorig:LeftArm,mixamorig:LeftForeArm,mixamorig:LeftHandIndex1,mixamorig:LeftHandIndex2,mixamorig:Spine1,mixamorig:Spine,mixamorig:Hips,mixamorig:LeftHandThumb1,mixamorig:RightHandThumb1,mixamorig:LeftHandIndex3,mixamorig:RightHandIndex3,mixamorig:RightHandThumb2,mixamorig:LeftHandThumb2,mixamorig:RightHandThumb3,mixamorig:LeftHandThumb3
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 4 scale=(1.71, 1.71, 1.71) height=1.503945 head=(-3.18, 1.07, -0.84) seated=True
+mesh=Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx vertices=997340 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 5 scale=(1.67, 1.67, 1.67) height=1.421626 head=(-3.12, 1.36, 1.13) seated=True
+mesh=Assets/人/日治時期長輩女/tripo_convert_55823c37-f454-4808-bc43-e5329c672c81.fbx vertices=753748 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+六社領袖 6 scale=(1.69, 1.69, 1.69) height=1.518621 head=(-1.85, 1.10, 2.64) seated=True
+mesh=Assets/人/部落女/部落女性1/部落女性1.fbx vertices=1010006 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(0.23157, 0.71958, 0.60517, -0.24969)
+leftPalmBasis=(-0.18626, 0.68893, 0.65319, 0.25303)
+rightPalmLength=0.1246879
+leftPalmLength=0.1273506
+保守派族人 0 scale=(1.71, 1.71, 1.71) height=1.47947 head=(-4.60, 1.41, -1.39) seated=False
+mesh=Assets/人/畢專 賽德克青年/原住民青年2/tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx vertices=1010947 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_ToeBase,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_ToeBase,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0
+保守派族人 1 scale=(1.67, 1.67, 1.67) height=1.485232 head=(-5.47, 1.42, -1.40) seated=False
+mesh=Assets/人/日本女性/賽德克新娘/tripo_convert_880135f6-31e4-4f15-a52b-10eacb2ded41.fbx vertices=766394 bones=Root,Hip,Pelvis,L_Thigh,L_Calf,L_Foot,L_CalfTwist01,L_CalfTwist02,L_ThighTwist01,L_ThighTwist02,R_Thigh,R_ThighTwist01,R_ThighTwist02,R_Calf,R_Foot,R_CalfTwist01,R_CalfTwist02,Waist,Spine01,Spine02,NeckTwist01,NeckTwist02,Head,L_Clavicle,L_Upperarm,L_Forearm,L_ForearmTwist01,L_ForearmTwist02,L_Hand,L_UpperarmTwist01,L_UpperarmTwist02,R_Clavicle,R_Upperarm,R_UpperarmTwist01,R_UpperarmTwist02,R_Forearm,R_ForearmTwist01,R_ForearmTwist02,R_Hand
+rightPalmBasis=(-0.70711, 0.00000, 0.00000, 0.70711)
+leftPalmBasis=(0.00000, 0.70711, 0.70711, 0.00000)
+rightPalmLength=0
+leftPalmLength=0

@@ -1,0 +1,1 @@
+elbowAngle=102.4311 fist=100 seated=False handY=1.552851 headY=1.411693

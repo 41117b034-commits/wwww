@@ -1,8 +1,10 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-08。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-09。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-08 已新增第二章 P 鍵快速進入夜晚秘密會議。Play 後點一下 Game 視窗，片頭或白天流程中按 P 即進入營火全景，再接原本三秒開場與對話；空白鍵仍只略過片頭。已用 Unity Input System 模擬鍵盤事件驗證片頭 P、空白鍵後 P、重複 P 與會議兩個分支，兩輪黑幕後均退出 Play Mode，正式通關紀錄保留。詳細驗證限制與證據見文末。
+最新狀態：2026-10-09 已接續完成第二章會議的三張截圖修改：第三位女性領袖的手腕方向、第五位領袖較寬且較矮的身材比例，以及支持起義時莫那前傾站起、彎肘握緊右拳。final-support 與 final-refuse 均經 Play → P 正式輸入路徑完成，assertionsPassed=true、errors=0，黑幕後 playing=false；已查看引擎畫面。詳細證據、既有警告與驗證限制見文末。
+
+前次快捷功能：2026-10-08 已新增第二章 P 鍵快速進入夜晚秘密會議。Play 後點一下 Game 視窗，片頭或白天流程中按 P 即進入營火全景，再接原本三秒開場與對話；空白鍵仍只略過片頭。已用 Unity Input System 模擬鍵盤事件驗證片頭 P、空白鍵後 P、重複 P 與會議兩個分支，兩輪黑幕後均退出 Play Mode，正式通關紀錄保留。
 
 前次狀態：2026-10-07 已接續完成秘密會議三秒開場、九人模型去重與支持起義演出。夜景淡入後先保持全景三秒，再切到首位發言者；莫那魯道在支持分支結語高舉右手，說完才回全景、六位領袖依序起身。已替換臉部異常的候選模型並修正座椅穿插。最終 fell-support-rally-final-seats 與 protect-refuse-rally-final-seats 均 completed=true、errors=[]、council failures=[]，黑幕後 playing=false。證據在 _CodexBackups/chapter2_council_rally_20261007/；詳見文末。先前砍伐完成度 0→100%、連錯三次重試及白天小孩保留。
 
@@ -675,3 +677,27 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 播放記錄包含 Missing Script 警告、URP 點光陰影圖調整訊息；第一次播放另外有一筆 Unity Editor DontSaveInEditor 斷言，後續兩輪未再記錄該斷言。沒有 C# 編譯錯誤或新功能例外，不宣稱全專案零警告／零斷言。
 - 測試後移出臨時 Chapter2ShortcutProbe 與 meta，保留副本於備份目錄；未 commit／push。Assets / Documentation / Packages / ProjectSettings 最大檔案 87,096,360 bytes，無檔案達 100,000,000 bytes。
 - 清理後再次編譯成功並完成 domain reload；實際開啟 Unity Console 顯示 0 Error／0 Warning／0 Log，Play 停止、場景名稱無未儲存星號。這是清理後狀態，播放期間的警告與斷言仍保留於上述記錄。最終正式來源雜湊與兩輪測試時一致，見 final-source-comparison.json。
+
+## 2026-10-09 接續完成會議手腕、身材比例與握拳起身
+
+- 接續使用者三張截圖的未完成工作，直接修改原專案；已讀 AGENTS、本檔及固定劇情文字第 3–5 頁。沿用前次已加入的 CouncilHands／CouncilPoseAuthoring 初稿，再修正握拳外形並完成當前版本驗證。
+- 第三位女性領袖：Chapter2CouncilHands 使用 authoring 校正的左右手掌座標，在共用骨架／坐姿之後對齊手腕，說話時右掌自然朝上，消除原本拇指朝下、手掌像反接的外觀。手掌資料預先保存到場景，無須在 Play Mode 讀取不可讀的原 FBX 網格。
+- 第五位領袖：保留同一長輩女性模型，在原等比配置上調成寬 1.22、高 0.90、厚 1.10，修正細長外形；不修改原模型匯入設定。發言近景與集體站立畫面已查看。
+- 支持起義：最後一句前先對準坐著的莫那，台詞開始時以 0.8 秒前傾起身，同時收緊右拳、彎肘抬起；右肘穩定角度約 102.43 度，手臂不是伸直舉掌。手腕轉向分攤至前臂，避免扭折接縫。六位領袖維持坐姿聽完，鏡頭回全景後才依序起身；拒絕分支保留一般站起及保守派離場。
+- 原莫那模型沒有手指骨骼，新增第二章專用網格 `Assets/Chapter2/Poses/MonaRallyFist.asset`。作者工具從原網格建立四指收緊、併攏與拇指扣住的 blend shape，並重算法線。此二進位資產 36,490,444 bytes；原 FBX 保留。Chapter2CouncilCastAuthoring 重建角色後也會重新套用手腕與比例校正。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1 原專案編譯完成。透過臨時 Chapter2CouncilRevisionProbe 送入 Unity Input System 的 P／1／2，正式 Update 讀取後進入會議；最終兩輪均使用正式台詞時間及一倍速，沒有直接跳 Stage。這是 Editor 輸入模擬與引擎畫面檢查，不是全程人工鍵盤、獨立建置或實體 VR 驗收。
+- `final-support`：completed=true、assertionsPassed=true、errors=0、warnings=0；起身握拳、右肘彎曲、莫那說話期間六位領袖仍坐著、之後全部起身等斷言通過。逐張查看女性手腕、第五位領袖、正式握拳鏡頭、診斷近照與站立全景。正式黑幕結尾自行停止，playing=false、dirty=false。
+- `final-refuse`：completed=true、assertionsPassed=true、errors=0、warnings=13（既有 Missing Script）；沒有觸發 CouncilRally 或集體起身，六位領袖維持坐姿；查看保守派發言畫面。正式結尾自行停止，playing=false、dirty=false。
+- 兩輪 PlayerPrefs 的 WusheEvent.Chapter2.Result 前後字串完全相同；快捷預覽未覆寫正式通關紀錄。女性領袖的手指主軸與前臂偏差最高約 0.03 度；這項數值是手腕方向驗證，握拳外形另外以渲染近照判讀，不能只用 blend shape=100 當作外觀通過。
+- resumed*、revision*、v4、v6、v7 圖片與資料均為較早診斷；中途曾出現手指空隙、局部折痕或拇指未扣緊，不能取代 final-*。v6-deformation-orientation.json 僅屬 v6 的數值檢查，不是最終版本的證據。
+- 本輪未重跑白天保護／砍伐、第一章、完整片頭或 VR。第一章場景、共用 Chapter1IncidentRig、Chapter2Actor 與接手時 SHA-256 一致；最終九個正式來源／場景／網格檔案與兩輪測試版本一致。
+
+### 保存與清理
+
+- 證據、原始備份與最終兩輪在 `_CodexBackups/chapter2_council_pose_20261008/`；final-continuation-originals 為此次續作接手時備份。final-source-hashes／final-source-comparison 與 unchanged-comparison 保存來源比對。
+- Documentation/Chapter2.md 已更新。新增 Chapter2-council-wrist-preview.png、Chapter2-council-proportions-preview.png、Chapter2-council-fist-close-preview.png，更新 Chapter2-council-rally-preview.png 與 Chapter2-council-standing-preview.png。
+- 測試後將臨時 Chapter2CouncilRevisionProbe 與 meta 移至 verification-tools；正式 Assets 不保留自動播放／輪詢測試工具。清理後重新編譯完成，實際開啟 Unity Console 顯示 0 Error／0 Warning／0 Log；Play 已停止，場景無未儲存星號。這是清理後狀態，播放期間既有 Missing Script 警告仍保存在測試記錄。
+- 最終 Assets／Documentation／Packages／ProjectSettings 共 3,387 檔，沒有檔案達 100,000,000 bytes，最大 87,096,360 bytes；詳見 final-size-audit.json。未 commit／push。

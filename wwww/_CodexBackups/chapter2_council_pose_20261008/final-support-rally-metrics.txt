@@ -1,0 +1,1 @@
+available=True elbowAngle=102.4311 fist=100 seated=False seatWeight=0

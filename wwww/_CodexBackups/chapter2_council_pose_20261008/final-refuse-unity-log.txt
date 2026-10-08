@@ -1,0 +1,19 @@
+2026-10-08T16:12:32.6708134Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6793827Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6808919Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6814129Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6829371Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6839484Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6849506Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6859470Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6869458Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6879448Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6890039Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6900045Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:32.6910176Z Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-08T16:12:33.2177141Z Log [Chapter2] Stage=Intro
+2026-10-08T16:12:39.5876549Z Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-08T16:12:39.6089564Z Log [Chapter2] Stage=Meeting
+2026-10-08T16:13:23.1240412Z Log [Chapter2] Stage=Vote
+2026-10-08T16:13:23.4608385Z Log [Chapter2] Stage=Ending
+2026-10-08T16:14:06.7015964Z Log [Chapter2] Stage=Complete

@@ -1,0 +1,6 @@
+{
+  "samples": 37605,
+  "negative_jacobian_count": 0,
+  "minimum_determinant": 0.001470496073410083,
+  "check": "Finite difference of authored deformation at source hand vertices. Does not replace rendered acceptance."
+}

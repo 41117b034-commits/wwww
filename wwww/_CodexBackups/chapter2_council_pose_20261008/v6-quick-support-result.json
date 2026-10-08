@@ -1,0 +1,295 @@
+{
+    "label": "v6-quick-support",
+    "branch": "support",
+    "startedUtc": "2026-10-08T15:06:21.4123022Z",
+    "endedUtc": "2026-10-08T15:07:23.3209304Z",
+    "finalStage": "Complete",
+    "playerPrefsBefore": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "playerPrefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "completed": true,
+    "playingAfterExit": false,
+    "timedOut": false,
+    "sceneDirtyAfterExit": false,
+    "playerPrefsExistedBefore": true,
+    "playerPrefsExistedAfter": true,
+    "playerPrefsUnchanged": true,
+    "rallyObserved": true,
+    "standingTogetherObserved": true,
+    "monaStoodDuringRally": true,
+    "leadersStayedSeatedDuringMona": true,
+    "allLeadersStood": true,
+    "refusalLeadersStayedSeated": true,
+    "errors": 0,
+    "warnings": 0,
+    "leaderCount": 6,
+    "monaRallySamples": 68,
+    "settledRallySamples": 53,
+    "endingSamples": 309,
+    "elapsedSeconds": 48.27706527709961,
+    "maximumFistWeight": 100.0,
+    "minimumSettledFistWeight": 100.0,
+    "minimumSettledElbowAngle": 102.43096923828125,
+    "maximumSettledElbowAngle": 102.43118286132813,
+    "passed": true,
+    "leftWrist": {
+        "side": "left",
+        "samples": 435,
+        "speakingSamples": 3,
+        "continuousPairs": 414,
+        "maximumFingerForearmAngle": 0.0,
+        "maximumPalmNormalError": 0.0,
+        "maximumContinuousFingerStep": 3.2310729026794435,
+        "maximumContinuousNormalStep": 7.274997711181641,
+        "maximumAnyNormalStep": 7.274997711181641
+    },
+    "rightWrist": {
+        "side": "right",
+        "samples": 435,
+        "speakingSamples": 3,
+        "continuousPairs": 414,
+        "maximumFingerForearmAngle": 0.0,
+        "maximumPalmNormalError": 0.0,
+        "maximumContinuousFingerStep": 62.19212341308594,
+        "maximumContinuousNormalStep": 38.33546447753906,
+        "maximumAnyNormalStep": 50.17582702636719
+    },
+    "actors": [
+        {
+            "name": "莫那魯道 · 既有長老角色",
+            "localScale": {
+                "x": 1.7154093980789185,
+                "y": 1.7154093980789185,
+                "z": 1.7154093980789185
+            },
+            "rigHeight": 1.4824541807174683,
+            "shoulderWidth": 0.36307552456855776,
+            "hipWidth": 0.22080481052398683,
+            "torsoLength": 0.48036113381385805,
+            "leftLegLength": 0.8227769136428833,
+            "rightLegLength": 0.8383780717849731,
+            "shoulderWidthToHeight": 0.244915172457695,
+            "torsoToHeight": 0.3240310251712799,
+            "legToHeight": 0.5602719783782959,
+            "heightToOtherLeadersMean": 1.0127627849578858,
+            "shoulderRatioToOtherLeadersMean": 0.9685497283935547,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 1",
+            "localScale": {
+                "x": 1.724973201751709,
+                "y": 1.724973201751709,
+                "z": 1.724973201751709
+            },
+            "rigHeight": 1.5262669324874879,
+            "shoulderWidth": 0.40069064497947695,
+            "hipWidth": 0.2244240790605545,
+            "torsoLength": 0.45678430795669558,
+            "leftLegLength": 0.8763853311538696,
+            "rightLegLength": 0.8903359174728394,
+            "shoulderWidthToHeight": 0.2625298500061035,
+            "torsoToHeight": 0.299282044172287,
+            "legToHeight": 0.5787720680236816,
+            "heightToOtherLeadersMean": 1.0516741275787354,
+            "shoulderRatioToOtherLeadersMean": 1.0462043285369874,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 2",
+            "localScale": {
+                "x": 1.7240098714828492,
+                "y": 1.7240098714828492,
+                "z": 1.7240098714828492
+            },
+            "rigHeight": 1.5104445219039918,
+            "shoulderWidth": 0.370094895362854,
+            "hipWidth": 0.22560566663742066,
+            "torsoLength": 0.49113383889198305,
+            "leftLegLength": 0.8283804655075073,
+            "rightLegLength": 0.837279200553894,
+            "shoulderWidthToHeight": 0.24502383172512055,
+            "torsoToHeight": 0.3251584768295288,
+            "legToHeight": 0.5513806343078613,
+            "heightToOtherLeadersMean": 1.038507342338562,
+            "shoulderRatioToOtherLeadersMean": 0.9630048274993897,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 3",
+            "localScale": {
+                "x": 1.6672004461288453,
+                "y": 1.6672004461288453,
+                "z": 1.6672004461288453
+            },
+            "rigHeight": 1.4434781074523926,
+            "shoulderWidth": 0.33824115991592409,
+            "hipWidth": 0.1440766602754593,
+            "torsoLength": 0.4515343904495239,
+            "leftLegLength": 0.666145920753479,
+            "rightLegLength": 0.643172562122345,
+            "shoulderWidthToHeight": 0.23432372510433198,
+            "torsoToHeight": 0.3128100037574768,
+            "legToHeight": 0.45352903008461,
+            "heightToOtherLeadersMean": 0.9834087491035461,
+            "shoulderRatioToOtherLeadersMean": 0.9132694005966187,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 4",
+            "localScale": {
+                "x": 1.7123823165893555,
+                "y": 1.7123823165893555,
+                "z": 1.7123823165893555
+            },
+            "rigHeight": 1.5039451122283936,
+            "shoulderWidth": 0.35698720812797549,
+            "hipWidth": 0.2270382195711136,
+            "torsoLength": 0.47345247864723208,
+            "leftLegLength": 0.8482572436332703,
+            "rightLegLength": 0.8325092196464539,
+            "shoulderWidthToHeight": 0.237367182970047,
+            "torsoToHeight": 0.3148070275783539,
+            "legToHeight": 0.5587858557701111,
+            "heightToOtherLeadersMean": 1.0331153869628907,
+            "shoulderRatioToOtherLeadersMean": 0.9273311495780945,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 5",
+            "localScale": {
+                "x": 2.0405709743499758,
+                "y": 1.50533926486969,
+                "z": 1.839859127998352
+            },
+            "rigHeight": 1.279879093170166,
+            "shoulderWidth": 0.3606722950935364,
+            "hipWidth": 0.23443308472633363,
+            "torsoLength": 0.6078589558601379,
+            "leftLegLength": 0.8431652784347534,
+            "rightLegLength": 0.8529642820358276,
+            "shoulderWidthToHeight": 0.28180184960365298,
+            "torsoToHeight": 0.4749346673488617,
+            "legToHeight": 0.6626132130622864,
+            "heightToOtherLeadersMean": 0.8529393672943115,
+            "shoulderRatioToOtherLeadersMean": 1.1405234336853028,
+            "seated": true
+        },
+        {
+            "name": "六社領袖 6",
+            "localScale": {
+                "x": 1.6894516944885255,
+                "y": 1.6894516944885255,
+                "z": 1.6894516944885255
+            },
+            "rigHeight": 1.5186207294464112,
+            "shoulderWidth": 0.38901177048683169,
+            "hipWidth": 0.23822303116321565,
+            "torsoLength": 0.49036747217178347,
+            "leftLegLength": 0.8295957446098328,
+            "rightLegLength": 0.8459392189979553,
+            "shoulderWidthToHeight": 0.25616124272346499,
+            "torsoToHeight": 0.32290318608283999,
+            "legToHeight": 0.5516633987426758,
+            "heightToOtherLeadersMean": 1.0453041791915894,
+            "shoulderRatioToOtherLeadersMean": 1.015669345855713,
+            "seated": true
+        },
+        {
+            "name": "保守派族人 0",
+            "localScale": {
+                "x": 1.705114483833313,
+                "y": 1.705114483833313,
+                "z": 1.705114483833313
+            },
+            "rigHeight": 1.4794703722000123,
+            "shoulderWidth": 0.35341793298721316,
+            "hipWidth": 0.22470279037952424,
+            "torsoLength": 0.4815186858177185,
+            "leftLegLength": 0.8388532400131226,
+            "rightLegLength": 0.8303607702255249,
+            "shoulderWidthToHeight": 0.23888137936592103,
+            "torsoToHeight": 0.32546693086624148,
+            "legToHeight": 0.5641255378723145,
+            "heightToOtherLeadersMean": 1.0107243061065674,
+            "shoulderRatioToOtherLeadersMean": 0.9446883201599121,
+            "seated": false
+        },
+        {
+            "name": "保守派族人 1",
+            "localScale": {
+                "x": 1.6657049655914307,
+                "y": 1.6657049655914307,
+                "z": 1.6657049655914307
+            },
+            "rigHeight": 1.485231876373291,
+            "shoulderWidth": 0.25504064559936526,
+            "hipWidth": 0.17413069307804109,
+            "torsoLength": 0.40298786759376528,
+            "leftLegLength": 0.9275169372558594,
+            "rightLegLength": 0.9331591129302979,
+            "shoulderWidthToHeight": 0.17171773314476014,
+            "torsoToHeight": 0.27132993936538699,
+            "legToHeight": 0.6263924241065979,
+            "heightToOtherLeadersMean": 1.014660358428955,
+            "shoulderRatioToOtherLeadersMean": 0.6790806651115418,
+            "seated": false
+        }
+    ],
+    "checks": [
+        {
+            "name": "completed-and-left-play-mode",
+            "detail": "Complete",
+            "passed": true
+        },
+        {
+            "name": "no-runtime-errors",
+            "detail": "errors=0 warnings=0",
+            "passed": true
+        },
+        {
+            "name": "shortcut-preserved-existing-result",
+            "detail": "Read-only comparison of key existence and string contents.",
+            "passed": true
+        },
+        {
+            "name": "six-leaders-present",
+            "detail": "count=6",
+            "passed": true
+        },
+        {
+            "name": "leader-3-wrist-samples",
+            "detail": "left=435 right=435 speaking=3",
+            "passed": true
+        },
+        {
+            "name": "leader-3-fingers-follow-forearms",
+            "detail": "maximum degrees: left=0 right=0",
+            "passed": true
+        },
+        {
+            "name": "mona-stood-with-rally",
+            "detail": "settled samples=53",
+            "passed": true
+        },
+        {
+            "name": "right-fist-fully-closed",
+            "detail": "minimum settled blend shape=100",
+            "passed": true
+        },
+        {
+            "name": "right-elbow-remained-bent",
+            "detail": "range=102.431 to 102.4312",
+            "passed": true
+        },
+        {
+            "name": "six-leaders-seated-during-mona-rally-line",
+            "detail": "samples=68",
+            "passed": true
+        },
+        {
+            "name": "six-leaders-stood-after-mona",
+            "detail": "standing observed=True",
+            "passed": true
+        }
+    ]
+}

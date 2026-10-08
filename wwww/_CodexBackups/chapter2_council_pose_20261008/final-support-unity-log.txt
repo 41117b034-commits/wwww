@@ -1,0 +1,6 @@
+2026-10-08T16:07:36.8817264Z Log [Chapter2] Stage=Intro
+2026-10-08T16:07:43.2998021Z Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+2026-10-08T16:07:43.3284155Z Log [Chapter2] Stage=Meeting
+2026-10-08T16:08:26.9697422Z Log [Chapter2] Stage=Vote
+2026-10-08T16:08:27.2803649Z Log [Chapter2] Stage=Ending
+2026-10-08T16:09:01.7836197Z Log [Chapter2] Stage=Complete
