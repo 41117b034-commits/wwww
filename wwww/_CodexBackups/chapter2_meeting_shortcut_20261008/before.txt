@@ -1,0 +1,3 @@
+playing=False dirty=False stage=Intro beat=gameplay
+video=False day=True night=False axe=False meter=False choices=False subtitle= fade=0 cuts=0
+result={"treeChoice":"fell","meetingChoice":"support","woodIntegrity":100.0,"validCuts":5,"failedCuts":0,"casualties":0,"completed":true}

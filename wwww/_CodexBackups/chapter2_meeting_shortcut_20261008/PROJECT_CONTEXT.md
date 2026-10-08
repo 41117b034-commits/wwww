@@ -1,10 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-08。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-07。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-08 已新增第二章 P 鍵快速進入夜晚秘密會議。Play 後點一下 Game 視窗，片頭或白天流程中按 P 即進入營火全景，再接原本三秒開場與對話；空白鍵仍只略過片頭。已用 Unity Input System 模擬鍵盤事件驗證片頭 P、空白鍵後 P、重複 P 與會議兩個分支，兩輪黑幕後均退出 Play Mode，正式通關紀錄保留。詳細驗證限制與證據見文末。
-
-前次狀態：2026-10-07 已接續完成秘密會議三秒開場、九人模型去重與支持起義演出。夜景淡入後先保持全景三秒，再切到首位發言者；莫那魯道在支持分支結語高舉右手，說完才回全景、六位領袖依序起身。已替換臉部異常的候選模型並修正座椅穿插。最終 fell-support-rally-final-seats 與 protect-refuse-rally-final-seats 均 completed=true、errors=[]、council failures=[]，黑幕後 playing=false。證據在 _CodexBackups/chapter2_council_rally_20261007/；詳見文末。先前砍伐完成度 0→100%、連錯三次重試及白天小孩保留。
+最新狀態：2026-10-07 已接續完成秘密會議三秒開場、九人模型去重與支持起義演出。夜景淡入後先保持全景三秒，再切到首位發言者；莫那魯道在支持分支結語高舉右手，說完才回全景、六位領袖依序起身。已替換臉部異常的候選模型並修正座椅穿插。最終 fell-support-rally-final-seats 與 protect-refuse-rally-final-seats 均 completed=true、errors=[]、council failures=[]，黑幕後 playing=false。證據在 _CodexBackups/chapter2_council_rally_20261007/；詳見文末。先前砍伐完成度 0→100%、連錯三次重試及白天小孩保留。
 
 ## 專案位置
 
@@ -656,22 +654,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 測試結束後檢查 playing=False、dirty=False、pipeline=PC_PipelineAsset。臨時 Chapter2WorkProbe、Chapter2Verification、Chapter2CouncilReview、Chapter2CouncilPoseReview 與 meta 已移至本次備份目錄的 verification-tools；正式保留角色配置 authoring 和演出程式。
 - 清理後重新整理並完成 Unity 編譯，實際開啟 Console 檢查為 0 Error / 0 Warning / 0 Log；Play 未啟動，場景無未儲存標記。這是清理後狀態，播放期間的既有警告仍記錄在前述證據。
 - 最終 Assets / Documentation / Packages / ProjectSettings 共 3,377 檔；達 100,000,000 bytes 的檔案為 0，最大 87,096,360 bytes，詳見 asset-size-audit.json。本次要求已完成；尚未做實體 VR 或獨立建置驗收。
-
-## 2026-10-08 第二章 P 鍵快速預覽秘密會議
-
-- 使用者希望保留空白鍵略過影片，另外按 P 直接到截圖中的「第二章 / 夜晚的秘密會議」營火全景，方便後續修改與預覽。已閱讀根目錄指引及固定劇情文字摘錄第 3–5 頁。
-- Chapter2Player.Key 新增 P；Chapter2Controller.Update 呼叫 SkipToMeeting。片頭及白天階段可跳轉，Meeting／Vote／Ending／Complete 不重開；同次跳轉重複按鍵亦忽略。
-- 跳轉停止控制器所有 coroutine（含獨立揮斧）、影片與音效，釋放影片 RenderTexture，收起斧頭、選項、砍伐條、箭頭和舊字幕，沿用 SetNight、營火全景、淡入與三秒停留。未改場景、角色、光線與對話內容。
-- 原會議至結尾抽為 RunMeeting，正常白天流程與快捷入口共用。已比對備份，會議內容除「快捷預覽不保存結果」條件外完全一致；快捷預覽不捏造白天選擇，也不覆寫 WusheEvent.Chapter2.Result。
-- Documentation/Chapter2.md 已補充操作方式。原始備份、輸入測試工具、引擎截圖、狀態及來源雜湊在 _CodexBackups/chapter2_meeting_shortcut_20261008/。
-
-### 本次實際驗證及限制
-
-- Unity 6000.0.58f1 原專案編譯成功。透過臨時 Editor probe 將 KeyboardState 事件送入 Unity Input System，正式 Update 讀取 P／Space／1／2；不是直接呼叫跳轉方法。Windows computer-use 送入的按鍵未觸發遊戲，故不宣稱已完成原生人工鍵盤驗收。
-- 片頭 P：Intro → Meeting，截圖 meeting-overview-210426.png 與使用者參考一致；video=false、day=false、night=true、axe=false、meter=false、choices=false、fade=0。會議途中再送 P 未重開；接續 Vote → Ending（拒絕）→ Complete，退出後 playing=false、dirty=false。
-- 空白鍵只進入 Follow，尚未進入夜景，見 space-follow.txt；白天再送 P → Meeting，截圖 meeting-overview-210749.png。支持選項也到 Complete，退出後 playing=false、dirty=false。兩輪 PlayerPrefs 與測試前完整字串一致。
-- 已目視檢查 1600×900 引擎全景截圖，也查看 Unity Game 視窗；電腦操作工具取得的 Game 畫面有顯示失真，視覺驗收以引擎截圖為準。會議三秒全景與發言依正式一倍速播放。
-- 本次未重跑完整白天保護／砍伐，亦未專項測試揮斧或槍擊中途的 P；該路徑的 coroutine 中止与場景／UI 清理由程式檢查確認。未進行獨立建置、實體 VR 或第一章回歸。
-- 播放記錄包含 Missing Script 警告、URP 點光陰影圖調整訊息；第一次播放另外有一筆 Unity Editor DontSaveInEditor 斷言，後續兩輪未再記錄該斷言。沒有 C# 編譯錯誤或新功能例外，不宣稱全專案零警告／零斷言。
-- 測試後移出臨時 Chapter2ShortcutProbe 與 meta，保留副本於備份目錄；未 commit／push。Assets / Documentation / Packages / ProjectSettings 最大檔案 87,096,360 bytes，無檔案達 100,000,000 bytes。
-- 清理後再次編譯成功並完成 domain reload；實際開啟 Unity Console 顯示 0 Error／0 Warning／0 Log，Play 停止、場景名稱無未儲存星號。這是清理後狀態，播放期間的警告與斷言仍保留於上述記錄。最終正式來源雜湊與兩輪測試時一致，見 final-source-comparison.json。

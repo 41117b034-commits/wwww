@@ -52,7 +52,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     VideoPlayer video;
     RenderTexture videoTexture;
     bool videoError, videoEnded, skip, readyToChoose, canChop;
-    bool meetingShortcutUsed;
     float chopStarted, nextCut, raisedFor;
     Coroutine flow;
     readonly string[] introLines = {
@@ -81,7 +80,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if (!player || !ui) return;
         ui.ConfigureVR(player.IsVR);
-        if(Chapter2Player.Key(Chapter2Player.KeyControlName.P)) SkipToMeeting();
         if(CurrentStage==Stage.Intro && player.ActionPressed) skip=true;
         if(CurrentStage==Stage.TreeChoice || CurrentStage==Stage.Vote)
         {
@@ -102,28 +100,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     public void SelectA() { Choose(0); }
     public void SelectB() { Choose(1); }
-    // Preview the council without replaying the film, escort, and logging choice.
-    public void SkipToMeeting()
-    {
-        if(!isActiveAndEnabled || flow==null || meetingShortcutUsed || (int)CurrentStage>=(int)Stage.Meeting) return;
-        meetingShortcutUsed=true;
-        // Includes the separate axe-swing coroutine, which can otherwise change the UI later.
-        StopAllCoroutines();
-        skip=true;readyToChoose=false;canChop=false;raisedFor=0;
-        if(video)
-        {
-            video.errorReceived-=VideoError;video.loopPointReached-=VideoEnd;
-            video.Stop();Destroy(video);video=null;
-        }
-        ui.videoImage.gameObject.SetActive(false);ui.videoImage.texture=null;
-        if(videoTexture){videoTexture.Release();Destroy(videoTexture);videoTexture=null;}
-        effects.Stop();axe.SetActive(false);
-        if(routeGuide)routeGuide.GuidanceEnabled=false;
-        ui.HideChoices();ui.meterPanel.SetActive(false);ui.endingPanel.SetActive(false);
-        ui.Line("","");ui.hint.text="";ui.fade.color=Color.black;
-        player.canMove=false;player.canLook=false;
-        flow=StartCoroutine(RunMeeting());
-    }
     public bool TryGetChopContact(out RaycastHit contact)
     {
         contact=default;
@@ -159,7 +135,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Run()
     {
-        SetStage(Stage.Intro);ui.objective.text="新規定";ui.hint.text="E／空白鍵／右手扳機  略過片頭  |  P  直達夜晚會議";
+        SetStage(Stage.Intro);ui.objective.text="新規定";ui.hint.text="E／空白鍵／右手扳機  略過片頭";
         yield return Intro();
         ui.videoImage.gameObject.SetActive(false); ui.fade.color=Color.black;
         player.Warp(new Vector3(0,.08f,-17),sacredTree.position);
@@ -199,10 +175,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if(TreeDecision==0) yield return Protect(); else yield return Fell();
         yield return Fade(1,1.6f);
         ui.Line("","");ui.hint.text="";yield return new WaitForSeconds(.6f);
-        yield return RunMeeting();
-    }
-    IEnumerator RunMeeting()
-    {
         SetNight();
         player.Warp(meetingSpawn.position,campfire.position);
         yield return FrameCouncilOverview(.01f);
@@ -241,8 +213,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.endingPanel.SetActive(true);ui.continueButton.gameObject.SetActive(false);
         yield return new WaitForSeconds(3);
         SetStage(Stage.Complete);
-        // A preview has no completed daytime route and must not overwrite a real result.
-        if(saveResult && !meetingShortcutUsed)
+        if(saveResult)
         {
             var result=new Chapter2Result {treeChoice=TreeDecision==0?"protect":"fell",meetingChoice=MeetingDecision==0?"support":"refuse",woodIntegrity=Integrity,validCuts=ValidCuts,failedCuts=FailedCuts,casualties=TreeDecision==0?1:0,completed=true};
             PlayerPrefs.SetString("WusheEvent.Chapter2.Result",JsonUtility.ToJson(result));PlayerPrefs.Save();

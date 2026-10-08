@@ -1,0 +1,5 @@
+playing=True dirty=False stage=Meeting beat=council-overview
+video=False day=False night=True axe=False meter=False choices=False subtitle= fade=0 cuts=0
+keyboard=Keyboard:/Keyboard focused=True editorFocus= (UnityEditor.GameView)
+shortcut=True flow=UnityEngine.Coroutine
+result={"treeChoice":"fell","meetingChoice":"support","woodIntegrity":100.0,"validCuts":5,"failedCuts":0,"casualties":0,"completed":true}

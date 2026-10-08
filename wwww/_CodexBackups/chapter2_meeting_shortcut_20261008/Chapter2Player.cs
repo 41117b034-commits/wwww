@@ -25,9 +25,9 @@ public sealed class Chapter2Player : MonoBehaviour
     {
         var b = Keyboard.current;
         if (b == null) return false;
-        switch(k) { case KeyControlName.One: return b.digit1Key.wasPressedThisFrame; case KeyControlName.Two: return b.digit2Key.wasPressedThisFrame; case KeyControlName.E: return b.eKey.wasPressedThisFrame; case KeyControlName.P: return b.pKey.wasPressedThisFrame; default: return b.spaceKey.wasPressedThisFrame; }
+        switch(k) { case KeyControlName.One: return b.digit1Key.wasPressedThisFrame; case KeyControlName.Two: return b.digit2Key.wasPressedThisFrame; case KeyControlName.E: return b.eKey.wasPressedThisFrame; default: return b.spaceKey.wasPressedThisFrame; }
     }
-    public enum KeyControlName { One, Two, E, Space, P }
+    public enum KeyControlName { One, Two, E, Space }
     void Awake() { motor = GetComponent<CharacterController>(); }
     void Update()
     {
