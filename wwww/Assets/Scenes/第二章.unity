@@ -14398,19 +14398,19 @@ MonoBehaviour:
   - id: C2_001
     role: 0
     chinese: "\u8B66\u5BDF\u8981\u6C42\u65CF\u4EBA\u96C6\u5408\uFF0C\u5BA3\u8B80\u65B0\u7684\u4F10\u6728\u8207\u642C\u904B\u898F\u5B9A\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: e17b7b9b3d23d944f99155a764d39a03, type: 3}
   - id: C2_002
     role: 0
     chinese: "\u6728\u6750\u4E0D\u51C6\u62D6\u66F3\uFF0C\u5FC5\u9808\u80A9\u625B\u4E0B\u5C71\u3002\u9661\u5761\u8207\u9577\u9014\u642C\u904B\uFF0C\u4F7F\u65CF\u4EBA\u7684\u751F\u6D3B\u66F4\u52A0\u8271\u56F0\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 23b4a94c9c3cb9d45baaa70a5b37d22c, type: 3}
   - id: C2_003
     role: 0
     chinese: "\u8B66\u5BDF\u9032\u4E00\u6B65\u547D\u4EE4\u65CF\u4EBA\u524D\u5F80\u8056\u5730\u300C\u897F\u4ED4\u5E0C\u514B\u300D\uFF0C\u780D\u4F10\u88AB\u8996\u70BA\u5B88\u8B77\u8005\u7684\u5DE8\u6728\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 7746c8971d340094db6f53757bfe9b2e, type: 3}
   - id: C2_004
     role: 0
     chinese: "\u5728\u69CD\u53E3\u8207\u97AD\u5B50\u7684\u5A01\u903C\u4E0B\uFF0C\u65CF\u4EBA\u8D70\u5165\u68EE\u6797\u3002\u58D3\u6291\u7684\u61A4\u6012\uFF0C\u9010\u6F38\u5316\u70BA\u53CD\u6297\u7684\u6C7A\u5FC3\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 7d42eeb955fab02469baf7c4f8bc79ef, type: 3}
   - id: C2_005
     role: 1
     chinese: "\u628A\u9019\u4E9B\u6A39\u90FD\u780D\u4E86\u3002"
