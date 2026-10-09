@@ -42,39 +42,14 @@ public static class Chapter2CouncilVillageAuthoring
                     if(component&&!(component is Transform)&&!(component is MeshFilter)&&!(component is MeshRenderer)&&!(component is Collider)&&!(component is LODGroup))Object.DestroyImmediate(component);
                 // FBX roots carry an axis correction; preserve it when adding a world yaw.
                 house.SetActive(true);house.transform.SetPositionAndRotation(Vector3.zero,Quaternion.AngleAxis(yaw[i],Vector3.up)*donor.transform.rotation);
-                LevelHouse(house.transform,positions[i]);
+                var renderers=house.GetComponentsInChildren<Renderer>();Bounds b=renderers[0].bounds;
+                foreach(var r in renderers)b.Encapsulate(r.bounds);
+                house.transform.localScale*=3.6f/b.size.y;
+                b=renderers[0].bounds;foreach(var r in renderers)b.Encapsulate(r.bounds);
+                house.transform.position=positions[i]-new Vector3(b.center.x,b.min.y,b.center.z);
             }
             EditorSceneManager.MarkSceneDirty(c.gameObject.scene);EditorSceneManager.SaveScene(c.gameObject.scene);
         }
         finally{EditorSceneManager.ClosePreviewScene(source);}
-    }
-
-    public static void LevelHouse(Transform house,Vector3 groundCenter)
-    {
-        string model=house.name.Substring(house.name.LastIndexOf(" · ",StringComparison.Ordinal)+3);
-        string path="Assets/房子/"+model+"/"+model+".fbx";
-        var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        if(!source)throw new InvalidOperationException("Missing house source: "+path);
-        var originals=source.GetComponentsInChildren<MeshFilter>(true);
-        foreach(var mf in house.GetComponentsInChildren<MeshFilter>(true))
-        {
-            if(mf.sharedMesh)continue;
-            var original=originals.FirstOrDefault(f=>f.name==mf.name)??originals.First();
-            mf.sharedMesh=original.sharedMesh;
-            var collider=mf.GetComponent<MeshCollider>();if(collider)collider.sharedMesh=original.sharedMesh;
-        }
-        // Keep the FBX's authored axis conversion, but remove the donor's
-        // scene pitch and roll. Only its horizontal facing is carried over.
-        Vector3 localForward=Quaternion.Inverse(source.transform.rotation)*Vector3.forward;
-        Vector3 forward=Vector3.ProjectOnPlane(house.rotation*localForward,Vector3.up).normalized;
-        if(forward.sqrMagnitude<.1f)forward=Vector3.forward;
-        house.rotation=Quaternion.LookRotation(forward,Vector3.up)*source.transform.rotation;
-        var renderers=house.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.GetComponent<MeshFilter>()?.sharedMesh).ToArray();
-        if(renderers.Length==0)throw new InvalidOperationException("No visible geometry: "+house.name);
-        Bounds b=renderers[0].bounds;foreach(var r in renderers)b.Encapsulate(r.bounds);
-        house.localScale*=3.6f/b.size.y;
-        b=renderers[0].bounds;foreach(var r in renderers)b.Encapsulate(r.bounds);
-        house.position+=groundCenter-new Vector3(b.center.x,b.min.y,b.center.z);
-        EditorUtility.SetDirty(house);
     }
 }

@@ -7,7 +7,6 @@ public sealed class Chapter2Actor : MonoBehaviour
     public bool seated;
     public bool fallen;
     public bool speaking;
-    [Min(.1f)] public float seatedHipHeight=.54f;
     public Vector3 facing = Vector3.back;
     public Chapter1IncidentRig Rig { get; private set; }
     public float FallProgress { get; private set; }
@@ -65,11 +64,10 @@ public sealed class Chapter2Actor : MonoBehaviour
         }
         if (SeatWeight>0 && leftFoot && rightFoot)
         {
-            float footReach=.2f*seatedHipHeight/.54f;
-            Vector3 l=leftFoot.position+Rig.Forward*(footReach*SeatWeight),r=rightFoot.position+Rig.Forward*(footReach*SeatWeight);
+            Vector3 l=leftFoot.position+Rig.Forward*(.2f*SeatWeight),r=rightFoot.position+Rig.Forward*(.2f*SeatWeight);
             // Council stumps are 0.44 m high. Different donor rigs have different
             // pelvis heights; keep the seated pelvis above the seat surface.
-            float seatDrop=Mathf.Max(0,Rig.Hips.position.y-seatedHipHeight);
+            float seatDrop=Mathf.Max(0,Rig.Hips.position.y-.54f);
             Rig.Hips.position += Vector3.down * (seatDrop*SeatWeight);
             Chapter1IncidentRig.Solve(leftThigh,leftKnee,leftFoot,l,Rig.Forward);
             Chapter1IncidentRig.Solve(rightThigh,rightKnee,rightFoot,r,Rig.Forward);

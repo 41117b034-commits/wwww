@@ -1,0 +1,3 @@
+Log [Chapter2] Stage=Intro
+Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+Log [Chapter2] Stage=Meeting

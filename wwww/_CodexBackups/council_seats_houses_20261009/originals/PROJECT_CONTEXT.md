@@ -2,9 +2,7 @@
 
 更新日期：2026-10-09。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-09 已將第二章 Play → P 的四棟會議房屋校正水平並貼地，修復傳統建築的遺失網格引用；開場九位成年人全部坐著，左側原站立兩人補上座椅，右前方加入坐矮椅的原住民小孩，共十人。小孩全程坐著聆聽；原劇本成人起身仍保留。本輪 final-support／final-refuse 均 checks.passed=true、errors=0、結尾自行停止 Play Mode，第一章場景檔案未改。證據在 _CodexBackups/council_seats_houses_20261009/，細節與驗證限制見文末。
-
-前次畫面修正：2026-10-09 已完成達多握刀時手腕順著前臂、所有發言者抬頭對鏡頭、莫那起身宣告時右手握緊拳頭；四位字幕人名加上使用者指定身分。保留原營火／人物／倒木場景，外圍沿用第一章模型與材質的房屋。本輪座位調整保留這些演出與字幕。
+最新狀態：2026-10-09 已完成第二章 Play → P 畫面修正：達多握刀時手腕順著前臂、所有發言者抬頭對鏡頭、莫那起身宣告時右手握緊拳頭；四位字幕人名加上使用者指定身分。保留原營火／人物／倒木場景，只在外圍新增四棟沿用第一章模型與材質的房屋。本輪 review3-support 與 final-refuse 逐行與流程檢查均通過、errors=0、結束後 playing=false；第一章場景本輪前後 SHA-256 相同。細節與驗證限制見文末。
 
 上次劇本更新：2026-10-09 已將第二章 Play → P 的夜間會議換成使用者提供的新劇本：莫那·魯道、達多·莫那、巴萬·拿威、瓦旦為具名發言者，依指定分行逐行字幕。同意分支插刀／全員起身／拉遠與決戰字卡；拒絕分支玩家走近莫那、斥責與指向側面出口後直接淡黑。final-support 35 行、final-refuse 34 行已經正式輸入路徑與引擎畫面檢查，兩輪 checks.passed=true、errors=0、退出後 playing=false。人物為既有模型與程序肢體動作，未新增配音及專用細部臉部動畫；其他限制與資產序列化處理見文末。
 
@@ -754,23 +752,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 新房屋只引用原模型與材質，未複製大型網格；本輪未切換專案序列化設定。正式資產大小稽核無單檔達100,000,000 bytes；最大仍為89,742,488 bytes的既有握刀網格。
 - 本輪未重玩第一章、第二章白天分支與完整片頭，未新增配音或細部臉部表情。沒有提交或推送 Git。
 - 清理後 Unity 已完成重新編譯；Console 顯示 0 Error／0 Warning／0 Log、Play 停止且場景無未存標記。這是清理後狀態，不抹除上面拒絕輪的13則既有警告。最終稽核3426個正式檔案，無超過100 MB。
-
-## 2026-10-09 會議房屋校平、全員坐姿與小孩
-
-- 使用者以新截圖要求檢查傾斜房屋、讓左側兩位站立族人也坐下，並加入坐著的小孩。直接修改原第二章場景；已讀專案指引及固定劇情參考，本次只處理夜間會議佈置。
-- `Chapter2CouncilVillageAuthoring.LevelHouse` 保留原 FBX 軸向修正，移除從第一章实例繼承的俯仰與側傾，只保留水平朝向。四棟高度統一3.6公尺、底部貼地。原茅屋最大傾斜約10.6度；傳統建築原先 MeshFilter 引用遺失，已重接同一原 FBX 網格，現在可見於莫那後方。房屋並非改用新的模型。
-- 新增 `Chapter2CouncilSeatingAuthoring`：九位成年人開場皆設為坐姿；左側捲髮青年與頭巾女族人移至左前弧線、各配0.44公尺高木椅。原七位成人、營火與森林位置保留。
-- 沿用既有 `Assets/Chapter2/Characters/原住民小孩.prefab`，在夜間群組右前方新增 `會議原住民小孩`，配0.29公尺矮椅。`Chapter2Actor.seatedHipHeight` 預設仍為原成人0.54公尺，孩子使用0.38公尺，足部前伸距離相應縮短。小孩沒有加入戰士／演出名單，不持刀、兩分支均持續坐著。原劇本莫那、達多與成年群眾起身的時序保留。
-- `Tools > Chapter 2 > Level Council Houses and Seat Listeners` 可重套以上佈置；場景已保存，使用者正常 Play → P 無須執行工具。Documentation/Chapter2.md 已記錄維護方式。
-
-### 本輪實際驗證
-
-- Unity 6000.0.58f1 原專案，臨時 Editor probe 透過 Input System 注入 P／1／2，由正式 Update 處理；一倍速完整播放兩分支，另目視1600×900引擎截圖。不是全程人工鍵盤或實體 VR 驗收。
-- 最終 `final-support`：35行字幕、姓名與單行顯示通過，插刀、九位成人起身、拉遠、決戰字卡及黑幕退出均完成；elapsed約132.48秒、errors=0、warnings=0。
-- 最終 `final-refuse`：34行字幕、姓名與單行顯示通過，玩家繞火走近、莫那斥責及淡黑退出完成；elapsed約128.15秒、errors=0、warnings=13，警告均為既有 Missing Script，詳見本輪log。未出現支持分支的集體起身或決戰字卡。
-- 兩輪均 `checks.passed=true`、`completed=true`、`playingAfterExit=false`、`dirty=false`、`prefsUnchanged=true`。每轮開場 `initialActors=10`、`initialSeated=10`；`childAlwaysSeated=true`、`childHasKnife=false`；四棟房屋 `maxHouseTilt=0`、`maxHouseGroundGap=0`。水平檢查扣除 FBX 軸向轉換，不能將 Inspector 的 X=270度當作房屋歪斜。
-- 已查看全景、左側兩位成人座椅近照、孩子坐姿近照、成人集體站立而孩子仍坐著的全景，以及拒絕玩家近景。座椅位置最終前移至臀部下方；`review-support` 與 `seats-only` 是座椅尚偏後的診斷版本，不能代替 final-*。
-- 證據、原始備份、逐行比對、雜湊及截圖保存在 `_CodexBackups/council_seats_houses_20261009/`。預覽為 `Documentation/Chapter2-all-seated-child-preview.png` 與 `Documentation/Chapter2-seated-child-preview.png`。
-- 本輪未重玩白天護樹／砍伐、第一章、完整片頭，亦未做獨立建置或實體 VR。成人坐姿預設數值不變，第一章場景 SHA-256 與本輪修改前相同；不代表第一章本輪已進行玩法驗收。未 commit／push。
-- 臨時 `Chapter2SeatingProbe.cs` 與 meta 已移至本輪 `verification-tools/`，正式 Assets 不保留自動播放工具。移出後 Unity 編譯及 domain reload 完成，實際開啟 Console 顯示0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號。清理後零警告不抹除拒絕輪的13則既有 Missing Script。
-- 四個正式來源／場景檔案與最終兩輪測試時 SHA-256 一致，見 final-source-comparison.json。最終 Assets／Documentation／Packages／ProjectSettings 共3430檔，無單檔達100,000,000 bytes，最大89,742,488 bytes；本輪沿用原模型，沒有新增大型網格。未切換專案序列化設定。

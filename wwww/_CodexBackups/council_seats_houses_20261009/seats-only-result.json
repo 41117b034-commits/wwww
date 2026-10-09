@@ -1,0 +1,32 @@
+{
+    "label": "seats-only",
+    "prefsBefore": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "finalStage": "Meeting",
+    "completed": false,
+    "playingAfterExit": false,
+    "dirty": false,
+    "allStanding": false,
+    "endingCard": false,
+    "approached": false,
+    "knifePlanted": false,
+    "prefsUnchanged": true,
+    "elapsed": 1.8908212184906006,
+    "knifeTipHeight": 0.0,
+    "minApproachFireDistance": 999.0,
+    "errors": 0,
+    "warnings": 0,
+    "houses": 4,
+    "initialActors": 10,
+    "initialSeated": 10,
+    "childAlwaysSeated": true,
+    "childPresent": true,
+    "childHasKnife": false,
+    "maxHouseTilt": 0.0,
+    "maxHouseGroundGap": 0.0,
+    "childHipHeight": 0.3800000548362732,
+    "lines": [],
+    "stages": [
+        "Meeting"
+    ]
+}

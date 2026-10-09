@@ -1,0 +1,18 @@
+會議房屋 1 · 傳統建築 position=(0.00, 1.80, 11.60) rotation=(270.00, 354.72, 0.00) scale=(11.21, 11.21, 11.21)
+ mesh=Assets/房子/傳統建築/傳統建築.fbx transform=(270.00, 354.72, 0.00) source rotation=(270.00, 0.00, 0.00)
+會議房屋 2 · 茅屋1 position=(10.50, 1.80, 4.00) rotation=(270.00, 252.39, 0.00) scale=(5.00, 4.73, 4.29)
+ mesh=Assets/房子/茅屋1/茅屋1.fbx transform=(270.00, 252.39, 0.00) source rotation=(270.00, 0.00, 0.00)
+會議房屋 3 · 茅屋2 position=(-10.50, 1.80, 4.00) rotation=(270.00, 61.03, 0.00) scale=(4.74, 4.86, 4.69)
+ mesh=Assets/房子/茅屋2/茅屋2.fbx transform=(270.00, 61.03, 0.00) source rotation=(270.00, 0.00, 0.00)
+會議房屋 4 · 茅屋1 position=(9.50, 1.80, -8.00) rotation=(270.00, 197.39, 0.00) scale=(5.00, 4.73, 4.29)
+ mesh=Assets/房子/茅屋1/茅屋1.fbx transform=(270.00, 197.39, 0.00) source rotation=(270.00, 0.00, 0.00)
+瓦旦 pos=(1.89, 0.02, 2.70) seated=True
+達多·莫那 pos=(3.10, 0.03, 1.13) seated=True
+會議戰士 · 長裙女族人 pos=(3.19, 0.09, -0.85) seated=True
+莫那·魯道 pos=(0.00, 0.02, 3.10) seated=True
+巴萬·拿威 pos=(-3.19, 0.02, -0.85) seated=True
+會議族人 · 女長輩 pos=(-3.10, 0.03, 1.13) seated=True
+會議戰士 · 短髮女族人 pos=(-1.89, 0.09, 2.70) seated=True
+會議戰士 · 捲髮青年 pos=(-4.15, 0.00, -2.15) seated=True
+會議戰士 · 頭巾女族人 pos=(-3.15, 0.00, -3.75) seated=True
+會議原住民小孩 pos=(3.50, 0.00, -2.85) seated=True

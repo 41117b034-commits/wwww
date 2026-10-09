@@ -1,0 +1,27 @@
+{
+  "fileCount": 3430,
+  "limit": 100000000,
+  "overLimit": [],
+  "largest": [
+    {
+      "FullName": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\Grip_會議戰士 · 長裙女族人.asset",
+      "Length": 89742488
+    },
+    {
+      "FullName": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\物品\\石盤\\source\\Stone Plate (W318)\\Stone Plate (W318)_1.jpg",
+      "Length": 87096360
+    },
+    {
+      "FullName": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\FearFaces\\tripo_node_ecb91fad.asset",
+      "Length": 85511663
+    },
+    {
+      "FullName": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Models\\Chapter1Doorway\\IncidentHutOpening.asset",
+      "Length": 81699052
+    },
+    {
+      "FullName": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\Grip_達多·莫那.asset",
+      "Length": 77475212
+    }
+  ]
+}
