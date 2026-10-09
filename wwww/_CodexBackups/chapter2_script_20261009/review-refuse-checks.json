@@ -1,0 +1,9 @@
+{
+  "label": "review-refuse",
+  "passed": true,
+  "dialogueLines": 34,
+  "errors": 0,
+  "warnings": 0,
+  "playingAfterExit": false,
+  "failures": []
+}

@@ -1,0 +1,12 @@
+1.560824 
+6.587908 Hilt
+19.04158 Concern
+34.1966 Fire
+53.94611 Resolve
+62.72716 EyesClosed
+67.02988 MonaRise
+68.44974 Declare
+90.92131 PlayerApproach
+100.7259 Rest
+105.2482 Cold
+116.2083 Expel

@@ -1,0 +1,9 @@
+{
+  "label": "final-refuse",
+  "passed": true,
+  "dialogueLines": 34,
+  "errors": 0,
+  "warnings": 13,
+  "playingAfterExit": false,
+  "failures": []
+}

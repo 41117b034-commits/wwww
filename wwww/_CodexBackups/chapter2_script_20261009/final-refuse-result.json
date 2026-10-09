@@ -1,0 +1,265 @@
+{
+    "label": "final-refuse",
+    "prefsBefore": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "finalStage": "Complete",
+    "completed": true,
+    "playingAfterExit": false,
+    "dirty": false,
+    "allStanding": false,
+    "endingCard": false,
+    "approached": true,
+    "knifePlanted": false,
+    "prefsUnchanged": true,
+    "elapsed": 127.77812957763672,
+    "knifeTipHeight": 0.0,
+    "minApproachFireDistance": 1.5163195133209229,
+    "errors": 0,
+    "warnings": 13,
+    "lines": [
+        {
+            "speaker": "達多·莫那",
+            "text": "父親！",
+            "cue": "Hilt",
+            "time": 5.763371467590332,
+            "visualLines": 1
+        },
+        {
+            "speaker": "達多·莫那",
+            "text": "日本人逼我們砍巨木、扣工資，",
+            "cue": "Hilt",
+            "time": 8.036467552185059,
+            "visualLines": 1
+        },
+        {
+            "speaker": "達多·莫那",
+            "text": "連敬酒都要被打！",
+            "cue": "Hilt",
+            "time": 11.463203430175782,
+            "visualLines": 1
+        },
+        {
+            "speaker": "達多·莫那",
+            "text": "我們還要忍到什麼時候？",
+            "cue": "Hilt",
+            "time": 14.13888931274414,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "達多，冷靜！",
+            "cue": "Concern",
+            "time": 18.402008056640626,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "日本人的槍砲比樹葉還多。",
+            "cue": "Concern",
+            "time": 20.767963409423829,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "動了手，",
+            "cue": "Concern",
+            "time": 23.931900024414064,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "部落的婦女和孩子怎麼辦？",
+            "cue": "Concern",
+            "time": 26.144315719604493,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "莫那，這是一條死路啊！",
+            "cue": "Concern",
+            "time": 29.317245483398439,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "死路？",
+            "cue": "Fire",
+            "time": 33.37400436401367,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "瓦旦，看看我們的年輕人，",
+            "cue": "Fire",
+            "time": 35.53775405883789,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "手是用來握獵刀的，",
+            "cue": "Fire",
+            "time": 38.77528762817383,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "現在卻在幫日人扛木材。",
+            "cue": "Fire",
+            "time": 41.56304931640625,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "丟了 Gaya（祖靈的教誨），",
+            "cue": "Fire",
+            "time": 44.5650634765625,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "我們活著和野獸有什麼兩樣？",
+            "cue": "Fire",
+            "time": 48.20975875854492,
+            "visualLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威",
+            "text": "頭目！",
+            "cue": "Resolve",
+            "time": 52.77208709716797,
+            "visualLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威",
+            "text": "我寧可做自由的鬼，",
+            "cue": "Resolve",
+            "time": 55.04448699951172,
+            "visualLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威",
+            "text": "也不做屈辱的人！",
+            "cue": "Resolve",
+            "time": 57.7735710144043,
+            "visualLines": 1
+        },
+        {
+            "speaker": "瓦旦",
+            "text": "我們打不贏日本帝國的……",
+            "cue": "EyesClosed",
+            "time": 61.52078628540039,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "明天的運動會，",
+            "cue": "Declare",
+            "time": 67.15389251708985,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "日本官吏都在公學校。",
+            "cue": "Declare",
+            "time": 69.64412689208985,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "那是祖靈給的唯一機會！",
+            "cue": "Declare",
+            "time": 72.63729858398438,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "我莫那·魯道已經決定起義，",
+            "cue": "Declare",
+            "time": 75.68335723876953,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "用鮮血洗刷屈辱！",
+            "cue": "Declare",
+            "time": 79.09173583984375,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "賽德克巴萊的子孫們，",
+            "cue": "Declare",
+            "time": 81.78079223632813,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "你們，願不願意跟隨我？",
+            "cue": "Declare",
+            "time": 84.8042984008789,
+            "visualLines": 1
+        },
+        {
+            "speaker": "玩家",
+            "text": "莫那頭目，這根本是自殺！我想活下去……",
+            "cue": "Rest",
+            "time": 99.17964935302735,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "活下去？",
+            "cue": "Cold",
+            "time": 103.72798919677735,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "那就去向日本人跪下！",
+            "cue": "Cold",
+            "time": 106.00151824951172,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "去幫他們扛木頭、",
+            "cue": "Cold",
+            "time": 108.98284149169922,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "聽他們叫你生番！",
+            "cue": "Cold",
+            "time": 111.55652618408203,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "滾！",
+            "cue": "Expel",
+            "time": 114.43521118164063,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "彩虹橋上沒有你的位置，",
+            "cue": "Expel",
+            "time": 116.66033935546875,
+            "visualLines": 1
+        },
+        {
+            "speaker": "莫那·魯道",
+            "text": "你不配稱為 Sediq Bale（真的人）！",
+            "cue": "Expel",
+            "time": 119.66447448730469,
+            "visualLines": 1
+        }
+    ],
+    "stages": [
+        "Meeting",
+        "Vote",
+        "Ending",
+        "Complete"
+    ]
+}

@@ -13,13 +13,14 @@ public sealed partial class Chapter2Controller
         Vector3 inward=Vector3.ProjectOnPlane(campfire.position-at,Vector3.up).normalized;
         Vector3 side=Vector3.Cross(Vector3.up,inward);
         Vector3 position=at+inward*2.35f+side*.3f;
-        // The two standing dissenters share a row; view diagonally to keep the other out of frame.
+        // The two standing listeners share a row; view diagonally to keep the other out of frame.
         if(System.Array.IndexOf(conservatives,actor)>=0)
             position=at+new Vector3(1.65f,0,-1.85f);
-        position.y=at.y+(actor.seated?1.3f:1.65f);
-        Vector3 target=at+Vector3.up*(actor.seated?.9f:1.15f);
+        float eyeHeight=actor.Rig&&actor.Rig.Head?actor.Rig.Head.position.y:at.y+(actor.seated?1.12f:1.52f);
+        position.y=eyeHeight+.015f;
+        Vector3 target=new Vector3(at.x,eyeHeight-.20f,at.z);
         bool rally=CouncilRally&&actor==mona;
-        if(rally){position=at+inward*3.05f+side*.3f+Vector3.up*1.65f;target=at+Vector3.up*1.3f;}
+        if(rally){position=at+inward*3.05f+side*.3f;position.y=eyeHeight+.015f;target=new Vector3(at.x,eyeHeight-.20f,at.z);}
         actor.Face(position);
         yield return CouncilCameraShot(position,target,rally?55:50,.7f);
         CouncilSpeaker=actor;CameraBeat="council-speaker";
@@ -31,19 +32,6 @@ public sealed partial class Chapter2Controller
         Vector3 position=campfire.position+(ending?new Vector3(0,3.65f,-10):new Vector3(0,2.4f,-8.2f));
         yield return CouncilCameraShot(position,campfire.position+Vector3.up*.85f,64,seconds);
         CameraBeat=ending?"council-pullback":"council-overview";
-    }
-
-    IEnumerator CouncilStandTogether()
-    {
-        yield return FrameCouncilOverview(1);
-        CouncilStandingTogether=true;
-        for(int i=0;i<leaders.Length;i++)
-        {
-            leaders[i].Face(campfire.position);
-            leaders[i].StandFromSeat(i*.13f);
-        }
-        foreach(var actor in conservatives)actor.Face(mona.transform.position);
-        yield return new WaitForSeconds(3);
     }
 
     IEnumerator CouncilCameraShot(Vector3 position,Vector3 target,float fov,float seconds)

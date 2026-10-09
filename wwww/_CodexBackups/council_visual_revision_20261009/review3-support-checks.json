@@ -1,0 +1,9 @@
+{
+  "label": "review3-support",
+  "passed": true,
+  "dialogueLines": 35,
+  "errors": 0,
+  "warnings": 0,
+  "playingAfterExit": false,
+  "failures": []
+}

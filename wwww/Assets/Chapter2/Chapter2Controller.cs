@@ -14,6 +14,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     public GameObject fallenStump, axe, dayGroup, nightGroup;
     public Chapter2Actor[] workers, leaders, conservatives;
     public Chapter2Actor officer, mona;
+    public Chapter2Actor tado, bawan, watan;
     public Light sun, fireLight;
     public AudioSource ambience, effects, fireAudio;
     public AudioClip forestAudio, nightAudio, chopAudio, threatAudio;
@@ -204,41 +205,29 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     IEnumerator RunMeeting()
     {
         SetNight();
+        PrepareCouncilDrama();
         player.Warp(meetingSpawn.position,campfire.position);
         yield return FrameCouncilOverview(.01f);
-        SetStage(Stage.Meeting);ui.chapter.text="第二章  /  夜晚的秘密會議";ui.objective.text="聆聽莫那魯道與六社領袖";
+        SetStage(Stage.Meeting);ui.chapter.text="第二章  /  夜晚的秘密會議";ui.objective.text="聆聽營火旁的密議";
         yield return Fade(0,1.5f);
         yield return new WaitForSeconds(3);
-        yield return Say(mona,"莫那魯道","若再忍下去，族人的靈魂將被踐踏殆盡！");
-        string[] speeches={"我們肩上的木材越來越重，能帶回家的工錢卻越來越少。","他們的命令已經踏進聖地，連祖靈的守護也要奪走。","我們的孩子，不該只學會在槍口前低頭。","部落之間要彼此照應，不能再讓任何一社獨自受辱。","反抗會付出代價。但沉默，也正在奪走我們的一切。","我們要奪回尊嚴。今晚，把各社的決心連在一起。"};
-        for(int i=0;i<leaders.Length;i++) yield return Say(leaders[i],"六社領袖 · "+(i+1),speeches[i%speeches.Length]);
+        yield return CouncilScript();
         yield return FrameCouncilOverview();
         SetStage(Stage.Vote);ui.objective.text="表達你的立場";ui.hint.text="1 支持／2 拒絕  |  VR 舉起右手支持，或按左手主按鈕拒絕";
-        ui.Choices("你支持起義嗎？","1  舉手，支持起義","2  搖頭，拒絕起義");readyToChoose=true;
+        ui.Choices("你願意跟隨莫那·魯道嗎？","1  同意，跟隨起義","2  拒絕，我想活下去");readyToChoose=true;
         while(MeetingDecision<0) yield return null;
         SetStage(Stage.Ending);ui.hint.text="";
+        if(MeetingDecision==0)yield return CouncilAgreement();
+        else yield return CouncilRefusal();
+        ui.Line("","");
+        if(MeetingDecision==0)yield return FrameCouncilOverview(5,true);
+        yield return Fade(1,2);
         if(MeetingDecision==0)
         {
-            yield return Say(leaders[0],"族人","願有一天，孩子能不再受命令與槍口擺布。願我們自由地生活。",6);
-            yield return Say(mona,"莫那魯道","我們記住彼此今晚的決心。",4);
+            ui.endingPanel.SetActive(true);ui.continueButton.gameObject.SetActive(false);
+            yield return new WaitForSeconds(3);
         }
-        else
-        {
-            yield return Say(conservatives[0],"保守派族人","起義會把家人也捲進去！我不能答應。",5);
-            yield return Say(mona,"莫那魯道","我們已經忍受太多。這一次，我們要守住尊嚴。",5);
-            yield return Say(conservatives[1],"保守派族人","既然你們已經決定，我們就先離開。",4);
-            yield return FrameCouncilOverview();
-            yield return LeaveConservatives();
-        }
-        CouncilRally=MeetingDecision==0;
-        if(!CouncilRally){mona.StandFromSeat();yield return new WaitForSeconds(1.25f);}
-        yield return Say(mona,"莫那魯道","我們的血，不該再白白流淌。霧社，該覺醒了！",6);
-        ui.Line("","");
-        if(CouncilRally)yield return CouncilStandTogether();
-        if(!player.IsVR)yield return FrameCouncilOverview(5,true);
-        yield return Fade(1,2);
-        ui.endingPanel.SetActive(true);ui.continueButton.gameObject.SetActive(false);
-        yield return new WaitForSeconds(3);
+        else yield return new WaitForSeconds(.8f);
         SetStage(Stage.Complete);
         // A preview has no completed daytime route and must not overwrite a real result.
         if(saveResult && !meetingShortcutUsed)
@@ -402,18 +391,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if(actor&&CurrentStage>=Stage.Meeting&&nightGroup.activeInHierarchy)
         {ui.Line("","");yield return FrameCouncilSpeaker(actor);}
-        if(CouncilRally&&actor==mona)
-        {mona.StandFromSeat(0,.8f);actor.gameObject.AddComponent<Chapter2RallyGesture>().Begin();}
         ui.Line(name,words);if(actor) {actor.speaking=true;if(actor.Rig) actor.Rig.conversationTarget=player.view.transform;}
         yield return new WaitForSeconds(seconds>0?seconds:lineSeconds);
         if(actor) actor.speaking=false;
-    }
-    IEnumerator LeaveConservatives()
-    {
-        Vector3[] start=new Vector3[conservatives.Length];for(int i=0;i<start.Length;i++){start[i]=conservatives[i].transform.position;conservatives[i].seated=false;}
-        for(float t=0;t<1;t+=Time.deltaTime/7)
-        {for(int i=0;i<start.Length;i++) conservatives[i].transform.position=Vector3.Lerp(start[i],new Vector3(-12-i*1.2f,start[i].y,-12),t);yield return null;}
-        foreach(var actor in conservatives) actor.gameObject.SetActive(false);
     }
     public void SetNight()
     {

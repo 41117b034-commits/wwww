@@ -63,6 +63,7 @@ public static class Chapter2CouncilCastAuthoring
         }
         finally{EditorSceneManager.CloseScene(source,true);SceneManager.SetActiveScene(active);}
         Chapter2CouncilPoseAuthoring.Apply();
+        Chapter2CouncilStoryAuthoring.Apply();
     }
 
     static Chapter2Actor Replace(Chapter2Actor old,GameObject donor)

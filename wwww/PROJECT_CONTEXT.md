@@ -2,7 +2,9 @@
 
 更新日期：2026-10-09。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-09 已接續完成第二章會議的三張截圖修改：第三位女性領袖的手腕方向、第五位領袖較寬且較矮的身材比例，以及支持起義時莫那前傾站起、彎肘握緊右拳。final-support 與 final-refuse 均經 Play → P 正式輸入路徑完成，assertionsPassed=true、errors=0，黑幕後 playing=false；已查看引擎畫面。詳細證據、既有警告與驗證限制見文末。
+最新狀態：2026-10-09 已完成第二章 Play → P 畫面修正：達多握刀時手腕順著前臂、所有發言者抬頭對鏡頭、莫那起身宣告時右手握緊拳頭；四位字幕人名加上使用者指定身分。保留原營火／人物／倒木場景，只在外圍新增四棟沿用第一章模型與材質的房屋。本輪 review3-support 與 final-refuse 逐行與流程檢查均通過、errors=0、結束後 playing=false；第一章場景本輪前後 SHA-256 相同。細節與驗證限制見文末。
+
+上次劇本更新：2026-10-09 已將第二章 Play → P 的夜間會議換成使用者提供的新劇本：莫那·魯道、達多·莫那、巴萬·拿威、瓦旦為具名發言者，依指定分行逐行字幕。同意分支插刀／全員起身／拉遠與決戰字卡；拒絕分支玩家走近莫那、斥責與指向側面出口後直接淡黑。final-support 35 行、final-refuse 34 行已經正式輸入路徑與引擎畫面檢查，兩輪 checks.passed=true、errors=0、退出後 playing=false。人物為既有模型與程序肢體動作，未新增配音及專用細部臉部動畫；其他限制與資產序列化處理見文末。
 
 前次快捷功能：2026-10-08 已新增第二章 P 鍵快速進入夜晚秘密會議。Play 後點一下 Game 視窗，片頭或白天流程中按 P 即進入營火全景，再接原本三秒開場與對話；空白鍵仍只略過片頭。已用 Unity Input System 模擬鍵盤事件驗證片頭 P、空白鍵後 P、重複 P 與會議兩個分支，兩輪黑幕後均退出 Play Mode，正式通關紀錄保留。
 
@@ -701,3 +703,52 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - Documentation/Chapter2.md 已更新。新增 Chapter2-council-wrist-preview.png、Chapter2-council-proportions-preview.png、Chapter2-council-fist-close-preview.png，更新 Chapter2-council-rally-preview.png 與 Chapter2-council-standing-preview.png。
 - 測試後將臨時 Chapter2CouncilRevisionProbe 與 meta 移至 verification-tools；正式 Assets 不保留自動播放／輪詢測試工具。清理後重新編譯完成，實際開啟 Unity Console 顯示 0 Error／0 Warning／0 Log；Play 已停止，場景無未儲存星號。這是清理後狀態，播放期間既有 Missing Script 警告仍保存在測試記錄。
 - 最終 Assets／Documentation／Packages／ProjectSettings 共 3,387 檔，沒有檔案達 100,000,000 bytes，最大 87,096,360 bytes；詳見 final-size-audit.json。未 commit／push。
+
+## 2026-10-09 夜間會議改為四位具名角色的新劇本
+
+- 依本次完整劇本直接修改原專案第二章；已讀 AGENTS、交接與固定劇情摘錄第 3–5 頁。最新使用者劇本取代舊的六社輪流發言、保守派離場及舊結語；白天正常流程和 P 快捷共用新 RunMeeting。
+- 人物與場景保留既有模型。原長老為「莫那·魯道」；原第二位男性領袖為「達多·莫那」；原第四位男性領袖為「巴萬·拿威」；原第一位灰髮領袖為「瓦旦」。四位的 GameObject 名稱與 controller 引用已保存到第二章場景，字幕直接顯示這些姓名。其他五人改用描述性會議群眾名稱，集體台詞顯示「巴萬與眾戰士」，新劇情沒有族人 1／2／3 或六社領袖編號字幕。
+- 新增 Chapter2Controller.CouncilStory.cs，按原文保存共通 26 行、同意 9 行、拒絕 8 行。每次只顯示一行，不將整段合併；Gaya、Sediq Bale 與括號文字保留。短句至少 2.15 秒，長句按字數延長。開場仍是夜景淡入及三秒營火全景。
+- 新增 Chapter2CouncilDrama.cs：按刀柄、憂慮伸手、凝視火堆、握刀、低頭、莫那起身、達多拔刀插入泥土、眾人起身拔刀、莫那點頭與側指出口等程序肢體演出。瓦旦「閉上眼」段落目前以低头／停頓呈現，沒有專用眼皮形變；冷笑、咆哮沒有新增配音或口型，臉部仍沿用既有模型。不得將這些細部臉部演出寫成已完整製作。
+- 同意分支：達多先起身插刀，兩行誓言後再轉全景；其餘人物站起、持刀響應三行。莫那說完四行囑咐後拉遠，展示營火與九人，再淡黑、顯示原有「決戰的時刻，將至。」並停止 Editor Play Mode。
+- 拒絕分支：視角先回到玩家站位，再沿營火外圍走到莫那面前。莫那轉向接近中的玩家；玩家台詞後由莫那斥責四行，再指向側面出口斥責三行，直接淡黑退出，不進入支持分支的起身／拉遠／決戰字卡。
+- 新增 Chapter2CouncilStoryAuthoring、Chapter2KnifeGripAuthoring 與 Props/ 內小型獵刀／刀鞘／材質及七份右手握柄網格，修正原先刀柄浮在張開手掌旁的診斷版本。Tools / Chapter 2 / Apply Named Council Story 可重套名字、引用與刀具，Use Distinct Council Characters 之後也會套用。網格必須保留二進位；作者工具使用名稱與檔名一致的非 persistent 副本，直接以 SaveToSerializedFileAndForget 儲存，避免匯入器因名稱不符改写為文字。
+
+### 本次實際驗證
+
+- Unity 6000.0.58f1 原專案 Editor Play Mode，以臨時 Chapter2StoryProbe 送入 Input System 的 P／1／2，由正式 Update 處理。全程正式台詞時間與 Time.timeScale=1，另查看引擎 1600×900 截圖。這是 Editor 輸入模擬與視覺檢查，不是全程人工鍵盤或實體 VR 驗收。
+- final-support：35 行字幕與姓名逐項對照使用者原文，所有 Text 實際 visualLines=1；checks.passed=true、completed=true、errors=0、warnings=0。插刀／全員起身／決戰字卡皆出現；刀尖 y=-0.05967，插入地面。完成約 131.91 遊戲秒，正式流程自行停止，playingAfterExit=false、dirty=false。
+- final-refuse：34 行字幕／姓名與單行顯示全部通過；checks.passed=true、completed=true、errors=0。玩家路徑至營火中心的最小水平距離約 1.516 公尺，沒有穿過火圈；沒有插刀、集體起身或決戰字卡。完成約 127.78 遊戲秒，playingAfterExit=false、dirty=false。已查看玩家對話、莫那側指出口及 Sediq Bale 長句畫面。
+- 兩輪 WusheEvent.Chapter2.Result 字串前後相同，P 預覽沒有覆寫原本通關紀錄。final-refuse 有 13 筆既有 Missing Script 警告；播放另有 URP 點光陰影圖調整訊息，不宣稱全專案播放零警告。
+- diagnostic-support 是未校正握柄／腿部接地的較早畫面，review-refuse 是尚未修正莫那朝向與側指方向的版本，不能代替 final-*。
+- 未重跑完整白天護樹／砍伐、第一章、獨立建置或實體 VR。XR 保留頭部追蹤；拒絕路線移動 XR origin，未做頭戴裝置舒適度驗證。
+
+### 資產處理、保存與限制
+
+- 作者工具診斷期間曾短暫切換 EditorSettings.serializationMode，觸發 Unity 對既有場景及資產重新序列化；已還原 ForceText（m_SerializationMode: 2），最終工具已移除此做法。大型既有 MonaRallyFist、GriefHands 及 IncidentHutOpening 已重存二進位。其他場景／資產可能存在此次重新序列化的檔案差異；沒有用較舊備份覆蓋使用者既有修改，不宣稱第一章檔案雜湊完全不變。
+- 本輪所有正式檔案均小於 100,000,000 bytes，最大為 Grip_會議戰士 · 長裙女族人.asset，89,742,488 bytes。詳細最後稽核保存在 asset-size-audit.json。前面的 169–271 MB 握刀網格是已修正的文字序列化診斷狀態。
+- 原始備份、expected-lines.json、check-results.ps1、兩分支 JSON、截圖、紀錄及雜湊在 _CodexBackups/chapter2_script_20261009/。Documentation/Chapter2.md 已更新；新增四張 Chapter2-new-council-*.png 預覽。沒有 commit／push。
+- 清理前 playing=false、dirty=false；臨時 Chapter2StoryProbe 與 meta 已移到本輪 verification-tools，正式 Assets 不保留自動播放測試工具。已核對 8 個正式來源／場景檔案與最終播放時 SHA-256 相同。
+- 測試工具移出後重新編譯完成；清理後實際查看 Console 為 0 Error／0 Warning／0 Log，Play 停止，場景無未儲存星號。此為清理後狀態，不抹除 final-refuse 的既有 Missing Script 警告。最後大小稽核 3,420 檔，超過或等於 100,000,000 bytes 的檔案為 0。
+
+## 夜間會議手腕、視線、握拳與第一章房屋（2026-10-09）
+
+使用者依三張 Play → P 截圖要求修正達多握刀手腕、發言者低頭、莫那宣告時仍張掌，以及字幕身分；並澄清場景是保留截圖中的按 P 後環境，只補上第一章房屋。
+
+- `Chapter2CouncilDrama.cs`：持刀手腕沿前臂，刀身改跟隨掌中握持軸；前臂分攤旋轉。發言時最後一層頭部姿勢對準實際鏡頭，覆蓋原低頭角度。莫那 Declare 使用既有 MonaRallyFist 形狀，右肘彎曲、拳头收緊舉起。拒絕斥責時仍看向玩家，驅逐右手指向出口。
+- `Chapter2Controller.Council.cs`：坐姿近景高度根據角色頭部位置，起身鏡頭調整構圖，不再高角度俯視臉部。
+- `Chapter2Controller.CouncilStory.cs`：字幕人名依序顯示「達多·莫那（莫那·魯道之子）」、「巴萬·拿威（年輕戰士）」、「瓦旦（長老代表）」、「莫那·魯道（賽德克社頭目）」。Hierarchy 保留前次具名角色名稱。台詞與原分行未變。
+- 新增 `Chapter2CouncilVillageAuthoring.cs` 與已儲存第二章場景群組 `會議外圍房屋 · 第一章模型`：四棟房屋沿用第一章的茅屋1、茅屋2、傳統建築及場景材質，夜間才顯示；保留營火、九人、木材堆及倒木。唯讀 Preview Scene 取得房屋，僅保存第二章；本輪第一章場景 SHA-256 前後一致（8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2）。
+
+### 本輪實際驗證與限制
+
+- Unity 6000.0.58f1，透過暫時 Editor probe 注入 Input System 的 P、1／2 事件，執行正式 Update 路徑；使用原速度與完整字幕等待。不是實體鍵盤逐鍵操作，也未測實體 VR。
+- 最終支持證據 `review3-support`：35 行與身分逐一符合，台詞及人名視覺行數皆為 1；宣告七行拳頭權重1；插刀接地、全員站起、拉遠、決戰字卡及淡黑退出均完成。errors=0、warnings=0，elapsed 約132.97秒。
+- 最終拒絕證據 `final-refuse`：34 行與身分逐一符合、單行顯示；玩家繞火走近後莫那對視斥責、指向側面，淡黑後退出，沒有支持結尾字卡。errors=0，13則既有 Missing Script 警告；最小繞火距離約1.56公尺，elapsed 約128.30秒。
+- 兩輪 `checks.passed=true`、`completed=true`、`playingAfterExit=false`、`dirty=false`、`prefsUnchanged=true`。已目視引擎1600×900截圖：達多手腕／四位說話視線／莫那閉拳宣告／房屋全景／拒絕對視及指向出口。5個正式來源與場景的 SHA-256 均與測試時相同。
+- 診斷輪 `review-support` 因驗證工具尚在重新編譯時進入 Play，Domain Reload 使既有 rig 暫態陣列失效，已停止並完整重啟；不計為最終驗證。`review2-support` 房屋 FBX 軸向尚未保留，修正為保留 donor 旋轉後才取得 `review3-support` 最終畫面。沒有修改共用第一章 Rig 來掩蓋診斷錯誤。
+- 資料與原檔備份在 `_CodexBackups/council_visual_revision_20261009/`。臨時 `Chapter2VisualProbe.cs` 與 meta 在完成後移至其中 `verification-tools/`，不保留於正式 Assets/Editor。
+- 預覽圖：`Documentation/Chapter2-council-houses-preview.png`、`Chapter2-tado-wrist-preview.png`、`Chapter2-speaker-gaze-preview.png`、`Chapter2-declaration-fist-preview.png`。
+- 新房屋只引用原模型與材質，未複製大型網格；本輪未切換專案序列化設定。正式資產大小稽核無單檔達100,000,000 bytes；最大仍為89,742,488 bytes的既有握刀網格。
+- 本輪未重玩第一章、第二章白天分支與完整片頭，未新增配音或細部臉部表情。沒有提交或推送 Git。
+- 清理後 Unity 已完成重新編譯；Console 顯示 0 Error／0 Warning／0 Log、Play 停止且場景無未存標記。這是清理後狀態，不抹除上面拒絕輪的13則既有警告。最終稽核3426個正式檔案，無超過100 MB。

@@ -1,0 +1,22 @@
+{
+    "label": "",
+    "prefsBefore": "",
+    "prefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":100.0,\"validCuts\":5,\"failedCuts\":0,\"casualties\":0,\"completed\":true}",
+    "finalStage": "",
+    "completed": false,
+    "playingAfterExit": false,
+    "dirty": false,
+    "allStanding": false,
+    "endingCard": false,
+    "approached": false,
+    "knifePlanted": false,
+    "prefsUnchanged": false,
+    "elapsed": 0.0,
+    "knifeTipHeight": 0.0,
+    "minApproachFireDistance": 999.0,
+    "errors": 2043,
+    "warnings": 13,
+    "houses": 0,
+    "lines": [],
+    "stages": []
+}
