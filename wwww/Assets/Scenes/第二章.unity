@@ -14418,7 +14418,7 @@ MonoBehaviour:
   - id: C2_006
     role: 2
     chinese: "\u9019\u68F5\u5DE8\u6728\u662F\u6211\u5011\u7684\u5B88\u8B77\u8005\u2026\u2026\u771F\u7684\u8981\u780D\u4E0B\u53BB\u55CE\uFF1F"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 539e90144c12edf45a469e5bd3d70e93, type: 3}
   - id: C2_007
     role: 1
     chinese: "\u9000\u958B\uFF01\u8AB0\u6562\u9055\u6297\u547D\u4EE4\uFF1F"
