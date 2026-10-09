@@ -15,6 +15,8 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         public Role role;
         [TextArea(1, 4)] public string chinese;
         public AudioClip clip;
+        [Tooltip("個別語音音量：0 為原音量；-6 約減半；+6 約加倍。過大可能失真。")]
+        [Range(-30f, 12f)] public float volumeDb = 0f;
     }
     [Header("逐句配音：Officer 日語；族人與玩家賽德克族語；Narrator 中文")]
     public VoiceLine[] lines = new VoiceLine[] {
@@ -91,6 +93,9 @@ public sealed class Chapter2AudioManager : MonoBehaviour
     [Header("選用 Mixer Group；AudioSource 由本元件建立")]
     public AudioMixerGroup musicOutput, narrationOutput, characterOutput;
     AudioSource music, narration, character;
+    Chapter2VoiceGain narrationGain, characterGain;
+    VoiceLine activeLine;
+    Role activeRole;
     Coroutine musicFade;
     float envelope, duck = 1;
     AudioClip requestedMusic;
@@ -101,6 +106,8 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         if (!music) music = MakeSource("Chapter2 BGM", true);
         if (!narration) narration = MakeSource("Chapter2 Narration", false);
         if (!character) character = MakeSource("Chapter2 Character Voice", false);
+        if (!narrationGain) narrationGain = narration.GetComponent<Chapter2VoiceGain>() ?? narration.gameObject.AddComponent<Chapter2VoiceGain>();
+        if (!characterGain) characterGain = character.GetComponent<Chapter2VoiceGain>() ?? character.gameObject.AddComponent<Chapter2VoiceGain>();
     }
     AudioSource MakeSource(string label, bool loop)
     {
@@ -115,6 +122,7 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         duck = Mathf.MoveTowards(duck, VoicePlaying ? duckFactor : 1f, Time.unscaledDeltaTime * 4);
         music.volume = musicVolume * envelope * duck;
         narration.volume = narrationVolume; character.volume = characterVolume;
+        UpdateVoiceGain();
         music.outputAudioMixerGroup = musicOutput;
         narration.outputAudioMixerGroup = narrationOutput; character.outputAudioMixerGroup = characterOutput;
     }
@@ -173,6 +181,7 @@ public sealed class Chapter2AudioManager : MonoBehaviour
             return originalSeconds;
         }
         var source = role == Role.Narrator ? narration : character;
+        activeLine = found; activeRole = role; UpdateVoiceGain();
         source.clip = found.clip; source.volume = role == Role.Narrator ? narrationVolume : characterVolume;
         source.outputAudioMixerGroup = role == Role.Narrator ? narrationOutput : characterOutput;
         source.Play();
@@ -181,6 +190,15 @@ public sealed class Chapter2AudioManager : MonoBehaviour
     public void StopVoice()
     {
         if (narration) narration.Stop(); if (character) character.Stop();
+        activeLine = null;
+        if (narrationGain) narrationGain.Gain = 1f;
+        if (characterGain) characterGain.Gain = 1f;
+    }
+    void UpdateVoiceGain()
+    {
+        float gain = activeLine != null ? Mathf.Pow(10f, Mathf.Clamp(activeLine.volumeDb, -30f, 12f) / 20f) : 1f;
+        if (narrationGain) narrationGain.Gain = activeLine != null && activeRole == Role.Narrator ? gain : 1f;
+        if (characterGain) characterGain.Gain = activeLine != null && activeRole != Role.Narrator ? gain : 1f;
     }
     public void StopAllAudio()
     {
