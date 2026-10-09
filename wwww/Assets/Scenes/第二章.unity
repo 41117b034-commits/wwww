@@ -14093,6 +14093,7 @@ GameObject:
   - component: {fileID: 206475605}
   - component: {fileID: 206475607}
   - component: {fileID: 206475608}
+  - component: {fileID: 206475609}
   m_Layer: 0
   m_Name: Chapter2_NewRulesAndSecretCouncil
   m_TagString: Untagged
@@ -14113,6 +14114,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1596110020}
+  chapterAudio: {fileID: 0}
+  narrateAfterOpeningFilm: 1
   ui: {fileID: 1288949345}
   sacredTree: {fileID: 1879062536}
   treeApproach: {fileID: 1172475255}
@@ -14379,6 +14382,275 @@ MonoBehaviour:
   - {fileID: 1879062536}
   ground: {fileID: 105905548}
   timberPiles: {fileID: 1450025053}
+--- !u!114 &206475609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206475604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7dd1e34418542243a72daf07db2022f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lines:
+  - id: C2_001
+    role: 0
+    chinese: "\u8B66\u5BDF\u8981\u6C42\u65CF\u4EBA\u96C6\u5408\uFF0C\u5BA3\u8B80\u65B0\u7684\u4F10\u6728\u8207\u642C\u904B\u898F\u5B9A\u3002"
+    clip: {fileID: 0}
+  - id: C2_002
+    role: 0
+    chinese: "\u6728\u6750\u4E0D\u51C6\u62D6\u66F3\uFF0C\u5FC5\u9808\u80A9\u625B\u4E0B\u5C71\u3002\u9661\u5761\u8207\u9577\u9014\u642C\u904B\uFF0C\u4F7F\u65CF\u4EBA\u7684\u751F\u6D3B\u66F4\u52A0\u8271\u56F0\u3002"
+    clip: {fileID: 0}
+  - id: C2_003
+    role: 0
+    chinese: "\u8B66\u5BDF\u9032\u4E00\u6B65\u547D\u4EE4\u65CF\u4EBA\u524D\u5F80\u8056\u5730\u300C\u897F\u4ED4\u5E0C\u514B\u300D\uFF0C\u780D\u4F10\u88AB\u8996\u70BA\u5B88\u8B77\u8005\u7684\u5DE8\u6728\u3002"
+    clip: {fileID: 0}
+  - id: C2_004
+    role: 0
+    chinese: "\u5728\u69CD\u53E3\u8207\u97AD\u5B50\u7684\u5A01\u903C\u4E0B\uFF0C\u65CF\u4EBA\u8D70\u5165\u68EE\u6797\u3002\u58D3\u6291\u7684\u61A4\u6012\uFF0C\u9010\u6F38\u5316\u70BA\u53CD\u6297\u7684\u6C7A\u5FC3\u3002"
+    clip: {fileID: 0}
+  - id: C2_005
+    role: 1
+    chinese: "\u628A\u9019\u4E9B\u6A39\u90FD\u780D\u4E86\u3002"
+    clip: {fileID: 0}
+  - id: C2_006
+    role: 2
+    chinese: "\u9019\u68F5\u5DE8\u6728\u662F\u6211\u5011\u7684\u5B88\u8B77\u8005\u2026\u2026\u771F\u7684\u8981\u780D\u4E0B\u53BB\u55CE\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_007
+    role: 1
+    chinese: "\u9000\u958B\uFF01\u8AB0\u6562\u9055\u6297\u547D\u4EE4\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_008
+    role: 1
+    chinese: "\u6728\u6750\u4E0D\u80FD\u518D\u53D7\u640D\uFF01\u653E\u6162\u52D5\u4F5C\uFF0C\u91CD\u65B0\u627E\u6E96\u843D\u9EDE\u3002"
+    clip: {fileID: 0}
+  - id: C2_009
+    role: 2
+    chinese: "\u547D\u4EE4\u5B8C\u6210\u4E86\u3002\u53EF\u662F\uFF0C\u6211\u5011\u8A72\u600E\u9EBC\u9762\u5C0D\u7956\u9748\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_010
+    role: 2
+    chinese: "\u524D\u9762\u5C31\u662F\u897F\u4ED4\u5E0C\u514B\u3002\u9019\u7247\u68EE\u6797\uFF0C\u5B88\u8B77\u8457\u6211\u5011\u7684\u751F\u6D3B\u3002"
+    clip: {fileID: 0}
+  - id: C2_011
+    role: 2
+    chinese: "\u6CBF\u8457\u9019\u689D\u5C0F\u5F91\uFF0C\u8DDF\u6211\u4F86\u3002\u4E0D\u8981\u96E2\u968A\u592A\u9060\u3002"
+    clip: {fileID: 0}
+  - id: C2_012
+    role: 4
+    chinese: "\u7236\u89AA\uFF01"
+    clip: {fileID: 0}
+  - id: C2_013
+    role: 4
+    chinese: "\u65E5\u672C\u4EBA\u903C\u6211\u5011\u780D\u5DE8\u6728\u3001\u6263\u5DE5\u8CC7\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_014
+    role: 4
+    chinese: "\u9023\u656C\u9152\u90FD\u8981\u88AB\u6253\uFF01"
+    clip: {fileID: 0}
+  - id: C2_015
+    role: 4
+    chinese: "\u6211\u5011\u9084\u8981\u5FCD\u5230\u4EC0\u9EBC\u6642\u5019\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_016
+    role: 6
+    chinese: "\u9054\u591A\uFF0C\u51B7\u975C\uFF01"
+    clip: {fileID: 0}
+  - id: C2_017
+    role: 6
+    chinese: "\u65E5\u672C\u4EBA\u7684\u69CD\u7832\u6BD4\u6A39\u8449\u9084\u591A\u3002"
+    clip: {fileID: 0}
+  - id: C2_018
+    role: 6
+    chinese: "\u52D5\u4E86\u624B\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_019
+    role: 6
+    chinese: "\u90E8\u843D\u7684\u5A66\u5973\u548C\u5B69\u5B50\u600E\u9EBC\u8FA6\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_020
+    role: 6
+    chinese: "\u83AB\u90A3\uFF0C\u9019\u662F\u4E00\u689D\u6B7B\u8DEF\u554A\uFF01"
+    clip: {fileID: 0}
+  - id: C2_021
+    role: 3
+    chinese: "\u6B7B\u8DEF\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_022
+    role: 3
+    chinese: "\u74E6\u65E6\uFF0C\u770B\u770B\u6211\u5011\u7684\u5E74\u8F15\u4EBA\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_023
+    role: 3
+    chinese: "\u624B\u662F\u7528\u4F86\u63E1\u7375\u5200\u7684\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_024
+    role: 3
+    chinese: "\u73FE\u5728\u537B\u5728\u5E6B\u65E5\u4EBA\u625B\u6728\u6750\u3002"
+    clip: {fileID: 0}
+  - id: C2_025
+    role: 3
+    chinese: "\u4E1F\u4E86 Gaya\uFF08\u7956\u9748\u7684\u6559\u8AA8\uFF09\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_026
+    role: 3
+    chinese: "\u6211\u5011\u6D3B\u8457\u548C\u91CE\u7378\u6709\u4EC0\u9EBC\u5169\u6A23\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_027
+    role: 5
+    chinese: "\u982D\u76EE\uFF01"
+    clip: {fileID: 0}
+  - id: C2_028
+    role: 5
+    chinese: "\u6211\u5BE7\u53EF\u505A\u81EA\u7531\u7684\u9B3C\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_029
+    role: 5
+    chinese: "\u4E5F\u4E0D\u505A\u5C48\u8FB1\u7684\u4EBA\uFF01"
+    clip: {fileID: 0}
+  - id: C2_030
+    role: 6
+    chinese: "\u6211\u5011\u6253\u4E0D\u8D0F\u65E5\u672C\u5E1D\u570B\u7684\u2026\u2026"
+    clip: {fileID: 0}
+  - id: C2_031
+    role: 3
+    chinese: "\u660E\u5929\u7684\u904B\u52D5\u6703\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_032
+    role: 3
+    chinese: "\u65E5\u672C\u5B98\u540F\u90FD\u5728\u516C\u5B78\u6821\u3002"
+    clip: {fileID: 0}
+  - id: C2_033
+    role: 3
+    chinese: "\u90A3\u662F\u7956\u9748\u7D66\u7684\u552F\u4E00\u6A5F\u6703\uFF01"
+    clip: {fileID: 0}
+  - id: C2_034
+    role: 3
+    chinese: "\u6211\u83AB\u90A3\xB7\u9B6F\u9053\u5DF2\u7D93\u6C7A\u5B9A\u8D77\u7FA9\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_035
+    role: 3
+    chinese: "\u7528\u9BAE\u8840\u6D17\u5237\u5C48\u8FB1\uFF01"
+    clip: {fileID: 0}
+  - id: C2_036
+    role: 3
+    chinese: "\u8CFD\u5FB7\u514B\u5DF4\u840A\u7684\u5B50\u5B6B\u5011\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_037
+    role: 3
+    chinese: "\u4F60\u5011\uFF0C\u9858\u4E0D\u9858\u610F\u8DDF\u96A8\u6211\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_038
+    role: 4
+    chinese: "\u6211\u8DDF\u96A8\u60A8\uFF01"
+    clip: {fileID: 0}
+  - id: C2_039
+    role: 4
+    chinese: "\u70BA\u4E86\u7956\u9748\uFF0C\u8840\u796D\u5F69\u8679\uFF01"
+    clip: {fileID: 0}
+  - id: C2_040
+    role: 7
+    chinese: "\u6211\u5011\u8DDF\u96A8\u60A8\uFF01"
+    clip: {fileID: 0}
+  - id: C2_041
+    role: 7
+    chinese: "\u70BA\u4E86\u7956\u9748\uFF01"
+    clip: {fileID: 0}
+  - id: C2_042
+    role: 7
+    chinese: "\u8840\u796D\u5F69\u8679\uFF01"
+    clip: {fileID: 0}
+  - id: C2_043
+    role: 3
+    chinese: "\u597D\uFF01"
+    clip: {fileID: 0}
+  - id: C2_044
+    role: 3
+    chinese: "\u4ECA\u591C\u56DE\u53BB\u5C0D\u59BB\u5152\u597D\u4E00\u9EDE\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_045
+    role: 3
+    chinese: "\u5225\u9732\u7834\u7DBB\u3002"
+    clip: {fileID: 0}
+  - id: C2_046
+    role: 3
+    chinese: "\u5929\u4EAE\u4E4B\u5F8C\u2026\u2026\u6211\u5011\u5F69\u8679\u6A4B\u4E0A\u898B\uFF01"
+    clip: {fileID: 0}
+  - id: C2_047
+    role: 8
+    chinese: "\u83AB\u90A3\u982D\u76EE\uFF0C\u9019\u6839\u672C\u662F\u81EA\u6BBA\uFF01\u6211\u60F3\u6D3B\u4E0B\u53BB\u2026\u2026"
+    clip: {fileID: 0}
+  - id: C2_048
+    role: 3
+    chinese: "\u6D3B\u4E0B\u53BB\uFF1F"
+    clip: {fileID: 0}
+  - id: C2_049
+    role: 3
+    chinese: "\u90A3\u5C31\u53BB\u5411\u65E5\u672C\u4EBA\u8DEA\u4E0B\uFF01"
+    clip: {fileID: 0}
+  - id: C2_050
+    role: 3
+    chinese: "\u53BB\u5E6B\u4ED6\u5011\u625B\u6728\u982D\u3001"
+    clip: {fileID: 0}
+  - id: C2_051
+    role: 3
+    chinese: "\u807D\u4ED6\u5011\u53EB\u4F60\u751F\u756A\uFF01"
+    clip: {fileID: 0}
+  - id: C2_052
+    role: 3
+    chinese: "\u6EFE\uFF01"
+    clip: {fileID: 0}
+  - id: C2_053
+    role: 3
+    chinese: "\u5F69\u8679\u6A4B\u4E0A\u6C92\u6709\u4F60\u7684\u4F4D\u7F6E\uFF0C"
+    clip: {fileID: 0}
+  - id: C2_054
+    role: 3
+    chinese: "\u4F60\u4E0D\u914D\u7A31\u70BA Sediq Bale\uFF08\u771F\u7684\u4EBA\uFF09\uFF01"
+    clip: {fileID: 0}
+  - id: C2_055
+    role: 2
+    chinese: "\u5225\u78B0\u5B83\uFF01\u9019\u662F\u6211\u5011\u7684\u8056\u5730\u3002"
+    clip: {fileID: 0}
+  - id: C2_056
+    role: 2
+    chinese: "\u9019\u662F\u7956\u9748\u5B88\u8B77\u7684\u5730\u65B9\u2026\u2026\u6211\u5011\u4E0D\u80FD\u9000\u3002"
+    clip: {fileID: 0}
+  - id: C2_057
+    role: 0
+    chinese: "\u69CD\u8072\u904E\u5F8C\uFF0C\u4E00\u540D\u963B\u64CB\u8B66\u5BDF\u7684\u65CF\u4EBA\u5012\u4E0B\u3002\u540C\u4F34\u6025\u5FD9\u4E0A\u524D\u67E5\u770B\u3002"
+    clip: {fileID: 0}
+  - id: C2_058
+    role: 2
+    chinese: "\u9000\u5F8C\u2026\u2026\u5B83\u8981\u5012\u4E0B\u4E86\u3002"
+    clip: {fileID: 0}
+  - id: C2_059
+    role: 1
+    chinese: "\u7D66\u6211\u53BB\u780D\u6A39"
+    clip: {fileID: 0}
+  introMusic: {fileID: 8300000, guid: 792e126a0b072f44c9471f9444bfbf06, type: 3}
+  forestMusic: {fileID: 8300000, guid: 603b707e653f7324ca88fa803a8b8f08, type: 3}
+  treeChoiceMusic: {fileID: 8300000, guid: fe1b4c8a89a0819419d2162664fb1e89, type: 3}
+  protectMusic: {fileID: 8300000, guid: 792e126a0b072f44c9471f9444bfbf06, type: 3}
+  choppingMusic: {fileID: 8300000, guid: c768e5dc5dc86144fb92b01fb0cf95fe, type: 3}
+  treeFallMusic: {fileID: 8300000, guid: fe1b4c8a89a0819419d2162664fb1e89, type: 3}
+  meetingMusic: {fileID: 8300000, guid: c768e5dc5dc86144fb92b01fb0cf95fe, type: 3}
+  voteMusic: {fileID: 8300000, guid: 603b707e653f7324ca88fa803a8b8f08, type: 3}
+  supportMusic: {fileID: 8300000, guid: 85211b6e65ae70841b36947771bf1449, type: 3}
+  refusalMusic: {fileID: 8300000, guid: fe1b4c8a89a0819419d2162664fb1e89, type: 3}
+  musicVolume: 0.35
+  narrationVolume: 1
+  characterVolume: 1
+  duckFactor: 0.3
+  musicFadeSeconds: 1
+  voiceTailSeconds: 0.2
+  warnMissingClips: 0
+  musicOutput: {fileID: 0}
+  narrationOutput: {fileID: 0}
+  characterOutput: {fileID: 0}
 --- !u!1 &207156095
 GameObject:
   m_ObjectHideFlags: 0
