@@ -1,0 +1,10 @@
+{
+  "label": "final-west",
+  "passed": true,
+  "errors": 0,
+  "warnings": 15,
+  "frontDistance": 2.3999996185302734,
+  "frontAngle": 0.0,
+  "witnessRadius": 0.8944270014762878,
+  "failures": []
+}

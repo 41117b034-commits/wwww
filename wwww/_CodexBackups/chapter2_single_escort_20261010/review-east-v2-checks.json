@@ -1,0 +1,10 @@
+{
+  "label": "review-east-v2",
+  "passed": true,
+  "errors": 0,
+  "warnings": 1,
+  "frontDistance": 2.3803892135620117,
+  "frontAngle": 0.05233915522694588,
+  "witnessRadius": 0.8944270014762878,
+  "failures": []
+}

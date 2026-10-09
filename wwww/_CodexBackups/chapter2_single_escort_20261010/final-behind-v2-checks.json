@@ -1,0 +1,10 @@
+{
+  "label": "final-behind-v2",
+  "passed": true,
+  "errors": 0,
+  "warnings": 2,
+  "frontDistance": 2.3999996185302734,
+  "frontAngle": 0.0,
+  "witnessRadius": 0.8944270014762878,
+  "failures": []
+}

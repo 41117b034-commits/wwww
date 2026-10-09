@@ -1,0 +1,10 @@
+{
+  "label": "protect-full",
+  "passed": true,
+  "errors": 0,
+  "warnings": 2,
+  "frontDistance": 2.376546621322632,
+  "frontAngle": 0.6864256858825684,
+  "witnessRadius": 0.8944270014762878,
+  "failures": []
+}

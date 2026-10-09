@@ -14095,7 +14095,6 @@ GameObject:
   - component: {fileID: 206475608}
   - component: {fileID: 206475609}
   - component: {fileID: 206475610}
-  - component: {fileID: 206475611}
   m_Layer: 0
   m_Name: Chapter2_NewRulesAndSecretCouncil
   m_TagString: Untagged
@@ -14158,7 +14157,6 @@ MonoBehaviour:
   routeGuide: {fileID: 206475607}
   explorationSeconds: 180
   exploration: {fileID: 206475610}
-  forestEscort: {fileID: 206475611}
   trunkSurface: {fileID: 2052909205}
   openingFilm: {fileID: 32900000, guid: 56e7f19c4776036419614d351fa7ec1c, type: 3}
   videoPrepareTimeout: 12
@@ -14728,22 +14726,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chapter: {fileID: 206475605}
-  interactionRadius: 3
---- !u!114 &206475611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206475604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3db0d3d8c8c474f41a740f606c6eaa22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chapter: {fileID: 206475605}
-  walkingSpeed: 1.65
-  waitDistance: 5.5
+  interactionRadius: 1.5
 --- !u!1 &207156095
 GameObject:
   m_ObjectHideFlags: 0
@@ -90218,9 +90201,8 @@ GameObject:
   - component: {fileID: 1217200265}
   - component: {fileID: 1217200267}
   - component: {fileID: 1217200266}
-  - component: {fileID: 1217200268}
   m_Layer: 0
-  m_Name: "\u5DE8\u6728\u53F3\u5074\u65CF\u4EBA"
+  m_Name: "\u65CF\u4EBA 2"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90235,7 +90217,7 @@ Transform:
   m_GameObject: {fileID: 1217200264}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7196765, z: -0, w: 0.6943096}
-  m_LocalPosition: {x: 3.8, y: 0.027670741, z: 9.8}
+  m_LocalPosition: {x: -2.8, y: 0.027670741, z: -11.2}
   m_LocalScale: {x: 1.7240099, y: 1.7240099, z: 1.7240099}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -90283,24 +90265,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1217200268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217200264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74c86ddeb84a59a40b1c291cca4a6691, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chapter: {fileID: 206475605}
-  patrolOffset: {x: 0.8, y: 0, z: -0.4}
-  watchDirection: {x: 0, y: 0, z: -1}
-  pauseSeconds: 5
-  phaseOffset: 2
-  speed: 0.42
 --- !u!1 &1217761572
 GameObject:
   m_ObjectHideFlags: 0
@@ -108245,9 +108209,8 @@ GameObject:
   - component: {fileID: 1483105458}
   - component: {fileID: 1483105460}
   - component: {fileID: 1483105459}
-  - component: {fileID: 1483105461}
   m_Layer: 0
-  m_Name: "\u5DE8\u6728\u5DE6\u5074\u65CF\u4EBA"
+  m_Name: "\u65CF\u4EBA 3"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108262,7 +108225,7 @@ Transform:
   m_GameObject: {fileID: 1483105457}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.006881182, z: -0, w: 0.99997634}
-  m_LocalPosition: {x: -3.8, y: 0.086134136, z: 10.3}
+  m_LocalPosition: {x: -4.1, y: 0.086134136, z: -10.4}
   m_LocalScale: {x: 1.6672004, y: 1.6672004, z: 1.6672004}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -108310,24 +108273,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1483105461
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1483105457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74c86ddeb84a59a40b1c291cca4a6691, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chapter: {fileID: 206475605}
-  patrolOffset: {x: -0.8, y: 0, z: -0.4}
-  watchDirection: {x: 0, y: 0, z: -1}
-  pauseSeconds: 5
-  phaseOffset: 4
-  speed: 0.42
 --- !u!1 &1483981623
 GameObject:
   m_ObjectHideFlags: 0

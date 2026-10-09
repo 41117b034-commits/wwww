@@ -26,7 +26,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     [Header("三分鐘自由探索與路邊交談")]
     [Min(1)] public float explorationSeconds = 180;
     public Chapter2Exploration exploration;
-    public Chapter2ForestEscort forestEscort;
     public Collider trunkSurface;
     [Header("Replace this clip with the final opening film")]
     public VideoClip openingFilm;
@@ -79,9 +78,6 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if (!exploration) exploration = GetComponent<Chapter2Exploration>();
         if (!exploration) exploration = gameObject.AddComponent<Chapter2Exploration>();
         exploration.chapter = this;
-        if (!forestEscort) forestEscort = GetComponent<Chapter2ForestEscort>();
-        if (!forestEscort) forestEscort = gameObject.AddComponent<Chapter2ForestEscort>();
-        forestEscort.Initialize(this);
         ui.buttonA.onClick.AddListener(SelectA); ui.buttonB.onClick.AddListener(SelectB);
         ui.continueButton.onClick.AddListener(ReturnToMenu);
         player.canMove = false; player.canLook = false;
@@ -193,13 +189,23 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         yield return IntroduceForest();
         yield return exploration.Explore(explorationSeconds);
         yield return BeginForestEscort();
-        yield return forestEscort.LeadToTree();
-        workers[0].Face(sacredTree.position);
+        Vector3[] starts = new Vector3[workers.Length];
+        for (int i = 0; i < workers.Length; i++) starts[i] = workers[i].transform.position;
+        float progress = 0;
+        while (progress < 1)
+        {
+            // The escort waits when the player falls behind.
+            Vector3 relative = player.transform.position - workers[0].transform.position;
+            if (relative.magnitude < 6.5f) progress += Time.deltaTime / 15;
+            ui.objective.text = relative.magnitude >= 6.5f ? "族人正在等你，沿黃色箭頭跟上" : "跟著黃色箭頭，前往巨木";
+            for (int i = 0; i < workers.Length; i++) workers[i].transform.position = Vector3.Lerp(starts[i], WorkerDestination(i), Mathf.Clamp01(progress));
+            yield return null;
+        }
+        for (int i = 0; i < workers.Length; i++) workers[i].Face(sacredTree.position);
         if (routeGuide) routeGuide.EscortArrived = true;
         while (!ArrivedAtTree)
         { ui.objective.text = "沿黃色箭頭走近巨木"; ui.hint.text = $"距離黃色標記小於 {treeArrivalDistance:0.0} 公尺，就會自動進入劇情。"; yield return null; }
         player.canMove = false;
-        forestEscort.StopWitnessPatrols();
         routeGuide.GuidanceEnabled = false;
         ui.hint.text = ""; ui.objective.text = "聆聽警察與族人的對話";
         yield return FrameSpeaker(officer);

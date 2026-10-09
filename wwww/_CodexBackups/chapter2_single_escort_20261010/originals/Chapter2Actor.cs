@@ -9,8 +9,6 @@ public sealed class Chapter2Actor : MonoBehaviour
     public bool speaking;
     [Min(.1f)] public float seatedHipHeight=.54f;
     public Vector3 facing = Vector3.back;
-    // Only the roaming guide follows terrain height; authored story actors keep zero.
-    public float GroundHeight { get; set; }
     public Chapter1IncidentRig Rig { get; private set; }
     public float FallProgress { get; private set; }
     public float FallenLowestPoint { get; private set; }
@@ -53,7 +51,7 @@ public sealed class Chapter2Actor : MonoBehaviour
         Rig.walking = standStarted<0 && !fallen && delta.magnitude > 0.0005f;
         if (Rig.walking) Rig.Face(delta);
         Rig.speakingWeight = speaking && !fallen ? 0.65f : 0;
-        if (!fallen) Rig.Ground(GroundHeight);
+        if (!fallen) Rig.Ground(0);
         previous = transform.position;
     }
     void LateUpdate()

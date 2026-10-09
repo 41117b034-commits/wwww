@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public sealed class Chapter2Exploration : MonoBehaviour
 {
     public Chapter2Controller chapter;
-    public float interactionRadius=3f;
+    public float interactionRadius=1.5f;
     public bool Active { get; private set; }
     public bool ChatOpen => current;
     public bool WaitingForReply => client && client.Busy;
@@ -79,17 +79,10 @@ public sealed class Chapter2Exploration : MonoBehaviour
         EnsureUI();
         var group=chapter.dayGroup.transform.Find("Background people · local patrols");
         participants=group?group.GetComponentsInChildren<Chapter2AmbientNPC>(false):new Chapter2AmbientNPC[0];
-        var cast=new List<Chapter2AmbientNPC>(participants);
-        for(int i=1;i<chapter.workers.Length;i++)
-        {
-            var witness=chapter.workers[i].GetComponent<Chapter2AmbientNPC>();
-            if(witness && !cast.Contains(witness))cast.Add(witness);
-        }
-        participants=cast.ToArray();
         Active=true;deadline=Time.unscaledTime+Mathf.Max(1,seconds);answerVisibleUntil=0;
         chapter.routeGuide.GuidanceEnabled=false;
         chapter.ui.objective.text="自由探索，認識林間的人們";
-        chapter.ui.hint.text="";
+        chapter.ui.hint.text="靠近路邊人物 1.5 公尺內，按 E 或點選「交談」";
         chapter.player.canMove=true;chapter.player.canLook=true;
         timer.transform.parent.gameObject.SetActive(true);
         client.StartCoroutine(client.Prepare());
@@ -139,7 +132,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
     public static string DisplayName(Chapter2AmbientNPC npc)
     {
         if(npc.name.Contains("小孩"))return "林間小孩";
-        if(npc.name.Contains("巨木"))return npc.name;
         if(npc.GetComponent<Chapter2Actor>().police)return npc.name.EndsWith("1")?"樹旁警察":"路邊警察";
         return npc.name.EndsWith("2")?"休息的族人":"林間族人";
     }
@@ -192,7 +184,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         if(client && client.Busy)client.CancelRequest();
         if(panel)panel.SetActive(false);
         if(Active && chapter)
-        {chapter.player.canMove=true;chapter.player.canLook=true;chapter.ui.hint.text="";}
+        {chapter.player.canMove=true;chapter.player.canLook=true;chapter.ui.hint.text="靠近路邊人物 1.5 公尺內，按 E 或點選「交談」";}
     }
     public void CancelExploration()
     {

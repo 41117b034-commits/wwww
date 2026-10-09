@@ -51,25 +51,21 @@ public sealed partial class Chapter2Controller
         var guide = workers[0];
         Introducing = true;
         ui.objective.text = "跟隨族人，前往巨木";
-        ui.hint.text = "";
+        // Keep the player's exploration position. The original guide calls from there.
         player.canMove = false; player.canLook = false;
-        CameraBeat = "guide-approaching";
-        yield return forestEscort.ComeToPlayer();
         guide.Face(player.transform.position);
-        CameraBeat = "guide-in-front";
         guide.Rig.pointTarget = sacredTree; guide.Rig.pointProgress = 1;
-        yield return Say(guide, "族人", "沿著這條小徑，跟我來。不要離隊太遠。", 3);
-        guide.Rig.conversationTarget = null;
         Vector3 from = guide.Rig.Forward;
         Vector3 toward = Vector3.ProjectOnPlane(sacredTree.position - guide.transform.position, Vector3.up).normalized;
         for (float t = 0; t < 1; t += Time.deltaTime / 1.2f)
         { guide.Face(guide.transform.position + Vector3.Slerp(from, toward, Mathf.SmoothStep(0, 1, t))); yield return null; }
         guide.Face(sacredTree.position);
+        yield return Say(guide, "族人", "沿著這條小徑，跟我來。不要離隊太遠。", 3);
         guide.Rig.pointTarget = null; guide.Rig.pointProgress = 0;
         ui.Line("", "");
         // Hand control back at the same location the player finished exploring.
         player.canMove = true; player.canLook = true;
-        ui.hint.text = "";
+        ui.hint.text = "WASD 移動・按住滑鼠右鍵環顧  |  VR 左搖桿移動、右搖桿轉向";
         routeGuide.GuidanceEnabled = true; Introducing = false; CameraBeat = "gameplay";
     }
 

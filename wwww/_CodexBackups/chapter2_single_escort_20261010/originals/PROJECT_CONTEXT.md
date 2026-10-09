@@ -1,10 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-09。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-10 更新第二章探索後單人帶路。三分鐘到期並等当次回答／閱讀結束，原帶路族人先尋路走到玩家當時視線前方，再面向玩家邀請跟隨，獨自帶路到原巨木。另兩位原隊員移至巨木左右，各自約0.9公尺內巡走，進入巨木對話前停下，保留後續救援與受驚演出。原五位路邊人物加這兩位，共七位可在3公尺內交談；底部「靠近路邊人物……」常駐字串已移除。驗證證據在 _CodexBackups/chapter2_single_escort_20261010/，詳細限制見文末。
-
-前次 LLM 功能：2026-10-09 完成影片後三分鐘探索及免費本機文字對話；模型已下載並驗證，安裝在 D:/WusheLocalLLM，沒有付費 API 或外網備援。該輪 final-local-v2 與 expiry-pending 為新增帶路調整前的驗證，不能代替本輪路徑與同伴演出檢查。操作見 Documentation/Chapter2-local-dialogue.md。
+最新狀態：2026-10-09 已完成第二章影片後三分鐘自由探索與免費本機 LLM 文字對話。原森林介紹後加上「現在開始你可以自由探索，了解這裡的環境」，路邊兩名警察、兩名族人、一名小孩可在1.5公尺內按 E 交談，各自保留近期問答；到時等已送出的回答及閱讀時間結束，再接原黃色箭頭與帶路到巨木。模型已下載並驗證，安裝在 D:/WusheLocalLLM，沒有付費 API 或外網備援。正式180秒測試 final-local-v2 與到期等待邊界測試 expiry-pending 合併 passed=true、兩輪各 errors=0。詳細驗證與限制見文末及 Documentation/Chapter2-local-dialogue.md。
 
 前次場景佈置：2026-10-09 已將第二章 Play → P 的四棟會議房屋校正水平並貼地，修復傳統建築的遺失網格引用；開場九位成年人全部坐著，左側原站立兩人補上座椅，右前方加入坐矮椅的原住民小孩，共十人。小孩全程坐著聆聽；原劇本成人起身仍保留。該輪 final-support／final-refuse 均 checks.passed=true、errors=0、結尾自行停止 Play Mode，第一章場景檔案未改。證據在 _CodexBackups/council_seats_houses_20261009/，細節與驗證限制見文末。
 
@@ -804,25 +802,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 九個正式來源／設定／場景檔案與 final-local-v2 測試時雜湊一致（final-source-comparison.json）；第一章場景 SHA-256 與本輪開始相同。本輪未提交／推送。
 
 - 清理完成：兩個臨時 Editor probe 及 meta 已移至本輪 verification-tools/，正式 Assets 不保留自動測試工具。Unity 清理後重新編譯／domain reload 完成，實際開啟 Console 顯示0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號；此狀態不取代上述遊玩輪警告記錄。正式 Assets／Documentation／Packages／ProjectSettings／Tools 共3481檔，無單檔達100,000,000 bytes，最大89,742,488 bytes；約1.1GB模型保留在專案外 D 槽。
-
-## 2026-10-10 探索後迎接玩家、單人帶路與3公尺交談
-
-- 依使用者兩張截圖：修正到期後族人在視線外說話，改由原 workers[0] 走到玩家視線前方再邀請跟隨；只保留他帶路。workers[1]／[2] 改放在巨木右／左側附近巡走，後續仍查看被槍殺的同伴。移除底部探索操作字串，交談半徑由1.5改3公尺。已讀固定第二章劇情參考，以本次要求為準。
-- 新增 Chapter2ForestEscort，使用既有 Unity Navigation，從本場景森林地面與實體碰撞建立 runtime NavMesh；排除玩家／人物／夜间佈置，不新增下載套件。迎接點優先選玩家鏡頭水平前方2.4公尺，樹幹遮擋時選視線前方附近可達位置，尋路走到後才說原跟隨台詞。玩家位置不重置；非VR在極端俯仰或邊界情況可微調視線確保人物可見。迎接及邀請期間暫停桌面移動／轉頭，VR頭部追蹤保留。
-- 邀請結束後一人按路徑走到原 WorkerDestination(0)，速度1.65m/s，玩家落後超過5.5m便等待；黃色箭頭沿可走路徑轉彎。舊 x=-3.2～0.65 的單向窄走廊限制取消，避免玩家在樹後／道路兩側無法跟上，CharacterController 實體碰撞仍保留。Chapter2Actor 增加默認0的 GroundHeight，只有引路者按地面高度更新，其他既有演出維持0。
-- 場景保存唯一帶路者與原兩個同伴引用；後兩者改名「巨木右側族人」「巨木左側族人」，各加 Chapter2AmbientNPC，起點相對巨木為(3.8,0,-2.2)／(-3.8,0,-1.7)，來回位移(±0.8,0,-0.4)，最大水平離家約0.894m。兩人也納入自由交談，共七人；帶路者不加入。進入巨木對話前禁用兩人的巡走元件，避免與護樹救援、站起走兩步、或砍樹受驚程式搶姿勢。
-- Chapter2Exploration 程式預設與場景序列化 interactionRadius 都為3，移除探索開始和每次關閉交談時的底部提示。附近按 E／點交談按鈕及對話面板內操作提示保留。模型、三分鐘、每人記憶與到期等待規則不變。Documentation/Chapter2.md 和 Chapter2-local-dialogue.md 已更新操作。
-
-### 本輪驗證與已知範圍
-
-- Unity6000.0.58f1 原專案，臨時 Editor probe 注入空白鍵略過片頭，用設定位移把玩家置於不同起點；迎接期間不替玩家转向，正式跟隨段使用實際 CharacterController.Move 沿路前進。檢查1600×900引擎輸出，未使用實體VR，也不是全程真人键鼠操作。
-- review-east-v2：縮短探索15秒的右側林地測試，玩家(12,0.08,-8)面朝東；迎接者距離2.380m、水平視角差0.052°，面孔位於畫面中央；玩家身體及鏡頭僅有0.04m自然落地差，無位置傳送。能等待落後玩家，沿路抵達 TreeChoice，errors=0、warnings=1，checks.passed=true。此輪 exploreElapsed 舊測量欄含了迎接時間，不能当作計時證據。
-- protect-full：場景正式180秒，和小孩交談，截止前0.4秒送出真實本機LLM問題。時間到仍在生成，回覆及閱讀完成後才迎接；exploreElapsed=207.47秒含生成與閱讀。帶路者距離2.377m、水平視角差0.686°，玩家及鏡頭位置差0。成功抵達巨木、選護樹，兩位同伴 Examining=true，完成後續命令／起身短走，進入 Meeting；errors=0、warnings=2，均為既有停用音源，checks.passed=true。
-- 上述兩輪七人均在2.99m可開交談、3.01m拒絕，底部操作提示全程為空；樹旁兩人巡走最大0.894m。另用五處座標（道路兩側、巨木後方及較遠林地）分別驗證引路者到該處、該處回巨木的完整導航路徑，共每輪10條。這是可達性檢查，不代表五處都已逐步走完。
-- 首輪 review-east 因 NavMeshPath 在 MonoBehaviour 欄位初始化時呼叫 Unity native API 失敗；已改為主執行緒第一次尋路時建立，該失敗輪不作驗收。後續編譯與遊玩結果另列；原始檔及所有診斷保留於本輪備份。
-- final-west：縮短探索15秒，玩家(-14,0.08,5)面朝西。迎接距離2.4m、角差0°，沿路抵達巨木，五次有效砍伐、受驚退步、樹倒及轉入 Meeting 完成；errors=0、warnings=15（13則既有Missing Script及2則停用音源），checks.passed=true。
-- final-behind-v2：縮短探索15秒，玩家(0,0.08,19)面朝北，原巨木在玩家後方。引路者繞樹到鏡頭前2.4m、角差0°，能反向繞回原目的地並觸發護樹；兩位同伴均查看倒地者，畫面顯示兩人蹲下，後續進入 Meeting。errors=0、warnings=2，checks.passed=true。其前一輪 final-behind 停在測試驅動的轉角0.2～0.4m死區，已只修正測試工具的前進門檻，不改正式路線或傳送玩家；以前一輪未完成資料作診斷，不作通關驗收。
-- 四個通過輪均 playing=false、dirty=false。七個正式程式／場景檔案與上述測試雜湊一致（final-source-comparison.json）。第一章場景 SHA-256 與修改前一致；夜間會議演出檔案和佈置未改，本輪護樹／砍樹只驗證到 Meeting，未重新完整播放夜間兩分支或第一章。
-- 預覽圖 Documentation/Chapter2-guide-meets-player-preview.png、Chapter2-tree-witnesses-rescue-preview.png。驗證記錄只代表 Editor、原場景現有碰撞與上述起點；未做獨立建置或實體VR頭戴裝置驗收。沒有提交／推送。
-
-- 最後清理：Chapter2EscortProbe.cs 及 meta 已移至本輪 verification-tools/；正式Assets不留自動測試工具。清理後Unity重新編譯與domain reload成功，實際Console為0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號。此清理後狀態不抹除上列測試輪的既有警告。七個正式來源與驗證雜湊再次一致；Assets／Documentation／Packages／ProjectSettings／Tools共3485檔，無單檔達100,000,000 bytes，最大89,742,488 bytes，本機模型仍在專案外D槽。退出Play後無llama-server殘留程序。

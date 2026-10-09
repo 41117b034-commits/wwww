@@ -16,8 +16,6 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
     Transform[] arrows;
     Transform marker;
     Material ownedMaterial;
-    Vector3[] route;
-    float nextRouteUpdate;
     public Vector3 Target => EscortArrived ? chapter.treeApproach.position : chapter.workers[0].transform.position;
     bool Following => chapter && GuidanceEnabled && chapter.CurrentStage==Chapter2Controller.Stage.Follow;
     void Start()
@@ -40,15 +38,6 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
         bool show=Following || (chapter.CurrentStage==Chapter2Controller.Stage.Chopping&&!chapter.AtTree);
         Vector3 from=chapter.player.transform.position,to=Target;from.y=to.y=0;
         Vector3 direction=to-from;float distance=direction.magnitude;direction=direction.normalized;
-        if(show && chapter.forestEscort && Time.unscaledTime>=nextRouteUpdate)
-        {
-            nextRouteUpdate=Time.unscaledTime+.35f;
-            chapter.forestEscort.TryPath(from,to,out route);
-        }
-        if(!show)route=null;
-        float routeLength=0;
-        if(route!=null)for(int i=1;i<route.Length;i++)routeLength+=Vector3.Distance(route[i-1],route[i]);
-        else routeLength=distance;
         DistanceMetres=distance;
         if(distanceLabel)
         {
@@ -59,24 +48,14 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
             var anchor=new Vector2(Mathf.Clamp(point.x,.15f,.85f),Mathf.Clamp(point.y,.34f,.77f));
             distanceLabel.rectTransform.anchorMin=distanceLabel.rectTransform.anchorMax=anchor;
         }
-        VisibleArrows=show?Mathf.Clamp(Mathf.CeilToInt((routeLength-.8f)/1.7f),0,arrows.Length):0;
+        VisibleArrows=show?Mathf.Clamp(Mathf.CeilToInt((distance-.8f)/1.7f),0,arrows.Length):0;
         for(int i=0;i<arrows.Length;i++)
         {
             arrows[i].gameObject.SetActive(i<VisibleArrows);
             if(i>=VisibleArrows)continue;
-            float along=Mathf.Lerp(.85f,Mathf.Max(.85f,routeLength-.55f),VisibleArrows==1?0:i/(float)(VisibleArrows-1));
-            var p=from+direction*along;var facing=direction;
-            if(route!=null && route.Length>1)
-            {
-                for(int part=1;part<route.Length;part++)
-                {
-                    var segment=route[part]-route[part-1];float length=segment.magnitude;
-                    if(along<=length || part==route.Length-1){p=route[part-1]+segment.normalized*Mathf.Min(along,length);facing=Vector3.ProjectOnPlane(segment,Vector3.up).normalized;break;}
-                    along-=length;
-                }
-            }
-            p.y+=.075f;
-            arrows[i].SetPositionAndRotation(p,Quaternion.LookRotation(facing.sqrMagnitude>.001f?facing:Vector3.forward));
+            float along=Mathf.Lerp(.85f,Mathf.Max(.85f,distance-.55f),VisibleArrows==1?0:i/(float)(VisibleArrows-1));
+            var p=from+direction*along;p.y=.075f;
+            arrows[i].SetPositionAndRotation(p,Quaternion.LookRotation(direction));
             arrows[i].localScale=Vector3.one*(.72f+.045f*Mathf.Sin(Time.unscaledTime*4.5f-i*.45f));
         }
         marker.gameObject.SetActive(Following);
@@ -90,10 +69,16 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
     {
         RouteBlocked=false;
         if(!Following)return proposed;
-        // Retrieval can start on either side of, or beyond, the tree. The former
-        // northbound corridor could prevent following those paths. Physical world
-        // collisions still apply, and the single guide waits if the player lags.
-        return proposed;
+        // A walking corridor, not camera control: players can still turn and look around.
+        float furthest=EscortArrived?chapter.treeApproach.position.z+.65f:chapter.workers[0].transform.position.z+1.1f;
+        // A player may finish exploration beside the road. Allow a gradual return
+        // instead of snapping them across the forest when the escort starts.
+        var limited=proposed;
+        limited.x=Mathf.Clamp(limited.x,Mathf.Min(current.x,leftBoundary),Mathf.Max(current.x,rightBoundary));
+        limited.z=Mathf.Clamp(limited.z,Mathf.Min(current.z,-18),Mathf.Max(current.z,furthest));
+        RouteBlocked=(limited-proposed).sqrMagnitude>.000001f;
+        if(RouteBlocked)chapter.ui.hint.text="請留在隊伍的小徑上，沿黃色箭頭跟上族人。";
+        return limited;
     }
     void Part(Transform parent,string label,Vector3 position,Vector3 scale,float yaw)
     {
