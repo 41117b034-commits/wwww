@@ -23,6 +23,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     public AudioSource ambience, effects, fireAudio;
     public AudioClip forestAudio, nightAudio, chopAudio, threatAudio;
     public Chapter2RouteGuide routeGuide;
+    [Header("三分鐘自由探索與路邊交談")]
+    [Min(1)] public float explorationSeconds = 180;
+    public Chapter2Exploration exploration;
     public Collider trunkSurface;
     [Header("Replace this clip with the final opening film")]
     public VideoClip openingFilm;
@@ -72,6 +75,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         { Debug.LogError("[Chapter2] Required scene references are missing.", this); enabled = false; return; }
         if (!chapterAudio) chapterAudio = GetComponent<Chapter2AudioManager>();
         if (!chapterAudio) chapterAudio = gameObject.AddComponent<Chapter2AudioManager>();
+        if (!exploration) exploration = GetComponent<Chapter2Exploration>();
+        if (!exploration) exploration = gameObject.AddComponent<Chapter2Exploration>();
+        exploration.chapter = this;
         ui.buttonA.onClick.AddListener(SelectA); ui.buttonB.onClick.AddListener(SelectB);
         ui.continueButton.onClick.AddListener(ReturnToMenu);
         player.canMove = false; player.canLook = false;
@@ -90,7 +96,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if (!player || !ui) return;
         ui.ConfigureVR(player.IsVR);
-        if (Chapter2Player.Key(Chapter2Player.KeyControlName.P)) SkipToMeeting();
+        if ((!exploration || !exploration.ChatOpen) && Chapter2Player.Key(Chapter2Player.KeyControlName.P)) SkipToMeeting();
         if (CurrentStage == Stage.Intro && player.ActionPressed) skip = true;
         if (CurrentStage == Stage.TreeChoice || CurrentStage == Stage.Vote)
         {
@@ -116,6 +122,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if (!isActiveAndEnabled || flow == null || meetingShortcutUsed || (int)CurrentStage >= (int)Stage.Meeting) return;
         meetingShortcutUsed = true;
+        if (exploration) exploration.CancelExploration();
         // Includes the separate axe-swing coroutine, which can otherwise change the UI later.
         StopAllCoroutines();
         if (chapterAudio) chapterAudio.StopAllAudio();
@@ -175,10 +182,13 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.videoImage.gameObject.SetActive(false); ui.fade.color = Color.black;
         player.Warp(new Vector3(0, .08f, -17), sacredTree.position);
         player.canMove = false; player.canLook = false;
+        if (routeGuide) routeGuide.GuidanceEnabled = false;
         SetStage(Stage.Follow); ui.objective.text = "跟隨族人，前往巨木";
         ui.hint.text = "WASD 移動・按住滑鼠右鍵環顧  |  VR 左搖桿移動、右搖桿轉向";
         yield return Fade(0, 1.2f);
         yield return IntroduceForest();
+        yield return exploration.Explore(explorationSeconds);
+        yield return BeginForestEscort();
         Vector3[] starts = new Vector3[workers.Length];
         for (int i = 0; i < workers.Length; i++) starts[i] = workers[i].transform.position;
         float progress = 0;

@@ -39,6 +39,21 @@ public sealed partial class Chapter2Controller
         yield return CameraShot(player.view.transform.position, guide.transform.position + Vector3.up * .9f, .65f);
         CameraBeat = "introduction";
         yield return Say(guide, "族人", "前面就是西仔希克。這片森林，守護著我們的生活。", 6);
+        yield return Say(guide, "族人", "現在開始你可以自由探索，了解這裡的環境", 5);
+        ui.Line("", "");
+        player.Warp(player.transform.position, guide.transform.position);
+        player.canMove = true; player.canLook = true;
+        Introducing = false; CameraBeat = "exploration";
+    }
+
+    IEnumerator BeginForestEscort()
+    {
+        var guide = workers[0];
+        Introducing = true;
+        ui.objective.text = "跟隨族人，前往巨木";
+        // Keep the player's exploration position. The original guide calls from there.
+        player.canMove = false; player.canLook = false;
+        guide.Face(player.transform.position);
         guide.Rig.pointTarget = sacredTree; guide.Rig.pointProgress = 1;
         Vector3 from = guide.Rig.Forward;
         Vector3 toward = Vector3.ProjectOnPlane(sacredTree.position - guide.transform.position, Vector3.up).normalized;
@@ -48,8 +63,7 @@ public sealed partial class Chapter2Controller
         yield return Say(guide, "族人", "沿著這條小徑，跟我來。不要離隊太遠。", 3);
         guide.Rig.pointTarget = null; guide.Rig.pointProgress = 0;
         ui.Line("", "");
-        // Return the camera to the player's metre-scale origin before handing back input.
-        player.Warp(player.transform.position, guide.transform.position);
+        // Hand control back at the same location the player finished exploring.
         player.canMove = true; player.canLook = true;
         ui.hint.text = "WASD 移動・按住滑鼠右鍵環顧  |  VR 左搖桿移動、右搖桿轉向";
         routeGuide.GuidanceEnabled = true; Introducing = false; CameraBeat = "gameplay";

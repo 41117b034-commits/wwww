@@ -14094,6 +14094,7 @@ GameObject:
   - component: {fileID: 206475607}
   - component: {fileID: 206475608}
   - component: {fileID: 206475609}
+  - component: {fileID: 206475610}
   m_Layer: 0
   m_Name: Chapter2_NewRulesAndSecretCouncil
   m_TagString: Untagged
@@ -14154,6 +14155,8 @@ MonoBehaviour:
   chopAudio: {fileID: 8300000, guid: 96234a17e3e2fcc468763931f45d7c64, type: 3}
   threatAudio: {fileID: 8300000, guid: f665b2ffefbd6ec4c93c6759326c8140, type: 3}
   routeGuide: {fileID: 206475607}
+  explorationSeconds: 180
+  exploration: {fileID: 206475610}
   trunkSurface: {fileID: 2052909205}
   openingFilm: {fileID: 32900000, guid: 56e7f19c4776036419614d351fa7ec1c, type: 3}
   videoPrepareTimeout: 12
@@ -14710,6 +14713,20 @@ MonoBehaviour:
   musicOutput: {fileID: 0}
   narrationOutput: {fileID: 0}
   characterOutput: {fileID: 0}
+--- !u!114 &206475610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206475604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6759a983d3ec88a41ade59443fc286f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chapter: {fileID: 206475605}
+  interactionRadius: 1.5
 --- !u!1 &207156095
 GameObject:
   m_ObjectHideFlags: 0

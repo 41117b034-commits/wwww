@@ -43,6 +43,8 @@
 
 ## 程式與維護
 
+2026-10-09 新增影片後的三分鐘自由探索：先播放原森林介紹與「現在開始你可以自由探索，了解這裡的環境」，再讓玩家靠近所有五位路邊警察／族人／小孩，在1.5公尺內開啟文字自由對話。時間到等當次回答結束，再接原帶路與黃色箭頭。使用 D 槽的免費本機 Qwen 模型，沒有付費雲端 API。操作、首次安裝、角色資料及限制見 [Chapter2-local-dialogue.md](Chapter2-local-dialogue.md)。
+
 `Assets/Chapter2/Chapter2Controller.cs` 為章節狀態機；`Chapter2Player.cs` 管理桌面／XR 輸入；`Chapter2Presentation.cs` 管理 UI；`Chapter2Actor.cs` 重用既有動作骨架。
 
 `Chapter2Controller.CouncilStory.cs` 保存新會議逐行台詞、兩個分支、玩家繞火行走與起身鏡頭。`Chapter2CouncilDrama.cs` 套用會議姿勢與獵刀演出。`Tools > Chapter 2 > Apply Named Council Story` 將角色引用、名稱、刀具保存到第二章場景；角色來源為原長老（莫那）、原第二位男性（達多）、原第四位男性（巴萬）、原第一位灰髮領袖（瓦旦）。其餘演出者使用描述性群眾名稱，集體字幕顯示「巴萬與眾戰士」。獵刀為小型自製遊戲道具，素材保存在 `Assets/Chapter2/Props/`。

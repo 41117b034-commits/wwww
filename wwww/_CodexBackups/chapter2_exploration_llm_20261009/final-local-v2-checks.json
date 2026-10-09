@@ -1,0 +1,17 @@
+{
+  "label": "final-local-v2",
+  "pendingReplyCase": "expiry-pending",
+  "passed": true,
+  "participants": 5,
+  "errors": 0,
+  "warnings": 1,
+  "explorationElapsed": 184.9413604736328,
+  "replySeconds": [
+    19.53279685974121,
+    10.046218872070312,
+    17.785293579101562,
+    9.222480773925781,
+    1.0294570922851562
+  ],
+  "failures": []
+}

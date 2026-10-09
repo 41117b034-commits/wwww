@@ -2,7 +2,9 @@
 
 更新日期：2026-10-09。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-09 已將第二章 Play → P 的四棟會議房屋校正水平並貼地，修復傳統建築的遺失網格引用；開場九位成年人全部坐著，左側原站立兩人補上座椅，右前方加入坐矮椅的原住民小孩，共十人。小孩全程坐著聆聽；原劇本成人起身仍保留。本輪 final-support／final-refuse 均 checks.passed=true、errors=0、結尾自行停止 Play Mode，第一章場景檔案未改。證據在 _CodexBackups/council_seats_houses_20261009/，細節與驗證限制見文末。
+最新狀態：2026-10-09 已完成第二章影片後三分鐘自由探索與免費本機 LLM 文字對話。原森林介紹後加上「現在開始你可以自由探索，了解這裡的環境」，路邊兩名警察、兩名族人、一名小孩可在1.5公尺內按 E 交談，各自保留近期問答；到時等已送出的回答及閱讀時間結束，再接原黃色箭頭與帶路到巨木。模型已下載並驗證，安裝在 D:/WusheLocalLLM，沒有付費 API 或外網備援。正式180秒測試 final-local-v2 與到期等待邊界測試 expiry-pending 合併 passed=true、兩輪各 errors=0。詳細驗證與限制見文末及 Documentation/Chapter2-local-dialogue.md。
+
+前次場景佈置：2026-10-09 已將第二章 Play → P 的四棟會議房屋校正水平並貼地，修復傳統建築的遺失網格引用；開場九位成年人全部坐著，左側原站立兩人補上座椅，右前方加入坐矮椅的原住民小孩，共十人。小孩全程坐著聆聽；原劇本成人起身仍保留。該輪 final-support／final-refuse 均 checks.passed=true、errors=0、結尾自行停止 Play Mode，第一章場景檔案未改。證據在 _CodexBackups/council_seats_houses_20261009/，細節與驗證限制見文末。
 
 前次畫面修正：2026-10-09 已完成達多握刀時手腕順著前臂、所有發言者抬頭對鏡頭、莫那起身宣告時右手握緊拳頭；四位字幕人名加上使用者指定身分。保留原營火／人物／倒木場景，外圍沿用第一章模型與材質的房屋。本輪座位調整保留這些演出與字幕。
 
@@ -774,3 +776,29 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 本輪未重玩白天護樹／砍伐、第一章、完整片頭，亦未做獨立建置或實體 VR。成人坐姿預設數值不變，第一章場景 SHA-256 與本輪修改前相同；不代表第一章本輪已進行玩法驗收。未 commit／push。
 - 臨時 `Chapter2SeatingProbe.cs` 與 meta 已移至本輪 `verification-tools/`，正式 Assets 不保留自動播放工具。移出後 Unity 編譯及 domain reload 完成，實際開啟 Console 顯示0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號。清理後零警告不抹除拒絕輪的13則既有 Missing Script。
 - 四個正式來源／場景檔案與最終兩輪測試時 SHA-256 一致，見 final-source-comparison.json。最終 Assets／Documentation／Packages／ProjectSettings 共3430檔，無單檔達100,000,000 bytes，最大89,742,488 bytes；本輪沿用原模型，沒有新增大型網格。未切換專案序列化設定。
+
+## 2026-10-09 三分鐘自由探索與免費本機 NPC 對話
+
+- 使用者指定路邊全部警察、族人與小孩、探索180秒、不能使用可能計費的雲端 API，並明確同意立即下載約1至2 GB免費模型。沿用固定第二章場景，已參照 AGENTS.md、交接與第二章劇情摘錄。沒有新增集合橋段，也不把帶路三人誤當自由交談人物。
+- Chapter2Controller／Performance 在原 IntroduceForest 後串接 Chapter2Exploration.Explore(180)，接著 BeginForestEscort。保留原「前面就是西仔希克。這片森林，守護著我們的生活。」並補指定探索句。新句目前只有字幕等待，未錄配音。探索期間原隊伍等待、黃色箭頭與跟隨走廊限制關閉；時間到再播原帶路提示、開始跟隨。
+- Chapter2Exploration 僅從 Background people · local patrols 取得現有五位路邊角色（2警察、2成年族人、1小孩），最近人物水平距離≤1.5m可按 E 或按鈕交談。超出範圍提示消失；桌面文字輸入／送出／Esc離開，交談暫停人物巡邏及玩家移動，人物面向玩家。打字中的 P 不會觸發夜間快捷。三分鐘不中斷計時，到期禁止新問題，等待既有請求並保留5至13秒閱讀。最後從當前位置回到原帶路，修正 Chapter2RouteGuide 避免將走廊外玩家瞬移回中央。
+- Chapter2LocalDialogue 使用 llama.cpp b11526 CPU x64 與官方 Qwen2.5-1.5B-Instruct-GGUF Q4_K_M。模型1,117,320,736 bytes，已驗 SHA-256；執行檔下載包亦與 GitHub release digest 核對。均置於 D:/WusheLocalLLM，不放進 Assets/Git。資料見本輪 model-installation.json。無帳號、API金鑰或付費雲端備援，模型下載後無須外網；服務限定 HTTP loopback 127.0.0.1:18080。Unity隱藏啟動本機服務，離開場景／Play時停止自己啟動的程序。
+- Assets/StreamingAssets/Chapter2LocalLLM.json 保存安裝路徑；Tools/LocalLLM/Install-LocalNPC.ps1 提供展示電腦的下載／校验／改路徑步驟。第一次可需約1.2GB流量，其後正常 Play。換電腦或打包時仍要部署外部模型並核對 StreamingAssets 路徑；本次未製作模型安裝包。
+- 人物設定在 Chapter2LocalDialogue.Persona，背景文字在 Resources/Chapter2LocalDialogueContext.txt。每位人物各保存最近三輪成功問答，限本次遊玩，不需外部或向量資料庫。模型輸出只作文字顯示，不能控制主線或執行程式。仍可能答錯；設定不是史料原話，也不是模型已獲完整史料訓練。
+- Windows原生繁體轉換已修正字串終止參數，250筆測試通過。舊 final-local 的亂碼畫面不作驗收；以修正後 final-local-v2 為準。ui-diagnostic 縮短且停用模型，只是 UI 診斷，review-local 是繁體轉換前診斷。
+
+### 本輪自由探索驗證
+
+- final-local-v2 使用場景正式180秒、真實本機模型，五人皆有非預寫回答；本機 i5-1235U／約16GB RAM 的五次回覆耗時約19.53／10.05／17.79／9.22／1.03秒。小孩知道玩家自介「阿山」，另一位警察回答不知道，確認人物近期紀錄未混用。總探索184.94秒含結尾閱讀時間。errors=0、warnings=1（既有停用音源），結束後playing=false、dirty=false。
+- 距離1.501m拒絕、1.49m可開，五人提示與範圍外隱藏通過，聊天中P不跳章、隊伍等待與箭頭隱藏通過；回接時玩家位置跳動0，測試抵達 TreeChoice。回覆面板及人物畫面已檢查1600×900引擎截圖，預覽為 Documentation/Chapter2-local-police-preview.png 與 Chapter2-local-child-preview.png。
+- 正式180秒輪最後的短回覆在到期前已完成，因此另做 expiry-pending：真實問題送出後將測試截止點設在0.1秒，確認仍在生成時到期會等到完整回答與閱讀後再走，並抵達 TreeChoice；errors=0、warnings=1。此為刻意強制造成到期的邊界測試，不能當作180秒時長證據。check-exploration.ps1 同時要求正式時長、五人真實回答、記憶隔離與待答邊界測試，final-local-v2-checks.json passed=true。
+- 以上由臨時 Editor 工具注入 Input System 鍵盤事件、填入實際輸入欄並觸發送出；跟隨段以工具移動玩家沿隊伍至巨木。不是全程人工走圖或實體 VR 驗收。第一版未做語音輸入／合成語音、VR虛擬鍵盤、獨立執行檔驗收；未重跑完整白天護樹／砍伐分支或第一章。模型品質及展示機速度仍需試玩調整。
+- 原始備份、測試報告與截圖在 _CodexBackups/chapter2_exploration_llm_20261009/。模型服務退出Play後已確認關閉；沒有 commit／push。
+
+### 本輪原夜間流程回歸
+
+- 同一本輪 council/ 下 final-support 與 final-refuse 均以正常一倍速 Play → P → 1／2 跑完，35／34行字幕逐行比對通過，checks.passed=true、errors=0、playingAfterExit=false、dirty=false、prefsUnchanged=true。兩輪各15則既有警告（13則 Missing Script、2則停用音源），未把清空後 Console 狀態當作無警告的遊玩紀錄。
+- 支持分支插刀、成人起身、拉遠與決戰字卡通過；拒絕分支走近莫那、斥責及淡黑退出通過。兩輪十人開場坐姿、孩子全程坐姿與無刀、四棟房屋水平貼地檢查通過，且本輪已查看引擎全景。
+- 九個正式來源／設定／場景檔案與 final-local-v2 測試時雜湊一致（final-source-comparison.json）；第一章場景 SHA-256 與本輪開始相同。本輪未提交／推送。
+
+- 清理完成：兩個臨時 Editor probe 及 meta 已移至本輪 verification-tools/，正式 Assets 不保留自動測試工具。Unity 清理後重新編譯／domain reload 完成，實際開啟 Console 顯示0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號；此狀態不取代上述遊玩輪警告記錄。正式 Assets／Documentation／Packages／ProjectSettings／Tools 共3481檔，無單檔達100,000,000 bytes，最大89,742,488 bytes；約1.1GB模型保留在專案外 D 槽。

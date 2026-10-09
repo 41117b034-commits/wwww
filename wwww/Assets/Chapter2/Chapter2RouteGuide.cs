@@ -71,7 +71,11 @@ public sealed class Chapter2RouteGuide : MonoBehaviour
         if(!Following)return proposed;
         // A walking corridor, not camera control: players can still turn and look around.
         float furthest=EscortArrived?chapter.treeApproach.position.z+.65f:chapter.workers[0].transform.position.z+1.1f;
-        var limited=proposed;limited.x=Mathf.Clamp(limited.x,leftBoundary,rightBoundary);limited.z=Mathf.Clamp(limited.z,-18,furthest);
+        // A player may finish exploration beside the road. Allow a gradual return
+        // instead of snapping them across the forest when the escort starts.
+        var limited=proposed;
+        limited.x=Mathf.Clamp(limited.x,Mathf.Min(current.x,leftBoundary),Mathf.Max(current.x,rightBoundary));
+        limited.z=Mathf.Clamp(limited.z,Mathf.Min(current.z,-18),Mathf.Max(current.z,furthest));
         RouteBlocked=(limited-proposed).sqrMagnitude>.000001f;
         if(RouteBlocked)chapter.ui.hint.text="請留在隊伍的小徑上，沿黃色箭頭跟上族人。";
         return limited;

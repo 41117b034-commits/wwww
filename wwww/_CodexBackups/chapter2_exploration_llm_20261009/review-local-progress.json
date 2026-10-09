@@ -1,0 +1,65 @@
+{
+    "label": "review-local",
+    "finalStage": "",
+    "expiryReply": "是的，我記得你剛剛問過我。",
+    "expiryError": "",
+    "count": 5,
+    "errors": 0,
+    "warnings": 0,
+    "noArrowsDuringExplore": true,
+    "workersWait": true,
+    "allPrompts": true,
+    "allOutsideHidden": true,
+    "insideAccepted": true,
+    "outsideRejected": true,
+    "typingPDoesNotSkip": true,
+    "expiryWaited": true,
+    "returnedToEscort": false,
+    "arrivedAtTree": false,
+    "dirty": false,
+    "playingAfterExit": false,
+    "configuredSeconds": 180.0,
+    "explorationElapsed": 0.0,
+    "escortFirstJump": 0.0,
+    "introduction": [
+        "前面就是西仔希克。這片森林，守護著我們的生活。",
+        "現在開始你可以自由探索，了解這裡的環境"
+    ],
+    "answers": [
+        {
+            "actor": "林間原住民小孩",
+            "question": "你在這裡做什麼？",
+            "answer": "我在這裡探索森林，看看這邊的景色。",
+            "error": "",
+            "seconds": 14.982357025146485
+        },
+        {
+            "actor": "林間族人 2",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "這片森林對我很重要，因為它是我們部落的家鄉。我們的狩獵、農耕和休息都在這里進行。森林的樹木和植被保護我們免受野獸的侵扰，也提供我們所需的糧食和木料。",
+            "error": "",
+            "seconds": 13.674053192138672
+        },
+        {
+            "actor": "林間族人 3",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "這片森林對我很重要，是我們的家園。",
+            "error": "",
+            "seconds": 11.499435424804688
+        },
+        {
+            "actor": "樹旁巡察警察 1",
+            "question": "你為什麼在這裡？",
+            "answer": "我是警察。來這裡執行任務。",
+            "error": "",
+            "seconds": 8.271743774414063
+        },
+        {
+            "actor": "樹旁巡察警察 2",
+            "question": "你為什麼在這裡？",
+            "answer": "我是警察。巡查森林，确保秩序。",
+            "error": "",
+            "seconds": 1.4839019775390626
+        }
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "label": "final-local",
+    "finalStage": "",
+    "expiryReply": "我叫阿山，你在這裡做什麼？-DPOchD_in4LvoE",
+    "expiryError": "",
+    "count": 5,
+    "errors": 0,
+    "warnings": 0,
+    "noArrowsDuringExplore": true,
+    "workersWait": true,
+    "allPrompts": true,
+    "allOutsideHidden": true,
+    "insideAccepted": true,
+    "outsideRejected": true,
+    "typingPDoesNotSkip": true,
+    "expiryWaited": true,
+    "returnedToEscort": false,
+    "arrivedAtTree": false,
+    "dirty": false,
+    "playingAfterExit": false,
+    "configuredSeconds": 180.0,
+    "explorationElapsed": 0.0,
+    "escortFirstJump": 0.0,
+    "introduction": [
+        "前面就是西仔希克。這片森林，守護著我們的生活。",
+        "現在開始你可以自由探索，了解這裡的環境"
+    ],
+    "answers": [
+        {
+            "actor": "林間原住民小孩",
+            "question": "我叫阿山。你在這裡做什麼？",
+            "answer": "我在這裡探視森林，觀察鳥鳴與樹木。퀂ǉ",
+            "error": "",
+            "seconds": 17.601154327392579
+        },
+        {
+            "actor": "林間族人 2",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "森林對我來說很重要，它是我們的家，也是我們的糧食和庇護所。我親愛的家人、我們的農耕、狩獵和遊玩都在森林裡。我敬畏森林，因為它保護我們。",
+            "error": "",
+            "seconds": 13.668659210205079
+        },
+        {
+            "actor": "林間族人 3",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "對我來說，這片森林是我與家人、族人相連的橋樑。它是我生活的重要部分，是我對自然的敬畏和對未來的期望。\\chapter2_exploration_llm_20261009\\council\\command.t",
+            "error": "",
+            "seconds": 15.191207885742188
+        },
+        {
+            "actor": "樹旁巡察警察 1",
+            "question": "你為什麼在這裡？",
+            "answer": "我是警察，來巡查森林的狀況。DPOchD_in4LvoEsO",
+            "error": "",
+            "seconds": 10.074104309082032
+        },
+        {
+            "actor": "樹旁巡察警察 2",
+            "question": "你知道我的名字嗎？",
+            "answer": "我叫西仔希克。ingIpc",
+            "error": "",
+            "seconds": 1.6053314208984376
+        }
+    ]
+}

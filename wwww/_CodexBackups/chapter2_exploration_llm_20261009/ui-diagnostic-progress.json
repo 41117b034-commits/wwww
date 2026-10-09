@@ -1,0 +1,63 @@
+{
+    "label": "ui-diagnostic",
+    "finalStage": "",
+    "count": 5,
+    "errors": 0,
+    "warnings": 0,
+    "noArrowsDuringExplore": true,
+    "workersWait": true,
+    "allPrompts": true,
+    "allOutsideHidden": true,
+    "insideAccepted": true,
+    "outsideRejected": true,
+    "typingPDoesNotSkip": true,
+    "expiryWaited": false,
+    "returnedToEscort": false,
+    "arrivedAtTree": false,
+    "dirty": false,
+    "playingAfterExit": false,
+    "configuredSeconds": 35.0,
+    "explorationElapsed": 0.0,
+    "escortFirstJump": 0.0,
+    "introduction": [
+        "前面就是西仔希克。這片森林，守護著我們的生活。",
+        "現在開始你可以自由探索，了解這裡的環境"
+    ],
+    "answers": [
+        {
+            "actor": "林間原住民小孩",
+            "question": "你在這裡做什麼？",
+            "answer": "",
+            "error": "本機對話服務尚未就緒，請稍後重試。",
+            "seconds": 2.124013900756836
+        },
+        {
+            "actor": "林間族人 2",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "",
+            "error": "本機對話服務尚未就緒，請稍後重試。",
+            "seconds": 2.125011444091797
+        },
+        {
+            "actor": "林間族人 3",
+            "question": "這片森林對你有什麼意義？",
+            "answer": "",
+            "error": "本機對話服務尚未就緒，請稍後重試。",
+            "seconds": 2.0974349975585939
+        },
+        {
+            "actor": "樹旁巡察警察 1",
+            "question": "你為什麼在這裡？",
+            "answer": "",
+            "error": "本機對話服務尚未就緒，請稍後重試。",
+            "seconds": 2.2546730041503908
+        },
+        {
+            "actor": "樹旁巡察警察 2",
+            "question": "你為什麼在這裡？",
+            "answer": "",
+            "error": "",
+            "seconds": 0.0
+        }
+    ]
+}
