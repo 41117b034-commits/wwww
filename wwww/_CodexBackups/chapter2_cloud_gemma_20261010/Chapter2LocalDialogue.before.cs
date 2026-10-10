@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
-// Local or opt-in free cloud text inference. Model output is never a game command.
+// Local, text-only inference. Model output is never interpreted as a game command.
 public sealed class Chapter2LocalDialogue : MonoBehaviour
 {
     [Serializable] public class Settings
@@ -37,17 +37,14 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     public bool Busy { get; private set; }
     public bool Ready { get; private set; }
     public string LastError { get; private set; }
-    public string Provider => cloudConfig != null && cloudConfig.enabled ? "Free cloud Gemma: " + cloudConfig.model : "Local: " + settings.model;
     UnityWebRequest activeRequest;
     System.Diagnostics.Process ownedProcess;
     string world;
     bool starting;
-    Chapter2CloudGemma.Config cloudConfig;
-    string cloudKey, cloudConfigError;
 
     void Awake()
     {
-        // Shared local-model paths contain no credentials. Cloud secrets live outside the project.
+        // Machine-specific paths live outside Assets and never include an API key.
         string path=Path.Combine(Application.streamingAssetsPath,"Chapter2LocalLLM.json");
         if(File.Exists(path))
         {
@@ -56,7 +53,6 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         }
         var data=Resources.Load<TextAsset>("Chapter2LocalDialogueContext");
         world=data?data.text:"時間是1930年，地點是西仔希克森林。玩家是部落青年。";
-        Chapter2CloudGemma.TryGetActive(out cloudConfig, out cloudKey, out cloudConfigError);
     }
     bool LocalEndpoint()
     {
@@ -66,10 +62,6 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     {
         if(starting){while(starting)yield return null;yield break;}
         starting=true; LastError=null;
-        if(!string.IsNullOrEmpty(cloudConfigError))
-        { Ready=false;LastError=cloudConfigError;starting=false;yield break; }
-        if(cloudConfig != null && cloudConfig.enabled)
-        { Ready=!string.IsNullOrWhiteSpace(cloudKey);starting=false;yield break; }
         if(!LocalEndpoint()){LastError="此版本只使用電腦上的免費本機模型。";starting=false;yield break;}
         yield return CheckHealth();
         if(Ready){starting=false;yield break;}
@@ -87,7 +79,7 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
                     WorkingDirectory=Path.GetDirectoryName(settings.executable),
                     UseShellExecute=false, CreateNoWindow=true, WindowStyle=System.Diagnostics.ProcessWindowStyle.Hidden
                 };
-                if(ownedProcess==null || ownedProcess.HasExited)ownedProcess=System.Diagnostics.Process.Start(info);
+                ownedProcess=System.Diagnostics.Process.Start(info);
             }
             catch(Exception e){LastError=e.Message;}
             float deadline=Time.realtimeSinceStartup+55;
@@ -103,10 +95,8 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         var uri=new Uri(settings.endpoint);
         using(var request=UnityWebRequest.Get(uri.GetLeftPart(UriPartial.Authority)+"/health"))
         {
-            activeRequest=request;
             request.timeout=2; yield return request.SendWebRequest();
             Ready=request.result==UnityWebRequest.Result.Success;
-            activeRequest=null;
         }
     }
     public string Persona(Chapter2AmbientNPC npc)
@@ -135,32 +125,18 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         Busy=true;
         if(!Ready)yield return Prepare();
         if(!Ready){Busy=false;done(null,LastError);yield break;}
+        var messages=new List<Message>{new Message("system",Persona(npc))};
+        messages.AddRange(history);messages.Add(new Message("user",question));
+        var body=new Request{model=settings.model,messages=messages.ToArray()};
         string answer=null,error=null;
-        bool cloud=cloudConfig != null && cloudConfig.enabled;
-        UnityWebRequest pending;
-        if(cloud)
-            pending=Chapter2CloudGemma.CreateRequest(cloudConfig.model,cloudKey,Chapter2CloudGemma.BuildBody(Persona(npc),history,question));
-        else
-        {
-            var messages=new List<Message>{new Message("system",Persona(npc))};
-            messages.AddRange(history);messages.Add(new Message("user",question));
-            var body=new Request{model=settings.model,messages=messages.ToArray()};
-            pending=new UnityWebRequest(settings.endpoint,"POST");
-            pending.uploadHandler=new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(body)));
-            pending.downloadHandler=new DownloadHandlerBuffer();pending.SetRequestHeader("Content-Type","application/json");
-            pending.timeout=75;
-        }
-        using(var request=pending)
+        using(var request=new UnityWebRequest(settings.endpoint,"POST"))
         {
             activeRequest=request;
+            request.uploadHandler=new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(body)));
+            request.downloadHandler=new DownloadHandlerBuffer();request.SetRequestHeader("Content-Type","application/json");
+            request.timeout=75;
             yield return request.SendWebRequest();
-            if(request.result!=UnityWebRequest.Result.Success)
-            {error=cloud?Chapter2CloudGemma.HttpError(request.responseCode):"對方暫時無法回覆，請稍後再試。";Ready=false;}
-            else if(cloud)
-            {
-                Chapter2CloudGemma.TryReadAnswer(request.downloadHandler.text,out answer,out error);
-                if(error==null)answer=Traditional(answer);
-            }
+            if(request.result!=UnityWebRequest.Result.Success){error="對方暫時無法回覆，請稍後再試。";Ready=false;}
             else
             {
                 try
@@ -184,9 +160,7 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     public void CancelRequest()
     {
         activeRequest?.Abort();
-        StopAllCoroutines();
-        activeRequest?.Dispose();activeRequest=null;
-        Busy=false;starting=false;
+        StopAllCoroutines();Busy=false;starting=false;
     }
     static string Traditional(string text)
     {
@@ -209,7 +183,6 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     void OnDestroy()
     {
         CancelRequest();
-        cloudKey=null;
         if(ownedProcess!=null)
         {
             try { if(!ownedProcess.HasExited)ownedProcess.Kill();ownedProcess.Dispose(); } catch(Exception){}
