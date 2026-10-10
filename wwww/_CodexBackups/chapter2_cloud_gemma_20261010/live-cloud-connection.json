@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "model": "gemma-4-26b-a4b-it",
+  "statusCode": 200,
+  "seconds": 1.588,
+  "answer": "我不知道你的名字，你沒告訴過我。你要介紹一下嗎？",
+  "error": null,
+  "usage": {
+    "promptTokenCount": 573,
+    "candidatesTokenCount": 16,
+    "totalTokenCount": 589,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 573
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

@@ -11,6 +11,7 @@ public sealed class Chapter2DialogueSettingsWindow : EditorWindow
     [NonSerialized] string status = "", answer = "";
     [NonSerialized] bool confirmed;
     [NonSerialized] int selected;
+    [NonSerialized] Vector2 scroll;
     UnityWebRequest request;
     double began;
     string testedModel, testedKey;
@@ -44,6 +45,7 @@ public sealed class Chapter2DialogueSettingsWindow : EditorWindow
     }
     void OnGUI()
     {
+        scroll = EditorGUILayout.BeginScrollView(scroll);
         EditorGUILayout.LabelField("第二章 NPC：免費雲端試用", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("先使用 Google AI Studio 的 Free Tier 專案。此工具只呼叫 Gemma，不會開啟計費或換成付費模型。免費額度及可用性以 Google 帳號顯示為準。", MessageType.Info);
         if (GUILayout.Button("1. 開啟 Google AI Studio，取得免費專案的 API key"))
@@ -76,6 +78,7 @@ public sealed class Chapter2DialogueSettingsWindow : EditorWindow
         }
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("通過連線後重新 Play，影片結束後走近 NPC 即可試問。\n組員可用自己的免費金鑰，無須下載本機模型。\n此設定適用 Windows 私下測試；公開發行需另接伺服器保管金鑰。", EditorStyles.wordWrappedLabel);
+        EditorGUILayout.EndScrollView();
     }
     void StartTest()
     {

@@ -1,0 +1,22 @@
+{
+    "finished": true,
+    "passed": true,
+    "playing": false,
+    "dirty": false,
+    "cloudConfigured": false,
+    "checks": [
+        "conversation history and current question serialized",
+        "separate persona, thinking off, no paid tools",
+        "fixed HTTPS destination, no key in URL, bounded timeout, no redirects",
+        "unlisted model rejected before network",
+        "reply parts combined and thinking excluded",
+        "blocked candidate not shown as answer",
+        "blocked prompt handled without candidate",
+        "empty response handled",
+        "malformed response handled",
+        "quota, authentication and network errors distinguished",
+        "Windows DPAPI roundtrip without saving a credential",
+        "validation preserved user cloud configuration"
+    ],
+    "failure": ""
+}

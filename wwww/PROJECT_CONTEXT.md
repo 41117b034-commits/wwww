@@ -2,7 +2,9 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-10 第二章自由探索 NPC 已切換到免費本機 Gemma 4 E2B IT Q4_0（D:/WusheLocalLLM，約2.84 GB），Qwen 檔案保留可切回。補強玩家／NPC 姓名指涉及警察、小孩身分限制。Unity 七次真實問答完成、errors=0；但同時跑 Unity 的首問較慢（初次約56秒，換NPC約30–34秒，接續問答約2–6秒）。詳細實測、操作及限制見文末「2026-10-10 Gemma 本機試用」。
+最新狀態：2026-10-10 已新增免費雲端 Gemma 試用接法及 Unity `Tools → Chapter 2 → NPC 對話設定（免費雲端／本機）`。預設雲端模型為 `gemma-4-26b-a4b-it`，可選31B；只有使用者提供 Free Tier 金鑰並通過連線測試才啟用。當前尚未提供金鑰，仍使用本機 Gemma；雲端真實回答／速度待測，未開啟計費。詳見文末「2026-10-10 免費雲端 Gemma 接線」。
+
+前次模型狀態：2026-10-10 第二章自由探索 NPC 已切換到免費本機 Gemma 4 E2B IT Q4_0（D:/WusheLocalLLM，約2.84 GB），Qwen 檔案保留可切回。補強玩家／NPC 姓名指涉及警察、小孩身分限制。Unity 七次真實問答完成、errors=0；但同時跑 Unity 的首問較慢（初次約56秒，換NPC約30–34秒，接續問答約2–6秒）。詳細實測、操作及限制見文末「2026-10-10 Gemma 本機試用」。
 
 前次狀態：2026-10-10 完成第二章人名與近距迎接：全九位白天人物可交談，帶路者阿威·比胡介紹後巡走，督工警察中村正雄加入LLM對話；探索及當次回答／閱讀結束後，阿威先移到玩家附近再短程走來。巨木旁命令與回話採雙人構圖，阿威向警察走近再面向他說話。夜間四位原有角色與身分字幕保留，其他配角補上姓名。詳細驗證與限制見文末「2026-10-10 人名與近距迎接」。
 
@@ -866,3 +868,26 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 5. 第一輪測試遭背景重編譯中斷，造成既有 rig 非序列化狀態遺失並反覆 IndexOutOfRange，記在 `hotreload-interrupted-*`，不算通過。停止該輪、清掉自己啟動而因重載失去追蹤的服務，編譯完成後全新 Play 的上述最終輪沒有錯誤，退出時服務正常自動結束。
 
 臨時驗證腳本已移出 Assets，放至上述備份目錄。大型下載及部分檔案均在 D 槽，下載暫存已清理。後續可研究共享提示快取與提早暖機以改善首問等待，本輪未實作；模型仍可能產生錯誤歷史資訊，不能把以上少量問題通過解讀成零幻覺。
+
+## 2026-10-10 免費雲端 Gemma 接線
+
+使用者要求「先幫我試試看免費的」，授權嘗試雲端 NPC 推論，仍不可開啟付費 API。已依 Google 官方 Gemma API／價格頁查證，實作私人 Windows 試用接法；**還沒有使用者的免費 API key，因此尚未完成真實雲端問答**。
+
+- 新增 `Assets/Chapter2/Chapter2CloudGemma.cs`：固定 Google HTTPS `generateContent`，只允許 `gemma-4-26b-a4b-it` 與 `gemma-4-31b-it`。沿用 Persona 與每位 NPC 的三輪記憶，systemInstruction 與 user/model 分開，關閉思考、256輸出token、30秒timeout；只讀非 thought 文字，不啟用搜尋／工具。429、401/403、404、斷線、空內容／封鎖內容有提示，不重試到付費模型。
+- `Chapter2LocalDialogue` 支援本機／雲端兩種請求。雲端成功設定後不啟動本機模型；沒有設定時走既有本機。失敗不偷偷切換服務；可由設定視窗切回本機，下次 Play 生效。補齊取消 health request 的資源釋放，避免取消暖機後重複啟動自己尚在載入的程序。
+- 新增 `Assets/Editor/Chapter2DialogueSettingsWindow.cs`，Unity 選單 `Tools → Chapter 2 → NPC 對話設定（免費雲端／本機）`。金鑰遮罩欄、Free Tier 確認、「測試並啟用」與本機切回。測試問「你猜我叫甚麼名字」，收到真實回答且儲存成功才启用雲端；此連線測試使用簡短阿威角色提示，正式遊戲仍用完整 Persona。此工具本身無法由 API key 判斷計費層級，使用者須先確認 AI Studio 專案為 Free Tier、未啟用計費。
+- 金鑰以 Windows DPAPI 保存在 `%LOCALAPPDATA%/WusheNPC/cloud-gemma.json`，不放入專案、場景、EditorPrefs 或 Git。程式不列印金鑰／伺服器原始錯誤；header 傳 key，禁止重新導向。本轮沒有建立金鑰、開啟計費或對 Google 送出推論請求。組員可用各自免費金鑰，不需本機模型；尚未建立多人共用後端、公開發行的金鑰代理或 Quest／WebGL 適配。
+- `Documentation/Chapter2-local-dialogue.md` 新增完整設定方式、資料傳送範圍、朋友電腦操作、免費额度與公開發行限制；Google 免費服务內容可能用於改善產品，已在設定視窗說明。
+
+實際驗證，資料在 `_CodexBackups/chapter2_cloud_gemma_20261010/`：
+
+1. 使用本專案 Unity 6000.0.58f1 Roslyn 與實際 rsp 參考，編譯整份 runtime 和 Editor 程式均 exit=0；主 Editor 重新編譯後 `scriptCompilationFailed=false`。既有棄用 API 警告未處理，不能宣稱整個專案零警告。
+2. 隔離的小型 Unity 專案與主 Unity Editor 各執行12項接線檢查，均 passed=true：多輪格式、獨立 Persona、thought 排除、封鎖／空／損壞 JSON、額度／權限／網路錯誤提示、固定端點與禁止付費模型、Windows 加密往返、未改動個人設定。這些沒有真實 API key，也不是真實 Google 回應測試。
+3. 主專案 Play → 空白鍵 → NPC 問答，本機回歸成功：阿威回答「我不知道你叫什麼名字。你先告訴我你的名字吧。」30.573秒；errors=0、warnings=1（既有停用音源），finished=true、playing=false、dirty=false。引擎截圖已查看。測試器暫將探索延長600秒，正式配置仍180秒。當時存在外部 llama-server，遊戲未關閉非自己啟動的服務。
+4. 第二章場景與本機 JSON 雜湊前後一致。未改第一章、角色位置或主線。未重跑全部主線分支、獨立建置、實體VR，也未驗證雲端遊戲內速度或品質。
+5. 原生電腦操作工具無法還原最小化的 Unity（`activate_window` timeout）；仍透過 Unity Editor 腳本完成上述編譯和回歸。設定視窗已由選單方法要求開啟，但未取得原生視窗畫面驗收。已請使用者自行開啟 Unity、用 Google 帳號取得 Free Tier 金鑰，且明確請勿把金鑰貼進聊天；尚未收到回覆。
+
+待使用者操作：在 Unity 上述設定視窗貼入免費金鑰並按「測試並啟用」，再重跑實際遊戲內三種角色的未知玩家姓名、玩家名字記憶、警察森林立場與回應耗時。金鑰不得進聊天或 Git；未收到金鑰不能把目前接線檢查報成雲端已測通。
+
+清理：兩個臨時主專案 Editor 驗證器及 meta 已移至本輪 verification-tools；正式 Assets 只保留對話程式與設定視窗。沒有提交或推送 GitHub。
+

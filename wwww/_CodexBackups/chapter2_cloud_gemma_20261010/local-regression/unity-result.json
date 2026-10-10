@@ -1,0 +1,20 @@
+{
+    "finished": true,
+    "playing": false,
+    "dirty": false,
+    "errors": 0,
+    "warnings": 1,
+    "stage": "Follow",
+    "modelFile": "Local: wushe-npc",
+    "error": "",
+    "configuredExploreSeconds": 180.0,
+    "answers": [
+        {
+            "npc": "阿威·比胡",
+            "question": "你猜我叫甚麼名字",
+            "answer": "我不知道你叫什麼名字。你先告訴我你的名字吧。",
+            "error": "",
+            "seconds": 30.573406219482423
+        }
+    ]
+}
