@@ -24,26 +24,25 @@ public sealed class Chapter2GreetingBubble : MonoBehaviour
         bubble.canvasRect = owner.chapter.ui.canvas.GetComponent<RectTransform>();
         bubble.rect.SetParent(bubble.canvasRect, false);
         bubble.rect.pivot = new Vector2(.5f, 0); bubble.rect.sizeDelta = new Vector2(252, 130);
-        var graphic = go.GetComponent<Chapter2BubbleGraphic>(); graphic.color = new Color(.09f,.14f,.12f); graphic.raycastTarget = false;
+        var graphic = go.GetComponent<Chapter2BubbleGraphic>(); graphic.color = new Color(.98f,.96f,.87f); graphic.raycastTarget = false;
         var name = bubble.Label(bubble.actor.DisplayName, 21, new Vector2(.07f,.73f),new Vector2(.93f,.96f));
-        name.color = new Color(.78f,.73f,.56f);
+        name.color = new Color(.38f,.30f,.20f);
         bubble.words = bubble.Label("", 34, new Vector2(.08f,.29f),new Vector2(.92f,.74f));
         var reply = new GameObject("Reply E",typeof(RectTransform),typeof(Image),typeof(Button));
         var r = reply.GetComponent<RectTransform>(); r.SetParent(bubble.rect,false);
         r.anchorMin=new Vector2(.56f,.07f);r.anchorMax=new Vector2(.94f,.32f);r.offsetMin=r.offsetMax=Vector2.zero;
-        reply.GetComponent<Image>().color = new Color(.27f,.31f,.22f);
+        reply.GetComponent<Image>().color = new Color(.86f,.79f,.60f);
         bubble.ReplyButton = reply.GetComponent<Button>();bubble.ReplyButton.targetGraphic=reply.GetComponent<Image>();
         bubble.ReplyButton.onClick.AddListener(()=>owner.TryOpen(npc));
         var label=bubble.Label("回覆  E",21,Vector2.zero,Vector2.one);
         label.rectTransform.SetParent(r,false);label.alignment=TextAnchor.MiddleCenter;
-        label.color = new Color(.94f,.87f,.67f);
         go.SetActive(false);return bubble;
     }
     Text Label(string value,int size,Vector2 min,Vector2 max)
     {
         var go=new GameObject("Text",typeof(RectTransform),typeof(Text));var r=go.GetComponent<RectTransform>();r.SetParent(rect,false);
         r.anchorMin=min;r.anchorMax=max;r.offsetMin=r.offsetMax=Vector2.zero;
-        var t=go.GetComponent<Text>();t.font=owner.chapter.ui.font;t.fontSize=size;t.text=value;t.color=new Color(.92f,.88f,.76f);
+        var t=go.GetComponent<Text>();t.font=owner.chapter.ui.font;t.fontSize=size;t.text=value;t.color=new Color(.16f,.13f,.09f);
         t.supportRichText=false;t.raycastTarget=false;t.alignment=TextAnchor.MiddleLeft;t.verticalOverflow=VerticalWrapMode.Overflow;return t;
     }
     public bool PlaceAndShow(bool nearby)
@@ -73,13 +72,13 @@ public sealed class Chapter2GreetingBubble : MonoBehaviour
     }
 }
 
-// Rounded forest-green card with a small speech tail; generated as UI geometry, no image asset.
+// Rounded cream card with a small speech tail; generated as UI geometry, no image asset.
 public sealed class Chapter2BubbleGraphic : MaskableGraphic
 {
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();var r=GetPixelAdjustedRect();
-        AddShape(vh,r,new Color(.34f,.38f,.29f,1),13,14);
+        AddShape(vh,r,new Color(.20f,.17f,.12f,1),13,14);
         r.xMin+=3;r.xMax-=3;r.yMin+=3;r.yMax-=3;
         AddShape(vh,r,color,10,12);
     }

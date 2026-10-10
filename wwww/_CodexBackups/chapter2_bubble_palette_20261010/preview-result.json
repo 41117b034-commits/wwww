@@ -1,0 +1,20 @@
+{
+    "finished": true,
+    "passed": true,
+    "playing": false,
+    "dirty": false,
+    "error": "",
+    "provider": "",
+    "stage": "Meeting",
+    "errors": 0,
+    "warnings": 2,
+    "checks": [
+        "all nine NPCs retained",
+        "old green interaction rectangle absent",
+        "preview uses unchanged 180 seconds",
+        "P shortcut reaches meeting",
+        "P shortcut hides every greeting"
+    ],
+    "answers": [],
+    "configuredSeconds": 180.0
+}

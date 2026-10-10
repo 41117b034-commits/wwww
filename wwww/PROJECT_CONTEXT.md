@@ -2,7 +2,9 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-10 第二章已接上第一章分支記憶，新增森林行走邊界及人物問候氣泡（早安／你好、回覆 E），移除中央綠色交談框。第一章上前阻止結尾漏存結果已補齊。最終原專案 Editor 測試九人交談、四邊四角阻擋／走回、異常位置恢復、三次真實雲端記憶問答及到期帶路至 TreeChoice 通過，errors=0、warnings=1（既有停用音源）。正式探索設定仍180秒；詳細範圍見文末。
+最新外觀：2026-10-10 人物問候氣泡已改為深灰綠底、米金色文字及橄欖綠回覆按鈕；Unity 編譯及實際遊戲預覽確認完成。配色驗證見文末。
+
+先前功能狀態：2026-10-10 第二章已接上第一章分支記憶，新增森林行走邊界及人物問候氣泡（早安／你好、回覆 E），移除中央綠色交談框。第一章上前阻止結尾漏存結果已補齊。最終原專案 Editor 測試九人交談、四邊四角阻擋／走回、異常位置恢復、三次真實雲端記憶問答及到期帶路至 TreeChoice 通過，errors=0、warnings=1（既有停用音源）。正式探索設定仍180秒；詳細範圍見文末。
 
 目前雲端狀態：使用者已自行完成免費金鑰設定，本轮實際問答 Provider 為 Free cloud Gemma: gemma-4-26b-a4b-it，收到三次成功回答。下方舊「免費雲端 Gemma 接線」段落的「尚未提供 key」只代表當時接線驗證，已被後續實測取代。本輪沒有改金鑰、開啟計費或更換模型；雲端失敗仍不自動切本機。
 
@@ -919,3 +921,9 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 補充最終預覽：preview-result.json 使用正式180秒設定，Play→空白鍵進探索、氣泡實際畫面已查看；再送 P 至 Meeting 並等淡入完成，所有氣泡隱藏，errors=0、warnings=2（既有停用音源），playing=false、dirty=false。只確認夜間開場，不代表完整會議分支驗收。預覽保存於 Documentation/Chapter2-greeting-bubble-preview.png。
 - 本輪驗證工具 Chapter2MemoryBubbleProbe.cs 及 meta 已移至備份 verification-tools，正式Assets不保留自動播放測試程式。11份正式程式／背景資料與最終遊玩時雜湊一致（final-source-comparison.json）；第一章／第二章場景與本機設定均未改。未 commit／push。
 - 清理後 Unity 完成重新編譯及 assembly/domain reload，驗證工具與待處理命令檔均不存在；11份正式來源最後再次比對與通過輪完全一致。Play已停止，最終測試退出時場景dirty=false。未將舊Console斷言或既有音源警告解讀成已修復。
+
+## 2026-10-10 問候氣泡配色
+
+依使用者要求降低白色氣泡的突兀感，僅修改 Chapter2GreetingBubble.cs 配色：深灰綠底、柔和灰綠描邊、米金色姓名與問候、橄欖綠回覆按鈕。版面、三公尺距離、回覆 E 與對話流程不變。同步更新對話說明與 Documentation/Chapter2-greeting-bubble-preview.png。
+
+實際驗證：原 Unity Editor 編譯成功（scriptCompilationFailed=false）。重用既有預覽工具進入 Play／探索，檢視引擎截圖確認新顏色與文字可讀；正式探索180秒保持。P跳會議後氣泡收起；preview-result.json passed=true、errors=0、warnings=2（既有停用音源），退出 playing=false、dirty=false。本次未發送 LLM 問題，未重跑記憶／邊界／全部故事分支或實體VR。證據在 _CodexBackups/chapter2_bubble_palette_20261010/；臨時預覽工具移回備份，不留在正式 Assets。未提交或推送。
