@@ -1,0 +1,453 @@
+{
+  "model": "qwen",
+  "args": [
+    "D:/WusheLocalLLM/runtime/llama-server.exe",
+    "-m",
+    "D:/WusheLocalLLM/models/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "--alias",
+    "wushe-trial",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18081",
+    "-c",
+    "4096",
+    "-t",
+    "4",
+    "-tb",
+    "4",
+    "-np",
+    "1",
+    "-ngl",
+    "0",
+    "--no-warmup",
+    "--reasoning",
+    "off"
+  ],
+  "prompt_source": "pre-change/current project snapshot",
+  "temperature": 0.65,
+  "max_tokens": 160,
+  "results": [
+    {
+      "role": "阿威·比胡",
+      "case": "guess",
+      "question": "你猜我叫甚麼名字",
+      "seconds": 5.455,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我不知道你的名字。"
+            }
+          }
+        ],
+        "created": 1791607123,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 5,
+          "prompt_tokens": 464,
+          "total_tokens": 469,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-DOYvpMW1uH8oxL8wR4FYSbdutyHMlQBR",
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 464,
+          "prompt_ms": 5241.254,
+          "prompt_per_token_ms": 11.295806034482759,
+          "prompt_per_second": 88.52843231791476,
+          "predicted_n": 5,
+          "predicted_ms": 160.696,
+          "predicted_per_token_ms": 40.174,
+          "predicted_per_second": 24.89172101359088
+        }
+      }
+    },
+    {
+      "role": "阿威·比胡",
+      "case": "identity",
+      "question": "你叫什麼名字？你在這裡做什麼？",
+      "seconds": 1.316,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我叫阿威·比胡，是地名西仔希克的賽德克青年。我現在正在森林中探索。"
+            }
+          }
+        ],
+        "created": 1791607124,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 29,
+          "prompt_tokens": 467,
+          "total_tokens": 496,
+          "prompt_tokens_details": {
+            "cached_tokens": 453
+          }
+        },
+        "id": "chatcmpl-B1znH1cEgTMYtAtD2z7MgUZCka2c9sdy",
+        "timings": {
+          "cache_n": 453,
+          "prompt_n": 14,
+          "prompt_ms": 208.089,
+          "prompt_per_token_ms": 14.8635,
+          "prompt_per_second": 67.2789046994315,
+          "predicted_n": 29,
+          "predicted_ms": 1099.139,
+          "predicted_per_token_ms": 39.25496428571428,
+          "predicted_per_second": 25.474485028736133
+        }
+      }
+    },
+    {
+      "role": "中村正雄",
+      "case": "guess",
+      "question": "你猜我叫甚麼名字",
+      "seconds": 4.643,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我是中村正雄，不是西仔希克。"
+            }
+          }
+        ],
+        "created": 1791607129,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 13,
+          "prompt_tokens": 469,
+          "total_tokens": 482,
+          "prompt_tokens_details": {
+            "cached_tokens": 103
+          }
+        },
+        "id": "chatcmpl-GhlGAqS2MOAG7YeltizP5OUSBsvxV0zK",
+        "timings": {
+          "cache_n": 103,
+          "prompt_n": 366,
+          "prompt_ms": 4147.151,
+          "prompt_per_token_ms": 11.331013661202185,
+          "prompt_per_second": 88.25335754593938,
+          "predicted_n": 13,
+          "predicted_ms": 468.227,
+          "predicted_per_token_ms": 39.01891666666666,
+          "predicted_per_second": 25.628594677368028
+        }
+      }
+    },
+    {
+      "role": "中村正雄",
+      "case": "identity",
+      "question": "你叫什麼名字？你在這裡做什麼？",
+      "seconds": 1.073,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我是中村正雄，一名警察。我在這裡檢查伐木的族人是否遵守命令。"
+            }
+          }
+        ],
+        "created": 1791607130,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 22,
+          "prompt_tokens": 472,
+          "total_tokens": 494,
+          "prompt_tokens_details": {
+            "cached_tokens": 458
+          }
+        },
+        "id": "chatcmpl-BNnFmfQ2tXgXPpDzCAJ5z2KKXwCXtjcD",
+        "timings": {
+          "cache_n": 458,
+          "prompt_n": 14,
+          "prompt_ms": 232.155,
+          "prompt_per_token_ms": 16.5825,
+          "prompt_per_second": 60.30453791647821,
+          "predicted_n": 22,
+          "predicted_ms": 830.955,
+          "predicted_per_token_ms": 39.56928571428572,
+          "predicted_per_second": 25.27212664945755
+        }
+      }
+    },
+    {
+      "role": "都比·阿威",
+      "case": "guess",
+      "question": "你猜我叫甚麼名字",
+      "seconds": 4.971,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我是都比·阿威，賽德克族的少年。"
+            }
+          }
+        ],
+        "created": 1791607135,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 15,
+          "prompt_tokens": 466,
+          "total_tokens": 481,
+          "prompt_tokens_details": {
+            "cached_tokens": 103
+          }
+        },
+        "id": "chatcmpl-KrmxFbXHgV1JHzVzqB0YX7hMGrl8DwI4",
+        "timings": {
+          "cache_n": 103,
+          "prompt_n": 363,
+          "prompt_ms": 4392.141,
+          "prompt_per_token_ms": 12.099561983471073,
+          "prompt_per_second": 82.64761991930588,
+          "predicted_n": 15,
+          "predicted_ms": 549.138,
+          "predicted_per_token_ms": 39.22414285714286,
+          "predicted_per_second": 25.494502292684167
+        }
+      }
+    },
+    {
+      "role": "都比·阿威",
+      "case": "identity",
+      "question": "你叫什麼名字？你在這裡做什麼？",
+      "seconds": 1.428,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我是都比·阿威，一名賽德克部落青年。今天，我們正在森林中探索，對森林和大自然感到興奮。"
+            }
+          }
+        ],
+        "created": 1791607136,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 31,
+          "prompt_tokens": 469,
+          "total_tokens": 500,
+          "prompt_tokens_details": {
+            "cached_tokens": 455
+          }
+        },
+        "id": "chatcmpl-WsttVY9KMMwk2qoAyNHiKyyo8LpnJIlK",
+        "timings": {
+          "cache_n": 455,
+          "prompt_n": 14,
+          "prompt_ms": 236.342,
+          "prompt_per_token_ms": 16.88157142857143,
+          "prompt_per_second": 59.236191620617575,
+          "predicted_n": 31,
+          "predicted_ms": 1159.589,
+          "predicted_per_token_ms": 38.652966666666664,
+          "predicted_per_second": 25.871235411857132
+        }
+      }
+    },
+    {
+      "role": "阿威·比胡",
+      "case": "place",
+      "question": "西仔希克是誰？",
+      "seconds": 1.074,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "西仔希克是地名，我們在這裡，這就是我正在帶路的森林。"
+            }
+          }
+        ],
+        "created": 1791607137,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 22,
+          "prompt_tokens": 464,
+          "total_tokens": 486,
+          "prompt_tokens_details": {
+            "cached_tokens": 452
+          }
+        },
+        "id": "chatcmpl-PjObAltD7YZcahkPiB4BXDkbcHVjxGsL",
+        "timings": {
+          "cache_n": 452,
+          "prompt_n": 12,
+          "prompt_ms": 196.968,
+          "prompt_per_token_ms": 16.413999999999998,
+          "prompt_per_second": 60.92360180333861,
+          "predicted_n": 22,
+          "predicted_ms": 843.683,
+          "predicted_per_token_ms": 40.175380952380955,
+          "predicted_per_second": 24.890865407979064
+        }
+      }
+    },
+    {
+      "role": "中村正雄",
+      "case": "forest",
+      "question": "這片森林對你有什麼意義？",
+      "seconds": 1.216,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "這片森林對我來說，是我們族人的生命基礎。保護它，就是保護我們的家鄉。"
+            }
+          }
+        ],
+        "created": 1791607138,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 25,
+          "prompt_tokens": 471,
+          "total_tokens": 496,
+          "prompt_tokens_details": {
+            "cached_tokens": 457
+          }
+        },
+        "id": "chatcmpl-RrSkCZRzk6WGIAF6k9f7Gba7iuKO2KzM",
+        "timings": {
+          "cache_n": 457,
+          "prompt_n": 14,
+          "prompt_ms": 241.268,
+          "prompt_per_token_ms": 17.233428571428572,
+          "prompt_per_second": 58.0267586252632,
+          "predicted_n": 25,
+          "predicted_ms": 941.291,
+          "predicted_per_token_ms": 39.22045833333333,
+          "predicted_per_second": 25.49689734630417
+        }
+      }
+    },
+    {
+      "role": "阿威·比胡",
+      "case": "unknown",
+      "question": "我們部落的祭典精確有幾個步驟？每個日期和禁忌是什麼？",
+      "seconds": 2.371,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "祭典的步驟和日期禁忌我不是很清楚，因為現在我們正在森林中，而且我對於這些事都不太清楚。所以，我建議你先跟我一起探索森林，或許這樣我們能找到答案。"
+            }
+          }
+        ],
+        "created": 1791607141,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 47,
+          "prompt_tokens": 477,
+          "total_tokens": 524,
+          "prompt_tokens_details": {
+            "cached_tokens": 452
+          }
+        },
+        "id": "chatcmpl-A7Ih7LlspDQWuE4i9vGTPtVFHmY4EcfW",
+        "timings": {
+          "cache_n": 452,
+          "prompt_n": 25,
+          "prompt_ms": 382.276,
+          "prompt_per_token_ms": 15.29104,
+          "prompt_per_second": 65.397775429271,
+          "predicted_n": 47,
+          "predicted_ms": 1955.805,
+          "predicted_per_token_ms": 42.5175,
+          "predicted_per_second": 23.51972717116481
+        }
+      }
+    },
+    {
+      "role": "阿威·比胡",
+      "case": "remember",
+      "question": "你還記得我叫什麼名字嗎？",
+      "seconds": 0.82,
+      "reply": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "我记得你叫阿山。"
+            }
+          }
+        ],
+        "created": 1791607142,
+        "model": "wushe-trial",
+        "system_fingerprint": "b11526-5e4878e97",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 7,
+          "prompt_tokens": 488,
+          "total_tokens": 495,
+          "prompt_tokens_details": {
+            "cached_tokens": 452
+          }
+        },
+        "id": "chatcmpl-zrJoMqvGFdCK2YP0dp5EQ4wPiVLrjYbc",
+        "timings": {
+          "cache_n": 452,
+          "prompt_n": 36,
+          "prompt_ms": 573.516,
+          "prompt_per_token_ms": 15.931,
+          "prompt_per_second": 62.770698637875846,
+          "predicted_n": 7,
+          "predicted_ms": 234.814,
+          "predicted_per_token_ms": 39.135666666666665,
+          "predicted_per_second": 25.552139139915
+        }
+      }
+    }
+  ],
+  "startup_seconds": 3.189
+}

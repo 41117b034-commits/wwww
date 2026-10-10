@@ -1,7 +1,7 @@
 {
   "endpoint": "http://127.0.0.1:18080/v1/chat/completions",
   "model": "wushe-npc",
-  "executable": "D:/WusheLocalLLM/runtime/llama-server.exe",
-  "modelFile": "D:/WusheLocalLLM/models/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "executable": "D:\\WusheLocalLLM\\runtime\\llama-server.exe",
+  "modelFile": "D:\\WusheLocalLLM\\models\\gemma-4-E2B-it-Q4_0.gguf",
   "autoStart": true
 }

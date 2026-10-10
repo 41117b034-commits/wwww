@@ -1,0 +1,12 @@
+{
+    "finished": false,
+    "playing": false,
+    "dirty": false,
+    "errors": 16984,
+    "warnings": 32,
+    "stage": "",
+    "modelFile": "",
+    "error": "",
+    "configuredExploreSeconds": 0.0,
+    "answers": []
+}

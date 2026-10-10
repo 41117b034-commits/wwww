@@ -13,32 +13,19 @@
 
 ## 本機模型與費用
 
-使用免費開源的 [llama.cpp](https://github.com/ggml-org/llama.cpp) Windows CPU 版本 b11526。安裝腳本提供以下兩種本機模型，皆為 Apache-2.0；首次下載後，遊玩時不需要外網或 API 金鑰，也沒有雲端 token 費用。速度與回覆品質須以展示電腦實測為準。
+使用免費開源的 [llama.cpp](https://github.com/ggml-org/llama.cpp) Windows CPU 版本 b11526，搭配官方 [Qwen2.5-1.5B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF) Q4_K_M（Apache-2.0）。模型1,117,320,736 bytes，首次下載後，遊玩時不需要外網或 API 金鑰，也沒有雲端 token 費用。速度與回覆品質須以展示電腦實測為準。
 
-| 安裝選項 | 模型 | 模型檔大小 |
-| --- | --- | --- |
-| `Gemma4E2B`（預設） | [Gemma 4 E2B IT，ggml-org Q4_0](https://huggingface.co/ggml-org/gemma-4-E2B-it-GGUF) | 2,841,481,184 bytes（約2.84 GB） |
-| `Qwen25_15B` | [Qwen2.5-1.5B-Instruct-GGUF Q4_K_M](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF) | 1,117,320,736 bytes（約1.12 GB） |
-
-安裝位置為 `D:/WusheLocalLLM/`；大型模型不放進 Unity Assets 或 Git。C 槽剩餘空間較少，使用 D 槽。安裝腳本核對模型與執行檔的 SHA-256；Gemma 固定為 ggml-org 倉庫 revision `b4243c156154b6dca9324415f8c7ccc098b4aed1`。沒有新增圖片、音訊或 MTP 模型，只使用文字對話。
+目前安裝在 `D:/WusheLocalLLM/`；約1.1 GB的模型不放進 Unity Assets 或 Git。C 槽剩餘空間較少，這次使用 D 槽。模型及執行檔的 SHA-256 已和官方 Hugging Face LFS／GitHub release digest 核對。
 
 `Assets/StreamingAssets/Chapter2LocalLLM.json` 保存本機服務及模型路徑。進入探索時，若 `http://127.0.0.1:18080` 尚未提供服务，遊戲會以隱藏視窗啟動這份已安裝的 llama-server；結束 Play Mode／離開場景時，只停止自己啟動的程序。若使用者先開了同埠服務，遊戲只連線、不擅自關閉。端點限定 HTTP loopback，沒有任何付費雲端備援。
 
 換展示電腦時，可在專案根目錄執行：
 
 ```powershell
-& .\Tools\LocalLLM\Install-LocalNPC.ps1 -Destination 'D:\WusheLocalLLM' -Model Gemma4E2B
+& .\Tools\LocalLLM\Install-LocalNPC.ps1 -Destination 'D:\WusheLocalLLM'
 ```
 
-此腳本下載執行檔及選定模型、驗證雜湊，並更新本專案的本機路徑。請在停止 Play Mode 後切換；下一次 Play 使用新設定。Gemma 初次下載需約2.9 GB流量（含執行檔）；既有模型驗證通過就不重下載。切換不會刪除另一個模型。要切回 Qwen：
-
-```powershell
-& .\Tools\LocalLLM\Install-LocalNPC.ps1 -Destination 'D:\WusheLocalLLM' -Model Qwen25_15B
-```
-
-加上 `-DownloadOnly` 可只下載及驗證、不變更 Unity 設定。兩種模型皆使用4執行緒、4096 token上下文、單次160 token上限，並關閉思考模式；這些是本作的測試設定，不是模型能支援的最大值。Gemma 的「E2B」指有效參數量，並非只有2 GB記憶體，也不能從名稱直接推算速度。
-
-GitHub 只共用程式和設定；組員仍須在自己的電腦執行安裝腳本。獨立 Windows 建置也需要在該電腦安裝模型，並確認建置輸出的 StreamingAssets 設定正確；目前不把外部模型打進遊戲安裝包。
+此腳本下載同一版本的執行檔及模型、驗證雜湊，並更新本專案的本機路徑；初次下載需約1.2 GB流量。之後正常 Play 即可。獨立 Windows 建置也需要在該電腦安裝同一模型，並確認建置輸出的 StreamingAssets 設定正確；本次不把外部模型打進遊戲安裝包。
 
 ## 角色與記憶
 
@@ -69,7 +56,7 @@ GitHub 只共用程式和設定；組員仍須在自己的電腦執行安裝腳�
 
 每位 NPC 保留本次遊玩中最近三輪成功問答；人物間各自分開，離開再回來可以接著問。未做跨次遊玩或跨章節的永久記憶。第一版不需要 SQL 或向量資料庫，不訓練新模型。
 
-模型只產生文字，不能移動人物、判定主線選擇、改檔或執行指令。提示要求繁體中文、簡短回答、依人物見聞回應、不預知後續劇情；Windows 端另做繁體字轉換。姓名提示明確區分玩家與 NPC：問「你叫什麼」才是 NPC 自介；問「我叫什麼／你猜我叫甚麼名字」須依玩家先前自介，沒介紹過就說不知道，不把地名當姓名。這是給模型的規則，沒有用固定答案攔截玩家問題。生成內容仍可能不準確，需要以實際試玩持續調整。歷史事實以核定資料為準。
+模型只產生文字，不能移動人物、判定主線選擇、改檔或執行指令。提示要求繁體中文、簡短回答、依人物見聞回應、不預知後續劇情；Windows 端另做繁體字轉換。生成內容仍可能不準確，需要以實際試玩持續調整。歷史事實以核定資料為準。
 
 ## 驗證範圍
 
@@ -86,5 +73,3 @@ GitHub 只共用程式和設定；組員仍須在自己的電腦執行安裝腳�
 2026-10-10 單人帶路更新驗證：`_CodexBackups/chapter2_single_escort_20261010/` 中 `review-east-v2`、`protect-full`、`final-west`、`final-behind-v2` 均 checks.passed=true、errors=0。右側、左側、巨木後方均實際走到原巨木；唯一帶路者到達鏡頭前約2.4m才邀請跟隨。正式180秒 `protect-full` 等真實LLM回答和閱讀結束後才迎接，兩位同伴後續可查看倒地者；另有砍伐至轉夜間的驗證。其餘方位輪將探索縮短15秒，只驗路徑及演出，不能當作180秒證據。七位人物交談3公尺內外邊界與底部操作字串移除均通過。實體VR與獨立建置仍未驗收。
 
 2026-10-10 人名／近距迎接修訂：本輪最終 protect-full、final-west、final-behind 檢查全部通過且errors=0。完整180秒輪保留等待真實回答／閱讀；三輪迎接1.501、1.774、1.821秒，九位人物3公尺邊界、巡走與雙人對話朝向通過。E鍵主警察交談及Play→P夜間四名保留另有證據。實際測試限制、既有警告與截圖見PROJECT_CONTEXT.md文末及_CodexBackups/chapter2_named_roam_20261010/。
-
-2026-10-10 Gemma 試用：目前啟用 Gemma 4 E2B IT Q4_0，玩家／NPC 名字指涉及警察、小孩身分提示已補強。Unity七次真實問答完成且errors=0；這台電腦同時跑Unity時首次回答含啟動約56秒，換NPC首問30–34秒，同NPC接續2–6秒。單跑服務的1.5–11.2秒不能當遊戲內速度。測試僅在Play中延長探索以便連問，正式設定仍3分鐘。具體回答、截圖、小樣本比較與限制見PROJECT_CONTEXT.md文末及_CodexBackups/chapter2_gemma_trial_20261010/。不保證歷史資訊正確或每次回答相同。
