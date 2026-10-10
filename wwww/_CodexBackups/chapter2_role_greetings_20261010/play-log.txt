@@ -1,0 +1,4 @@
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+

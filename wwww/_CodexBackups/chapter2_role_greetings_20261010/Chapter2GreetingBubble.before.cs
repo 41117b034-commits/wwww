@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,61 +13,24 @@ public sealed class Chapter2GreetingBubble : MonoBehaviour
     Chapter2Exploration owner;
     Chapter2Actor actor;
     float nextGreeting;
-    string[] greetingOptions;
-    int lastGreeting = -1;
     static readonly string[] Greetings = { "早安！", "你好！" };
-    static readonly string[] VillagerGreetings =
-    {
-        "你來啦，昨晚睡得好嗎？",
-        "山裡早上涼，多走動就暖了。",
-        "今天看起來又有得忙了。",
-        "有什麼想問的，就問吧。",
-        "腳下有石頭，走慢一點。"
-    };
-    static readonly string[] PoliceGreetings =
-    {
-        "站住，你是哪裡來的？",
-        "有什麼事嗎？",
-        "別打擾我，我正在巡邏。",
-        "站住，你有話要說？"
-    };
-    static readonly string[] ChildGreetings =
-    {
-        "你要去哪裡呀？",
-        "你有看到剛剛那隻鳥嗎？",
-        "那棵樹好高喔！",
-        "你會學鳥叫嗎？",
-        "你可以陪我說說話嗎？"
-    };
-    static readonly string[] GuideGreetings =
-    {
-        "想知道這裡的事，可以問我。",
-        "先四處看看，等等我來找你。"
-    };
 
     public static Chapter2GreetingBubble Create(Chapter2Exploration owner, Chapter2AmbientNPC npc)
     {
         var go = new GameObject("Greeting · " + Chapter2Exploration.DisplayName(npc), typeof(RectTransform), typeof(CanvasRenderer), typeof(Chapter2BubbleGraphic));
         var bubble = go.AddComponent<Chapter2GreetingBubble>();
         bubble.owner = owner; bubble.Npc = npc; bubble.actor = npc.GetComponent<Chapter2Actor>();
-        var options = new List<string>(Greetings);
-        options.AddRange(bubble.actor.police ? PoliceGreetings : bubble.actor.isChild ? ChildGreetings : VillagerGreetings);
-        if (!bubble.actor.police && !bubble.actor.isChild && owner.chapter.workers != null &&
-            owner.chapter.workers.Length > 0 && bubble.actor == owner.chapter.workers[0])
-            options.AddRange(GuideGreetings);
-        bubble.greetingOptions = options.ToArray();
         bubble.rect = go.GetComponent<RectTransform>();
         bubble.canvasRect = owner.chapter.ui.canvas.GetComponent<RectTransform>();
         bubble.rect.SetParent(bubble.canvasRect, false);
-        bubble.rect.pivot = new Vector2(.5f, 0); bubble.rect.sizeDelta = new Vector2(320, 180);
+        bubble.rect.pivot = new Vector2(.5f, 0); bubble.rect.sizeDelta = new Vector2(252, 130);
         var graphic = go.GetComponent<Chapter2BubbleGraphic>(); graphic.color = new Color(.09f,.14f,.12f); graphic.raycastTarget = false;
-        var name = bubble.Label(bubble.actor.DisplayName, 21, new Vector2(.07f,.79f),new Vector2(.93f,.96f));
+        var name = bubble.Label(bubble.actor.DisplayName, 21, new Vector2(.07f,.73f),new Vector2(.93f,.96f));
         name.color = new Color(.78f,.73f,.56f);
-        bubble.words = bubble.Label("", 28, new Vector2(.07f,.30f),new Vector2(.93f,.76f));
-        bubble.words.horizontalOverflow = HorizontalWrapMode.Wrap;
+        bubble.words = bubble.Label("", 34, new Vector2(.08f,.29f),new Vector2(.92f,.74f));
         var reply = new GameObject("Reply E",typeof(RectTransform),typeof(Image),typeof(Button));
         var r = reply.GetComponent<RectTransform>(); r.SetParent(bubble.rect,false);
-        r.anchorMin=new Vector2(.62f,.06f);r.anchorMax=new Vector2(.94f,.25f);r.offsetMin=r.offsetMax=Vector2.zero;
+        r.anchorMin=new Vector2(.56f,.07f);r.anchorMax=new Vector2(.94f,.32f);r.offsetMin=r.offsetMax=Vector2.zero;
         reply.GetComponent<Image>().color = new Color(.27f,.31f,.22f);
         bubble.ReplyButton = reply.GetComponent<Button>();bubble.ReplyButton.targetGraphic=reply.GetComponent<Image>();
         bubble.ReplyButton.onClick.AddListener(()=>owner.TryOpen(npc));
@@ -102,13 +64,7 @@ public sealed class Chapter2GreetingBubble : MonoBehaviour
         }
         if(!visible){gameObject.SetActive(false);return false;}
         if(!gameObject.activeSelf && Time.unscaledTime>=nextGreeting)
-        {
-            // Keep each role's lines separate and avoid repeating the previous greeting.
-            int index = Random.Range(0, greetingOptions.Length - (lastGreeting >= 0 ? 1 : 0));
-            if (lastGreeting >= 0 && index >= lastGreeting) index++;
-            lastGreeting = index; Greeting = greetingOptions[index]; words.text = Greeting;
-            nextGreeting = Time.unscaledTime + 8; Npc.Greet(owner.chapter.player.transform);
-        }
+        { Greeting=Greetings[Random.Range(0,Greetings.Length)];words.text=Greeting;nextGreeting=Time.unscaledTime+8;Npc.Greet(owner.chapter.player.transform); }
         float width=Mathf.Max(400,canvasRect.rect.width),height=Mathf.Max(300,canvasRect.rect.height);
         float half=rect.sizeDelta.x*.5f/width;
         rect.anchorMin=rect.anchorMax=new Vector2(Mathf.Clamp(v.x,half+.015f,1-half-.015f),Mathf.Clamp(v.y,.08f,.98f-rect.sizeDelta.y/height));
