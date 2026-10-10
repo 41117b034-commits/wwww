@@ -12,7 +12,6 @@ public sealed class Chapter2Player : MonoBehaviour
     public bool canLook = true;
     public float speed = 2.6f;
     public Chapter2RouteGuide routeGuide;
-    public Chapter2WorldBoundary worldBoundary;
     public bool IsVR { get; private set; }
     public bool PrimaryPressed { get; private set; }
     public bool SecondaryPressed { get; private set; }
@@ -30,12 +29,6 @@ public sealed class Chapter2Player : MonoBehaviour
     }
     public enum KeyControlName { One, Two, E, Space, P }
     void Awake() { motor = GetComponent<CharacterController>(); }
-    void Start()
-    {
-        if (!worldBoundary) worldBoundary = GetComponent<Chapter2WorldBoundary>();
-        if (!worldBoundary) worldBoundary = gameObject.AddComponent<Chapter2WorldBoundary>();
-        worldBoundary.Initialize(this);
-    }
     void Update()
     {
         UnityEngine.XR.InputDevices.GetDevicesAtXRNode(XRNode.Head, devices);
@@ -83,14 +76,7 @@ public sealed class Chapter2Player : MonoBehaviour
         if(!motor||!motor.enabled||!canMove)return;
         Vector3 next=transform.position+motion;
         if(routeGuide)next=routeGuide.Constrain(transform.position,next);
-        if(worldBoundary && worldBoundary.enabled)next=worldBoundary.Constrain(transform.position,next);
         motor.Move(next-transform.position);
-    }
-    public void RestoreGroundPosition(Vector3 position)
-    {
-        if (motor) motor.enabled = false;
-        transform.position = position; gravity = 0;
-        if (motor) motor.enabled = true;
     }
     public void Warp(Vector3 position, Vector3 lookAt)
     {

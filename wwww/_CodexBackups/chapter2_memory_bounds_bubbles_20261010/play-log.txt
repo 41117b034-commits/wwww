@@ -1,0 +1,36 @@
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:SetNight () (at Assets/Chapter2/Chapter2Controller.cs:458)
+Chapter2Controller/<RunMeeting>d__153:MoveNext () (at Assets/Chapter2/Chapter2Controller.cs:222)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator)
+Chapter2Controller:SkipToMeeting () (at Assets/Chapter2/Chapter2Controller.cs:148)
+Chapter2Controller:Update () (at Assets/Chapter2/Chapter2Controller.cs:104)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:Start () (at Assets/Chapter2/Chapter2Controller.cs:90)
+
+Warning Can not play a disabled audio source
+UnityEngine.AudioSource:Play ()
+Chapter2Controller:SetNight () (at Assets/Chapter2/Chapter2Controller.cs:458)
+Chapter2Controller/<RunMeeting>d__153:MoveNext () (at Assets/Chapter2/Chapter2Controller.cs:222)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator)
+Chapter2Controller:SkipToMeeting () (at Assets/Chapter2/Chapter2Controller.cs:148)
+Chapter2Controller:Update () (at Assets/Chapter2/Chapter2Controller.cs:104)
+

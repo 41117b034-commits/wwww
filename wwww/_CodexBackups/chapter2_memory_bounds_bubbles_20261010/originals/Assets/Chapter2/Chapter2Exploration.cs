@@ -22,12 +22,11 @@ public sealed class Chapter2Exploration : MonoBehaviour
     public int ParticipantCount => participants.Length;
     Chapter2AmbientNPC[] participants=new Chapter2AmbientNPC[0];
     readonly Dictionary<Chapter2AmbientNPC,List<Chapter2LocalDialogue.Message>> histories=new Dictionary<Chapter2AmbientNPC,List<Chapter2LocalDialogue.Message>>();
-    readonly List<Chapter2GreetingBubble> greetings=new List<Chapter2GreetingBubble>();
     Chapter2AmbientNPC current;
     Chapter2LocalDialogue client;
     GameObject panel;
-    Button send,close;
-    Text title,transcript,status,timer;
+    Button prompt,send,close;
+    Text promptText,title,transcript,status,timer;
     ScrollRect scroll;
     InputField input;
     float deadline,answerVisibleUntil;
@@ -44,6 +43,8 @@ public sealed class Chapter2Exploration : MonoBehaviour
         timerBox.GetComponent<Image>().raycastTarget=false;
         timer=Label(timerBox,"探索時間",24,new Vector2(.04f,0),new Vector2(.96f,1),TextAnchor.MiddleCenter);
         timer.color=new Color(.93f,.83f,.6f);
+        prompt=Button(parent,"Roadside interaction",new Vector2(.34f,.31f),new Vector2(.66f,.39f),out promptText);
+        prompt.onClick.AddListener(()=>TryOpen(Nearest));
         panel=Box(parent,"Roadside conversation",new Vector2(.10f,.025f),new Vector2(.90f,.46f),new Color(.025f,.04f,.035f,.96f)).gameObject;
         title=Label(panel.transform,"",30,new Vector2(.035f,.87f),new Vector2(.79f,.98f),TextAnchor.MiddleLeft);
         title.color=new Color(.91f,.79f,.51f);
@@ -68,7 +69,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         send=Button(panel.transform,"Send question",new Vector2(.80f,.135f),new Vector2(.965f,.265f),out var sendText);
         sendText.text="送出";send.onClick.AddListener(()=>SubmitQuestion(input.text));
         status=Label(panel.transform,"",21,new Vector2(.035f,.01f),new Vector2(.965f,.12f),TextAnchor.MiddleLeft);
-        panel.SetActive(false);timer.transform.parent.gameObject.SetActive(false);
+        panel.SetActive(false);prompt.gameObject.SetActive(false);timer.transform.parent.gameObject.SetActive(false);
         // Fade and authored story cards must stay above the temporary dialogue.
         chapter.ui.fade.transform.SetAsLastSibling();chapter.ui.endingPanel.transform.SetAsLastSibling();
     }
@@ -78,8 +79,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
         EnsureUI();
         chapter.forestEscort.BeginExploration();
         participants=chapter.dayGroup.GetComponentsInChildren<Chapter2AmbientNPC>(false);
-        if(greetings.Count==0)foreach(var npc in participants)greetings.Add(Chapter2GreetingBubble.Create(this,npc));
-        chapter.ui.fade.transform.SetAsLastSibling();chapter.ui.endingPanel.transform.SetAsLastSibling();
         Active=true;deadline=Time.unscaledTime+Mathf.Max(1,seconds);answerVisibleUntil=0;
         chapter.routeGuide.GuidanceEnabled=false;
         chapter.ui.objective.text="自由探索，認識林間的人們";
@@ -89,7 +88,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         client.StartCoroutine(client.Prepare());
         while(Active && RemainingSeconds>0)yield return null;
         if(!Active)yield break;
-        HideGreetings();
+        prompt.gameObject.SetActive(false);
         // A request already sent may finish. No new question can extend the timer.
         while(Active && (WaitingForReply || Time.unscaledTime<answerVisibleUntil))yield return null;
         if(!Active)yield break;
@@ -103,7 +102,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         timer.text=remaining>0?$"自由探索  {Mathf.CeilToInt(remaining)/60:00}:{Mathf.CeilToInt(remaining)%60:00}":"探索結束，準備出發";
         if(current)
         {
-            HideGreetings();
+            prompt.gameObject.SetActive(false);
             if(Keyboard.current?.escapeKey.wasPressedThisFrame==true){CloseChat();return;}
             if(!current.isActiveAndEnabled || Distance(current)>interactionRadius+.05f){CloseChat();return;}
             current.GetComponent<Chapter2Actor>().speaking=!WaitingForReply && LastReply!=null && Time.unscaledTime<answerVisibleUntil;
@@ -115,25 +114,19 @@ public sealed class Chapter2Exploration : MonoBehaviour
         Nearest=null;float best=interactionRadius;
         if(remaining>0)
         {
-            foreach(var bubble in greetings)
+            foreach(var npc in participants)
             {
-                var npc=bubble.Npc;
-                if(!npc)continue;
+                if(!npc || !npc.isActiveAndEnabled)continue;
                 float distance=Distance(npc);
-                bool visible=bubble.PlaceAndShow(npc.isActiveAndEnabled && distance<=interactionRadius);
-                if(visible && distance<=best){best=distance;Nearest=npc;}
+                if(distance<=best){best=distance;Nearest=npc;}
             }
         }
-        else HideGreetings();
+        prompt.gameObject.SetActive(Nearest);
         if(Nearest)
         {
+            promptText.text="E  與"+DisplayName(Nearest)+"交談";
             if(Chapter2Player.Key(Chapter2Player.KeyControlName.E) || (chapter.player.IsVR && chapter.player.ActionPressed))TryOpen(Nearest);
         }
-    }
-    void HideGreetings()
-    {
-        foreach(var bubble in greetings)if(bubble)bubble.PlaceAndShow(false);
-        Nearest=null;
     }
     float Distance(Chapter2AmbientNPC npc)=>Vector3.Distance(new Vector3(chapter.player.transform.position.x,0,chapter.player.transform.position.z),new Vector3(npc.transform.position.x,0,npc.transform.position.z));
     public static string DisplayName(Chapter2AmbientNPC npc)
@@ -151,7 +144,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         chapter.player.FocusOn(npc.transform.position+Vector3.up*(npc.GetComponent<Chapter2Actor>().isChild?.95f:1.45f));
         title.text=DisplayName(npc);input.text="";LastError=null;LastReply=null;pendingQuestion=null;
         chapter.ui.hint.text="";
-        panel.SetActive(true);HideGreetings();RefreshTranscript();
+        panel.SetActive(true);prompt.gameObject.SetActive(false);RefreshTranscript();
         input.interactable=true;input.ActivateInputField();return true;
     }
     public bool SubmitQuestion(string question)
@@ -195,7 +188,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
     {
         CloseChat();Active=false;Nearest=null;
         if(client)client.CancelRequest();
-        HideGreetings();if(timer)timer.transform.parent.gameObject.SetActive(false);
+        if(prompt)prompt.gameObject.SetActive(false);if(timer)timer.transform.parent.gameObject.SetActive(false);
     }
     void OnDisable(){CancelExploration();}
     Text Label(Transform parent,string words,int size,Vector2 min,Vector2 max,TextAnchor align)

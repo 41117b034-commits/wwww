@@ -263,7 +263,6 @@ public partial class Chapter1PerformanceController
         Debug.Log("[Doorway] Knockout tableau ready; stopping Play Mode in 3 seconds.");
         yield return new WaitForSecondsRealtime(incidentKnockoutHoldSeconds);
         chapterCompleted = true; cinematicStoryPlaying = false;
-        SaveChapterResult();
         StopChapterPlayMode();
     }
     void DrawDoorwayHud()

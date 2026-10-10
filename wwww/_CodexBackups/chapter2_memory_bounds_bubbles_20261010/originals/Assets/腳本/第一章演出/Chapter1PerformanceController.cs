@@ -1011,7 +1011,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         else
         {
             // 如果不播放開場故事，就直接進入自由探索。
-            if (saveResultToPlayerPrefs) Chapter2StoryMemory.BeginChapter();
             openingStoryPlaying = false;
             SetMission("自由探索婚禮：與族人交談、幫新郎送酒，或靠近舞圈加入舞蹈。");
             UnlockFreeExploration();
@@ -1648,7 +1647,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         storyStarted = true;
-        if (saveResultToPlayerPrefs) Chapter2StoryMemory.BeginChapter();
         openingStoryPlaying = true;
         cinematicStoryPlaying = false;
         tensionAudioHasStarted = false;
@@ -15600,8 +15598,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         PlayerPrefs.SetString(conflictChoicePrefsKey, lastChoice.ToString());
         PlayerPrefs.SetInt(peopleInjuredPrefsKey, peopleInjured);
         PlayerPrefs.SetInt(moralePrefsKey, morale);
-        Chapter2StoryMemory.Complete(lastChoice.ToString(), IsNewPoliceScene() && doorwayStaged,
-            deliveredWineCount, sharedFoodCount, danceFinished);
         PlayerPrefs.Save();
     }
 

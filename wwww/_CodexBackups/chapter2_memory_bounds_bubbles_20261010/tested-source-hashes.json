@@ -1,0 +1,57 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D95D1EC1969C84A6327BE4B4C292F3C2C05E17BE35E499B4845228FCAE0AF01F",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2StoryMemory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "7E8F4D8A7A9DD180D425506A902722A180EC95EE0A078FD75C85DCB546707986",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2WorldBoundary.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "AAC1CFB65F7668B95952D63A15FA5B1839BDEEA6CE89C33B97CD533D696D83EB",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2GreetingBubble.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0703BEAE55A6B57D34789821B6EE3D72DA79C7DCC36B75A51AD7A2843FF52E25",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Exploration.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "FEBF082C9B7BB28D99BEF065763CC94BE779E738EC7E93004DB5505B65C7E41C",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2LocalDialogue.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0FA81503AC0C3506391D4C91C86E22C552A970232984B80A813013484AE67A21",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Player.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "CBF6013ED824EEF67AC5380C66BE3DD9DFA81D681D9D5FB5C928AFCD6FC7FCB9",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2AmbientNPC.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0A07225DEFBB85A65E61F0A197051F83731064C649B597F3DEBD131174BFDE4E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\Chapter1NpcMemory.json"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "E3BD111DE30E1321248C4DF84270EC464EDA7A53A541EFDF794952F3DFF07DCD",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\Chapter2LocalDialogueContext.txt"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "5D1CB80F2D7F3B7D371F203660C4364E3DEAB995F1138BD7A2E942990E1C3144",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\第一章演出\\Chapter1PerformanceController.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "2B1FC43A11C7F0A28DA4AFBBBCE102A968B9D8DACC91A17D4ADFDD5CF3AC51AC",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\第一章演出\\Chapter1PerformanceController.Doorway.cs"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0A3D63728479588373C94BA8A8C824C664B631D2A024ACEAAE6486729DE91113",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第一章新版警察.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1C3B24796206907A1AC75F1F780E4B489CF38B27BD329AF2EBF303F30E90651D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\StreamingAssets\\Chapter2LocalLLM.json"
+  }
+]

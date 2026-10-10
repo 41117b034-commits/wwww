@@ -1,0 +1,18 @@
+{
+    "finished": true,
+    "passed": true,
+    "playing": false,
+    "dirty": false,
+    "error": "",
+    "provider": "",
+    "stage": "",
+    "errors": 0,
+    "warnings": 0,
+    "checks": [
+        "first chapter scene enables saving",
+        "real Chapter1 SaveChapterResult persists Intervene",
+        "real Chapter1 SaveChapterResult persists Watch"
+    ],
+    "answers": [],
+    "configuredSeconds": 0.0
+}

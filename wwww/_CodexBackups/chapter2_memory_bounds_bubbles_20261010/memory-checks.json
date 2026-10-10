@@ -1,0 +1,32 @@
+{
+    "finished": true,
+    "passed": true,
+    "playing": false,
+    "dirty": false,
+    "error": "",
+    "provider": "",
+    "stage": "",
+    "errors": 0,
+    "warnings": 0,
+    "checks": [
+        "direct chapter 2 does not invent chapter 1",
+        "intervene includes actual knockout, excludes watch events",
+        "only completed wedding activities included",
+        "child not given adult details or player choice",
+        "second chapter police not confused with perpetrators",
+        "authored knowledge scope: 阿威·比胡",
+        "authored knowledge scope: 達奇斯·諾幹",
+        "authored knowledge scope: 拉娃·塔道",
+        "authored knowledge scope: 中村正雄",
+        "authored knowledge scope: 帖木·阿班",
+        "authored knowledge scope: 伊婉·諾幹",
+        "authored knowledge scope: 佐藤正一",
+        "authored knowledge scope: 田中武雄",
+        "authored knowledge scope: 都比·阿威",
+        "watch excludes intervene and skipped tasks",
+        "new run masks stale legacy result",
+        "old save safely imports choice without invented outcome"
+    ],
+    "answers": [],
+    "configuredSeconds": 0.0
+}

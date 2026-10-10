@@ -16,9 +16,6 @@ public sealed class Chapter2AmbientNPC : MonoBehaviour
     public int TripsCompleted { get; private set; }
     public Vector3 Home { get; private set; }
     public Transform ConversationPartner { get; set; }
-    Transform greetingPartner;
-    float greetingUntil;
-    public void Greet(Transform partner) { greetingPartner=partner;greetingUntil=Time.time+1.8f; }
     Chapter2Actor actor;
     float began;
     bool configured, wasMoving;
@@ -40,12 +37,11 @@ public sealed class Chapter2AmbientNPC : MonoBehaviour
     void Update()
     {
         if (!actor || !actor.Rig) return;
-        var listener=ConversationPartner?ConversationPartner:Time.time<greetingUntil?greetingPartner:null;
-        if (listener)
+        if (ConversationPartner)
         {
             // Freeze the patrol clock too, so resuming never snaps to a later waypoint.
             began += Time.deltaTime;
-            actor.Face(listener.position);
+            actor.Face(ConversationPartner.position);
             return;
         }
         if (!patrolEnabled) return;

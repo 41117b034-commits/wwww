@@ -2,9 +2,7 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-10 第二章已接上第一章分支記憶，新增森林行走邊界及人物問候氣泡（早安／你好、回覆 E），移除中央綠色交談框。第一章上前阻止結尾漏存結果已補齊。最終原專案 Editor 測試九人交談、四邊四角阻擋／走回、異常位置恢復、三次真實雲端記憶問答及到期帶路至 TreeChoice 通過，errors=0、warnings=1（既有停用音源）。正式探索設定仍180秒；詳細範圍見文末。
-
-目前雲端狀態：使用者已自行完成免費金鑰設定，本轮實際問答 Provider 為 Free cloud Gemma: gemma-4-26b-a4b-it，收到三次成功回答。下方舊「免費雲端 Gemma 接線」段落的「尚未提供 key」只代表當時接線驗證，已被後續實測取代。本輪沒有改金鑰、開啟計費或更換模型；雲端失敗仍不自動切本機。
+最新狀態：2026-10-10 已新增免費雲端 Gemma 試用接法及 Unity `Tools → Chapter 2 → NPC 對話設定（免費雲端／本機）`。預設雲端模型為 `gemma-4-26b-a4b-it`，可選31B；只有使用者提供 Free Tier 金鑰並通過連線測試才啟用。當前尚未提供金鑰，仍使用本機 Gemma；雲端真實回答／速度待測，未開啟計費。詳見文末「2026-10-10 免費雲端 Gemma 接線」。
 
 前次模型狀態：2026-10-10 第二章自由探索 NPC 已切換到免費本機 Gemma 4 E2B IT Q4_0（D:/WusheLocalLLM，約2.84 GB），Qwen 檔案保留可切回。補強玩家／NPC 姓名指涉及警察、小孩身分限制。Unity 七次真實問答完成、errors=0；但同時跑 Unity 的首問較慢（初次約56秒，換NPC約30–34秒，接續問答約2–6秒）。詳細實測、操作及限制見文末「2026-10-10 Gemma 本機試用」。
 
@@ -893,29 +891,3 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 
 清理：兩個臨時主專案 Editor 驗證器及 meta 已移至本輪 verification-tools；正式 Assets 只保留對話程式與設定視窗。沒有提交或推送 GitHub。
 
-
-## 2026-10-10 第一章記憶、森林邊界與人物問候氣泡
-
-使用者要求把前一輪建議的第一章事件摘要／實際分支／人物知情範圍接入第二章，修正自由探索走出地形後落入空景，並以頭上氣泡取代綠色交談提示。本輪直接修改原專案；已讀根目錄指引及固定劇情第2–5頁，現行第一章程式優先於較舊設計文件。
-
-- `Chapter2StoryMemory.cs` 與 Resources/Chapter1NpcMemory.json 保存可編輯的遊戲事件摘要、九人的知情範圍。第一章開始重置本輪標記，完成後寫入選擇、演出版本、送酒／食物次數及舞蹈完成狀態。補齊 Chapter1PerformanceController.Doorway 的上前阻止結尾 SaveChapterResult 呼叫；既有沉默觀望儲存也產生新記錄。未更動第一章動畫／字幕／場景。
-- NPC 每次詢問均讀取當前存檔，兩個分支只選其一；沒有完成記錄時不猜玩家經歷。舊版只有選擇的存檔僅承接選擇，不推測詳細演出。需使用此版重玩完成第一章才有完整任務與結果。NPC 不能把第二章未發生的巨木事件／密議當記憶，模型回答不能改寫遊戲記錄。
-- 阿威、帖木為外場見證者；達奇斯、拉娃、伊婉聽同伴轉述；第二章三名警察聽同僚轉述，並非第一章那兩位肇事者；都比只知婚禮被打斷，不提供成人衝突細節。這些是明確標示的本作虛構人物設定，不是新增歷史人物事實；JSON 可編輯。未建立雲端資料庫、文化史料庫或永久自由聊天記憶，聊天仍每 NPC 最近三輪。
-- `Chapter2GreetingBubble` 以 UGUI 幾何繪製奶油白圓角氣泡、姓名、早安／你好及右下「回覆 E」。三公尺內可見人物顯示，離開／聊天／到期／P跳章收起；E選最近可見者，按鈕指定該人物，保留VR扳機入口。問候不呼叫模型，8秒冷卻避免範圍邊緣反覆換字；人物打招呼時短暫面向玩家後繼續巡走。原輸入與回答面板沿用。
-- `Chapter2WorldBoundary` 附加於 Chapter2Player，從 Forest ground Collider 取得地面。預設日間可走範圍中心左右32m、前後36m，外圍地形仍作遠景；每次鍵鼠／搖桿 Move 都限制於安全區，可沿邊與返回。地圖外／地下異常位置恢復到地面，保留視角朝向。不可移動的劇情演出不受此限制。原無限制路徑引導未重新加回舊單向走廊。
-
-### 實際驗證與限制
-
-證據與原始檔保存在 `_CodexBackups/chapter2_memory_bounds_bubbles_20261010/`。
-
-1. Unity6000.0.58f1 原專案編譯成功。memory-checks.json 全部通過：未玩／未完成不造記憶、兩分支互斥、已完成婚禮任務、九人知情設定、小孩過濾、舊存檔保守承接、重開不沿用舊結果。
-2. chapter1-save-checks.json 通過：在實際第一章場景，以受控欄位呼叫真正 SaveChapterResult，Intervene／Watch 均保存完整新記錄；測試後恢復欄位、所有碰過的 PlayerPrefs 及原第二章場景，dirty=false。這是儲存路徑驗證，沒有重新完整播放第一章兩段演出。
-3. 最終 play-result.json finished=true、passed=true、stage=TreeChoice、errors=0、warnings=1（既有停用音源）、playing=false、dirty=false。九位人物逐一驗證2.6m氣泡、3.04m隱藏／拒絕交談；阿威透過 Input System E，其餘透過 Unity UI PointerClick 事件開啟。四邊及四角反覆向外 Move 被擋住且可走回，正常邊界不觸發恢復傳送；額外地圖外低於地面的位置成功恢復，朝向不變。
-4. 正式遊戲輸入／送出路徑發送三次真實已啟用免費雲端 Gemma 問題：阿威談上前阻止後被警棍擊倒，帖木談沉默觀望與木屋事件，小孩表示未目睹，只聽大人提及。三次非空回答已查看引擎截圖；這是少量功能案例，不代表歷史準確率或零幻覺。為比較兩種記憶，本輪在測試中切換模擬完成存檔，退出後恢復使用者原存檔。
-5. 最後一問送出後刻意把截止點設為0.15秒，驗證到期等待正在生成的回答及閱讀，之後原單人迎接／導航成功到TreeChoice。為容納全部案例，測試期間探索暫設600秒；場景正式值仍180秒，沒有儲存場景。
-6. diagnostic-approach-result／diagnostic-no-bubble-background 是底板缺CanvasRenderer、測試接近點與岩石碰撞的早期診斷；已修正底板並讓測試器挑空的站位。diagnostic-features-escort-driver 已通過九人、邊界、三次問答，但測試器停在引路者而非巨木互動點，最後逾時；已僅修正測試目標，最終完整輪成功。diagnostic-outer-terrain 圖為早期只擋地形邊緣的空景版本，後來將可走區內縮，map-edge.png 才是最終可見森林邊界。
-7. 第一章與第二章場景、本機模型配置 SHA-256 前後一致（unchanged-after.json）。未改金鑰、計費、模型；沒有下載新套件。所有正式資產小於100,000,000bytes。未重跑砍樹／護樹／會議兩分支完整結尾、獨立建置或實體VR。
-
-- 補充最終預覽：preview-result.json 使用正式180秒設定，Play→空白鍵進探索、氣泡實際畫面已查看；再送 P 至 Meeting 並等淡入完成，所有氣泡隱藏，errors=0、warnings=2（既有停用音源），playing=false、dirty=false。只確認夜間開場，不代表完整會議分支驗收。預覽保存於 Documentation/Chapter2-greeting-bubble-preview.png。
-- 本輪驗證工具 Chapter2MemoryBubbleProbe.cs 及 meta 已移至備份 verification-tools，正式Assets不保留自動播放測試程式。11份正式程式／背景資料與最終遊玩時雜湊一致（final-source-comparison.json）；第一章／第二章場景與本機設定均未改。未 commit／push。
-- 清理後 Unity 完成重新編譯及 assembly/domain reload，驗證工具與待處理命令檔均不存在；11份正式來源最後再次比對與通過輪完全一致。Play已停止，最終測試退出時場景dirty=false。未將舊Console斷言或既有音源警告解讀成已修復。
