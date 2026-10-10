@@ -2,6 +2,8 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
+最新顯示修復：2026-10-10 Unity Game 預覽水平5倍／垂直1倍的異常縮放已透過介面恢復等比例置中，放大分頁也確認正常；遊戲程式及場景未改。
+
 最新外觀：2026-10-10 人物問候氣泡已改為深灰綠底、米金色文字及橄欖綠回覆按鈕；Unity 編譯及實際遊戲預覽確認完成。配色驗證見文末。
 
 先前功能狀態：2026-10-10 第二章已接上第一章分支記憶，新增森林行走邊界及人物問候氣泡（早安／你好、回覆 E），移除中央綠色交談框。第一章上前阻止結尾漏存結果已補齊。最終原專案 Editor 測試九人交談、四邊四角阻擋／走回、異常位置恢復、三次真實雲端記憶問答及到期帶路至 TreeChoice 通過，errors=0、warnings=1（既有停用音源）。正式探索設定仍180秒；詳細範圍見文末。
@@ -927,3 +929,8 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 依使用者要求降低白色氣泡的突兀感，僅修改 Chapter2GreetingBubble.cs 配色：深灰綠底、柔和灰綠描邊、米金色姓名與問候、橄欖綠回覆按鈕。版面、三公尺距離、回覆 E 與對話流程不變。同步更新對話說明與 Documentation/Chapter2-greeting-bubble-preview.png。
 
 實際驗證：原 Unity Editor 編譯成功（scriptCompilationFailed=false）。重用既有預覽工具進入 Play／探索，檢視引擎截圖確認新顏色與文字可讀；正式探索180秒保持。P跳會議後氣泡收起；preview-result.json passed=true、errors=0、warnings=2（既有停用音源），退出 playing=false、dirty=false。本次未發送 LLM 問題，未重跑記憶／邊界／全部故事分支或實體VR。證據在 _CodexBackups/chapter2_bubble_palette_20261010/；臨時預覽工具移回備份，不留在正式 Assets。未提交或推送。
+## 2026-10-10 修復 Unity Game 預覽拉伸
+
+使用者回報整個畫面及字幕橫向拉長。檢查 UserSettings/Layouts 中 GameView 的已儲存 ZoomArea，發現 m_Scale 約為 (5, 1)，且平移偏離中央。透過 Unity 原生介面重新設定 Game 視窗縮放滑桿到適合大小；一般面板恢復 (0.34837964, 0.34837964)，平移 (348.59998, 150.5)。再放大 Game 分頁確認仍維持正常16:9、完整構圖及正常文字；放大預覽顯示約0.78x。CurrentMaximizeLayout 的恢復用配置也已由 Unity 更新為等比例縮放。
+
+本次只修正本機 Editor 預覽狀態，未修改遊戲程式、場景、攝影機或氣泡顏色。實際看過修復前後 Unity 原生視窗；未重播 Play／LLM／故事分支。結束時保留放大的 Game 分頁、Play停止。兩側黑邊是正常等比例留邊。導致先前水平／垂直倍率不同的具體操作尚未確認，不能推斷是玩家或遊戲程式造成。
