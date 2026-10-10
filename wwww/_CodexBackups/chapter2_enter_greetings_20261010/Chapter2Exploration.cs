@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 
 // Three-minute free roam. Every daytime character can be approached.
@@ -34,9 +33,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
     float deadline,answerVisibleUntil;
     int conversationVersion;
     string pendingQuestion;
-    Keyboard imeKeyboard;
-    bool imeComposing;
-    int lastCompositionFrame = -10;
 
     void EnsureUI()
     {
@@ -66,10 +62,9 @@ public sealed class Chapter2Exploration : MonoBehaviour
         var field=Box(panel.transform,"Question input",new Vector2(.035f,.135f),new Vector2(.78f,.265f),new Color(.12f,.16f,.14f,1));
         input=field.gameObject.AddComponent<InputField>();input.targetGraphic=field.GetComponent<Image>();
         var value=Label(field,"",26,new Vector2(.025f,.04f),new Vector2(.975f,.96f),TextAnchor.MiddleLeft);
-        var placeholder=Label(field,"想問什麼？輸入後按 Enter 送出",25,new Vector2(.025f,.04f),new Vector2(.975f,.96f),TextAnchor.MiddleLeft);
+        var placeholder=Label(field,"想問什麼？輸入後按「送出」",25,new Vector2(.025f,.04f),new Vector2(.975f,.96f),TextAnchor.MiddleLeft);
         placeholder.color=new Color(.72f,.76f,.7f,.8f);
-        input.textComponent=value;input.placeholder=placeholder;input.characterLimit=240;input.lineType=InputField.LineType.MultiLineSubmit;
-        input.onSubmit.AddListener(SubmitFromInput);
+        input.textComponent=value;input.placeholder=placeholder;input.characterLimit=240;input.lineType=InputField.LineType.MultiLineNewline;
         send=Button(panel.transform,"Send question",new Vector2(.80f,.135f),new Vector2(.965f,.265f),out var sendText);
         sendText.text="送出";send.onClick.AddListener(()=>SubmitQuestion(input.text));
         status=Label(panel.transform,"",21,new Vector2(.035f,.01f),new Vector2(.965f,.12f),TextAnchor.MiddleLeft);
@@ -103,7 +98,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
     }
     void Update()
     {
-        TrackInputComposition();
         if(!Active || !panel)return;
         float remaining=RemainingSeconds;
         timer.text=remaining>0?$"自由探索  {Mathf.CeilToInt(remaining)/60:00}:{Mathf.CeilToInt(remaining)%60:00}":"探索結束，準備出發";
@@ -115,7 +109,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
             current.GetComponent<Chapter2Actor>().speaking=!WaitingForReply && LastReply!=null && Time.unscaledTime<answerVisibleUntil;
             input.interactable=send.interactable=remaining>0 && !WaitingForReply;
             status.text=remaining<=0?"探索時間已結束，等這次回答結束後出發。":
-                WaitingForReply?"對方正在回應……  你可以按 Esc 離開。":"Enter 送出；可以繼續追問，滾動滑鼠查看先前對話。";
+                WaitingForReply?"對方正在回應……  你可以按 Esc 離開。":"可以繼續追問；滾動滑鼠查看先前對話。";
             return;
         }
         Nearest=null;float best=interactionRadius;
@@ -146,37 +140,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
     {
         return npc.GetComponent<Chapter2Actor>().DisplayName;
     }
-    void TrackInputComposition()
-    {
-        if (imeKeyboard != Keyboard.current)
-        {
-            if (imeKeyboard != null) imeKeyboard.onIMECompositionChange -= OnCompositionChanged;
-            imeKeyboard = Keyboard.current; imeComposing = false;
-            if (imeKeyboard != null) imeKeyboard.onIMECompositionChange += OnCompositionChanged;
-        }
-        if (imeComposing || !string.IsNullOrEmpty(Input.compositionString))
-            lastCompositionFrame = Time.frameCount;
-    }
-    void OnCompositionChanged(IMECompositionString composition)
-    {
-        imeComposing = composition.Count > 0;
-        lastCompositionFrame = Time.frameCount;
-    }
-    void SubmitFromInput(string question)
-    {
-        // IME may clear its composition on the same Enter that confirms a character.
-        // Use the field's submit event, not end-edit: clicking away must not send.
-        if (imeComposing || !string.IsNullOrEmpty(Input.compositionString) ||
-            Time.frameCount <= lastCompositionFrame + 1 || !SubmitQuestion(question))
-            StartCoroutine(RefocusQuestionInput());
-    }
-    IEnumerator RefocusQuestionInput()
-    {
-        // InputField deactivates after invoking onSubmit; reactivate on the next frame.
-        yield return null;
-        if (Active && current && RemainingSeconds > 0 && !WaitingForReply)
-        { input.interactable = true; input.ActivateInputField(); }
-    }
     public bool TryOpen(Chapter2AmbientNPC npc)
     {
         if(!Active || RemainingSeconds<=0 || !npc || Distance(npc)>interactionRadius || System.Array.IndexOf(participants,npc)<0)return false;
@@ -204,7 +167,6 @@ public sealed class Chapter2Exploration : MonoBehaviour
             pendingQuestion=null;LastReply=answer;LastError=error;
             answerVisibleUntil=Time.unscaledTime+Mathf.Clamp((answer?.Length??30)*.1f+2,5,13);
             RefreshTranscript();
-            StartCoroutine(RefocusQuestionInput());
         }));
         return true;
     }
@@ -235,12 +197,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         if(client)client.CancelRequest();
         HideGreetings();if(timer)timer.transform.parent.gameObject.SetActive(false);
     }
-    void OnDisable()
-    {
-        if (imeKeyboard != null) imeKeyboard.onIMECompositionChange -= OnCompositionChanged;
-        imeKeyboard = null; imeComposing = false;
-        CancelExploration();
-    }
+    void OnDisable(){CancelExploration();}
     Text Label(Transform parent,string words,int size,Vector2 min,Vector2 max,TextAnchor align)
     {
         var go=new GameObject("Text",typeof(RectTransform),typeof(Text));var r=go.GetComponent<RectTransform>();r.SetParent(parent,false);

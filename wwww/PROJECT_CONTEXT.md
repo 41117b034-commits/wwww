@@ -2,7 +2,9 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新問候：2026-10-10 已加入使用者指定的16句台詞，依族人／警察／小孩／阿威區分，保留早安／你好。長句氣泡換行已通過實際四類角色預覽，詳見文末。
+最新輸入與問候：2026-10-10 對話輸入已支援 Enter／小鍵盤 Enter 送出，回答後恢復焦點；早安／你好僅留給一般族人，警察、小孩與阿威移除。鍵盤、空白、失焦、模擬IME及九人句庫驗證通過，詳見文末。
+
+前次問候：2026-10-10 已加入使用者指定的16句台詞，依族人／警察／小孩／阿威區分。長句氣泡換行已通過實際四類角色預覽，詳見文末。
 
 最新顯示修復：2026-10-10 Unity Game 預覽水平5倍／垂直1倍的異常縮放已透過介面恢復等比例置中，放大分頁也確認正常；遊戲程式及場景未改。
 
@@ -946,3 +948,13 @@ Chapter2GreetingBubble.cs 加入使用者逐字指定的台詞：一般族人5�
 實際驗證：原Unity Editor scriptCompilationFailed=false。Play→空白鍵進自由探索，實際阿威、一般族人、警察、小孩各取得對應句庫；全部候選台詞的 preferredHeight 均落在內文框內。預覽工具暫時在各類氣泡填入該句庫最長的實際句子作溢出檢查，已逐一檢視4張引擎截圖；這些截圖是長句版面驗證，不是隨機抽樣統計。preview-result.json finished/passed=true、errors=0、warnings=1（既有停用音源）、正式探索180秒、退出playing=false/dirty=false。第二章場景與預覽時來源SHA-256再比對一致。本次未送LLM問題、未重跑主線／邊界或實體VR。
 
 證據：_CodexBackups/chapter2_role_greetings_20261010/，預覽更新至 Documentation/Chapter2-greeting-bubble-preview.png。臨時Editor預覽工具移回備份；正式Assets只變更氣泡腳本，未提交或推送。
+
+## 2026-10-10 Enter 送出與限定一般族人問候
+
+依本次要求，Chapter2Exploration 的 UGUI InputField 改為 MultiLineSubmit，僅 onSubmit 呼叫現有 SubmitQuestion；保留滑鼠按鈕，提示標明 Enter 送出。使用 Input System IME事件及既有 Input.compositionString 追蹤組字，攔截組字中及剛提交的 Enter；不使用 onEndEdit，失去焦點不會送出。空白／等待回答／探索到期沿用 SubmitQuestion 的阻擋，無效送出與回答完畢後下一幀恢復輸入焦點，方便連續提問。
+
+Chapter2GreetingBubble：早安／你好只加入一般成年族人的句庫。警察4句、小孩5句、阿威的族人5句加專屬2句均不含這兩句；一般族人保留5句加早安／你好。配色與氣泡版面不變。
+
+實際驗證位於 _CodexBackups/chapter2_enter_greetings_20261010/：原專案編譯 failed=false。Play→空白鍵→開啟阿威對話，透過真正GameView Return／KeypadEnter事件經UGUI送出，使用臨時本機HTTP模擬回答（僅runtime將端點替換，未改雲端或本機設定檔、沒有雲端請求）。result.json passed=true、errors=0、warnings=1（既有音源）、playing=false、dirty=false。共3次模擬問答：Enter第一次、小鍵盤Enter追問、滑鼠送出；等待中按Enter不重送、回答後恢復focus。另確認空白Enter、點離欄位、組字中Enter與同幀組字提交、探索到期均不送出；全部九人句庫符合角色限制。正式探索仍180秒。
+
+IME以Input System組字事件模擬驗證，沒有逐一實测Windows注音／拼音候選視窗或實體VR；本輪非模型回答品質／雲端回歸。程式與第二章場景雜湊和測試時一致；臨時HTTP listener已關閉、Editor測試器移回備份，未提交或推送。

@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0A3D63728479588373C94BA8A8C824C664B631D2A024ACEAAE6486729DE91113",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "4E84885FF07734617B3E7ABE1409F48BA294CBDF798BCAABCF2F43E450E4144A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Exploration.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "10A76637C5EE31CE44EC4D09C509CF4AC3FB8071BEABE0DCF280953C8D492334",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2GreetingBubble.cs"
+  }
+]

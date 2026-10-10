@@ -51,12 +51,10 @@ public sealed class Chapter2GreetingBubble : MonoBehaviour
         var go = new GameObject("Greeting · " + Chapter2Exploration.DisplayName(npc), typeof(RectTransform), typeof(CanvasRenderer), typeof(Chapter2BubbleGraphic));
         var bubble = go.AddComponent<Chapter2GreetingBubble>();
         bubble.owner = owner; bubble.Npc = npc; bubble.actor = npc.GetComponent<Chapter2Actor>();
-        bool isGuide = owner.chapter.workers != null && owner.chapter.workers.Length > 0 &&
-            bubble.actor == owner.chapter.workers[0];
-        var options = new List<string>();
-        if (!bubble.actor.police && !bubble.actor.isChild && !isGuide) options.AddRange(Greetings);
+        var options = new List<string>(Greetings);
         options.AddRange(bubble.actor.police ? PoliceGreetings : bubble.actor.isChild ? ChildGreetings : VillagerGreetings);
-        if (!bubble.actor.police && !bubble.actor.isChild && isGuide)
+        if (!bubble.actor.police && !bubble.actor.isChild && owner.chapter.workers != null &&
+            owner.chapter.workers.Length > 0 && bubble.actor == owner.chapter.workers[0])
             options.AddRange(GuideGreetings);
         bubble.greetingOptions = options.ToArray();
         bubble.rect = go.GetComponent<RectTransform>();

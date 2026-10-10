@@ -1,0 +1,33 @@
+{
+    "passed": true,
+    "playing": false,
+    "dirty": false,
+    "errors": 0,
+    "warnings": 1,
+    "requests": 3,
+    "error": "",
+    "checks": [
+        "all 9 greeting pools present",
+        "greeting restriction: 阿威·比胡",
+        "greeting restriction: 達奇斯·諾幹",
+        "greeting restriction: 拉娃·塔道",
+        "greeting restriction: 中村正雄",
+        "greeting restriction: 帖木·阿班",
+        "greeting restriction: 伊婉·諾幹",
+        "greeting restriction: 佐藤正一",
+        "greeting restriction: 田中武雄",
+        "greeting restriction: 都比·阿威",
+        "guide chat opens",
+        "field initially focused",
+        "blank Enter ignored, focus retained",
+        "blur does not submit",
+        "IME Enter does not submit or clear text",
+        "composition commit Enter does not submit",
+        "Return sends exactly one question",
+        "no duplicate while waiting; answer restores focus",
+        "keypad Enter follow-up succeeds",
+        "mouse Send still works",
+        "expired exploration blocks new question",
+        "formal exploration remains 180 seconds"
+    ]
+}
