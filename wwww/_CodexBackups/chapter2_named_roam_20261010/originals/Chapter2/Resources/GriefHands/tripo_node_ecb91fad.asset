@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 684bfee66153e3f4f8b3d60198dd036a, type: 3}
+  m_Name: tripo_node_ecb91fad
+  m_EditorClassIdentifier: 
+  mesh: {fileID: 1, guid: db7aa621a7be1bd4c8628961b6c7fffb, type: 2}
+  leftPalm: {x: 0.15715767, y: 0.6702148, z: 0.71887505, w: -0.09660432}
+  rightPalm: {x: -0.16383356, y: 0.667678, z: 0.71968025, w: 0.09708305}
+  fistShape: 0

@@ -19471,7 +19471,7 @@ GameObject:
   - component: {fileID: 259145197}
   - component: {fileID: 259145199}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u65CF\u4EBA \xB7 \u5973\u9577\u8F29"
+  m_Name: "\u4F0A\u5A49\xB7\u963F\u6BD4\u65AF"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19507,6 +19507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u4F0A\u5A49\xB7\u963F\u6BD4\u65AF"
+  romanizedName: Iwan Abis
+  dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u9577\u8F29"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -39552,7 +39556,7 @@ GameObject:
   - component: {fileID: 560164109}
   - component: {fileID: 560164108}
   m_Layer: 0
-  m_Name: "\u6797\u9593\u539F\u4F4F\u6C11\u5C0F\u5B69"
+  m_Name: "\u90FD\u6BD4\xB7\u963F\u5A01"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39593,6 +39597,7 @@ MonoBehaviour:
   pauseSeconds: 5
   phaseOffset: 0
   speed: 0.42
+  patrolEnabled: 1
 --- !u!114 &560164109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39605,6 +39610,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u90FD\u6BD4\xB7\u963F\u5A01"
+  romanizedName: Dupi Awi
+  dialogueRole: "\u4F60\u662F\u8DDF\u8457\u5BB6\u4EBA\u5728\u6797\u908A\u6D3B\u52D5\u7684\u8CFD\u5FB7\u514B\u5C0F\u5B69\u3002\u597D\u5947\u3001\u8AAA\u8A71\u7C21\u55AE\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\u548C\u52D5\u690D\u7269\uFF0C\u4E0D\u61C2\u8ECD\u4E8B\u653F\u6CBB\u3002"
+  isChild: 1
   police: 0
   seated: 0
   fallen: 0
@@ -44671,6 +44680,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u9054\u591A\xB7\u83AB\u90A3"
+  romanizedName: Tado Mona
+  dialogueRole: "\u83AB\u90A3\xB7\u9B6F\u9053\u4E4B\u5B50"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -46049,6 +46062,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u83AB\u90A3\xB7\u9B6F\u9053"
+  romanizedName: Mona Rudo
+  dialogueRole: "\u8CFD\u5FB7\u514B\u793E\u982D\u76EE"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -52308,8 +52325,9 @@ GameObject:
   - component: {fileID: 735477013}
   - component: {fileID: 735477012}
   - component: {fileID: 735477014}
+  - component: {fileID: 735477015}
   m_Layer: 0
-  m_Name: "\u7763\u5DE5\u8B66\u5BDF"
+  m_Name: "\u4E2D\u6751\u6B63\u96C4"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52345,6 +52363,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u4E2D\u6751\u6B63\u96C4"
+  romanizedName: Nakamura Masao
+  dialogueRole: "\u4F60\u662F\u73FE\u5834\u7763\u5DE5\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u8A9E\u6C23\u7C21\u77ED\u56B4\u8085\uFF0C\u8981\u6C42\u65CF\u4EBA\u670D\u5F9E\u4F10\u6728\u547D\u4EE4\uFF0C\u4F46\u4E0D\u900F\u9732\u672A\u767C\u751F\u7684\u5287\u60C5\u3002"
+  isChild: 0
   police: 1
   seated: 0
   fallen: 0
@@ -52393,6 +52415,25 @@ MonoBehaviour:
   aim: 0
   lowered: 0
   aimTarget: {fileID: 0}
+--- !u!114 &735477015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 735477010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74c86ddeb84a59a40b1c291cca4a6691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chapter: {fileID: 206475605}
+  patrolOffset: {x: 1.2, y: 0, z: 0.5}
+  watchDirection: {x: 0, y: 0, z: 1}
+  pauseSeconds: 5
+  phaseOffset: 0
+  speed: 0.42
+  patrolEnabled: 0
 --- !u!1 &736813965
 GameObject:
   m_ObjectHideFlags: 0
@@ -53394,7 +53435,7 @@ GameObject:
   - component: {fileID: 759084531}
   - component: {fileID: 759084532}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u6230\u58EB \xB7 \u9577\u88D9\u5973\u65CF\u4EBA"
+  m_Name: "\u53E4\u6155\xB7\u963F\u57FA"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53430,6 +53471,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u53E4\u6155\xB7\u963F\u57FA"
+  romanizedName: Kumu Aki
+  dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -56336,7 +56381,7 @@ GameObject:
   - component: {fileID: 807016907}
   - component: {fileID: 807016909}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u6230\u58EB \xB7 \u77ED\u9AEE\u5973\u65CF\u4EBA"
+  m_Name: "\u9732\u6BD4\xB7\u5DF4\u5E72"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56372,6 +56417,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u9732\u6BD4\xB7\u5DF4\u5E72"
+  romanizedName: Lubi Bakan
+  dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -80638,6 +80687,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u74E6\u65E6"
+  romanizedName: Watan
+  dialogueRole: "\u9577\u8001\u4EE3\u8868"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -85983,7 +86036,7 @@ GameObject:
   - component: {fileID: 1149805436}
   - component: {fileID: 1149805435}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u539F\u4F4F\u6C11\u5C0F\u5B69"
+  m_Name: "\u90FD\u6BD4\xB7\u963F\u5A01"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86018,6 +86071,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u90FD\u6BD4\xB7\u963F\u5A01"
+  romanizedName: Dupi Awi
+  dialogueRole: "\u4F60\u662F\u8DDF\u8457\u5BB6\u4EBA\u5728\u6797\u908A\u6D3B\u52D5\u7684\u8CFD\u5FB7\u514B\u5C0F\u5B69\u3002\u597D\u5947\u3001\u8AAA\u8A71\u7C21\u55AE\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\u548C\u52D5\u690D\u7269\uFF0C\u4E0D\u61C2\u8ECD\u4E8B\u653F\u6CBB\u3002"
+  isChild: 1
   police: 0
   seated: 1
   fallen: 0
@@ -90220,7 +90277,7 @@ GameObject:
   - component: {fileID: 1217200266}
   - component: {fileID: 1217200268}
   m_Layer: 0
-  m_Name: "\u5DE8\u6728\u53F3\u5074\u65CF\u4EBA"
+  m_Name: "\u9054\u5947\u65AF\xB7\u8AFE\u5E79"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90255,6 +90312,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u9054\u5947\u65AF\xB7\u8AFE\u5E79"
+  romanizedName: Dakis Nokan
+  dialogueRole: "\u4F60\u662F\u5728\u5DE8\u6728\u9644\u8FD1\u52DE\u4F5C\u7684\u8CFD\u5FB7\u514B\u9752\u5E74\u3002\u95DC\u5FC3\u540C\u4F34\u8207\u5BB6\u4EBA\uFF0C\u73CD\u60DC\u68EE\u6797\u3002"
+  isChild: 0
   police: 0
   seated: 0
   fallen: 0
@@ -90301,6 +90362,7 @@ MonoBehaviour:
   pauseSeconds: 5
   phaseOffset: 2
   speed: 0.42
+  patrolEnabled: 1
 --- !u!1 &1217761572
 GameObject:
   m_ObjectHideFlags: 0
@@ -102670,6 +102732,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u5DF4\u842C\xB7\u62FF\u5A01"
+  romanizedName: Bawan Nawi
+  dialogueRole: "\u5E74\u8F15\u6230\u58EB"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -108247,7 +108313,7 @@ GameObject:
   - component: {fileID: 1483105459}
   - component: {fileID: 1483105461}
   m_Layer: 0
-  m_Name: "\u5DE8\u6728\u5DE6\u5074\u65CF\u4EBA"
+  m_Name: "\u62C9\u5A03\xB7\u5854\u9053"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108282,6 +108348,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u62C9\u5A03\xB7\u5854\u9053"
+  romanizedName: Lawa Tado
+  dialogueRole: "\u4F60\u662F\u5728\u6797\u9593\u6D3B\u52D5\u7684\u8CFD\u5FB7\u514B\u5973\u5B50\u3002\u95DC\u5FC3\u540C\u4F34\u3001\u5BB6\u4EBA\u8207\u7CE7\u98DF\uFF0C\u8AAA\u8A71\u6EAB\u548C\u3002"
+  isChild: 0
   police: 0
   seated: 0
   fallen: 0
@@ -108328,6 +108398,7 @@ MonoBehaviour:
   pauseSeconds: 5
   phaseOffset: 4
   speed: 0.42
+  patrolEnabled: 1
 --- !u!1 &1483981623
 GameObject:
   m_ObjectHideFlags: 0
@@ -112528,7 +112599,7 @@ GameObject:
   - component: {fileID: 1545712400}
   - component: {fileID: 1545712402}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u6230\u58EB \xB7 \u6372\u9AEE\u9752\u5E74"
+  m_Name: "\u6BD4\u80E1\xB7\u5E16\u6728"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112564,6 +112635,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u6BD4\u80E1\xB7\u5E16\u6728"
+  romanizedName: Pihu Teymu
+  dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u9752\u5E74"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0
@@ -118277,7 +118352,7 @@ GameObject:
   - component: {fileID: 1624007330}
   - component: {fileID: 1624007329}
   m_Layer: 0
-  m_Name: "\u6A39\u65C1\u5DE1\u5BDF\u8B66\u5BDF 1"
+  m_Name: "\u4F50\u85E4\u6B63\u4E00"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118319,6 +118394,7 @@ MonoBehaviour:
   pauseSeconds: 7.7
   phaseOffset: 6.8999996
   speed: 0.42
+  patrolEnabled: 1
 --- !u!114 &1624007330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118331,6 +118407,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u4F50\u85E4\u6B63\u4E00"
+  romanizedName: Sato Shoichi
+  dialogueRole: "\u4F60\u662F\u5DE1\u67E5\u6797\u5730\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u56B4\u8085\u5BE1\u8A00\uFF0C\u95DC\u5FC3\u79E9\u5E8F\uFF0C\u53EA\u8AC7\u81EA\u5DF1\u77E5\u9053\u7684\u4E8B\u60C5\u3002"
+  isChild: 0
   police: 1
   seated: 0
   fallen: 0
@@ -120855,8 +120935,9 @@ GameObject:
   - component: {fileID: 1671300634}
   - component: {fileID: 1671300636}
   - component: {fileID: 1671300635}
+  - component: {fileID: 1671300637}
   m_Layer: 0
-  m_Name: "\u65CF\u4EBA 1"
+  m_Name: "\u963F\u5A01\xB7\u6BD4\u80E1"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -120891,6 +120972,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u963F\u5A01\xB7\u6BD4\u80E1"
+  romanizedName: Awi Pihu
+  dialogueRole: "\u4F60\u662F\u719F\u6089\u6797\u9053\u7684\u8CFD\u5FB7\u514B\u9752\u5E74\uFF0C\u8CA0\u8CAC\u5E36\u73A9\u5BB6\u524D\u5F80\u5DE8\u6728\u3002\u73CD\u60DC\u68EE\u6797\uFF0C\u8AAA\u8A71\u6C89\u7A69\uFF0C\u9858\u610F\u4ECB\u7D39\u773C\u524D\u74B0\u5883\u3002"
+  isChild: 0
   police: 0
   seated: 0
   fallen: 0
@@ -120919,6 +121004,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1671300637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671300633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74c86ddeb84a59a40b1c291cca4a6691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chapter: {fileID: 206475605}
+  patrolOffset: {x: -1.8, y: 0, z: 1.2}
+  watchDirection: {x: 0, y: 0, z: 1}
+  pauseSeconds: 0.5
+  phaseOffset: 0
+  speed: 0.7
+  patrolEnabled: 0
 --- !u!1 &1672344242
 GameObject:
   m_ObjectHideFlags: 0
@@ -128281,7 +128385,7 @@ GameObject:
   - component: {fileID: 1763920097}
   - component: {fileID: 1763920096}
   m_Layer: 0
-  m_Name: "\u6A39\u65C1\u5DE1\u5BDF\u8B66\u5BDF 2"
+  m_Name: "\u7530\u4E2D\u6B66\u96C4"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -128323,6 +128427,7 @@ MonoBehaviour:
   pauseSeconds: 8.6
   phaseOffset: 9.2
   speed: 0.42
+  patrolEnabled: 1
 --- !u!114 &1763920097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128335,6 +128440,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u7530\u4E2D\u6B66\u96C4"
+  romanizedName: Tanaka Takeo
+  dialogueRole: "\u4F60\u662F\u6797\u9053\u57F7\u52E4\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u8AAA\u8A71\u7C21\u77ED\uFF0C\u7559\u610F\u901A\u884C\u8207\u642C\u904B\uFF0C\u4E0D\u77E5\u9053\u4E0A\u7D1A\u672A\u544A\u77E5\u7684\u4E8B\u60C5\u3002"
+  isChild: 0
   police: 1
   seated: 0
   fallen: 0
@@ -139196,7 +139305,7 @@ GameObject:
   - component: {fileID: 1894111174}
   - component: {fileID: 1894111173}
   m_Layer: 0
-  m_Name: "\u6797\u9593\u65CF\u4EBA 2"
+  m_Name: "\u5E16\u6728\xB7\u963F\u73ED"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139237,6 +139346,7 @@ MonoBehaviour:
   pauseSeconds: 5.9
   phaseOffset: 2.3
   speed: 0.42
+  patrolEnabled: 1
 --- !u!114 &1894111174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139249,6 +139359,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u5E16\u6728\xB7\u963F\u73ED"
+  romanizedName: Temu Aban
+  dialogueRole: "\u4F60\u662F\u6797\u908A\u4F11\u606F\u7684\u8CFD\u5FB7\u514B\u7537\u5B50\u3002\u52DE\u4F5C\u5F8C\u75B2\u618A\uFF0C\u8AAA\u8A71\u6EAB\u548C\uFF0C\u95DC\u5FC3\u7CE7\u98DF\u3001\u5DE5\u8CC7\u8207\u5BB6\u4EBA\u3002"
+  isChild: 0
   police: 0
   seated: 0
   fallen: 0
@@ -144603,7 +144717,7 @@ GameObject:
   - component: {fileID: 1968362828}
   - component: {fileID: 1968362827}
   m_Layer: 0
-  m_Name: "\u6797\u9593\u65CF\u4EBA 3"
+  m_Name: "\u4F0A\u5A49\xB7\u8AFE\u5E79"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144644,6 +144758,7 @@ MonoBehaviour:
   pauseSeconds: 6.8
   phaseOffset: 4.6
   speed: 0.42
+  patrolEnabled: 1
 --- !u!114 &1968362828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144656,6 +144771,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u4F0A\u5A49\xB7\u8AFE\u5E79"
+  romanizedName: Iwan Nokan
+  dialogueRole: "\u4F60\u662F\u8CFD\u5FB7\u514B\u5973\u5B50\uFF0C\u719F\u6089\u6797\u9593\u690D\u7269\u8207\u751F\u6D3B\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\uFF0C\u9858\u610F\u548C\u90E8\u843D\u9752\u5E74\u4EA4\u8AC7\u3002"
+  isChild: 0
   police: 0
   seated: 0
   fallen: 0
@@ -150484,7 +150603,7 @@ GameObject:
   - component: {fileID: 2054037214}
   - component: {fileID: 2054037216}
   m_Layer: 0
-  m_Name: "\u6703\u8B70\u6230\u58EB \xB7 \u982D\u5DFE\u5973\u65CF\u4EBA"
+  m_Name: "\u6B50\u51B0\xB7\u62FF\u5A01"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150520,6 +150639,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85389331951c44b40a8eb12ed0c51a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterName: "\u6B50\u51B0\xB7\u62FF\u5A01"
+  romanizedName: Obing Nawi
+  dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
+  isChild: 0
   police: 0
   seated: 1
   fallen: 0

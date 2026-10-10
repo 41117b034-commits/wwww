@@ -16,7 +16,7 @@ public sealed partial class Chapter2Controller
         foreach (var worker in workers) worker.gameObject.AddComponent<Chapter2StartleReaction>().Prepare();
         yield return CameraShot(new Vector3(0, 1.95f, 3.3f), new Vector3(0, 1.05f, 9.5f), .7f);
         CameraBeat = "tree-warning";
-        ui.Line("族人", "退後……它要倒下了。");
+        ui.Line(workers[0].DisplayName, "退後……它要倒下了。");
         float warningEnd = Time.unscaledTime + BeginChapterVoice(workers[0], "族人", "退後……它要倒下了。", 2.25f);
         workers[0].speaking = true;
         for (int i = 0; i < workers.Length; i++) workers[i].GetComponent<Chapter2StartleReaction>().Begin(sacredTree, i);
@@ -80,6 +80,31 @@ public sealed partial class Chapter2Controller
         actor.Face(position);
         yield return CameraShot(position, at + Vector3.up * .9f, .65f);
         CameraBeat = actor.police ? "police-speaking" : "villager-speaking";
+    }
+
+    IEnumerator FrameTreeExchange()
+    {
+        var guide=workers[0];
+        guide.Face(officer.transform.position);officer.Face(guide.transform.position);
+        Vector3 midpoint=(guide.transform.position+officer.transform.position)*.5f;
+        // Both partners remain visible, so the reply has an on-screen recipient.
+        yield return CameraShot(midpoint+new Vector3(0,1.65f,-5.8f),midpoint+Vector3.up*1.05f,.7f);
+        CameraBeat="police-speaking";
+    }
+    IEnumerator StepForwardToOfficer()
+    {
+        ui.Line("","");
+        var guide=workers[0];Vector3 start=guide.transform.position;
+        Vector3 direction=Vector3.ProjectOnPlane(officer.transform.position-start,Vector3.up).normalized;
+        Vector3 end=start+direction*Mathf.Min(1.25f,Mathf.Max(0,Vector3.Distance(start,officer.transform.position)-2.2f));
+        guide.Rig.BeginDepartureWalk(0);CameraBeat="villager-step-forward";
+        for(float t=0;t<1;t+=Time.deltaTime/1.1f)
+        {
+            guide.transform.position=Vector3.Lerp(start,end,Mathf.SmoothStep(0,1,t));
+            guide.Face(officer.transform.position);officer.Face(guide.transform.position);yield return null;
+        }
+        guide.transform.position=end;guide.Face(officer.transform.position);officer.Face(end);
+        CameraBeat="villager-speaking";
     }
 
     IEnumerator FrameConfrontation()

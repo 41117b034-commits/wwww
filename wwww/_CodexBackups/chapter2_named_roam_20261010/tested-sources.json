@@ -1,0 +1,52 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "36B721487D274240A1CA033CA991D1D9FFE7F6C10402CEE6BB602280FCD50871",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Actor.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "066EA113228EF47EBC0A3991EE8567A662304A93430E0E2892620EDC6EB60C07",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2AmbientNPC.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F5D04826ED1953BBF9072CD7FF4849738F006BC05435B2B39800479E5FF94941",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CastNames.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1F6D8E27C15C3A6A11D2E5606F2301D824A6A4EF4977FEFEBE022545D1F23D83",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "FB05ED683DE5D0661CA2B0CCF672DFC7BB776D04D56CA34E4136C3D67AAB663E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.Performance.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "72CD5F849ABCB0DDDA9FFBCD036AA55791D84B65B26DE73126A9B760633808C4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.ProtectAftermath.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "DCCE40CB0F06B7E4C918665F710BF39630800FB0FFF9D2FA6F14A60587D4C643",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Exploration.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "55EEFFE2EB6DE2328A050E18A7BC74288FCBCC97703F787DA10DD92E460EC270",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2ForestEscort.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "857DC20FF7D5971F2504A58D5B82D921ACA472906738856F5DF020000C73B5A0",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2LocalDialogue.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0A3D63728479588373C94BA8A8C824C664B631D2A024ACEAAE6486729DE91113",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  }
+]

@@ -1,0 +1,1 @@
+Original procedural placeholder audio authored for this project, 2026-10-04. Morning: wind and bird-like tones. Night: wind and insect-like tones. Axe: short wood-impact synthesis. Rifle report: synthesized transient, low thump and echoes. These are not field recordings. Replace with final recorded sound design as needed.

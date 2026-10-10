@@ -1,0 +1,19 @@
+{
+  "label": "protect-full",
+  "passed": true,
+  "checks": {
+    "finished": true,
+    "noErrors": true,
+    "nineNamedNPCs": true,
+    "threeMeterRange": true,
+    "guideRoams": true,
+    "nearbyArrival": true,
+    "guideVisible": true,
+    "exchange": true,
+    "navigation": true,
+    "fixedWitnesses": true,
+    "fullTimer": true,
+    "bothWitnesses": true
+  },
+  "warnings": 2
+}

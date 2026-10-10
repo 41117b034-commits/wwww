@@ -1,0 +1,22 @@
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning The referenced script (Unknown) on this Behaviour is missing!
+Warning Can not play a disabled audio source
+Log [Chapter2] Stage=Intro
+Log [Chapter2] Stage=Follow
+Log [Chapter2] Stage=TreeChoice
+Log [Chapter2] Stage=Chopping
+Log [Chapter2] Stage=Consequence
+Warning Can not play a disabled audio source
+Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+Log [Chapter2] Stage=Meeting

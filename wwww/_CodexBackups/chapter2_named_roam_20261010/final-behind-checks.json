@@ -1,0 +1,19 @@
+{
+  "label": "final-behind",
+  "passed": true,
+  "checks": {
+    "finished": true,
+    "noErrors": true,
+    "nineNamedNPCs": true,
+    "threeMeterRange": true,
+    "guideRoams": true,
+    "nearbyArrival": true,
+    "guideVisible": true,
+    "exchange": true,
+    "navigation": true,
+    "fixedWitnesses": true,
+    "bothWitnesses": true,
+    "officerKeyboard": true
+  },
+  "warnings": 2
+}

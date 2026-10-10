@@ -1,0 +1,42 @@
+[
+  {
+    "file": "forest_floor_diff_1k.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/forest_floor/forest_floor_diff_1k.jpg",
+    "page": "https://polyhaven.com/a/forest_floor",
+    "license": "CC0-1.0",
+    "bytes": 1329853,
+    "sha256": "f12e5adea1741f9eb7a528bfc621f8267885b9530b74c3a8afdb823899bdbf0b"
+  },
+  {
+    "file": "forest_floor_nor_gl_1k.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/forest_floor/forest_floor_nor_gl_1k.jpg",
+    "page": "https://polyhaven.com/a/forest_floor",
+    "license": "CC0-1.0",
+    "bytes": 1380104,
+    "sha256": "681f3de8c756c4d19bcda33039f953295498f38b1425ce9d56b37d6f97f6e518"
+  },
+  {
+    "file": "tree_stump_01_diff_1k.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/tree_stump_01/tree_stump_01_diff_1k.jpg",
+    "page": "https://polyhaven.com/a/tree_stump_01",
+    "license": "CC0-1.0",
+    "bytes": 907451,
+    "sha256": "781ebe420ac4d84f2e44b9e9937a596e3d5d90711d978a1392f8bf3771b5bf31"
+  },
+  {
+    "file": "tree_stump_01_nor_gl_1k.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/tree_stump_01/tree_stump_01_nor_gl_1k.jpg",
+    "page": "https://polyhaven.com/a/tree_stump_01",
+    "license": "CC0-1.0",
+    "bytes": 1238404,
+    "sha256": "425117514b0386bb6df41cb64a61a624d2596472e05777483d4021b3285e3ceb"
+  },
+  {
+    "file": "tree_stump_01_1k.fbx",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/tree_stump_01/tree_stump_01_1k.fbx",
+    "page": "https://polyhaven.com/a/tree_stump_01",
+    "license": "CC0-1.0",
+    "bytes": 2871068,
+    "sha256": "754a6b668361456a8ad3405d163735ac7fdd4a75b8e4fe16db777fcfe40f692d"
+  }
+]

@@ -3,6 +3,12 @@ using UnityEngine;
 [DefaultExecutionOrder(4200)]
 public sealed class Chapter2Actor : MonoBehaviour
 {
+    [Header("人物身分")]
+    public string characterName;
+    public string romanizedName;
+    [TextArea] public string dialogueRole;
+    public bool isChild;
+    public string DisplayName => string.IsNullOrWhiteSpace(characterName) ? name : characterName;
     public bool police;
     public bool seated;
     public bool fallen;

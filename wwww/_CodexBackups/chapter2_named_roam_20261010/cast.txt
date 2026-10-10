@@ -1,0 +1,20 @@
+playing=False dirty=False
+1428826 | 阿威·比胡 | Morning · forced logging | (-1.50, 0.02, -12.00) | police=False | patrol=True | model=阿威·比胡
+1425906 | 達奇斯·諾幹 | Morning · forced logging | (3.80, 0.03, 9.80) | police=False | patrol=True | model=達奇斯·諾幹
+1427664 | 拉娃·塔道 | Morning · forced logging | (-3.80, 0.09, 10.30) | police=False | patrol=True | model=拉娃·塔道
+1422656 | 中村正雄 | Morning · forced logging | (3.00, 0.02, 7.00) | police=True | patrol=True | model=中村正雄
+1430602 | 帖木·阿班 | Background people · local patrols | (6.10, 0.03, -1.60) | police=False | patrol=True | model=帖木·阿班
+1431134 | 伊婉·諾幹 | Background people · local patrols | (-7.30, 0.09, 6.00) | police=False | patrol=True | model=伊婉·諾幹
+1428570 | 佐藤正一 | Background people · local patrols | (8.40, 0.02, 10.80) | police=True | patrol=True | model=佐藤正一
+1429540 | 田中武雄 | Background people · local patrols | (10.50, 0.02, -6.80) | police=True | patrol=True | model=田中武雄
+1421396 | 都比·阿威 | Background people · local patrols | (-6.30, 0.02, -5.50) | police=False | patrol=True | model=都比·阿威
+1424944 | 瓦旦 | Night · secret council | (1.89, 0.02, 2.70) | police=False | patrol=False | model=瓦旦
+1421888 | 達多·莫那 | Night · secret council | (3.10, 0.03, 1.13) | police=False | patrol=False | model=達多·莫那
+1422764 | 古慕·阿基 | Night · secret council | (3.19, 0.09, -0.85) | police=False | patrol=False | model=古慕·阿基
+1422026 | 莫那·魯道 | Night · secret council | (0.00, 0.02, 3.10) | police=False | patrol=False | model=莫那·魯道
+1427112 | 巴萬·拿威 | Night · secret council | (-3.19, 0.02, -0.85) | police=False | patrol=False | model=巴萬·拿威
+1419414 | 伊婉·阿比斯 | Night · secret council | (-3.10, 0.03, 1.13) | police=False | patrol=False | model=伊婉·阿比斯
+1423054 | 露比·巴干 | Night · secret council | (-1.89, 0.09, 2.70) | police=False | patrol=False | model=露比·巴干
+1428084 | 比胡·帖木 | Night · secret council | (-4.15, 0.00, -2.15) | police=False | patrol=False | model=比胡·帖木
+1431710 | 歐冰·拿威 | Night · secret council | (-3.15, 0.00, -3.75) | police=False | patrol=False | model=歐冰·拿威
+1425474 | 都比·阿威 | Night · secret council | (3.50, 0.00, -2.85) | police=False | patrol=False | model=都比·阿威

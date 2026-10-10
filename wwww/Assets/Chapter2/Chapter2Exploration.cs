@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-// Three-minute free roam. Only the roadside ambient cast participates.
+// Three-minute free roam. Every daytime character can be approached.
 public sealed class Chapter2Exploration : MonoBehaviour
 {
     public Chapter2Controller chapter;
@@ -77,15 +77,8 @@ public sealed class Chapter2Exploration : MonoBehaviour
     public IEnumerator Explore(float seconds)
     {
         EnsureUI();
-        var group=chapter.dayGroup.transform.Find("Background people · local patrols");
-        participants=group?group.GetComponentsInChildren<Chapter2AmbientNPC>(false):new Chapter2AmbientNPC[0];
-        var cast=new List<Chapter2AmbientNPC>(participants);
-        for(int i=1;i<chapter.workers.Length;i++)
-        {
-            var witness=chapter.workers[i].GetComponent<Chapter2AmbientNPC>();
-            if(witness && !cast.Contains(witness))cast.Add(witness);
-        }
-        participants=cast.ToArray();
+        chapter.forestEscort.BeginExploration();
+        participants=chapter.dayGroup.GetComponentsInChildren<Chapter2AmbientNPC>(false);
         Active=true;deadline=Time.unscaledTime+Mathf.Max(1,seconds);answerVisibleUntil=0;
         chapter.routeGuide.GuidanceEnabled=false;
         chapter.ui.objective.text="自由探索，認識林間的人們";
@@ -138,10 +131,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
     float Distance(Chapter2AmbientNPC npc)=>Vector3.Distance(new Vector3(chapter.player.transform.position.x,0,chapter.player.transform.position.z),new Vector3(npc.transform.position.x,0,npc.transform.position.z));
     public static string DisplayName(Chapter2AmbientNPC npc)
     {
-        if(npc.name.Contains("小孩"))return "林間小孩";
-        if(npc.name.Contains("巨木"))return npc.name;
-        if(npc.GetComponent<Chapter2Actor>().police)return npc.name.EndsWith("1")?"樹旁警察":"路邊警察";
-        return npc.name.EndsWith("2")?"休息的族人":"林間族人";
+        return npc.GetComponent<Chapter2Actor>().DisplayName;
     }
     public bool TryOpen(Chapter2AmbientNPC npc)
     {
@@ -151,7 +141,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
         current.ConversationPartner=chapter.player.transform;
         chapter.player.canMove=false;chapter.player.canLook=false;
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
-        chapter.player.FocusOn(npc.transform.position+Vector3.up*(npc.name.Contains("小孩")?.95f:1.45f));
+        chapter.player.FocusOn(npc.transform.position+Vector3.up*(npc.GetComponent<Chapter2Actor>().isChild?.95f:1.45f));
         title.text=DisplayName(npc);input.text="";LastError=null;LastReply=null;pendingQuestion=null;
         chapter.ui.hint.text="";
         panel.SetActive(true);prompt.gameObject.SetActive(false);RefreshTranscript();

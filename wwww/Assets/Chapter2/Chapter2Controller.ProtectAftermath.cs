@@ -18,7 +18,7 @@ public sealed partial class Chapter2Controller
         }
         rifle.aim = 1;
         CameraBeat = "forced-order";
-        ui.Line("日本警察", "給我去砍樹");
+        ui.Line(officer.DisplayName, "給我去砍樹");
         float orderEnd = Time.unscaledTime + BeginChapterVoice(officer, "日本警察", "給我去砍樹", 3.2f);
         officer.speaking = true;
         // Keep the officer looking at the survivors, including while they are crouching.

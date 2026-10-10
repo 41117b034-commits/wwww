@@ -11,6 +11,7 @@ public sealed class Chapter2AmbientNPC : MonoBehaviour
     public float pauseSeconds = 5;
     public float phaseOffset;
     public float speed = .42f;
+    public bool patrolEnabled = true;
     public float MaxDistanceFromHome { get; private set; }
     public int TripsCompleted { get; private set; }
     public Vector3 Home { get; private set; }
@@ -27,6 +28,12 @@ public sealed class Chapter2AmbientNPC : MonoBehaviour
         began = Time.time - phaseOffset;
     }
 
+    public void RestartPatrol()
+    {
+        Home=transform.position;began=Time.time;wasMoving=false;
+        patrolEnabled=true;ConversationPartner=null;
+    }
+
     void Update()
     {
         if (!actor || !actor.Rig) return;
@@ -37,6 +44,7 @@ public sealed class Chapter2AmbientNPC : MonoBehaviour
             actor.Face(ConversationPartner.position);
             return;
         }
+        if (!patrolEnabled) return;
         if (!configured)
         {
             actor.Rig.BeginDepartureWalk(phaseOffset * .13f);

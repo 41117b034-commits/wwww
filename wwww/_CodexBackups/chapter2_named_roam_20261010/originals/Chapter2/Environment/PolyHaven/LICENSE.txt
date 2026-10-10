@@ -1,0 +1,19 @@
+Poly Haven assets used for Chapter 2
+
+License: CC0 1.0 Universal
+Official license: https://polyhaven.com/license
+Legal text: https://creativecommons.org/publicdomain/zero/1.0/
+Downloaded: 2026-10-04
+
+forest_floor (diffuse + OpenGL normal, 1K)
+https://polyhaven.com/a/forest_floor
+Author: eye-candy.xyz
+
+tree_stump_01 (FBX + diffuse + OpenGL normal, 1K)
+https://polyhaven.com/a/tree_stump_01
+Author: Rob Tuytel
+
+Exact download URLs, byte counts and SHA-256 hashes: sources.json.
+Only these selected assets were imported. The full Pine Forest collection
+was reviewed as a source recommendation but was not imported.
+These are generic forest assets, not a historical reconstruction of Xizaixike.

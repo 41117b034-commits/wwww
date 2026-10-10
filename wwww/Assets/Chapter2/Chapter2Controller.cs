@@ -82,6 +82,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if (!forestEscort) forestEscort = GetComponent<Chapter2ForestEscort>();
         if (!forestEscort) forestEscort = gameObject.AddComponent<Chapter2ForestEscort>();
         forestEscort.Initialize(this);
+        Chapter2CastNames.Apply(this);
         ui.buttonA.onClick.AddListener(SelectA); ui.buttonB.onClick.AddListener(SelectB);
         ui.continueButton.onClick.AddListener(ReturnToMenu);
         player.canMove = false; player.canLook = false;
@@ -202,10 +203,10 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         forestEscort.StopWitnessPatrols();
         routeGuide.GuidanceEnabled = false;
         ui.hint.text = ""; ui.objective.text = "聆聽警察與族人的對話";
-        yield return FrameSpeaker(officer);
-        yield return Say(officer, "日本警察", "把這些樹都砍了。");
-        yield return FrameSpeaker(workers[0]);
-        yield return Say(workers[0], "族人", "這棵巨木是我們的守護者……真的要砍下去嗎？");
+        yield return FrameTreeExchange();
+        yield return Say(officer, "日本警察", "把這些樹都砍了。",0,workers[0]);
+        yield return StepForwardToOfficer();
+        yield return Say(workers[0], "族人", "這棵巨木是我們的守護者……真的要砍下去嗎？",0,officer);
         yield return FrameConfrontation();
         SetStage(Stage.TreeChoice); ui.objective.text = "面對聖地的抉擇";
         ui.hint.text = "按 1／右手主按鈕，或按 2／左手主按鈕";
@@ -307,7 +308,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         var block = officer.transform.position + new Vector3(-1.7f, 0, .15f); block.y = start.y;
         yield return CameraShot(new Vector3(1.1f, 1.65f, 2.5f), new Vector3(1.1f, .85f, 7.4f), .65f);
         CameraBeat = "blocking";
-        ui.Line("族人", "別碰它！這是我們的聖地。");
+        ui.Line(workers[0].DisplayName, "別碰它！這是我們的聖地。");
         float blockVoiceEnd = Time.unscaledTime + BeginChapterVoice(workers[0], "族人", "別碰它！這是我們的聖地。", 4.3f);
         workers[0].speaking = true; workers[0].Rig.conversationTarget = officer.Rig.Head;
         for (float t = 0; t < 1; t += Time.deltaTime / 2.1f)
@@ -327,8 +328,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         rifle.target = workers[0];
         for (float t = 0; t < 1; t += Time.deltaTime / 1.3f) { rifle.aim = Mathf.SmoothStep(0, 1, t); yield return null; }
         rifle.aim = 1;
-        yield return Say(officer, "日本警察", "退開！誰敢違抗命令？", 4);
-        yield return Say(workers[0], "族人", "這是祖靈守護的地方……我們不能退。 ", 1.2f);
+        yield return Say(officer, "日本警察", "退開！誰敢違抗命令？", 4,workers[0]);
+        yield return Say(workers[0], "族人", "這是祖靈守護的地方……我們不能退。 ", 1.2f,officer);
         rifle.Fire();
         if (threatAudio) effects.PlayOneShot(threatAudio, .45f);
         workers[0].BeginFall(officer.transform.position);
@@ -409,11 +410,18 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         });
         if (CurrentStage == Stage.Chopping && canChop) player.canMove = true;
     }
-    IEnumerator Say(Chapter2Actor actor, string name, string words, float seconds = 0)
+    IEnumerator Say(Chapter2Actor actor, string name, string words, float seconds = 0, Chapter2Actor listener = null)
     {
         if (actor && CurrentStage >= Stage.Meeting && nightGroup.activeInHierarchy)
         { ui.Line("", ""); yield return FrameCouncilSpeaker(actor); }
-        ui.Line(name, words); if (actor) { actor.speaking = true; if (actor.Rig) actor.Rig.conversationTarget = player.view.transform; }
+        string display=actor&&(name=="族人"||name=="日本警察")?actor.DisplayName:name;
+        ui.Line(display, words);
+        if (actor)
+        {
+            actor.speaking = true;
+            if(listener){actor.Face(listener.transform.position);listener.Face(actor.transform.position);}
+            if (actor.Rig) actor.Rig.conversationTarget = listener ? (listener.Rig.Head?listener.Rig.Head:listener.transform) : player.view.transform;
+        }
         yield return WaitChapterVoice(BeginChapterVoice(actor, name, words, seconds > 0 ? seconds : lineSeconds));
         if (actor) actor.speaking = false;
     }

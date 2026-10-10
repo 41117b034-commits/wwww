@@ -1,0 +1,18 @@
+{
+  "label": "final-west",
+  "passed": true,
+  "checks": {
+    "finished": true,
+    "noErrors": true,
+    "nineNamedNPCs": true,
+    "threeMeterRange": true,
+    "guideRoams": true,
+    "nearbyArrival": true,
+    "guideVisible": true,
+    "exchange": true,
+    "navigation": true,
+    "fixedWitnesses": true,
+    "felled": true
+  },
+  "warnings": 15
+}

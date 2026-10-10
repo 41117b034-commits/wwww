@@ -2,7 +2,9 @@
 
 更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新狀態：2026-10-10 更新第二章探索後單人帶路。三分鐘到期並等当次回答／閱讀結束，原帶路族人先尋路走到玩家當時視線前方，再面向玩家邀請跟隨，獨自帶路到原巨木。另兩位原隊員移至巨木左右，各自約0.9公尺內巡走，進入巨木對話前停下，保留後續救援與受驚演出。原五位路邊人物加這兩位，共七位可在3公尺內交談；底部「靠近路邊人物……」常駐字串已移除。驗證證據在 _CodexBackups/chapter2_single_escort_20261010/，詳細限制見文末。
+最新狀態：2026-10-10 完成第二章人名與近距迎接：全九位白天人物可交談，帶路者阿威·比胡介紹後巡走，督工警察中村正雄加入LLM對話；探索及當次回答／閱讀結束後，阿威先移到玩家附近再短程走來。巨木旁命令與回話採雙人構圖，阿威向警察走近再面向他說話。夜間四位原有角色與身分字幕保留，其他配角補上姓名。詳細驗證與限制見文末「2026-10-10 人名與近距迎接」。
+
+前次帶路狀態：2026-10-10 更新第二章探索後單人帶路。三分鐘到期並等当次回答／閱讀結束，原帶路族人先尋路走到玩家當時視線前方，再面向玩家邀請跟隨，獨自帶路到原巨木。另兩位原隊員移至巨木左右，各自約0.9公尺內巡走，進入巨木對話前停下，保留後續救援與受驚演出。原五位路邊人物加這兩位，共七位可在3公尺內交談；底部「靠近路邊人物……」常駐字串已移除。驗證證據在 _CodexBackups/chapter2_single_escort_20261010/，詳細限制見文末。
 
 前次 LLM 功能：2026-10-09 完成影片後三分鐘探索及免費本機文字對話；模型已下載並驗證，安裝在 D:/WusheLocalLLM，沒有付費 API 或外網備援。該輪 final-local-v2 與 expiry-pending 為新增帶路調整前的驗證，不能代替本輪路徑與同伴演出檢查。操作見 Documentation/Chapter2-local-dialogue.md。
 
@@ -826,3 +828,20 @@ C:\Users\jimmy\畢專_霧社事件\wwww\wwww\PROJECT_CONTEXT.md
 - 預覽圖 Documentation/Chapter2-guide-meets-player-preview.png、Chapter2-tree-witnesses-rescue-preview.png。驗證記錄只代表 Editor、原場景現有碰撞與上述起點；未做獨立建置或實體VR頭戴裝置驗收。沒有提交／推送。
 
 - 最後清理：Chapter2EscortProbe.cs 及 meta 已移至本輪 verification-tools/；正式Assets不留自動測試工具。清理後Unity重新編譯與domain reload成功，實際Console為0 Error／0 Warning／0 Log，Play停止、場景無未儲存星號。此清理後狀態不抹除上列測試輪的既有警告。七個正式來源與驗證雜湊再次一致；Assets／Documentation／Packages／ProjectSettings／Tools共3485檔，無單檔達100,000,000 bytes，最大89,742,488 bytes，本機模型仍在專案外D槽。退出Play後無llama-server殘留程序。
+
+## 2026-10-10 人名與近距迎接
+
+- 本輪只處理使用者五張截圖：帶路者介紹後巡走、漏掉的主警察交談、第二章全員姓名、探索後附近短程迎接、巨木前族人向警察走近並對話。備份及測試位於 `_CodexBackups/chapter2_named_roam_20261010/`。
+- `Chapter2CastNames.cs` 與 `Chapter2Actor` 角色欄位統一 Hierarchy 名稱、字幕、交談標題及 LLM 自介。場景19個角色物件都有姓名，其中白天及夜間小孩同為都比·阿威。莫那·魯道、達多·莫那、巴萬·拿威、瓦旦保留，其他為根據原民會名譜創作的虛構配角；完整名單、命名原則及網路來源見 `Documentation/Chapter2-local-dialogue.md`。並非宣稱新增人物參與史實。
+- 探索包含九位白天NPC：3警察、5成年族人、1小孩。阿威介紹後約2秒開始附近往返，最大巡走距離2.163m；主警察留在原職位但能交談。小孩判斷改為明確欄位，不依物件名是否含「小孩」。模型維持免費本機Qwen，無新下載或API變更。
+- 等當次LLM回答／閱讀結束後，阿威移到玩家附近可行走位置（實測約3.2m），優先視線外，沿短路徑走到視線前；避開人物占用的迎接落點。原本已在很近的位置就直接走來。只瞬移NPC，不移動玩家；導航與單人帶路至原巨木、兩位同伴待命及後續查看倒地者保留。
+- 巨木前雙人鏡頭同時顯示阿威與中村正雄。阿威走近約1.25m再向警察說出守護者台詞，雙方彼此朝向；保護分支兩句相互對話也指定對方為聽者。
+- `review-east` 是第一輪診斷：主警察真實LLM回答「我叫中村正雄，是一名警察……」，九人2.99m可交談、3.01m不可，errors=0。發現迎接點可能與警察重疊後已增加占位檢查；此輪不能作為最終迎接畫面的證據。
+- 最終 `protect-full`：正式180秒，在截止前送出真實LLM問題，expiryWaited=true；含生成／閱讀200.293秒。迎接1.501秒，路徑3.514m，玩家身體和鏡頭位置差0。九人範圍與命名、指南巡走、雙人畫面和朝向通過，護樹後兩位同伴Examining=true並進入Meeting；errors=0、warnings=2（既有停用音源），checks.passed=true。
+- 最終 `final-west`：探索縮短25秒，玩家在西側面朝西；迎接1.774秒，附近路徑4.164m。保留等候落後玩家，實際以CharacterController走到巨木，砍倒巨木並進入Meeting；errors=0、warnings=15（13既有Missing Script、2停用音源），checks.passed=true。
+- 最終 `final-behind`：探索縮短25秒，以實際Input System E事件開啟主警察對話，再把玩家測試起點移到巨木後方朝北；迎接1.821秒，路徑4.164m，反向返回巨木與護樹、兩同伴查看至Meeting通過；errors=0、warnings=2，checks.passed=true。各輪五處導航取樣均完整，不能解讀為已實際走遍所有地圖角落。
+- `night-names`：正式Play→P事件路徑，四位既定人名正確、夜間全員具名，第一位達多的字幕仍為「達多·莫那（莫那·魯道之子）」。errors=0、warnings=15，檢查通過。本輪夜間只測開場至達多第一句，未重跑支持／拒絕完整結尾。
+- 截圖已實際查看，包括警察LLM姓名答覆、E鍵介面、修正後近距迎接、雙人對話、兩同伴查看、砍樹及P夜间首句。精選預覽：`Documentation/Chapter2-named-tree-exchange-preview.png`、`Documentation/Chapter2-named-officer-dialogue-preview.png`。
+- 驗證為Unity Editor加測試驅動的輸入／導航移動與引擎渲染，非真人完整走图、獨立建置或實體VR。未修改／測試第一章；未提交／推送GitHub。已有的遺失腳本與停用音源警告保留於各輪報告，並未宣稱修復。
+
+- 本輪清理完成：兩個臨時Editor probe及meta已移到verification-tools，正式Assets已移除。Unity重新編譯／domain reload完成，實際Console為0 Error／0 Warning／0 Log，Play停止且無場景未儲存星號；不取代上列測試警告紀錄。10個正式程式／場景檔案與最終測試雜湊一致，第一章場景SHA-256未變。正式來源及文件共3489檔，無單檔達100,000,000 bytes，最大89,742,488 bytes；退出Play後無llama-server殘留。
