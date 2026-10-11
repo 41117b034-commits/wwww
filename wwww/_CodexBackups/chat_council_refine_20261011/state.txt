@@ -1,0 +1,10 @@
+scene=第二章 playing=False dirty=False compilationFailed=False
+stage=Intro tree=(0.00, 0.00, 12.00) approach=(0.00, 0.00, 8.60) fire=(0.00, 0.00, 0.00) mona=(0.00, 0.02, 3.10)
+阿威·比胡=(-1.50, 0.02, -12.00)
+達奇斯·諾幹=(3.80, 0.03, 9.80)
+拉娃·塔道=(-3.80, 0.09, 10.30)
+trunk collider CapsuleCollider=Center: (0.00, 10.00, 12.00), Extents: (1.50, 10.00, 1.50)
+trunk collider MeshCollider=Center: (0.00, 11.00, 11.90), Extents: (2.32, 11.00, 2.27)
+button=Choice text= pos=(-0.18, 1.69, -16.50)
+button=Choice text= pos=(0.00, 1.56, -16.50)
+button=Choice text= pos=(0.18, 1.69, -16.50)

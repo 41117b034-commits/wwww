@@ -1,0 +1,100 @@
+2026-10-11T15:34:14 Warning Can not play a disabled audio source
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,40): error CS1023: Embedded statement cannot be a declaration or labeled statement
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,89): error CS0103: The name 'd' does not exist in the current context
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,92): error CS0103: The name 'd' does not exist in the current context
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,151): error CS0103: The name 'd' does not exist in the current context
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,174): error CS0103: The name 'd' does not exist in the current context
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,207): error CS0103: The name 'a' does not exist in the current context
+2026-10-11T15:34:23 Error Assets\Editor\Chapter2RefineProbe.cs(58,218): error CS0103: The name 'a' does not exist in the current context
+2026-10-11T15:34:26 Warning Can not play a disabled audio source
+2026-10-11T15:55:53 Warning Can not play a disabled audio source
+2026-10-11T15:56:01 Warning Can not play a disabled audio source
+2026-10-11T16:01:08 Exception IOException: Sharing violation on path C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\chat_council_refine_20261011\command.txt
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.File.ReadAllText (System.String path) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2RefineProbe.Tick () (at Assets/Editor/Chapter2RefineProbe.cs:21)
+UnityEditor.EditorApplication.Internal_CallUpdateFunctions () (at <5818bc53b12b4560b54110897827736e>:0)
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1Interactable.cs(77,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Tonemapping.cs(237,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1StorySubtitleBridge.cs(288,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ScreenSpaceAmbientOcclusion.cs(58,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\PostEffectsBase.cs(97,54): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\NoiseAndScratches.cs(47,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(23,18): warning CS0618: 'SystemInfo.supportsRenderTextures' is obsolete: 'supportsRenderTextures always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(53,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\MotionBlur.cs(68,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Blur.cs(49,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ImageEffectBase.cs(20,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(182,25): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(316,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(326,13): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\Bloom.cs(347,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\ContrastStretch.cs(91,18): warning CS0618: 'SystemInfo.supportsImageEffects' is obsolete: 'supportsImageEffects always returns true, no need to call it'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(134,17): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\Realistic Terrain Collection\Other\Effects\ImageEffects\Scripts\DepthOfField.cs(140,5): warning CS0618: 'RenderTexture.MarkRestoreExpected()' is obsolete: 'This function has no effect.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(1182,13): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3399,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(3504,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(4067,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(7356,48): warning CS0618: 'Object.FindObjectsOfType<T>(bool)' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15612,26): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15617,24): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15622,32): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1PerformanceController.cs(15627,35): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindFirstObjectByType instead or if finding any instance is acceptable the faster Object.FindAnyObjectByType'
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(292,18): warning CS0414: The field 'Chapter1CircleDancer.sharedGroundReady' is assigned but its value is never used
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(270,18): warning CS0414: The field 'Chapter1CircleDancer.hasInitialGroundY' is assigned but its value is never used
+2026-10-11T16:16:25 Warning Assets\腳本\第一章演出\Chapter1CircleDancer.cs(254,18): warning CS0414: The field 'Chapter1CircleDancer.initialOrderAngleCaptured' is assigned but its value is never used
+2026-10-11T16:25:42 Warning Can not play a disabled audio source
+2026-10-11T16:39:15 Warning Can not play a disabled audio source
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:23 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:46:24 Warning Can not play a disabled audio source
+2026-10-11T16:46:31 Warning Can not play a disabled audio source
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T16:53:19 Warning Can not play a disabled audio source
+2026-10-11T16:53:27 Warning Can not play a disabled audio source
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning The referenced script (Unknown) on this Behaviour is missing!
+2026-10-11T17:09:55 Warning Can not play a disabled audio source
+2026-10-11T17:10:05 Warning Can not play a disabled audio source

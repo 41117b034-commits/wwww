@@ -21,6 +21,10 @@ public sealed class Chapter2Player : MonoBehaviour
     CharacterController motor;
     float pitch, gravity, nextSnap;
     bool previousTrigger, previousPrimary, previousSecondary;
+    bool conversationView;
+    Vector3 beforeChatPosition, beforeChatViewPosition;
+    Quaternion beforeChatRotation, beforeChatViewRotation;
+    float beforeChatPitch;
     readonly List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
     public static bool Key(KeyControlName k)
     {
@@ -109,5 +113,48 @@ public sealed class Chapter2Player : MonoBehaviour
         transform.rotation=Quaternion.LookRotation(Vector3.ProjectOnPlane(direction,Vector3.up));
         pitch=-Mathf.Atan2(direction.y,new Vector2(direction.x,direction.z).magnitude)*Mathf.Rad2Deg;
         view.transform.localRotation=Quaternion.Euler(pitch,0,0);
+    }
+
+    // A temporary conversation shot. Keep the exploration position and restore it
+    // on exit; opening a chat must not permanently move either person.
+    public void BeginConversationView(Transform person, float eyeHeight)
+    {
+        EndConversationView();
+        beforeChatPosition=transform.position; beforeChatRotation=transform.rotation;
+        beforeChatViewPosition=view.transform.localPosition; beforeChatViewRotation=view.transform.localRotation;
+        beforeChatPitch=pitch; conversationView=true;
+        Vector3 away=Vector3.ProjectOnPlane(view.transform.position-person.position,Vector3.up).normalized;
+        if(away.sqrMagnitude<.01f)away=-Vector3.ProjectOnPlane(view.transform.forward,Vector3.up).normalized;
+        Vector3 eyes=person.position+Vector3.up*eyeHeight;
+        Vector3 shot=eyes+away*2.35f;
+        // Keep a consistent distance, selecting another side if a tree blocks it.
+        foreach(float angle in new[]{0f,30f,-30f,60f,-60f,90f,-90f,180f})
+        {
+            Vector3 direction=Quaternion.AngleAxis(angle,Vector3.up)*away;
+            Vector3 candidate=eyes+direction*2.35f;
+            bool blocked=false;
+            foreach(var hit in Physics.SphereCastAll(eyes+direction*.45f,.16f,direction,1.9f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                if(!hit.transform.IsChildOf(person)&&!hit.transform.IsChildOf(transform)){blocked=true;break;}
+            if(blocked)continue;
+            shot=candidate;break;
+        }
+        if(IsVR)
+        {
+            // Move the rig origin, while preserving the tracked head orientation.
+            RestoreGroundPosition(transform.position+Vector3.ProjectOnPlane(shot-view.transform.position,Vector3.up));
+        }
+        else
+        {
+            view.transform.position=shot;
+            view.transform.rotation=Quaternion.LookRotation(eyes-Vector3.up*.40f-shot);
+        }
+    }
+    public void EndConversationView()
+    {
+        if(!conversationView)return;
+        conversationView=false;
+        RestoreGroundPosition(beforeChatPosition);transform.rotation=beforeChatRotation;
+        view.transform.localPosition=beforeChatViewPosition;view.transform.localRotation=beforeChatViewRotation;
+        pitch=beforeChatPitch;
     }
 }

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "attempts": 27,
+  "errors": 0,
+  "fixedDistanceMetres": 2.35,
+  "keyboardE": true,
+  "escape": true,
+  "expirationRestoresView": true,
+  "outOfRangeRejected": true
+}

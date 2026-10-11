@@ -1,0 +1,14 @@
+1.600906 
+6.665462 Hilt
+17.83296 Concern
+31.89835 Fire
+49.79327 Resolve
+57.50264 EyesClosed
+61.58692 MonaRise
+62.90139 Declare
+83.8555 TadoRise
+85.20182 Stab
+87.50453 Planted
+93.61042 WarriorsRise
+96.00327 Pledge
+102.3542 Nod

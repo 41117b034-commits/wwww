@@ -31,6 +31,7 @@ public sealed class Chapter2Actor : MonoBehaviour
     float finalLift=-1;
     Vector3 previous;
     Transform leftThigh,rightThigh,leftKnee,rightKnee,leftFoot,rightFoot;
+    Transform seatedRoot;
     void Start()
     {
         var animator = GetComponentInChildren<Animator>();
@@ -44,6 +45,12 @@ public sealed class Chapter2Actor : MonoBehaviour
         rightKnee=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerLeg,"R_Calf","RightLeg");
         leftFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftFoot,"L_Foot","LeftFoot");
         rightFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightFoot,"R_Foot","RightFoot");
+        // Some imported humanoids map Hips to Pelvis, while Waist is its sibling
+        // under Hip. Lower their shared bone so the torso follows the seated legs.
+        seatedRoot=Rig.Hips;
+        while(seatedRoot && Rig.Head && !Rig.Head.IsChildOf(seatedRoot) &&
+              seatedRoot.parent && seatedRoot.parent!=transform && seatedRoot.parent!=animator.transform)
+            seatedRoot=seatedRoot.parent;
         previous = transform.position;
         skins=GetComponentsInChildren<SkinnedMeshRenderer>();
     }
@@ -78,7 +85,7 @@ public sealed class Chapter2Actor : MonoBehaviour
             // Council stumps are 0.44 m high. Different donor rigs have different
             // pelvis heights; keep the seated pelvis above the seat surface.
             float seatDrop=Mathf.Max(0,Rig.Hips.position.y-seatedHipHeight);
-            Rig.Hips.position += Vector3.down * (seatDrop*SeatWeight);
+            (seatedRoot?seatedRoot:Rig.Hips).position += Vector3.down * (seatDrop*SeatWeight);
             Chapter1IncidentRig.Solve(leftThigh,leftKnee,leftFoot,l,Rig.Forward);
             Chapter1IncidentRig.Solve(rightThigh,rightKnee,rightFoot,r,Rig.Forward);
         }

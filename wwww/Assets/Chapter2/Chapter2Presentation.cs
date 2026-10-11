@@ -14,19 +14,21 @@ public sealed class Chapter2Presentation : MonoBehaviour
     public RectTransform safeZone;
     bool inVR;
     Text locationCaption;
+    CanvasGroup locationCaptionGroup;
     public void ShowLocationCaption(string text, float alpha = 1)
     {
         if (!locationCaption)
         {
-            locationCaption=Label(canvas.transform,"",36,new Vector2(.2f,.72f),new Vector2(.8f,.83f),
-                new Color(.93f,.84f,.65f),TextAnchor.MiddleCenter);
-            locationCaption.name="夜景地點介紹";
-            locationCaption.gameObject.AddComponent<Shadow>().effectDistance=new Vector2(2,-2);
-            locationCaption.transform.SetSiblingIndex(fade.transform.GetSiblingIndex());
+            var background=Panel(canvas.transform,"夜景地點介紹",new Vector2(.08f,.035f),new Vector2(.92f,.19f),new Color(0,0,0,.90f));
+            locationCaptionGroup=background.gameObject.AddComponent<CanvasGroup>();
+            locationCaptionGroup.blocksRaycasts=false;locationCaptionGroup.interactable=false;
+            locationCaption=Label(background,"",34,new Vector2(.04f,.12f),new Vector2(.96f,.88f),
+                Color.white,TextAnchor.MiddleLeft);
+            background.SetSiblingIndex(fade.transform.GetSiblingIndex());
         }
         locationCaption.text=text;
-        locationCaption.color=new Color(.93f,.84f,.65f,alpha);
-        locationCaption.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        locationCaptionGroup.alpha=Mathf.Clamp01(alpha);
+        locationCaptionGroup.gameObject.SetActive(!string.IsNullOrEmpty(text));
     }
     public void ConfigureVR(bool value)
     {

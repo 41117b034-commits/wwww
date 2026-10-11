@@ -1,0 +1,17 @@
+Warning Can not play a disabled audio source
+Log [Chapter2] Stage=Intro
+Warning Can not play a disabled audio source
+Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+Log [Chapter2] Stage=Meeting
+Exception IOException: Sharing violation on path C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\chat_council_refine_20261011\command.txt
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.File.ReadAllText (System.String path) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2RefineProbe.Tick () (at Assets/Editor/Chapter2RefineProbe.cs:21)
+UnityEditor.EditorApplication.Internal_CallUpdateFunctions () (at <5818bc53b12b4560b54110897827736e>:0)
+

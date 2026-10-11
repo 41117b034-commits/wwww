@@ -12,10 +12,12 @@ using Object = UnityEngine.Object;
 public static class Chapter2CouncilKnifeAuthoring
 {
     const string Folder = "Assets/Chapter2/Props";
-    public static readonly Vector3 Tip = new Vector3(-.013f, .50f, 0);
-    static readonly float[] Y = { .061f, .12f, .24f, .36f, .44f, .48f, .50f };
-    static readonly float[] Back = { -.018f, -.019f, -.021f, -.023f, -.024f, -.021f, -.013f };
-    static readonly float[] Edge = { .019f, .027f, .036f, .044f, .040f, .021f, -.013f };
+    // M137701-02 photograph: broad parallel body, one curved cutting edge ending
+    // at the BACK of the blade. Avoid the centred spear point of a double-edged sword.
+    public static readonly Vector3 Tip = new Vector3(-.032f, .355f, 0);
+    static readonly float[] Y = { .045f, .054f, .067f, .135f, .214f, .272f, .300f, .325f, .343f, .355f };
+    static readonly float[] Back = { -.009f, -.026f, -.029f, -.028f, -.027f, -.028f, -.029f, -.030f, -.031f, -.032f };
+    static readonly float[] Edge = { .009f, .029f, .029f, .028f, .025f, .018f, .009f, -.005f, -.022f, -.032f };
     sealed class Parts
     {
         public Mesh blade, handle, sheath, collar;
@@ -75,7 +77,7 @@ public static class Chapter2CouncilKnifeAuthoring
         // Eleven retaining wires cross the open face; not decorative sword guards.
         for (int i = 0; i < 11; i++)
         {
-            float y = Mathf.Lerp(.086f, .467f, i / 10f);
+            float y = Mathf.Lerp(.073f, .326f, i / 10f);
             float left = Sample(Back, y) - .009f, right = Sample(Edge, y) + .009f;
             var wire = new GameObject("固定鐵條 " + (i + 1).ToString("00")).transform;
             wire.SetParent(sheath, false);
@@ -84,7 +86,7 @@ public static class Chapter2CouncilKnifeAuthoring
             Bar(wire, "右扣", new Vector3(right, y, -.003f), new Vector3(.003f, .003f, .027f), p.iron);
         }
         // Two simple dark-fibre bindings, without unrelated tribal motifs.
-        foreach (float y in new[] { .15f, .32f })
+        foreach (float y in new[] { .12f, .25f })
         {
             float left = Sample(Back, y) - .012f, right = Sample(Edge, y) + .012f;
             Bar(sheath, "背面繫帶", new Vector3((left + right) * .5f, y, -.037f), new Vector3(right - left, .012f, .005f), p.tie);
@@ -95,8 +97,8 @@ public static class Chapter2CouncilKnifeAuthoring
     {
         if (!AssetDatabase.IsValidFolder(Folder)) AssetDatabase.CreateFolder("Assets/Chapter2", "Props");
         var p = new Parts();
-        p.iron = Material("CouncilBlade", new Color(.24f, .255f, .25f), .68f, .25f);
-        p.edge = Material("CouncilKnifeEdge", new Color(.52f, .53f, .48f), .75f, .39f);
+        p.iron = Material("CouncilBlade", new Color(.19f, .20f, .19f), .48f, .19f);
+        p.edge = Material("CouncilKnifeEdge", new Color(.34f, .35f, .32f), .62f, .24f);
         p.wood = Material("CouncilHilt", new Color(.32f, .18f, .085f), 0, .2f);
         p.sheathWood = Material("CouncilScabbardWood", new Color(.38f, .24f, .12f), 0, .16f);
         p.tie = Material("CouncilKnifeBinding", new Color(.12f, .095f, .052f), 0, .1f);
@@ -108,7 +110,7 @@ public static class Chapter2CouncilKnifeAuthoring
         for (int i = 0; i < Y.Length - 1; i++)
         {
             // Broad forged face, narrow bevel on the cutting edge only.
-            float b0 = Mathf.Lerp(Back[i], Edge[i], .77f), b1 = Mathf.Lerp(Back[i + 1], Edge[i + 1], .77f);
+            float b0 = Mathf.Lerp(Back[i], Edge[i], .92f), b1 = Mathf.Lerp(Back[i + 1], Edge[i + 1], .92f);
             float t0 = .003f, t1 = i == Y.Length - 2 ? .00025f : .003f;
             for (int side = -1; side <= 1; side += 2)
             {
@@ -125,14 +127,14 @@ public static class Chapter2CouncilKnifeAuthoring
         blade.Quad(new Vector3(Back[0], Y[0], -.003f), new Vector3(Edge[0], Y[0], -.0003f),
             new Vector3(Edge[0], Y[0], .0003f), new Vector3(Back[0], Y[0], .003f), 0);
         p.blade = Save("CouncilKnifeBlade", blade.Finish());
-        p.handle = Save("CouncilKnifeHandle", Oval(new[] { -.115f, -.10f, -.055f, .016f, .048f, .062f },
-            new[] { .027f, .025f, .0215f, .019f, .0175f, .017f }, new[] { -.009f, -.006f, -.002f, 0f, 0f, 0f }, .80f));
-        p.collar = Save("CouncilKnifeCollar", Oval(new[] { .043f, .0615f }, new[] { .019f, .0185f }, new[] { 0f, 0f }, .83f));
+        p.handle = Save("CouncilKnifeHandle", Oval(new[] { -.09f, -.079f, -.045f, .012f, .035f, .047f },
+            new[] { .022f, .021f, .0175f, .0125f, .010f, .010f }, new[] { -.012f, -.010f, -.006f, -.002f, 0f, 0f }, .80f));
+        p.collar = Save("CouncilKnifeCollar", Oval(new[] { .033f, .047f }, new[] { .0115f, .0115f }, new[] { 0f, 0f }, .83f));
         var outline = new List<Vector2>();
-        outline.Add(new Vector2(Back[0] - .012f, .059f));
-        outline.Add(new Vector2(Edge[0] + .012f, .059f));
+        outline.Add(new Vector2(-.041f, .050f));
+        outline.Add(new Vector2(.043f, .050f));
         for (int i = 1; i < Y.Length; i++) outline.Add(new Vector2(Edge[i] + .012f, Y[i]));
-        outline.Add(new Vector2(Tip.x, .514f));
+        outline.Add(new Vector2(Tip.x, .370f));
         for (int i = Y.Length - 1; i >= 1; i--) outline.Add(new Vector2(Back[i] - .012f, Y[i]));
         p.sheath = Save("CouncilKnifeScabbard", Slab(outline, -.033f, -.006f));
         return p;
@@ -218,7 +220,7 @@ public static class Chapter2CouncilKnifeAuthoring
     }
     static Mesh Slab(List<Vector2> outline, float back, float front)
     {
-        var b = new Builder(1); Vector2 center = new Vector2(.003f, .27f);
+        var b = new Builder(1); Vector2 center = new Vector2(-.006f, .19f);
         for (int i = 0; i < outline.Count; i++)
         {
             Vector2 a = outline[i], n = outline[(i + 1) % outline.Count];

@@ -1,0 +1,15 @@
+Warning Can not play a disabled audio source
+Log [Chapter2] Stage=Intro
+Error Assets\Editor\Chapter2RefineProbe.cs(58,40): error CS1023: Embedded statement cannot be a declaration or labeled statement
+Error Assets\Editor\Chapter2RefineProbe.cs(58,89): error CS0103: The name 'd' does not exist in the current context
+Error Assets\Editor\Chapter2RefineProbe.cs(58,92): error CS0103: The name 'd' does not exist in the current context
+Error Assets\Editor\Chapter2RefineProbe.cs(58,151): error CS0103: The name 'd' does not exist in the current context
+Error Assets\Editor\Chapter2RefineProbe.cs(58,174): error CS0103: The name 'd' does not exist in the current context
+Error Assets\Editor\Chapter2RefineProbe.cs(58,207): error CS0103: The name 'a' does not exist in the current context
+Error Assets\Editor\Chapter2RefineProbe.cs(58,218): error CS0103: The name 'a' does not exist in the current context
+Warning Can not play a disabled audio source
+Log Reduced additional punctual light shadows resolution by 2 to make 6 shadow maps fit in the 2048x2048 shadow atlas. To avoid this, increase shadow atlas size, decrease big shadow resolutions, or reduce the number of shadow maps active in the same frame
+Log [Chapter2] Stage=Meeting
+Log [Chapter2] Stage=Vote
+Log [Chapter2] Stage=Ending
+Log [Chapter2] Stage=Complete

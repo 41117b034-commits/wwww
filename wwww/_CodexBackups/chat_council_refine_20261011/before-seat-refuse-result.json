@@ -1,0 +1,505 @@
+{
+    "label": "before-seat-refuse",
+    "prefsBefore": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":80.0,\"validCuts\":5,\"failedCuts\":1,\"casualties\":0,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":80.0,\"validCuts\":5,\"failedCuts\":1,\"casualties\":0,\"completed\":true}",
+    "finalStage": "Complete",
+    "completed": true,
+    "playingAfterExit": false,
+    "dirty": false,
+    "allStanding": false,
+    "endingCard": false,
+    "approached": true,
+    "knifePlanted": false,
+    "prefsUnchanged": true,
+    "elapsed": 113.55470275878906,
+    "knifeTipHeight": 0.0,
+    "minApproachFireDistance": 1.5040028095245362,
+    "errors": 7,
+    "warnings": 2,
+    "houses": 4,
+    "initialActors": 10,
+    "initialSeated": 10,
+    "childAlwaysSeated": true,
+    "childPresent": true,
+    "childHasKnife": false,
+    "maxHouseTilt": 0.0,
+    "maxHouseGroundGap": 0.0,
+    "childHipHeight": 0.3800000548362732,
+    "nightIntroSeen": true,
+    "introCleared": true,
+    "maxWalkSideDrift": 0.058141112327575687,
+    "refusalWalk": [
+        {
+            "x": 1.5499999523162842,
+            "y": 0.05000000074505806,
+            "z": -5.800000190734863
+        },
+        {
+            "x": 1.5488518476486207,
+            "y": 0.050734203308820727,
+            "z": -5.670036315917969
+        },
+        {
+            "x": 1.5481029748916627,
+            "y": 0.05121307447552681,
+            "z": -5.585269451141357
+        },
+        {
+            "x": 1.5455392599105836,
+            "y": 0.05285249277949333,
+            "z": -5.295070648193359
+        },
+        {
+            "x": 1.5406970977783204,
+            "y": 0.055948931723833087,
+            "z": -4.7469587326049809
+        },
+        {
+            "x": 1.5364694595336915,
+            "y": 0.05865238979458809,
+            "z": -4.2684102058410648
+        },
+        {
+            "x": 1.5317559242248536,
+            "y": 0.06166653335094452,
+            "z": -3.734866142272949
+        },
+        {
+            "x": 1.5264885425567628,
+            "y": 0.065034881234169,
+            "z": -3.1386232376098635
+        },
+        {
+            "x": 1.5212639570236207,
+            "y": 0.06837590038776398,
+            "z": -2.547217845916748
+        },
+        {
+            "x": 1.5159165859222413,
+            "y": 0.07179538160562515,
+            "z": -1.9419234991073609
+        },
+        {
+            "x": 1.5110249519348145,
+            "y": 0.07492342591285706,
+            "z": -1.3882179260253907
+        },
+        {
+            "x": 1.506636381149292,
+            "y": 0.07772980630397797,
+            "z": -0.8914505243301392
+        },
+        {
+            "x": 1.5034860372543336,
+            "y": 0.07974442094564438,
+            "z": -0.5348358750343323
+        },
+        {
+            "x": 1.4997586011886597,
+            "y": 0.08212801069021225,
+            "z": -0.11290913820266724
+        },
+        {
+            "x": 1.4952669143676758,
+            "y": 0.08500032126903534,
+            "z": 0.39552929997444155
+        },
+        {
+            "x": 1.4939097166061402,
+            "y": 0.08586814999580383,
+            "z": 0.549146831035614
+        },
+        {
+            "x": 1.4925657510757447,
+            "y": 0.08672760426998139,
+            "z": 0.701282262802124
+        },
+        {
+            "x": 1.4918588399887086,
+            "y": 0.08717967569828034,
+            "z": 0.7813044786453247
+        }
+    ],
+    "lines": [
+        {
+            "speaker": "達多·莫那（莫那·魯道之子）",
+            "text": "父親！",
+            "cue": "Hilt",
+            "time": 6.6325483322143559,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "達多·莫那（莫那·魯道之子）",
+            "text": "日本人逼我們砍巨木、扣工資，",
+            "cue": "Hilt",
+            "time": 8.024068832397461,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "達多·莫那（莫那·魯道之子）",
+            "text": "連敬酒都要被打！",
+            "cue": "Hilt",
+            "time": 11.078814506530762,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "達多·莫那（莫那·魯道之子）",
+            "text": "我們還要忍到什麼時候？",
+            "cue": "Hilt",
+            "time": 13.241183280944825,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "達多，冷靜！",
+            "cue": "Concern",
+            "time": 17.275283813476564,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "日本人的槍砲比樹葉還多。",
+            "cue": "Concern",
+            "time": 19.351627349853517,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "動了手，",
+            "cue": "Concern",
+            "time": 22.20724868774414,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "部落的婦女和孩子怎麼辦？",
+            "cue": "Concern",
+            "time": 24.23188018798828,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "莫那，這是一條死路啊！",
+            "cue": "Concern",
+            "time": 27.155073165893556,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "死路？",
+            "cue": "Fire",
+            "time": 31.04212188720703,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "瓦旦，看看我們的年輕人，",
+            "cue": "Fire",
+            "time": 32.97890090942383,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "手是用來握獵刀的，",
+            "cue": "Fire",
+            "time": 35.9658088684082,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "現在卻在幫日人扛木材。",
+            "cue": "Fire",
+            "time": 38.39469909667969,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "丟了 Gaya（祖靈的教誨），",
+            "cue": "Fire",
+            "time": 41.194496154785159,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "我們活著和野獸有什麼兩樣？",
+            "cue": "Fire",
+            "time": 44.514686584472659,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威（年輕戰士）",
+            "text": "頭目！",
+            "cue": "Resolve",
+            "time": 48.89439392089844,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威（年輕戰士）",
+            "text": "我寧可做自由的鬼，",
+            "cue": "Resolve",
+            "time": 50.59754943847656,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "巴萬·拿威（年輕戰士）",
+            "text": "也不做屈辱的人！",
+            "cue": "Resolve",
+            "time": 53.15863800048828,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "瓦旦（長老代表）",
+            "text": "我們打不贏日本帝國的……",
+            "cue": "EyesClosed",
+            "time": 56.79170227050781,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "明天的運動會，",
+            "cue": "Declare",
+            "time": 62.26533126831055,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "日本官吏都在公學校。",
+            "cue": "Declare",
+            "time": 64.37712097167969,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "那是祖靈給的唯一機會！",
+            "cue": "Declare",
+            "time": 66.87773132324219,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "我莫那·魯道已經決定起義，",
+            "cue": "Declare",
+            "time": 69.5370864868164,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "用鮮血洗刷屈辱！",
+            "cue": "Declare",
+            "time": 72.620361328125,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "賽德克巴萊的子孫們，",
+            "cue": "Declare",
+            "time": 74.86646270751953,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "你們，願不願意跟隨我？",
+            "cue": "Declare",
+            "time": 77.53740692138672,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 1.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "玩家",
+            "text": "莫那頭目，這根本是自殺！我想活下去……",
+            "cue": "Rest",
+            "time": 87.29684448242188,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "活下去？",
+            "cue": "Cold",
+            "time": 91.5355224609375,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "那就去向日本人跪下！",
+            "cue": "Cold",
+            "time": 93.40764617919922,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "去幫他們扛木頭、",
+            "cue": "Cold",
+            "time": 95.92674255371094,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "聽他們叫你生番！",
+            "cue": "Cold",
+            "time": 98.26168060302735,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "滾！",
+            "cue": "Expel",
+            "time": 101.1798095703125,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "彩虹橋上沒有你的位置，",
+            "cue": "Expel",
+            "time": 103.01260375976563,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        },
+        {
+            "speaker": "莫那·魯道（賽德克社頭目）",
+            "text": "你不配稱為 Sediq Bale（真的人）！",
+            "cue": "Expel",
+            "time": 105.76123809814453,
+            "gazeError": 0.0,
+            "wristBend": 0.0,
+            "fist": 0.0,
+            "visualLines": 1,
+            "speakerLines": 1
+        }
+    ],
+    "stages": [
+        "Meeting",
+        "Vote",
+        "Ending",
+        "Complete"
+    ]
+}

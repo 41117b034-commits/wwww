@@ -182,10 +182,10 @@ public sealed class Chapter2Exploration : MonoBehaviour
         if(!Active || RemainingSeconds<=0 || !npc || Distance(npc)>interactionRadius || System.Array.IndexOf(participants,npc)<0)return false;
         CloseChat();conversationVersion++;current=npc;
         if(!histories.ContainsKey(npc))histories[npc]=new List<Chapter2LocalDialogue.Message>();
-        current.ConversationPartner=chapter.player.transform;
+        current.ConversationPartner=chapter.player.view.transform;
         chapter.player.canMove=false;chapter.player.canLook=false;
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
-        chapter.player.FocusOn(npc.transform.position+Vector3.up*(npc.GetComponent<Chapter2Actor>().isChild?.95f:1.45f));
+        chapter.player.BeginConversationView(npc.transform,npc.GetComponent<Chapter2Actor>().isChild?.95f:1.5f);
         title.text=DisplayName(npc);input.text="";LastError=null;LastReply=null;pendingQuestion=null;
         chapter.ui.hint.text="";
         panel.SetActive(true);HideGreetings();RefreshTranscript();
@@ -222,6 +222,7 @@ public sealed class Chapter2Exploration : MonoBehaviour
     public void CloseChat()
     {
         conversationVersion++;
+        if(chapter && chapter.player)chapter.player.EndConversationView();
         if(current){current.ConversationPartner=null;current.GetComponent<Chapter2Actor>().speaking=false;}
         current=null;pendingQuestion=null;answerVisibleUntil=0;
         if(client && client.Busy)client.CancelRequest();

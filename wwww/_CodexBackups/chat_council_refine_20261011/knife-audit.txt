@@ -1,0 +1,8 @@
+達多·莫那 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+古慕·阿基 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+巴萬·拿威 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+伊婉·阿比斯 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+露比·巴干 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+比胡·帖木 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+歐冰·拿威 prop=賽德克佩刀 scale=(1.00, 1.00, 1.00) tip=(-0.03, 0.36, 0.00) blade=Center: (0.00, 0.20, 0.00), Extents: (0.03, 0.16, 0.00) handle=Center: (-0.01, -0.02, 0.00), Extents: (0.02, 0.07, 0.02)
+PASS: seven adult props, no sword guards, no colliders, persisted mesh and tip references.
