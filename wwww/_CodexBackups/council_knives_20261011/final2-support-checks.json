@@ -1,0 +1,9 @@
+{
+  "label": "final2-support",
+  "passed": true,
+  "dialogueLines": 35,
+  "errors": 0,
+  "warnings": 2,
+  "playingAfterExit": false,
+  "failures": []
+}

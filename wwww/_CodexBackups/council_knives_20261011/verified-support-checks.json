@@ -1,0 +1,12 @@
+{
+  "label": "verified-support",
+  "passed": false,
+  "dialogueLines": 35,
+  "errors": 0,
+  "warnings": 2,
+  "playingAfterExit": false,
+  "failures": [
+    "Child must remain a seated unarmed listener",
+    "Child seat height mismatch"
+  ]
+}

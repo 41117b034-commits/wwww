@@ -1,6 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-10。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-11。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+
+最新刀具：2026-10-11 第二章 Play → P 夜間七位持刀成年人已改用參考賽德克族館藏結構的簡化佩刀，移除十字護手，加入單刃、木柄及單面木鞘；插刀依新刀尖計算深度。原 Editor 的 final2-support／final2-refuse 均 checks.passed=true、errors=0，結尾自行停止 Play Mode，原分行字幕／分支／拳頭／座位保留。仍有停用音源與部分載入時遺失腳本警告，並非零警告驗收。證據及範圍見文末。
 
 最新輸入與問候：2026-10-10 對話輸入已支援 Enter／小鍵盤 Enter 送出，回答後恢復焦點；早安／你好僅留給一般族人，警察、小孩與阿威移除。鍵盤、空白、失焦、模擬IME及九人句庫驗證通過，詳見文末。
 
@@ -958,3 +960,17 @@ Chapter2GreetingBubble：早安／你好只加入一般成年族人的句庫。�
 實際驗證位於 _CodexBackups/chapter2_enter_greetings_20261010/：原專案編譯 failed=false。Play→空白鍵→開啟阿威對話，透過真正GameView Return／KeypadEnter事件經UGUI送出，使用臨時本機HTTP模擬回答（僅runtime將端點替換，未改雲端或本機設定檔、沒有雲端請求）。result.json passed=true、errors=0、warnings=1（既有音源）、playing=false、dirty=false。共3次模擬問答：Enter第一次、小鍵盤Enter追問、滑鼠送出；等待中按Enter不重送、回答後恢復focus。另確認空白Enter、點離欄位、組字中Enter與同幀組字提交、探索到期均不送出；全部九人句庫符合角色限制。正式探索仍180秒。
 
 IME以Input System組字事件模擬驗證，沒有逐一實测Windows注音／拼音候選視窗或實體VR；本輪非模型回答品質／雲端回歸。程式與第二章場景雜湊和測試時一致；臨時HTTP listener已關閉、Editor測試器移回備份，未提交或推送。
+
+## 2026-10-11 夜間會議改為賽德克佩刀
+
+本次只處理使用者確認的刀具替換。參考順益臺灣原住民博物館館藏 M137701-02 的文字說明（https://museum.org.tw/collection_detail.php?id=1189），自行建立單刃非對稱刀身、樸素木柄、窄鐵箍、單面木鞘與十一根固定鐵條。未使用外部圖片或模型；不宣稱為館藏精確複製、莫那家族特定人物實際用刀或歷史儀式還原。參考與製作界線見 Assets/Chapter2/Props/SeediqKnife_SOURCE.txt。
+
+新增 Editor/Chapter2CouncilKnifeAuthoring.cs，提供 Tools → Chapter 2 → Update Council Seediq Knives；僅重新建立既有刀具根物件的子零件。已對七位原有持刀成年人套用並儲存第二章場景：達多、古慕、巴萬、伊婉、露比、比胡、歐冰。莫那／瓦旦／小孩沒有新增刀。原根引用及握姿保留；既有刀刃網格 GUID 保留，新增木柄、窄鐵箍、木鞘網格與小型程序木紋，各新資產均低於 100 MB。
+
+Chapter2CouncilDrama 新增 knifeTip，插刀按真實刀尖位置埋入角色地面下約 7 cm，避免換短刀後懸空；未改手臂／手指動畫、台詞、鏡頭、角色姓名、房屋或其他章節。Chapter2CouncilStoryAuthoring 的刀具建置委派新工具，避免未來重新建置又恢復十字護手。本輪只執行刀具專用 Apply，未執行會重設其他劇情物件的全套作者工具。
+
+實際驗證：_CodexBackups/council_knives_20261011/。原 Unity 6000.0.58f1 Editor，透過 Input System 的 P 與 1／2 走正式會議流程；final2-support 35 行、final2-refuse 34 行均 checks.passed=true、errors=0、completed=true、playingAfterExit=false、dirty=false、prefsUnchanged=true。同意分支插刀、全員起身、原決戰字卡與淡黑停播通過；刀尖世界高度約 -0.0497，約為角色地面下 7 cm。拒絕分支走近、斥責、淡黑停播通過。兩輪均十人開場坐著，小孩全程坐著且無刀，原單行字幕／姓名與身分／發言視線／達多手腕／莫那握拳檢查通過。
+
+已檢視實際引擎畫面，包括達多按柄、巴萬拔刀、插刀與拒絕分支；knife-model-preview.png 是另外的清楚器物預覽。knife-audit.txt 確認七位、無十字護手、無道具 Collider、刀尖與網格引用有效。scene-preservation.json 確認場景修改前後 85 個腳本引用完全一致。final2-support 有 2 個停用音源警告；final2-refuse 有相同 2 個音源警告，另有 13 個載入時遺失腳本警告，因此不宣稱 Console 零警告。本次未修理音效或無關腳本，未重跑白天 LLM、砍樹全流程、建置版或實體 VR。
+
+初期 final-support 的 1 個例外來自臨時驗證器仍查舊座椅名稱；verified-support/refuse 的兒童檢查則因查舊姓名誤判。已讓驗證器依 isChild 辨識並完整重跑；以上 final2 兩輪才是最終驗證。臨時驗證器移回同備份資料夾 verification-tools，正式 Assets 不保留測試驅動器。原檔保存在 originals；未提交或推送 Git。

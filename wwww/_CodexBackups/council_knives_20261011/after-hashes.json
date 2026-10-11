@@ -1,0 +1,110 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity",
+    "Hash": "34B87027BC9F251095C4F0C29F81F5AB4776B1B082355B3404C7854B035E6156"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CouncilDrama.cs",
+    "Hash": "31F9237B5B04B7BEFE9D00A6B2B6779F86035DF3F07A79D515B405DD96C1F9EB"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter2CouncilStoryAuthoring.cs",
+    "Hash": "0214943144D41834F7F0330F58867B8A0A70D9BFED943AABD2D212EA522A0132"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter2CouncilKnifeAuthoring.cs",
+    "Hash": "613A9293278DE518D2F57105894A24913307894F0B451C3B523A53B357325DEB"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\PROJECT_CONTEXT.md",
+    "Hash": "4280C69578E8F27368C711815FE2D52FF0472E33EDB2DD4FC9332C377A067476"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilBlade.mat",
+    "Hash": "16C561C5DE60019C8473EEFEB6E346FF08D61FEF8729BFE77E6E8F3CE06B4812"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilBlade.mat.meta",
+    "Hash": "296B6080BF1B4A4E9F516E38BF60218E6E7C36F48BE49359A2CA471DA7E62583"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilHilt.mat",
+    "Hash": "50F6A3C8DA0A805DEF346E0F4AAEE2729EBB4C1168556592477DD18DF01CE725"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilHilt.mat.meta",
+    "Hash": "8B8D268082AE72AC57214D7ED42980B9E5D9971F5B8B6229B09FB6ACA8A7B42A"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeBinding.mat",
+    "Hash": "3160345A4447546C115614F9D5E29F314DE4E880F3018A799C94C24A5DB959CE"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeBinding.mat.meta",
+    "Hash": "4AC60AA06D929E2AAFB9EAC467A57D1816EC052527E2A44473E220FA84D27A35"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeBlade.asset",
+    "Hash": "B5079653A7ADA4B5575250C7F68E20CECCD8464D2C91FF3CBE1C87D2898BA925"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeBlade.asset.meta",
+    "Hash": "D6DA2767332FD91661FEF1F8523DF0C00B46BC9B327D74ED70C8915FE7E7104B"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeCollar.asset",
+    "Hash": "D82F34793F12AB4053D8F48EDB3360CAC55972BA6F08450D7EEB0F1180A2943C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeCollar.asset.meta",
+    "Hash": "4B263F915ADD7F24ABF7BFA4ECE6571DD86EAFF9FC863D0FA979A215C34911EA"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeEdge.mat",
+    "Hash": "A3D7954210641738A8E7EEBE00D946061F2A3E7E35AA115E3728032D700BF930"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeEdge.mat.meta",
+    "Hash": "9CA03B3705591E0D41CE02FEE6600AC411E8135326478F381929BB924D87A2DF"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeHandle.asset",
+    "Hash": "C2F63A3B6E5E888F7627C366EFF1F9BE04813F688EC0B092F7C8DA5B2E215777"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeHandle.asset.meta",
+    "Hash": "6AE1DE0B7F44BD0FF69395B3FC8AC4AEE88AC068F11E9DE2AF9241FDC35F5D9E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeScabbard.asset",
+    "Hash": "74B32CCCE0C97325C9EDF577967C69D95561E0F53A1B97BD4C47AEABBCB548CF"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeScabbard.asset.meta",
+    "Hash": "489E0C4E1818B0E8826EA422CD38667F4835F4AE4762663A08B23A347B726E75"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeWoodGrain.png",
+    "Hash": "79D734E69D3240BE2F6FED7697D589711D904A64ADFEC2AF14B30AE3E13EDF9E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilKnifeWoodGrain.png.meta",
+    "Hash": "BB603783F3531808B3E1E430EBFED4859645805634630CE54E5B38DA8AE5D4BA"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilScabbardWood.mat",
+    "Hash": "A88C78F68408F8E6798955F4712386352983D208296695877888D899C4BC5836"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\CouncilScabbardWood.mat.meta",
+    "Hash": "7F2668FC5BA4640300B694CBA9EE36C6422E248FC0B3398E0183651504186E27"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\SeediqKnife_SOURCE.txt",
+    "Hash": "759B710F2337A1D25AB7DFB93BE2B1AB8694F97E5694A3871FA90CA10FCD4E08"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Props\\SeediqKnife_SOURCE.txt.meta",
+    "Hash": "A5861E50AF2E966F483A5AD7BED3A96489149DF82BA4407790BA8AF50DDA6FBD"
+  }
+]

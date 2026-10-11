@@ -7,6 +7,7 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
     public enum Beat { Rest,Hilt,Concern,Fire,Resolve,EyesClosed,Declare,Cold,Expel,Stab,Planted,Draw,Pledge,Nod }
     public bool hasKnife;
     public Transform knife;
+    public Transform knifeTip;
     public SkinnedMeshRenderer gripRenderer;
     public Mesh gripMesh;
     public int gripShape=-1;
@@ -18,7 +19,7 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
     public float WristBend { get; private set; }
     public Beat CurrentBeat { get; private set; }
     public bool KnifePlanted { get; private set; }
-    public float KnifeTipHeight => knife ? (knife.position+knife.up*.58f).y : float.NaN;
+    public float KnifeTipHeight => knifeTip ? knifeTip.position.y : knife ? knife.TransformPoint(Vector3.up*.58f).y : float.NaN;
     Chapter2Actor actor;
     Transform arm,elbow,hand,spine;
     readonly Transform[] thighs=new Transform[2],knees=new Transform[2],feet=new Transform[2];
@@ -87,8 +88,11 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
                 float lift=Mathf.SmoothStep(0,1,Mathf.Clamp01(elapsed/.6f));
                 float drive=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.6f,1.15f,elapsed));
                 lean=42*drive;rig.Hips.position-=up*(h*.13f*drive);
-                plantedPosition=actor.transform.position+f*.49f+r*.31f+up*.5f;
                 plantedRotation=Quaternion.FromToRotation(up,-up);
+                // Keep the actual authored point 7 cm below the council ground.
+                Vector3 localTip=knifeTip&&knife?knife.InverseTransformPoint(knifeTip.position):Vector3.up*.58f;
+                Vector3 tipOffset=plantedRotation*Vector3.Scale(localTip,knife?knife.lossyScale:Vector3.one);
+                plantedPosition=actor.transform.position+f*.49f+r*.31f-up*.07f-tipOffset;
                 target=Vector3.Lerp(grip,arm.position+f*(h*.16f)+up*(h*.2f),lift);
                 target=Vector3.Lerp(target,plantedPosition,drive);direction=-up;
                 if(elapsed>=1.15f)KnifePlanted=true;
@@ -113,7 +117,7 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
         }
         if(poseArm)
         {
-            // A steady sword grip must not inherit the shared talking hand wave.
+            // A steady knife grip must not inherit the shared talking hand wave.
             Chapter1IncidentRig.Solve(arm,elbow,hand,Vector3.Lerp(hand.position,target,k),r+f*.2f-up*.3f);
             if(CurrentBeat==Beat.Expel)
             {
