@@ -25,26 +25,23 @@ public sealed class MenuPresentationController : MonoBehaviour
         "第一章",
         "第二章",
         "第三章",
-        "第四章",
-        "第五章"
+        "第四章"
     };
 
     private static readonly string[] ChapterTitles =
     {
         "第一章\n婚禮與導火線",
         "第二章\n新規定與秘密會議",
-        "第三章\n武裝準備與突襲計畫",
-        "第四章\n霧社突襲與戰鬥",
-        "第五章\n日軍鎮壓與毒氣攻擊"
+        "第三章\n霧社突襲與戰鬥",
+        "第四章\n日軍鎮壓與毒氣攻擊"
     };
 
     private static readonly Vector2[] ChapterPositions =
     {
-        new Vector2(-50f, 7f),
-        new Vector2(0f, 7f),
-        new Vector2(50f, 7f),
-        new Vector2(-25f, -29f),
-        new Vector2(25f, -29f)
+        new Vector2(-27f, 7f),
+        new Vector2(27f, 7f),
+        new Vector2(-27f, -29f),
+        new Vector2(27f, -29f)
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -832,7 +829,7 @@ public sealed class MenuPresentationController : MonoBehaviour
         }
     }
 
-    private void ArrangeChapterSelection()
+    public static void ArrangeChapterSelection()
     {
         TextMeshProUGUI[] allTexts =
             FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -965,7 +962,7 @@ public sealed class MenuPresentationController : MonoBehaviour
             ConfigureChapterSubtitle(buttonRect, label, ChapterTitles[i]);
         }
 
-        CenterCanvasVertically(canvas);
+        CenterCanvasVertically(canvas, true);
         Canvas.ForceUpdateCanvases();
     }
 
@@ -1043,7 +1040,7 @@ public sealed class MenuPresentationController : MonoBehaviour
         rect.SetAsLastSibling();
     }
 
-    private static void CenterCanvasVertically(Canvas canvas)
+    private static void CenterCanvasVertically(Canvas canvas, bool horizontal = false)
     {
         if (canvas == null)
         {
@@ -1071,12 +1068,14 @@ public sealed class MenuPresentationController : MonoBehaviour
             }
 
             screenPosition.y = Screen.height * 0.5f;
+            if (horizontal) screenPosition.x = Screen.width * 0.5f;
             canvasRect.position = camera.ScreenToWorldPoint(screenPosition);
         }
         else
         {
             Vector2 anchoredPosition = canvasRect.anchoredPosition;
             anchoredPosition.y = 0f;
+            if (horizontal) anchoredPosition.x = 0f;
             canvasRect.anchoredPosition = anchoredPosition;
         }
     }

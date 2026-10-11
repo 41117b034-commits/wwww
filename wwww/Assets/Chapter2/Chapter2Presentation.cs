@@ -13,6 +13,21 @@ public sealed class Chapter2Presentation : MonoBehaviour
     public Image fade, meter, cursor;
     public RectTransform safeZone;
     bool inVR;
+    Text locationCaption;
+    public void ShowLocationCaption(string text, float alpha = 1)
+    {
+        if (!locationCaption)
+        {
+            locationCaption=Label(canvas.transform,"",36,new Vector2(.2f,.72f),new Vector2(.8f,.83f),
+                new Color(.93f,.84f,.65f),TextAnchor.MiddleCenter);
+            locationCaption.name="夜景地點介紹";
+            locationCaption.gameObject.AddComponent<Shadow>().effectDistance=new Vector2(2,-2);
+            locationCaption.transform.SetSiblingIndex(fade.transform.GetSiblingIndex());
+        }
+        locationCaption.text=text;
+        locationCaption.color=new Color(.93f,.84f,.65f,alpha);
+        locationCaption.gameObject.SetActive(!string.IsNullOrEmpty(text));
+    }
     public void ConfigureVR(bool value)
     {
         if (value == inVR) return;

@@ -1,0 +1,72 @@
+{
+    "completed": true,
+    "stopped": true,
+    "dirty": false,
+    "chapter2Loaded": true,
+    "nightIntroSeen": true,
+    "introGoneBeforeDialogue": true,
+    "guideOutsideChoppingView": true,
+    "postFallFaceVisible": true,
+    "postFallBodyVisible": true,
+    "errors": 0,
+    "warnings": 2,
+    "cuts": 5,
+    "elapsed": 226.16107177734376,
+    "minTrunkClearance": 2.1113197803497316,
+    "refusalMinFireDistance": 999.0,
+    "maxRefusalSideDrift": 0.0,
+    "label": "menu-fell-support",
+    "prefsBefore": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":80.0,\"validCuts\":5,\"failedCuts\":1,\"casualties\":0,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"fell\",\"meetingChoice\":\"support\",\"woodIntegrity\":80.0,\"validCuts\":5,\"failedCuts\":1,\"casualties\":0,\"completed\":true}",
+    "beats": [
+        "gameplay",
+        "introduction",
+        "exploration",
+        "guide-approaching",
+        "guide-in-front",
+        "police-speaking",
+        "villager-step-forward",
+        "villager-speaking",
+        "confrontation",
+        "chopping",
+        "tree-warning",
+        "tree-falling",
+        "council-overview",
+        "council-speaker",
+        "council-standing-speaker",
+        "council-pullback"
+    ],
+    "refusalRoute": [],
+    "chopHeadViewport": {
+        "x": -1.7970435619354249,
+        "y": 0.38739264011383059,
+        "z": 0.7081055045127869
+    },
+    "postFallHeadViewport": {
+        "x": 0.5016510486602783,
+        "y": 0.6037139892578125,
+        "z": 3.8721208572387697
+    },
+    "workersAfterFall": [
+        {
+            "x": -4.75,
+            "y": 0.038223836570978168,
+            "z": 9.25
+        },
+        {
+            "x": 4.949999809265137,
+            "y": 0.02033386379480362,
+            "z": 9.800000190734864
+        },
+        {
+            "x": -5.3134918212890629,
+            "y": -0.02579938992857933,
+            "z": 10.118254661560059
+        }
+    ],
+    "trunkClearances": [
+        2.1113197803497316,
+        2.316859006881714,
+        2.6776888370513918
+    ]
+}

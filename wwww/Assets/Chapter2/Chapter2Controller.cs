@@ -224,8 +224,11 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         player.Warp(meetingSpawn.position, campfire.position);
         yield return FrameCouncilOverview(.01f);
         SetStage(Stage.Meeting); ui.chapter.text = "第二章  /  夜晚的秘密會議"; ui.objective.text = "聆聽營火旁的密議";
+        ui.ShowLocationCaption("夜晚，山林深處。");
         yield return Fade(0, 1.5f);
         yield return new WaitForSeconds(3);
+        for(float t=0;t<1;t+=Time.deltaTime/.6f){ui.ShowLocationCaption("夜晚，山林深處。",1-t);yield return null;}
+        ui.ShowLocationCaption("");
         yield return CouncilScript();
         yield return FrameCouncilOverview();
         SetStage(Stage.Vote); ui.objective.text = "表達你的立場"; ui.hint.text = "1 支持／2 拒絕  |  VR 舉起右手支持，或按左手主按鈕拒絕";
@@ -363,6 +366,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Fell()
     {
+        yield return ClearChoppingSpace();
         yield return RestoreChoppingView();
         SetStage(Stage.Chopping); canChop = true; player.canMove = true; axe.SetActive(true); chopStarted = Time.time;
         if (TryGetChopContact(out RaycastHit focus)) player.FocusOn(focus.point);

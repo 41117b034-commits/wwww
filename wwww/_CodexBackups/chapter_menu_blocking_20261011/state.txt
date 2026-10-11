@@ -1,0 +1,11 @@
+scene=選擇章節ˊ playing=False dirty=False compilationFailed=False
+button=Button (1) text=第二章/新規定與秘密會議 pos=(0.95, 1.83, 2.98)
+  PlayClickSound
+  JumpToChapter2
+button=Button (5) text=第三章/霧社突襲與戰鬥 pos=(-4.83, -1.90, 3.11)
+  PlayClickSound
+button=Button text=第一章/婚禮與導火線 pos=(-4.83, 1.83, 3.07)
+  PlayClickSound
+  JumpToScene5
+button=Button (4) text=第四章/日軍鎮壓與毒氣攻擊 pos=(0.95, -1.90, 2.98)
+  PlayClickSound

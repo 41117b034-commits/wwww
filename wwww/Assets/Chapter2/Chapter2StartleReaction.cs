@@ -46,10 +46,11 @@ public sealed class Chapter2StartleReaction : MonoBehaviour
         }
     }
 
-    public void Begin(Transform danger,int variation)
+    public void Begin(Transform danger,int variation,Vector3 retreatDirection=default)
     {
         Prepare();start=transform.position;
         forward=Vector3.ProjectOnPlane(danger.position-start,Vector3.up).normalized;retreat=-forward;
+        if(retreatDirection.sqrMagnitude>.01f)retreat=Vector3.ProjectOnPlane(retreatDirection,Vector3.up).normalized;
         actor.Rig.ClearInteractionPose();actor.speaking=false;actor.Face(start+forward);
         for(int i=0;i<2;i++){anchors[i]=feet[i].position;footRotations[i]=feet[i].rotation;}
         began=Time.time+variation*.09f;StepsCompleted=0;releaseAt=-1;active=true;

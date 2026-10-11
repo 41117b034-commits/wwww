@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "errors": 0,
+  "warnings": 2,
+  "minimumEstimatedTrunkClearance": 2.1113197803497314,
+  "testExplorationSeconds": 3,
+  "productionExplorationSeconds": 180
+}

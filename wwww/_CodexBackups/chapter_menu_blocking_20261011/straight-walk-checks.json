@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "samples": 17,
+  "straightDistance": 6.508823334297856,
+  "walkDistance": 6.5088233342979,
+  "maximumDeviation": 5.679650290961151E-08,
+  "minimumFireDistance": 1.5040020942687988
+}

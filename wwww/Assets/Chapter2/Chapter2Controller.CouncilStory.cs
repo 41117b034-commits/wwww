@@ -133,15 +133,19 @@ public sealed partial class Chapter2Controller
     IEnumerator WalkToMona()
     {
         Vector3 target = mona.transform.position + Vector3.up * 1.45f;
-        // Start at the player's place in the circle, then walk outside the fire ring.
-        Vector3[] route ={campfire.position+new Vector3(0,.05f,-5.8f),campfire.position+new Vector3(4.7f,.05f,-3.8f),
-            campfire.position+new Vector3(4.5f,.05f,1.5f),mona.transform.position+new Vector3(1.35f,.05f,-1.85f)};
+        // A single straight approach beside the fire, without the old outer detour.
+        Vector3[] route ={campfire.position+new Vector3(1.55f,.05f,-5.8f),
+            mona.transform.position+new Vector3(1.55f,.05f,-1.85f)};
         if (player.IsVR)
         {
             // Follow the same route with the origin; leave tracked head motion untouched.
             player.Warp(route[0], target);
         }
-        else yield return CouncilCameraShot(route[0] + Vector3.up * 1.65f, target, 55, .8f);
+        else
+        {
+            player.view.fieldOfView=55;
+            yield return CameraShot(route[0]+Vector3.up*1.65f,target,.6f);
+        }
         player.Warp(route[0], target);
         CameraBeat = "council-player-walk";
         for (int i = 1; i < route.Length; i++)

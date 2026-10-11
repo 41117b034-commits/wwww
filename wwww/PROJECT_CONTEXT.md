@@ -2,6 +2,8 @@
 
 更新日期：2026-10-11。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
+最新選單／走位：2026-10-11 選擇章節改為置中的 2×2 四章，第二章按鈕實際接到第二章場景；第三章「霧社突襲與戰鬥」、第四章「日軍鎮壓與毒氣攻擊」，移除原「武裝準備與突襲計畫」卡片。砍樹前阿威走到玩家左側，倒樹時三位族人改往樹幹側面退避；夜景加入「夜晚，山林深處。」介紹；拒絕起義沿火堆旁直線走向莫那。原 Editor 實際點擊選單→砍樹→同意，以及 Play→P→拒絕均完成，errors=0；測試限制見文末。
+
 最新刀具：2026-10-11 第二章 Play → P 夜間七位持刀成年人已改用參考賽德克族館藏結構的簡化佩刀，移除十字護手，加入單刃、木柄及單面木鞘；插刀依新刀尖計算深度。原 Editor 的 final2-support／final2-refuse 均 checks.passed=true、errors=0，結尾自行停止 Play Mode，原分行字幕／分支／拳頭／座位保留。仍有停用音源與部分載入時遺失腳本警告，並非零警告驗收。證據及範圍見文末。
 
 最新輸入與問候：2026-10-10 對話輸入已支援 Enter／小鍵盤 Enter 送出，回答後恢復焦點；早安／你好僅留給一般族人，警察、小孩與阿威移除。鍵盤、空白、失焦、模擬IME及九人句庫驗證通過，詳見文末。
@@ -974,3 +976,22 @@ Chapter2CouncilDrama 新增 knifeTip，插刀按真實刀尖位置埋入角色�
 已檢視實際引擎畫面，包括達多按柄、巴萬拔刀、插刀與拒絕分支；knife-model-preview.png 是另外的清楚器物預覽。knife-audit.txt 確認七位、無十字護手、無道具 Collider、刀尖與網格引用有效。scene-preservation.json 確認場景修改前後 85 個腳本引用完全一致。final2-support 有 2 個停用音源警告；final2-refuse 有相同 2 個音源警告，另有 13 個載入時遺失腳本警告，因此不宣稱 Console 零警告。本次未修理音效或無關腳本，未重跑白天 LLM、砍樹全流程、建置版或實體 VR。
 
 初期 final-support 的 1 個例外來自臨時驗證器仍查舊座椅名稱；verified-support/refuse 的兒童檢查則因查舊姓名誤判。已讓驗證器依 isChild 辨識並完整重跑；以上 final2 兩輪才是最終驗證。臨時驗證器移回同備份資料夾 verification-tools，正式 Assets 不保留測試驅動器。原檔保存在 originals；未提交或推送 Git。
+
+## 2026-10-11 四章選單、伐木站位與夜間開場／直線走近
+
+使用者本輪五張截圖要求已完成。章節規劃以本輪新要求優先於舊劇情 PDF 的五章編排；原始 PDF 不覆寫。
+
+1. Assets/Scenes/選擇章節ˊ.unity：咖啡色面板連同文字／卡片水平與垂直置中，保留背景及配色；卡片改為 2×2 四章。刪除原第三章「武裝準備與突襲計畫」按鈕，原第四／第五章改第三「霧社突襲與戰鬥」、第四「日軍鎮壓與毒氣攻擊」。第二章按鈕以持久 OnClick 接 tiao.JumpToChapter2，依場景名載入「第二章」；Build Settings 本來已有啟用該場景，未修改索引。第一章按鈕原有 JumpToScene5 保留。第三／四章本輪僅改名稱、排序，未建置其內容或新增跳轉。
+2. MenuPresentationController 的四章資料與位置同步調整，章節選單專用水平置中，其他選單仍沿用原垂直置中。新增 ChapterSelectionAuthoring.Apply，能處理舊場景巢狀按鈕與第五章游離標題，重新套用不會重複綁定第二章。
+3. Chapter2Controller.Performance.ClearChoppingSpace 在交付斧頭前，讓阿威用 1.2 秒走到砍伐點左側 3.6 公尺。原砍伐介面、計量及可移動限制保留。
+4. 倒樹時 Chapter2StartleReaction 保留原三步受驚退步，但接受明確退避方向；依實際倒樹方向讓三位族人往樹幹側面退，不沿倒樹方向後退。倒樹後阿威在樹旁回話，臉／身體不再埋入樹幹。
+5. RunMeeting 夜景淡入时显示米金色「夜晚，山林深處。」；全景保留 3 秒，介紹再用 0.6 秒淡出，才開始原逐行對話。P 捷徑與白天轉夜晚共用此段。
+6. CouncilRefusal 的 WalkToMona 移除原四點外圍路線，改為火堆側邊起點到莫那前方的一段直線，起步鏡頭也改用線性移動；台詞與拒絕結局保留。
+
+實際驗證（原 Unity 6000.0.58f1 Editor）保存 _CodexBackups/chapter_menu_blocking_20261011/：
+- 選單 edit/play 均看到置中四張卡；用原生滑鼠實際點第二章，成功載入 Assets/Scenes/第二章.unity。menu-fell-support 從這次載入繼續經介紹／探索／跟隨／砍五次／倒樹／夜間／支持起義到結尾，completed=true、stopped=true、dirty=false、errors=0、warnings=2（停用音源）。為縮短回歸，測試僅在 runtime 將探索設為 3 秒，正式場景仍180秒；略過片頭，測試器以 CharacterController 路線移動和有效時機砍伐，未請求 LLM、未寫入通關紀錄。day-checks.json passed=true。
+- 已檢視 chopping／fallen／night-intro 引擎截圖。阿威頭部投影在砍伐畫面左側之外；倒樹後頭部與身體可見，對樹幹 Collider 射線未被遮擋。以半徑2.32公尺的保守樹幹範圍加人體0.35公尺估算，三位族人最小額外淨距約2.11公尺；這是幾何估算並搭配實際畫面檢查，不是完整人體網格碰撞測試。
+- final-refuse：正式 Play→P→2，34行原字幕／姓名／手腕／握拳／十人開場坐姿及小孩無刀檢查通過；新介紹可見且第一行台詞前消失。completed=true、playingAfterExit=false、dirty=false、errors=0、warnings=2，正式 PlayerPrefs 前後相同。拒絕走路紀錄17個樣本，折線總長與直線距離同為約6.51公尺，最大偏離直線低於0.000001公尺；離火堆中心最小約1.50公尺。check-council 與 straight-walk-checks 均 passed=true，並已看 straight-walk 畫面。
+- 第二章場景本身 SHA-256 與修改前相同；此輪第二章改動由正式腳本執行，未搬動白天初始人物、夜景房屋或既有佩刀資產。暫存測試腳本移回 verification-tools，原檔保存在 originals。初期測試器鍵盤 enum 名稱的編譯錯誤已修正，最終測試在 compilationFailed=false 下執行。
+
+未測建置版、實體 VR、第三／四章內容、保護巨樹遭槍擊分支或雲端 LLM 品質；未提交／推送 Git。結束時 Unity 停在四章選單的 edit mode。

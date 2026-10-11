@@ -17,6 +17,11 @@ public class tiao : MonoBehaviour
         SceneManager.LoadScene("第一章新版警察");
     }
 
+    public void JumpToChapter2()
+    {
+        SceneManager.LoadScene("第二章");
+    }
+
     // 原有功能：跳到場景編號 4
     public void JumpToScene4()
     {

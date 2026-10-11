@@ -1,0 +1,57 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "04F4A55B037256F296F5BEF1C18EA086AD16B58DC9C706BA936065C4FCE6667B",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\場景切換\\MenuPresentationController.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "A73C5A8052F9369BC3E45C63B68D73594EE83DDD02A7622ED2F0985C7908B228",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\tiao.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1F36B6BB519BC1C1349E809BED32182E540B667DF4F02B0E899F7827AD63E3E0",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\選擇章節ˊ.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "34B87027BC9F251095C4F0C29F81F5AB4776B1B082355B3404C7854B035E6156",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "6794B03CE6DBBFF8D3E967927DF08392437138E2EC2D58E81E1680716A640173",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "E43C947187E892668319D1D5E6306D28499A92686E466A02D7FBE894F7BB507F",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.Performance.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "669E697C4BB2C4B6D1D53733B0AC2578617E2AE4D50EEE2CB1FEE4489E0A1EB2",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.CouncilStory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "143598BBE0FE7CB0A6D24DCFEB03264E4BF68A583BAE6804AEBFED16AF4B8A29",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2StartleReaction.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "41C37BFFFA7EE2546D76C84A6AE16330C05636F74B2A71F02D0C6A3F46E521E1",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Presentation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "703AA513B7DE041D22694C088CE245EC9EC584E4F1A3AB648335BE42472BD9A6",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\ChapterSelectionAuthoring.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "A0B2CAA6D44333415997CDF9C71FDC9B97727E81825F988DFC97F2E768189E49",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\PROJECT_CONTEXT.md"
+  }
+]

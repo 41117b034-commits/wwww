@@ -1,0 +1,19 @@
+2026-10-11T13:32:42 Error Assets\Editor\Chapter2BlockingPlayProbe.cs(47,69): error CS1061: 'string' does not contain a definition for 'Space' and no accessible extension method 'Space' accepting a first argument of type 'string' could be found (are you missing a using directive or an assembly reference?)
+2026-10-11T13:32:42 Error Assets\Editor\Chapter2BlockingPlayProbe.cs(58,96): error CS1061: 'string' does not contain a definition for 'Two' and no accessible extension method 'Two' accepting a first argument of type 'string' could be found (are you missing a using directive or an assembly reference?)
+2026-10-11T13:32:42 Error Assets\Editor\Chapter2BlockingPlayProbe.cs(83,120): error CS1061: 'string' does not contain a definition for 'Two' and no accessible extension method 'Two' accepting a first argument of type 'string' could be found (are you missing a using directive or an assembly reference?)
+2026-10-11T13:32:42 Error Assets\Editor\Chapter2BlockingPlayProbe.cs(83,128): error CS1061: 'string' does not contain a definition for 'One' and no accessible extension method 'One' accepting a first argument of type 'string' could be found (are you missing a using directive or an assembly reference?)
+2026-10-11T13:44:04 Warning Can not play a disabled audio source
+2026-10-11T13:45:38 Warning Can not play a disabled audio source
+2026-10-11T13:57:06 Exception IOException: Sharing violation on path C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\chapter_menu_blocking_20261011\council-command.txt
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) (at <152439c387994a8da523328132967f8d>:0)
+(wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) (at <152439c387994a8da523328132967f8d>:0)
+System.IO.File.ReadAllText (System.String path) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2CouncilBlockingProbe.Tick () (at Assets/Editor/Chapter2CouncilBlockingProbe.cs:79)
+UnityEditor.EditorApplication.Internal_CallUpdateFunctions () (at <5818bc53b12b4560b54110897827736e>:0)
+2026-10-11T13:57:11 Warning Can not play a disabled audio source
+2026-10-11T13:57:18 Warning Can not play a disabled audio source

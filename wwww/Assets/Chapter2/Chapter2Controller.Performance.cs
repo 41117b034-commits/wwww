@@ -8,6 +8,22 @@ public sealed partial class Chapter2Controller
     public Vector3 TreeFallDirection { get; private set; }
     public float TreeFallProgress { get; private set; }
 
+    IEnumerator ClearChoppingSpace()
+    {
+        // Step to the player's left before handing over the axe. Keep the guide
+        // outside both the close chopping view and the eventual falling trunk.
+        var guide=workers[0];
+        Vector3 forward=Vector3.ProjectOnPlane(sacredTree.position-treeApproach.position,Vector3.up).normalized;
+        Vector3 left=-Vector3.Cross(Vector3.up,forward);
+        Vector3 start=guide.transform.position;
+        Vector3 end=treeApproach.position+left*3.6f+forward*.65f;
+        end.y=start.y;
+        guide.Rig.ClearInteractionPose();ui.Line("","");
+        for(float t=0;t<1;t+=Time.deltaTime/1.2f)
+        { guide.transform.position=Vector3.Lerp(start,end,Mathf.SmoothStep(0,1,t));guide.Face(end+forward);yield return null; }
+        guide.transform.position=end;guide.Face(sacredTree.position);
+    }
+
     IEnumerator FallingTreeWarning()
     {
         // Retain the player's actual position when choosing the fall direction.
@@ -19,7 +35,14 @@ public sealed partial class Chapter2Controller
         ui.Line(workers[0].DisplayName, "退後……它要倒下了。");
         float warningEnd = Time.unscaledTime + BeginChapterVoice(workers[0], "族人", "退後……它要倒下了。", 2.25f);
         workers[0].speaking = true;
-        for (int i = 0; i < workers.Length; i++) workers[i].GetComponent<Chapter2StartleReaction>().Begin(sacredTree, i);
+        Vector3 fallSide=Vector3.Cross(Vector3.up,TreeFallDirection).normalized;
+        for (int i = 0; i < workers.Length; i++)
+        {
+            float side=Vector3.Dot(workers[i].transform.position-sacredTree.position,fallSide);
+            // Move sideways out of the fall corridor, not backwards along it.
+            Vector3 retreat=fallSide*(side>=0?1:-1);
+            workers[i].GetComponent<Chapter2StartleReaction>().Begin(sacredTree,i,retreat);
+        }
         yield return new WaitForSeconds(2.25f);
         while (Time.unscaledTime < warningEnd) yield return null;
         if (chapterAudio) chapterAudio.StopVoice();
