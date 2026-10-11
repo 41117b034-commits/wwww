@@ -1,0 +1,5 @@
+System.ArgumentException: The Object you want to instantiate is null.
+  at UnityEngine.Object.Instantiate[T] (T original) [0x0003d] in <25ce29052dfe4e49a635a42f7798806b>:0 
+  at Chapter2CouncilStoryAuthoring.SaveBinary (UnityEngine.Mesh mesh) [0x00007] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter2CouncilStoryAuthoring.cs:46 
+  at Chapter2MonaDetailProbe.Inspect () [0x0046a] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter2MonaDetailProbe.cs:36 
+  at Chapter2MonaDetailProbe.Tick () [0x0002c] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter2MonaDetailProbe.cs:16 

@@ -15,6 +15,8 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
     public Vector3 gripCenter;
     public Vector3 pointAt;
     public Transform speechLookTarget;
+    public Transform accusationTarget;
+    public float PointingError { get; private set; }
     public float GazeError { get; private set; }
     public float WristBend { get; private set; }
     public Beat CurrentBeat { get; private set; }
@@ -79,11 +81,12 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
             case Beat.Declare:
                 poseArm=true;target=arm.position+Vector3.ClampMagnitude((up*.16f+r*.14f+f*.19f)*h,
                     (Vector3.Distance(arm.position,elbow.position)+Vector3.Distance(elbow.position,hand.position))*.78f);lean=8;break;
-            case Beat.Cold:headAngle=-5;lean=7;break;
+            case Beat.Cold:headAngle=-5;lean=11;break;
             case Beat.Expel:
+                if(accusationTarget)pointAt=accusationTarget.position-Vector3.up*.22f;
                 poseArm=true;Vector3 toward=(pointAt-arm.position).normalized;
                 target=arm.position+toward*(Vector3.Distance(arm.position,elbow.position)+Vector3.Distance(elbow.position,hand.position))*.95f;
-                lean=12;headAngle=-3;break;
+                lean=16;headAngle=-3;break;
             case Beat.Stab:
                 float lift=Mathf.SmoothStep(0,1,Mathf.Clamp01(elapsed/.6f));
                 float drive=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.6f,1.15f,elapsed));
@@ -109,7 +112,7 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
         if(spine)spine.rotation=Quaternion.AngleAxis(lean*k,r)*spine.rotation;
         if(rig.Head)rig.Head.rotation=Quaternion.AngleAxis(headAngle*k,r)*rig.Head.rotation;
         // Apply eye contact after the seated, talking and dramatic lean layers.
-        if(actor.speaking&&speechLookTarget&&rig.Head)
+        if((actor.speaking||CurrentBeat==Beat.Cold||CurrentBeat==Beat.Expel)&&speechLookTarget&&rig.Head)
         {
             Vector3 gaze=(speechLookTarget.position-rig.Head.position).normalized;
             rig.Head.rotation=Quaternion.LookRotation(gaze,up)*Quaternion.Inverse(headBasis);
@@ -121,13 +124,21 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
             Chapter1IncidentRig.Solve(arm,elbow,hand,Vector3.Lerp(hand.position,target,k),r+f*.2f-up*.3f);
             if(CurrentBeat==Beat.Expel)
             {
-                if(hands)hand.rotation=Quaternion.Slerp(hand.rotation,Quaternion.LookRotation((pointAt-hand.position).normalized,up)*Quaternion.Inverse(hands.rightPalmBasis),k);
+                if(hands)
+                {
+                    var toward=(pointAt-hand.position).normalized;
+                    hand.rotation=Quaternion.Slerp(hand.rotation,Quaternion.LookRotation(toward,up)*Quaternion.Inverse(hands.rightPalmBasis),k);
+                    PointingError=Vector3.Angle(hand.rotation*(hands.rightPalmBasis*Vector3.forward),toward);
+                }
             }
         }
         if(hands&&hands.fistRenderer&&hands.fistShape>=0)
         {
             float fist=CurrentBeat==Beat.Declare?k:0;
-            hands.FistWeight=fist;hands.fistRenderer.SetBlendShapeWeight(hands.fistShape,fist*100);
+            hands.FistWeight=fist;
+            hands.PointWeight=CurrentBeat==Beat.Expel?k:0;
+            hands.AngerWeight=CurrentBeat==Beat.Cold?k:CurrentBeat==Beat.Expel?1:0;
+            hands.ApplyExpressionWeights();
             if(fist>0)
             {
                 Vector3 along=(hand.position-elbow.position).normalized;

@@ -8,7 +8,11 @@ public sealed class Chapter2CouncilHands : MonoBehaviour
     public Quaternion leftPalmBasis=Quaternion.identity,rightPalmBasis=Quaternion.identity;
     public SkinnedMeshRenderer fistRenderer;
     public Mesh fistMesh;
+    public Mesh refusalMesh;
     public int fistShape=-1;
+    public int pointShape=-1,angerShape=-1;
+    public float PointWeight {get;set;}
+    public float AngerWeight {get;set;}
     public float FistWeight {get;set;}
     Chapter2Actor actor;
     Transform leftElbow,rightElbow;
@@ -30,7 +34,20 @@ public sealed class Chapter2CouncilHands : MonoBehaviour
             Align(actor.Rig.LeftHand,leftElbow,leftPalmBasis,right);
             Align(actor.Rig.RightHand,rightElbow,rightPalmBasis,Vector3.Slerp(-right,Vector3.up,actor.speaking?.55f:0));
         }
-        if(fistRenderer&&fistShape>=0)fistRenderer.SetBlendShapeWeight(fistShape,100*Mathf.Clamp01(FistWeight));
+        ApplyExpressionWeights();
+    }
+    public void ApplyExpressionWeights()
+    {
+        if(!fistRenderer)return;
+        bool refusal=refusalMesh&&(PointWeight>0||AngerWeight>0);
+        var mesh=refusal?refusalMesh:fistMesh;
+        if(mesh&&fistRenderer.sharedMesh!=mesh)fistRenderer.sharedMesh=mesh;
+        if(refusal)
+        {
+            if(pointShape>=0)fistRenderer.SetBlendShapeWeight(pointShape,100*Mathf.Clamp01(PointWeight));
+            if(angerShape>=0)fistRenderer.SetBlendShapeWeight(angerShape,100*Mathf.Clamp01(AngerWeight));
+        }
+        else if(fistShape>=0)fistRenderer.SetBlendShapeWeight(fistShape,100*Mathf.Clamp01(FistWeight));
     }
     static void Align(Transform hand,Transform elbow,Quaternion basis,Vector3 normal)
     {

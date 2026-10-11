@@ -1,0 +1,57 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9554AD9C1A55A1B219EEF590A386D6D03D788385CF01D237932622E2B201517E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2DayCouncilIdentity.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "6FD9617E79453C4458ABCAB8633C2D488482A3A5F167C19A711C995E9032716A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CastNames.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "ECD1E98CF18653B24CF323619FBD10264D9EA12304EA75AD76BCA03A17F7601D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CouncilHands.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "0C9C8B32242B5C5F141B22B18B2B0521CA68A88D5C4BB468D7B5E6A5B56EB50E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CouncilDrama.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "2E37B8C7998035C8D0EC8FC00572C889DC17FCDA675F90DF3EA5E04B436D3C5D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.CouncilStory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "56798D698CBB51C03A0D674231CC3D15D17C9C8FF0F4BE2CC65B4F5DBAF48C05",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\Chapter1NpcMemory.json"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "974899E5B12E9AAA3E32DB1FF002554CDD0A3AAA50341D2229B8CC59D47618C0",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Resources\\Chapter2LocalDialogueContext.txt"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F3A68564C3597155AA3A0C75B3A0B325D049F2AD8907C34F3FD6AF5F611BCDDE",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter2DayIdentityAuthoring.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "39AC1831C603F8C1B3231E88A3F2E0B61580BDE4E065D714793360CF44BF90BE",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter2MonaExpressionAuthoring.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "B5755A84F8F2441E9E13D59785C39F10EE72FA6EE0174B37427461A382E3AD6B",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Poses\\MonaCouncilExpressions.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1169846EBE7CCA6828DB2D1C47ADDAC093BDF525718710A112944D5FADE90812",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  }
+]

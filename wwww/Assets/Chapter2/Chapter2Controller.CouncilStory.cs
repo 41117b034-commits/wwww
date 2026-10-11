@@ -125,7 +125,7 @@ public sealed partial class Chapter2Controller
         CouncilSpeaker = mona; mona.Face(player.view.transform.position);
         yield return CouncilLines(mona, mona.name, Chapter2CouncilDrama.Beat.Cold, new[]{
             "活下去？","那就去向日本人跪下！","去幫他們扛木頭、","聽他們叫你生番！"}, false);
-        mona.GetComponent<Chapter2CouncilDrama>().pointAt = campfire.position + new Vector3(-7, 1.3f, -1);
+        mona.GetComponent<Chapter2CouncilDrama>().accusationTarget = player.view.transform;
         yield return CouncilLines(mona, mona.name, Chapter2CouncilDrama.Beat.Expel, new[]{
             "滾！","彩虹橋上沒有你的位置，","你不配稱為 Sediq Bale（真的人）！"}, false);
     }

@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "cases": 27,
+  "names": [
+    "中村正雄",
+    "佐藤正一",
+    "古慕·阿基",
+    "田中武雄",
+    "莫那·魯道",
+    "達多·莫那",
+    "都比·阿威",
+    "阿威·比胡",
+    "露比·巴干"
+  ],
+  "failures": [],
+  "errors": 0,
+  "keyOpened": true,
+  "escapeClosed": true,
+  "outsideRejected": true,
+  "timeoutClosed": true
+}

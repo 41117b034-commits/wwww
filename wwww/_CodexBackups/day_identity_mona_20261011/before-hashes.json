@@ -1,0 +1,37 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F926E24E244D48ADD8FBC5538B24DE908FAE400FF912D25A39E538437110B4B4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F5D04826ED1953BBF9072CD7FF4849738F006BC05435B2B39800479E5FF94941",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CastNames.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "4EF71F02663BC8F5D2540C4711E334C919D0B4BDFB742AC53905917D51E7F42D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CouncilHands.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "31F9237B5B04B7BEFE9D00A6B2B6779F86035DF3F07A79D515B405DD96C1F9EB",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2CouncilDrama.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "669E697C4BB2C4B6D1D53733B0AC2578617E2AE4D50EEE2CB1FEE4489E0A1EB2",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2Controller.CouncilStory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "4964D33B4BDD0A0756A4F746471EDCCF12F48A6E5028E52B5C8DBF1E2C42C86B",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Poses\\MonaRallyFist.asset"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9AC4CD97EC62B60DD6B075B262F8930FA6ED05B6822A1628D1FDE65D730A40C1",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\PROJECT_CONTEXT.md"
+  }
+]

@@ -1,0 +1,442 @@
+{
+    "checks": [
+        {
+            "name": "中村正雄",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575160980225,
+                "y": 0.6058304309844971,
+                "z": 2.283555507659912
+            }
+        },
+        {
+            "name": "中村正雄",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575160980225,
+                "y": 0.6058304309844971,
+                "z": 2.283555507659912
+            }
+        },
+        {
+            "name": "中村正雄",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575160980225,
+                "y": 0.6058304309844971,
+                "z": 2.283555507659912
+            }
+        },
+        {
+            "name": "佐藤正一",
+            "approach": 0.11999999731779099,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058304905891419,
+                "z": 2.2835564613342287
+            }
+        },
+        {
+            "name": "佐藤正一",
+            "approach": 1.5,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058304905891419,
+                "z": 2.2835564613342287
+            }
+        },
+        {
+            "name": "佐藤正一",
+            "approach": 2.950000047683716,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058304905891419,
+                "z": 2.2835564613342287
+            }
+        },
+        {
+            "name": "古慕·阿基",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.4999734163284302,
+                "y": 0.6016928553581238,
+                "z": 2.3267321586608888
+            }
+        },
+        {
+            "name": "古慕·阿基",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.4999734163284302,
+                "y": 0.6016928553581238,
+                "z": 2.3267321586608888
+            }
+        },
+        {
+            "name": "古慕·阿基",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.4999734163284302,
+                "y": 0.6016928553581238,
+                "z": 2.3267321586608888
+            }
+        },
+        {
+            "name": "田中武雄",
+            "approach": 0.11999999731779099,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058306097984314,
+                "z": 2.2835545539855959
+            }
+        },
+        {
+            "name": "田中武雄",
+            "approach": 1.5,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058306097984314,
+                "z": 2.2835545539855959
+            }
+        },
+        {
+            "name": "田中武雄",
+            "approach": 2.950000047683716,
+            "distance": 2.34999942779541,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5025575757026672,
+                "y": 0.6058306097984314,
+                "z": 2.2835545539855959
+            }
+        },
+        {
+            "name": "莫那·魯道",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5040265321731567,
+                "y": 0.5921710133552551,
+                "z": 2.3515985012054445
+            }
+        },
+        {
+            "name": "莫那·魯道",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5040265321731567,
+                "y": 0.5921710133552551,
+                "z": 2.3515985012054445
+            }
+        },
+        {
+            "name": "莫那·魯道",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5040265321731567,
+                "y": 0.5921710133552551,
+                "z": 2.3515985012054445
+            }
+        },
+        {
+            "name": "達多·莫那",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5026813745498657,
+                "y": 0.6060644388198853,
+                "z": 2.318342447280884
+            }
+        },
+        {
+            "name": "達多·莫那",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5026813745498657,
+                "y": 0.6060644388198853,
+                "z": 2.318342447280884
+            }
+        },
+        {
+            "name": "達多·莫那",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5026813745498657,
+                "y": 0.6060644388198853,
+                "z": 2.318342447280884
+            }
+        },
+        {
+            "name": "都比·阿威",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5000813603401184,
+                "y": 0.6424163579940796,
+                "z": 2.314542770385742
+            }
+        },
+        {
+            "name": "都比·阿威",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5000813603401184,
+                "y": 0.6424163579940796,
+                "z": 2.314542770385742
+            }
+        },
+        {
+            "name": "都比·阿威",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5000813603401184,
+                "y": 0.6424163579940796,
+                "z": 2.314542770385742
+            }
+        },
+        {
+            "name": "阿威·比胡",
+            "approach": 0.11999999731779099,
+            "distance": 2.3500003814697267,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5027577877044678,
+                "y": 0.6050429940223694,
+                "z": 2.3181679248809816
+            }
+        },
+        {
+            "name": "阿威·比胡",
+            "approach": 1.5,
+            "distance": 2.3500003814697267,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5027577877044678,
+                "y": 0.6050429940223694,
+                "z": 2.3181679248809816
+            }
+        },
+        {
+            "name": "阿威·比胡",
+            "approach": 2.950000047683716,
+            "distance": 2.3500003814697267,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.5027577877044678,
+                "y": 0.6050429940223694,
+                "z": 2.3181679248809816
+            }
+        },
+        {
+            "name": "露比·巴干",
+            "approach": 0.11999999731779099,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.49944740533828738,
+                "y": 0.5964050889015198,
+                "z": 2.262105703353882
+            }
+        },
+        {
+            "name": "露比·巴干",
+            "approach": 1.5,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.49944740533828738,
+                "y": 0.5964050889015198,
+                "z": 2.262105703353882
+            }
+        },
+        {
+            "name": "露比·巴干",
+            "approach": 2.950000047683716,
+            "distance": 2.3499999046325685,
+            "positionRestore": 0.0,
+            "rotationRestore": 0.0,
+            "viewRestore": 0.0,
+            "opened": true,
+            "stayedOpen": true,
+            "closed": true,
+            "headViewport": {
+                "x": 0.49944740533828738,
+                "y": 0.5964050889015198,
+                "z": 2.262105703353882
+            }
+        }
+    ],
+    "errors": 0,
+    "outsideRejected": true,
+    "timeoutClosed": true,
+    "timeoutRestored": true,
+    "keyOpened": true,
+    "escapeClosed": true
+}

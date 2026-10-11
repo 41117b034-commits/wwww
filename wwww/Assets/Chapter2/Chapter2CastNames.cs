@@ -44,6 +44,8 @@ public static class Chapter2CastNames
         Set(c.conservatives[1],"歐冰·拿威","Obing Nawi","出席密議的賽德克女子");
         foreach(var actor in c.nightGroup.GetComponentsInChildren<Chapter2Actor>(true))
             if(actor.name=="會議原住民小孩"||actor.name=="都比·阿威")SetChild(actor);
+        // Resolve these last, after the authoritative council identities.
+        foreach(var identity in c.dayGroup.GetComponentsInChildren<Chapter2DayCouncilIdentity>(true))identity.Apply();
     }
     static void SetChild(Chapter2Actor actor)=>Set(actor,"都比·阿威","Dupi Awi","你是跟著家人在林邊活動的賽德克小孩。好奇、說話簡單，關心家人和動植物，不懂軍事政治。",true);
 }
