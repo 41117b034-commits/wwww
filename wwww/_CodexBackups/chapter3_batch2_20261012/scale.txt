@@ -1,0 +1,3 @@
+max=False scale=(0.32, 0.32)
+max=True scale=(0.81, 0.81)
+max=False scale=(0.32, 0.32)

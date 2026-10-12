@@ -1,0 +1,13 @@
+scene=Assets/Scenes/第三章.unity
+dirty=False
+playing=False
+compileFailed=False
+missingScripts=0
+missingMeshes=0
+sceneCount=1
+region=Village
+combat=Inactive
+HAND 右手持握 pos=(0.00, 1.70, 1.05) scale=(1.00, 1.00, 1.00) rot=(14.20, 0.00, 0.00)
+RENDER Center: (0.02, 1.72, 0.91), Extents: (0.06, 0.10, 0.16) local=Center: (0.02, -0.01, -0.14), Extents: (0.06, 0.06, 0.14) scale=(1.00, 1.00, 1.00)
+HAND 左手護木持握 pos=(0.00, 1.70, 1.05) scale=(-1.00, 1.00, 1.00) rot=(14.20, 0.00, 0.00)
+RENDER Center: (-0.02, 1.72, 0.91), Extents: (0.06, 0.10, 0.16) local=Center: (0.02, -0.01, -0.14), Extents: (0.06, 0.06, 0.14) scale=(-1.00, 1.00, 1.00)

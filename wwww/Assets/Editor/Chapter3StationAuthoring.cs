@@ -18,7 +18,8 @@ public static class Chapter3StationAuthoring
     const string Folder="Assets/Chapter3/Station";
     static Material timber, boards, plaster, stone, roof, metal, glass, dirt, path, bamboo, paper;
     static Font font;
-    [MenuItem("Tools/Chapter 3/Create Station Story Scene")]
+    // Historical source for the one-time merge. Third chapter now uses one scene;
+    // do not expose a menu that would recreate the archived standalone station.
     public static void Build()
     {
         if(EditorApplication.isPlaying)throw new InvalidOperationException("Stop Play first.");

@@ -1,0 +1,27 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "46F08289C83F54A76B70429F41F0E4A389403FF2A9043BACB0341BE8DD4BD8E6",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第三章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "4A82EE8E434D8BC1B4D39C26E587CD32E05B6D7AC426732C68A32AEEA38C1F37",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9CD0F72D33C8E5CC6E3A9137137437F0A17BFDC083C8D38369FB3803DDA884BB",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Combat.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D46238CD07C9260D9AA22FA5E5F79AD8707B8BA7F051883501C0B647E46AF4C4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Weapons.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "02CFA43AEA8B82B83FCF1290A9C3627CF110D6640A344D151E835F9FB03274B5",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Enemy.cs"
+  }
+]

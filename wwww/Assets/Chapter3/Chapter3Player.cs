@@ -5,11 +5,13 @@ using CommonUsages = UnityEngine.XR.CommonUsages;
 
 // Chapter 3 has its own walkable corridor, without Chapter 2's logging boundary.
 [RequireComponent(typeof(CharacterController))]
+[DefaultExecutionOrder(-100)]
 public sealed class Chapter3Player : MonoBehaviour
 {
     public Camera view;
     public Chapter3Controller chapter;
     public Chapter3StationController station;
+    public Chapter3Combat combat;
     public bool canMove, canLook;
     public float speed = 2.8f;
     public bool IsVR { get; private set; }
@@ -32,7 +34,7 @@ public sealed class Chapter3Player : MonoBehaviour
         right.TryGetFeatureValue(CommonUsages.triggerButton, out bool trigger);
         ActionPressed = Keyboard.current?.eKey.wasPressedThisFrame == true || (trigger && !previousTrigger);
         previousTrigger = trigger;
-        if (!IsVR && canLook && Mouse.current?.rightButton.isPressed == true)
+        if (!IsVR && canLook && (Mouse.current?.rightButton.isPressed == true || (combat && Cursor.lockState==CursorLockMode.Locked)))
         {
             var d = Mouse.current.delta.ReadValue() * .08f;
             transform.Rotate(0, d.x, 0); pitch = Mathf.Clamp(pitch - d.y, -70, 70);
@@ -57,8 +59,9 @@ public sealed class Chapter3Player : MonoBehaviour
         Vector3 next = transform.position + motion;
         if (chapter) next = chapter.Constrain(transform.position, next);
         else if (station) next = station.Constrain(transform.position, next);
+        else if (combat) next = combat.Constrain(transform.position, next);
         motor.Move(next - transform.position);
-        if (transform.position.y < -3) Warp(new Vector3(0, .1f, 0), Vector3.forward * 3);
+        if (transform.position.y < -3) Warp(combat?combat.spawn:new Vector3(0,.1f,0),Vector3.forward*3);
     }
     public void Warp(Vector3 position, Vector3 lookAt)
     {

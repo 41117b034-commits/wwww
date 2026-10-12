@@ -1,0 +1,36 @@
+{
+    "mode": "test-shortcuts",
+    "completed": true,
+    "stages": [
+        "Village:Opening",
+        "Village:Conversation",
+        "Station:Arrival",
+        "Station:Approach",
+        "Combat:Intro",
+        "Combat:Fighting",
+        "Combat:Intro",
+        "Combat:Fighting",
+        "Station:Arrival",
+        "Combat:Intro",
+        "Combat:Fighting"
+    ],
+    "checks": [
+        "chat active before shortcut=True",
+        "F6 from conversation=True",
+        "Space skips authored line=True",
+        "F7 starts combat=True",
+        "repeat F7 resets once=True",
+        "begin cancellable reload=True",
+        "F6 cancels reload and enemy update=True",
+        "clean combat restart=True",
+        "reload after jump=True",
+        "E resupply=True",
+        "only one scene after repeated jumps=True",
+        "no duplicate actors=True"
+    ],
+    "errors": [],
+    "elapsed": 27.1748046875,
+    "sceneHandle": -113074,
+    "sceneCount": 1,
+    "retries": 0
+}

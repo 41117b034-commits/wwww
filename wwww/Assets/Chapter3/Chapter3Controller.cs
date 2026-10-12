@@ -9,6 +9,7 @@ public sealed class Chapter3Controller : MonoBehaviour
 {
     public enum Stage { Opening, Conversation, Equipment, Departure, Trail, Arrival }
     public Chapter3Player player;
+    public Chapter3Flow flow;
     public Chapter3Presentation ui;
     public Chapter2Actor bawan, pihu;
     public Chapter2LocalDialogue dialogue;
@@ -41,8 +42,11 @@ public sealed class Chapter3Controller : MonoBehaviour
         ui.send.onClick.AddListener(()=>SubmitReply(ui.input.text));
         ui.input.onSubmit.AddListener(SubmitFromInput);
         ui.depart.onClick.AddListener(()=>Depart());
-        ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章"));
-        ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
+        if(!flow)
+        {
+            ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章"));
+            ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
+        }
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         StartCoroutine(Opening());
     }
@@ -198,14 +202,8 @@ public sealed class Chapter3Controller : MonoBehaviour
         for(float t=0;t<1.8f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.8f);yield return null;}
         ui.fade.color=Color.black;CurrentStage=Stage.Arrival;player.canLook=false;
         ui.objective.text="隊伍正前往駐在所";
-        // Keep the chapter running across maps; this is not a completion or rescue result.
-        if(Application.CanStreamedLevelBeLoaded("第三章_駐在所"))
-            yield return SceneManager.LoadSceneAsync("第三章_駐在所");
-        else
-        {
-            ui.ending.SetActive(true);
-            Debug.LogError("[Chapter3] 駐在所場景未加入 Build Settings。");
-        }
+        if(flow) flow.EnterStation();
+        else Debug.LogError("[Chapter3] Missing single-scene flow.");
     }
     IEnumerator WalkTo(Vector3 target)
     {
@@ -242,7 +240,7 @@ public sealed class Chapter3Controller : MonoBehaviour
         CurrentLine=line;ui.Say(actor.DisplayName,line);actor.Face(player.transform.position);Speak(actor,line,seconds);
         player.FocusOn(actor.transform.position+Vector3.up*1.22f);
         if(CurrentStage==Stage.Trail){var other=actor==bawan?pihu:bawan;other.Face(actor.transform.position);}
-        yield return new WaitForSeconds(seconds);actor.speaking=false;ui.Say("",null);CurrentLine=null;
+        yield return Chapter3Flow.WaitForLine(seconds);actor.speaking=false;ui.Say("",null);CurrentLine=null;
     }
     void Speak(Chapter2Actor actor,string line,float seconds)
     {
@@ -281,4 +279,10 @@ public sealed class Chapter3Controller : MonoBehaviour
     static float FlatDistance(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
     void OnDestroy()
     {requestVersion++;if(imeKeyboard!=null)imeKeyboard.onIMECompositionChange-=Composition;if(dialogue)dialogue.CancelRequest();}
+    public void Suspend()
+    {
+        requestVersion++;StopAllCoroutines();if(dialogue)dialogue.CancelRequest();WaitingForReply=false;
+        bawan.speaking=pihu.speaking=false;
+        if(imeKeyboard!=null)imeKeyboard.onIMECompositionChange-=Composition;imeKeyboard=null;
+    }
 }

@@ -3,11 +3,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// Batch 1: a story and equipment handoff. Combat and ammunition belong to batch 2.
+// Station story within the single Chapter 3 scene.
 public sealed class Chapter3StationController : MonoBehaviour
 {
     public enum Stage { Arrival, Approach, Briefing, Equipment, Regroup, Departure, SchoolHandoff }
     public Chapter3Player player;
+    public Chapter3Flow flow;
     public Chapter3Presentation ui;
     public Chapter2Actor bawan, pihu, mona;
     public Transform riflePickup, rifleFocus;
@@ -28,8 +29,17 @@ public sealed class Chapter3StationController : MonoBehaviour
         player.station=this;player.chapter=null;
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
-        ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章_駐在所"));
-        ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
+        Begin();
+    }
+    public void Begin()
+    {
+        StopAllCoroutines();HasRifle=false;equipmentBusy=false;CompanionsWaiting=false;Waypoint=0;CurrentLine=null;
+        bawan.speaking=pihu.speaking=mona.speaking=false;
+        bawan.transform.position=new Vector3(0,0,-15);pihu.transform.position=new Vector3(1.6f,0,-17);
+        bawan.Face(Vector3.zero);pihu.Face(Vector3.zero);mona.Face(new Vector3(0,0,-3));
+        riflePickup.gameObject.SetActive(true);player.station=this;player.chapter=null;player.combat=null;
+        player.Warp(new Vector3(0,.06f,-18),new Vector3(0,1.65f,0));
+        ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
         StartCoroutine(Arrival());
     }
     void Update()
@@ -106,8 +116,8 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Say(pihu,"我們一起走。",lineSeconds);
         ui.Say("",null);ui.hint.text="";yield return Fade(true,1.5f);
         CurrentStage=Stage.SchoolHandoff;player.canLook=false;
-        ui.objective.text="隊伍正前往霧社公學校";ui.ending.SetActive(true);
-        // Future school scene connects here. No chapter completion or Pihu outcome is saved.
+        ui.objective.text="前往霧社的山路";
+        if(flow) flow.EnterCombat();
     }
     IEnumerator Escort(Vector3[] route)
     {
@@ -147,7 +157,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         foreach(var other in new[]{bawan,pihu,mona})if(other!=actor)other.Face(actor.transform.position);
         player.FocusOn(actor.transform.position+Vector3.up*1.2f);
         var face=actor.GetComponent<Chapter2SpeechFace>();if(face)face.BeginLine(line,seconds,null);
-        yield return new WaitForSeconds(seconds);
+        yield return Chapter3Flow.WaitForLine(seconds);
         actor.speaking=false;CurrentLine=null;ui.Say("",null);
     }
     IEnumerator Fade(bool black,float duration)
@@ -174,4 +184,5 @@ public sealed class Chapter3StationController : MonoBehaviour
         return false;
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
+    public void Suspend(){StopAllCoroutines();bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}
 }

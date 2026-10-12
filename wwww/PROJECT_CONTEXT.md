@@ -2,7 +2,9 @@
 
 更新日期：2026-10-12。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-第三章固定製作批次（2026-10-12）：使用者要求記住七批規劃，以後直接說「做第幾批」就按 `Documentation/Chapter3-batches.md` 接續。1 駐在所場景與莫那／領槍劇情；2 刀槍操作及短戰鬥；3 學校／運動會空間配置；4 事件與突破／掩護兩線；5 比胡受傷與救援分支；6 林間結尾／LLM／結果記憶；7 整章串接和完整驗證。第 1 批已完成並通過 Editor 完整流程；下一批為第 2 批，驗證界線見 Documentation/Chapter3-station.md。
+最新第三章第 2 批（2026-10-12）：依使用者要求，第三章改為只留 `Assets/Scenes/第三章.unity`，內含「01 部落與山林」「02 駐在所」「03 山路短交戰」，一組玩家／攝影機／字幕／EventSystem，各區域輪流啟用。原獨立駐在所場景與 meta 已移出 Assets、備份在 `_CodexBackups/chapter3_batch2_20261012/archived-scenes/`，Build Settings 移除該入口。F6 快速到駐在所、F7 快速到短交戰，空白鍵略過當句預寫台詞；LLM 三輪交談不受空白鍵影響。第二批已加入獵刀持握／攻擊、步槍瞄準／射擊／單發裝填、三名巡警短交戰、掩體、玩家受傷與 R 檢查點重試，交戰後走到路口接第三批。1／2 換武器、左鍵攻擊、右鍵瞄準、R 裝填、E 後方補彈；Esc 放開滑鼠。第一、第二章場景 SHA256 不變。詳細實際驗證與限制見 `Documentation/Chapter3-combat.md` 及本輪文末紀錄；沒有實體 VR 或獨立建置驗證，沒有第三章通關／比胡生死記錄。後續所有區域也繼續加入同一第三章，不再拆 .unity。
+
+第三章固定製作批次（2026-10-12）：使用者要求記住七批規劃，以後直接說「做第幾批」就按 `Documentation/Chapter3-batches.md` 接續。1 駐在所場景與莫那／領槍劇情；2 刀槍操作及短戰鬥；3 學校／運動會空間配置；4 事件與突破／掩護兩線；5 比胡受傷與救援分支；6 林間結尾／LLM／結果記憶；7 整章串接和完整驗證。第 1、2 批已製作；下一批為第 3 批學校／運動會空間配置。仍只有第三章一個場景，驗證界線見 Documentation/Chapter3-combat.md。
 
 第三章開場基線（2026-10-12，第 1 批接續前）：已建立並儲存 `Assets/Scenes/第三章.unity`，完成第一部分部落與山林：清晨部落、巴萬三輪 LLM 交談、木桌 E 領刀、巴萬／比胡同行與等候、山路對話、駐在所前銜接。已有村落房屋、遠山、土路、樹林與林下植被；章節選單第三章已接線並加入 Build Settings。原 Unity 全段正常服務測試與強制備援測試皆完成，執行時 errors=[]；最後正常服務輪為 2 次真正回覆＋1 次備援。原生點選單、中文輸入與 Enter 另收到 1 次真正回覆。比胡手部目標修正後另做局部動作演練；未再聲稱重跑全線。場景引用有效、Missing Script／遺失網格皆 0；一般／放大預覽比例已檢查。新程式在 `Assets/Chapter3`，規格、證據與限制見 `Documentation/Chapter3-village.md` 及 `_CodexBackups/chapter3_village_20261012/`。駐在所已由下述第 1 批完成，學校／運動會、比胡生死分支仍待後續需求；本段不寫第三章通關或生死結果，未做 VR 實機或建置版驗證。
 
@@ -1088,3 +1090,15 @@ Chapter2CouncilDrama 新增 knifeTip，插刀按真實刀尖位置埋入角色�
 - `Chapter2GameViewScaleGuard` 每秒在第二章檢查已開啟的 Game View，只修復不一致／無效倍率；使用 Unity 本身的 ZoomArea 配置與置中方法，不在正常手動縮放時強制拉回適合大小。僅編輯器程式，不進遊戲建置。內部 API 已對照本機 Unity 組件；未來升級 Unity 時須重新核對。
 - 證據：`_CodexBackups/game_view_scale_20261012/live-verification.txt`、四份 Unity 保存的檢查配置與原始配置備份。原 Editor 編譯成功，檢查時 `compilationFailed=false`、`playing=false`、`dirty=false`。本次為實際 Editor 狀態／視窗切換驗證；電腦操作工具初始化失敗，未取得修復後原生視窗截圖，不宣稱人工畫面驗收。
 - 未修改第二章場景、角色、攝影機或劇情；場景 SHA-256 前後一致。未重跑劇情分支、LLM、打包或 VR。臨時 `Chapter2GameViewScaleProbe` 移至上述備份資料夾的 `verification-tools/`，正式保留自動校正工具及 meta。
+
+## 2026-10-12 第三章單一場景與第 2 批
+
+本輪先讀「整理第三章架構待定事項」對話、固定劇情摘錄與七批規劃，再依最新要求只留下 Assets/Scenes/第三章.unity。部落／山林、駐在所、山路短交戰在同一 scene 內分區啟用，共用玩家、攝影機、UI、EventSystem，原駐在所 .unity 與 meta 已移至 _CodexBackups/chapter3_batch2_20261012/archived-scenes。Build Settings 與原第三章 GUID、選單入口一致；後續第 3 批也繼續加進同一場景。
+
+第二批加入 1／2 換獵刀與步槍、左鍵攻擊、右鍵瞄準、R 單發裝填、掩體／三名巡警／中彈反應、體力及 R 檢查點重試，後方 E 補彈；同伴在交戰後一起前進，路口接下一批學校／運動會。F6 到駐在所、F7 到短交戰，空白鍵略過預寫台詞。快速跳段取消舊演出與装填、恢復步速，不写通關或比胡結果。使用原獵刀、村田簡化模型、原玩家手模型烘焙持握姿勢及專案槍聲；沒有新增配音。
+
+本次原 Unity 6000.0.58f1 Editor 驗證：test-full 完整走過部落、駐在所與交戰出口約163秒，scene handle 不變、sceneCount=1、completed=true、errors=[]；之後的最終手部構圖由 test-combat-release 重新跑完交戰，24項檢查全過，約46秒，completed=true、errors=[]。test-shortcuts 約27秒，聊天中 F6、空白跳台詞、F7／重複 F7、裝填中跳走、回戰鬥及 E 補給等12項全過，沒有重複敵人。後續僅加跳段重設步速；沒有把更早完整測試當作最後手部畫面驗證。實際看過 release 的握刀、瞄準、装填、敵人反應與結尾圖片。
+
+證據在 _CodexBackups/chapter3_batch2_20261012/。驅動器用既有 CharacterController 行走及 Unity Input System 鍵鼠事件；全段交談僅 runtime 強制預寫備援、字幕加速，沒有改金鑰／服務配置。不是原生真人全段、VR 實機或獨立建置驗證。第一、第二章場景雜湊一致；Assets 最大單檔89,742,488 bytes。交接前停止播放、保存第三章、檢查引用與一般／放大預覽比例；臨時工具移到 verification-tools，正式 Assets 不保留測試 probe。
+
+限制：本機仍有既有 OpenXR runtime 未配置的 Play 啟動診斷，errors=[] 不代表整個專案 Console 零警告。沒有重播第一／第二章完整流程、重新測雲端品質、製作學校人群／兩任務線／比胡救援或保存第四章記憶。早期手網格倍率與 probe 語法問題已修正；final/release 以外的早期圖不作視覺驗收。無 commit/push。下一步依第 3 批製作學校／運動會場空間和動線。
