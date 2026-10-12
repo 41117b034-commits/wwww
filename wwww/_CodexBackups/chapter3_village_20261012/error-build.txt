@@ -1,0 +1,5 @@
+System.InvalidOperationException: Avatar is null.
+  at UnityEngine.Animator.GetBoneTransform (UnityEngine.HumanBodyBones humanBoneId) [0x00011] in <9623598fabb641f2b6ad29ba2e520af2>:0 
+  at Chapter3VillageAuthoring.Pack (UnityEngine.Transform person) [0x00007] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter3VillageAuthoring.cs:210 
+  at Chapter3VillageAuthoring.Build () [0x00368] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter3VillageAuthoring.cs:51 
+  at Chapter3WorkProbe.Tick () [0x0005d] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter3WorkProbe.cs:24 

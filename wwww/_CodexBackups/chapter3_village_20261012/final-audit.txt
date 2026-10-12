@@ -1,0 +1,8 @@
+scene=Assets/Scenes/第三章.unity
+playing=False
+dirty=False
+compileFailed=False
+missingScripts=0
+missingMeshes=0
+actors=5
+references=True

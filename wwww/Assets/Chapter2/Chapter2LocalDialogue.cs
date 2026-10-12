@@ -132,6 +132,11 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     }
     public IEnumerator Ask(Chapter2AmbientNPC npc,List<Message> history,string question,Action<string,string> done)
     {
+        return AskWithPersona(Persona(npc), history, question, done);
+    }
+    // A later chapter supplies its own knowledge and scene boundaries; transport stays shared.
+    public IEnumerator AskWithPersona(string persona,List<Message> history,string question,Action<string,string> done)
+    {
         if(Busy){done(null,"請等對方回答完再提問。");yield break;}
         Busy=true;
         if(!Ready)yield return Prepare();
@@ -140,10 +145,10 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         bool cloud=cloudConfig != null && cloudConfig.enabled;
         UnityWebRequest pending;
         if(cloud)
-            pending=Chapter2CloudGemma.CreateRequest(cloudConfig.model,cloudKey,Chapter2CloudGemma.BuildBody(Persona(npc),history,question));
+            pending=Chapter2CloudGemma.CreateRequest(cloudConfig.model,cloudKey,Chapter2CloudGemma.BuildBody(persona,history,question));
         else
         {
-            var messages=new List<Message>{new Message("system",Persona(npc))};
+            var messages=new List<Message>{new Message("system",persona)};
             messages.AddRange(history);messages.Add(new Message("user",question));
             var body=new Request{model=settings.model,messages=messages.ToArray()};
             pending=new UnityWebRequest(settings.endpoint,"POST");

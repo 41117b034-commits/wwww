@@ -1,0 +1,1 @@
+handToStrapTarget=2.665601E-07 raised=1.169366

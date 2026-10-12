@@ -1,0 +1,33 @@
+{
+    "mode": "test-real",
+    "completed": true,
+    "blankBlocked": true,
+    "earlyDepartureBlocked": true,
+    "duplicateBlocked": true,
+    "tooFarPickupBlocked": true,
+    "waitingObserved": true,
+    "imeConfirmationBlocked": true,
+    "keyboardPickup": true,
+    "boundaryDoesNotSnap": true,
+    "turns": 3,
+    "generated": 2,
+    "fallback": 1,
+    "elapsed": 110.04127502441406,
+    "replies": [
+        "緊張是正常的，我也沒辦法說自己一點都不慌。先跟緊我們，別跟丟了就好。",
+        "不用把話都藏著。走在我身旁，有事就叫我。",
+        "那就好，只要能跟上我們，就沒什麼好擔心的。走吧，跟著我。\n把刀帶上。走在我和比胡身邊，我們一起出發。"
+    ],
+    "errors": [],
+    "lines": [
+        "天快亮了，大家都在等我們。",
+        "你昨晚有睡嗎？我一直聽著外面的聲音。",
+        "比胡，跟上。大家一起走。",
+        "你今天走得比平常快。",
+        "剛才你說的，我記著。別急，我們在這裡等你。",
+        "等等我，這條帶子又鬆了。",
+        "人齊了再走。",
+        "好了。這次我走你旁邊。",
+        "前面就是往駐在所的路。壓低聲音，跟緊。"
+    ]
+}

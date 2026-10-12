@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/Scenes/\u7B2C\u4E8C\u7AE0.unity"
     guid: f6a052fa54648464c9282642742cee7b
+  - enabled: 1
+    path: "Assets/Scenes/\u7B2C\u4E09\u7AE0.unity"
+    guid: 56624427d45ff86458f8610a742819ce
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 48d9a3e5269a3b2488dda1a97fa42f1c, type: 2}

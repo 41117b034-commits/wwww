@@ -30,7 +30,8 @@ public static class Chapter2GameViewScaleGuard
             EditorApplication.timeSinceStartup < nextCheck)
             return;
         nextCheck = EditorApplication.timeSinceStartup + 1;
-        if (SceneManager.GetActiveScene().path != "Assets/Scenes/第二章.unity")
+        string scene = SceneManager.GetActiveScene().path;
+        if (scene != "Assets/Scenes/第二章.unity" && scene != "Assets/Scenes/第三章.unity")
             return;
         Repair(false);
     }

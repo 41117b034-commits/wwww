@@ -22,6 +22,11 @@ public class tiao : MonoBehaviour
         SceneManager.LoadScene("第二章");
     }
 
+    public void JumpToChapter3()
+    {
+        SceneManager.LoadScene("第三章");
+    }
+
     // 原有功能：跳到場景編號 4
     public void JumpToScene4()
     {

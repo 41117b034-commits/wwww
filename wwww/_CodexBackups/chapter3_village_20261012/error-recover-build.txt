@@ -1,0 +1,2 @@
+System.Exception: Not the incomplete Chapter 3 build; refusing to reset scene.
+  at Chapter3WorkProbe.Tick () [0x000a8] in C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Editor\Chapter3WorkProbe.cs:29 

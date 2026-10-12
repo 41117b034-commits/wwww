@@ -1,0 +1,7 @@
+Scene=Assets/Scenes/第三章.unity dirty=False playing=True compilationFailed=False
+stage=Opening turns=0 generated=0 fallback=0 reply=
+露比·巴干 (6.90, 0.04, -1.00) scale=(1.69, 1.69, 1.69)
+巴萬·拿威 (0.00, 0.05, 3.50) scale=(1.71, 1.71, 1.71)
+古慕·阿基 (-5.10, -0.10, 1.40) scale=(1.67, 1.67, 1.67)
+比胡·帖木 (2.10, 0.03, 3.70) scale=(1.71, 1.71, 1.71)
+都比·阿威 (6.30, 0.04, -0.40) scale=(1.19, 1.19, 1.19)
