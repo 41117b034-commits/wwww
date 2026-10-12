@@ -1,0 +1,88 @@
+{
+    "completed": true,
+    "stopped": true,
+    "dirty": false,
+    "chapter2Loaded": true,
+    "nightIntroSeen": false,
+    "introGoneBeforeDialogue": false,
+    "guideOutsideChoppingView": false,
+    "postFallFaceVisible": false,
+    "postFallBodyVisible": false,
+    "errors": 0,
+    "warnings": 3,
+    "cuts": 0,
+    "elapsed": 91.37283325195313,
+    "minTrunkClearance": 999.0,
+    "refusalMinFireDistance": 999.0,
+    "maxRefusalSideDrift": 0.0,
+    "label": "day-protect-verified",
+    "prefsBefore": "{\"treeChoice\":\"protect\",\"meetingChoice\":\"refuse\",\"woodIntegrity\":100.0,\"validCuts\":0,\"failedCuts\":0,\"casualties\":1,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"protect\",\"meetingChoice\":\"refuse\",\"woodIntegrity\":100.0,\"validCuts\":0,\"failedCuts\":0,\"casualties\":1,\"completed\":true}",
+    "speech": [
+        {
+            "actor": "阿威·比胡",
+            "text": "前面就是西仔希克。這片森林，守護著我們的生活。",
+            "mouthMax": 0.032386187463998798
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "現在開始你可以自由探索，了解這裡的環境",
+            "mouthMax": 0.8790498375892639
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "沿著這條小徑，跟我來。不要離隊太遠。",
+            "mouthMax": 0.8531506657600403
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "這棵巨木是我們的守護者……真的要砍下去嗎？",
+            "mouthMax": 0.027812153100967408
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "別碰它！這是我們的聖地。",
+            "mouthMax": 0.851046085357666
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "這是祖靈守護的地方……我們不能退。 ",
+            "mouthMax": 0.799764096736908
+        }
+    ],
+    "beats": [
+        "gameplay",
+        "introduction",
+        "exploration",
+        "guide-approaching",
+        "guide-in-front",
+        "police-speaking",
+        "villager-step-forward",
+        "villager-speaking",
+        "confrontation",
+        "blocking",
+        "shooting",
+        "shot-lowering",
+        "rescue",
+        "checking-casualty",
+        "threat-raising",
+        "forced-order",
+        "survivors-standing",
+        "survivors-short-walk",
+        "survivors-short-walk-fade",
+        "council-overview"
+    ],
+    "refusalRoute": [],
+    "chopHeadViewport": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "postFallHeadViewport": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "workersAfterFall": [],
+    "trunkClearances": []
+}

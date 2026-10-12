@@ -1,0 +1,71 @@
+阿威·比胡 h=1.719999 nose=0.01225364,0.1052812,0.1316452 mouthY=0.05884125 depth=0.1146612
+達多·莫那 h=1.719999 nose=0.01742291,0.094401,0.1077557 mouthY=0.04796103 depth=0.09538841
+古慕·阿基 h=1.719601 nose=0.001199961,0.06270337,0.1432314 mouthY=0.01627415 depth=0.1269426
+都比·阿威 h=1.22 nose=-0.0008350228,0.07758147,0.1108856 mouthY=0.04464146 depth=0.0987644
+莫那·魯道 h=1.719999 nose=0.01014411,0.1067778,0.1713805 mouthY=0.0603378 depth=0.1547117
+露比·巴干 h=1.739592 nose=0.009804983,0.08399248,0.1457549 mouthY=0.03702348 depth=0.1312182
+瓦旦 h=1.72 nose=0.01225364,0.1052812,0.1316447 mouthY=0.05884123 depth=0.1146607
+阿威·比胡 faceVertices=31839 mouthY=0.05884125 depth=0.1146612
+達多·莫那 faceVertices=32869 mouthY=0.04796103 depth=0.09538841
+古慕·阿基 faceVertices=47630 mouthY=0.01627415 depth=0.1269426
+都比·阿威 faceVertices=11625 mouthY=0.04464146 depth=0.0987644
+莫那·魯道 faceVertices=43053 mouthY=0.0603378 depth=0.1547117
+露比·巴干 faceVertices=29381 mouthY=0.03702348 depth=0.1312182
+瓦旦 faceVertices=31839 mouthY=0.05884123 depth=0.1146607
+達多·莫那 faceVertices=32869 mouthY=0.047961 depth=0.09538889
+古慕·阿基 faceVertices=47630 mouthY=0.01626337 depth=0.1269433
+莫那·魯道 faceVertices=43053 mouthY=0.06033779 depth=0.1547117
+巴萬·拿威 faceVertices=46858 mouthY=0.05720977 depth=0.1059432
+露比·巴干 faceVertices=29381 mouthY=0.03625107 depth=0.1309623
+比胡·帖木 faceVertices=49372 mouthY=0.07058848 depth=0.1165564
+歐冰·拿威 faceVertices=40215 mouthY=0.05058147 depth=0.1016149
+都比·阿威 faceVertices=11625 mouthY=0.04464146 depth=0.09876464
+伊婉·阿比斯 faceVertices=48957 mouthY=0.01198646 depth=0.1166278
+阿威·比胡 faceVertices=31839 mouthY=0.07948124 depth=0.1184816
+達多·莫那 faceVertices=32869 mouthY=0.06860102 depth=0.09669495
+古慕·阿基 faceVertices=47630 mouthY=0.03690936 depth=0.1323757
+都比·阿威 faceVertices=11625 mouthY=0.05928146 depth=0.1038513
+莫那·魯道 faceVertices=43053 mouthY=0.0740978 depth=0.1579261
+露比·巴干 faceVertices=29381 mouthY=0.0578986 depth=0.132287
+瓦旦 faceVertices=31839 mouthY=0.07948123 depth=0.1184814
+達多·莫那 faceVertices=32869 mouthY=0.068601 depth=0.09669542
+古慕·阿基 faceVertices=47630 mouthY=0.03690337 depth=0.132376
+莫那·魯道 faceVertices=43053 mouthY=0.07409779 depth=0.1579261
+巴萬·拿威 faceVertices=46858 mouthY=0.07838795 depth=0.1156214
+露比·巴干 faceVertices=29381 mouthY=0.05746948 depth=0.1322868
+比胡·帖木 faceVertices=49372 mouthY=0.09122848 depth=0.1204178
+歐冰·拿威 faceVertices=40215 mouthY=0.07122146 depth=0.1140029
+都比·阿威 faceVertices=11625 mouthY=0.05928146 depth=0.1038513
+伊婉·阿比斯 faceVertices=48957 mouthY=0.03102171 depth=0.1218887
+阿威·比胡 faceVertices=31839 mouthY=0.07432125 depth=0.1180439
+達多·莫那 faceVertices=32869 mouthY=0.06344102 depth=0.09624386
+古慕·阿基 faceVertices=47630 mouthY=0.03175056 depth=0.1322784
+都比·阿威 faceVertices=11625 mouthY=0.05562146 depth=0.1038513
+莫那·魯道 faceVertices=43053 mouthY=0.0758178 depth=0.1579261
+露比·巴干 faceVertices=29381 mouthY=0.05267982 depth=0.1320103
+瓦旦 faceVertices=31839 mouthY=0.07432123 depth=0.1180434
+達多·莫那 faceVertices=32869 mouthY=0.063441 depth=0.09624422
+古慕·阿基 faceVertices=47630 mouthY=0.03174337 depth=0.1322786
+莫那·魯道 faceVertices=43053 mouthY=0.07581779 depth=0.1579261
+巴萬·拿威 faceVertices=46858 mouthY=0.07309341 depth=0.1148598
+露比·巴干 faceVertices=29381 mouthY=0.05216487 depth=0.1321678
+比胡·帖木 faceVertices=49372 mouthY=0.08606848 depth=0.1204178
+歐冰·拿威 faceVertices=40215 mouthY=0.06606147 depth=0.1103666
+都比·阿威 faceVertices=11625 mouthY=0.05562146 depth=0.1038513
+伊婉·阿比斯 faceVertices=48957 mouthY=0.0262629 depth=0.121495
+阿威·比胡 faceVertices=31839 mouthY=0.07432125 depth=0.1180439
+達多·莫那 faceVertices=32869 mouthY=0.06344102 depth=0.09624386
+古慕·阿基 faceVertices=47630 mouthY=0.03175056 depth=0.1322784
+都比·阿威 faceVertices=11625 mouthY=0.05562146 depth=0.1038513
+莫那·魯道 faceVertices=43053 mouthY=0.0758178 depth=0.1579261
+露比·巴干 faceVertices=29381 mouthY=0.05267982 depth=0.1320103
+瓦旦 faceVertices=31839 mouthY=0.07432123 depth=0.1180434
+達多·莫那 faceVertices=32869 mouthY=0.063441 depth=0.09624422
+古慕·阿基 faceVertices=47630 mouthY=0.03174337 depth=0.1322786
+莫那·魯道 faceVertices=43053 mouthY=0.07581779 depth=0.1579261
+巴萬·拿威 faceVertices=46858 mouthY=0.07309341 depth=0.1148598
+露比·巴干 faceVertices=29381 mouthY=0.05216487 depth=0.1321678
+比胡·帖木 faceVertices=49372 mouthY=0.08606848 depth=0.1204178
+歐冰·拿威 faceVertices=40215 mouthY=0.06606147 depth=0.1103666
+都比·阿威 faceVertices=11625 mouthY=0.05562146 depth=0.1038513
+伊婉·阿比斯 faceVertices=48957 mouthY=0.0262629 depth=0.121495

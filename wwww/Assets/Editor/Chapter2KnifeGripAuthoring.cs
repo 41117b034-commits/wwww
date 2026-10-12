@@ -34,23 +34,31 @@ public static class Chapter2KnifeGripAuthoring
         if(Vector3.Dot(normal,refNormal)<0)normal=-normal;
         Quaternion basis=Quaternion.LookRotation(along,normal),inverse=Quaternion.Inverse(basis);
         float length=points.Max(p=>Vector3.Dot(p,along));
-        drama.gripBasis=basis;drama.gripCenter=basis*(new Vector3(0,-.09f,.48f)*length);drama.gripRenderer=skin;
-        string path="Assets/Chapter2/Props/Grip_"+actor.name+".asset";
+        drama.gripBasis=basis;drama.gripRenderer=skin;
+        float start=.46f*length,radius=.105f*length;
+        // Recompute the handle centre even when reusing an existing baked mesh.
+        var fingerPoints=points.Select(p=>inverse*p).Where(p=>p.z>start).ToArray();
+        float meanZ=fingerPoints.Average(p=>p.z),meanY=fingerPoints.Average(p=>p.y),cov=0,variance=0;
+        foreach(var p in fingerPoints){cov+=(p.z-meanZ)*(p.y-meanY);variance+=(p.z-meanZ)*(p.z-meanZ);}
+        float slope=variance>1e-8f?cov/variance:0;
+        float baseY=meanY+slope*(start-meanZ);
+        drama.gripCenter=basis*new Vector3(0,baseY-radius,start);
+        string path="Assets/Chapter2/Props/NaturalGrip_"+actor.name+".asset";
         var mesh=AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if(!mesh)
         {
             var delta=new Vector3[vertices.Length];var deformed=(Vector3[])vertices.Clone();
-            float start=.43f*length,radius=.11f*length;
             for(int i=0;i<vertices.Length;i++)
             {
                 float weight=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.05f,.75f,Weight(weights[i],included)));if(weight==0)continue;
                 Vector3 q=inverse*bind.MultiplyPoint3x4(vertices[i]),closed=q;float s=Mathf.Max(0,q.z-start);
                 if(s>0)
                 {
-                    float theta=Mathf.Min(Mathf.PI*1.15f,s/radius);
-                    float blend=Mathf.SmoothStep(0,1,s/(length*.13f));
-                    closed.y=Mathf.Lerp(q.y,-radius+(radius+q.y)*Mathf.Cos(theta),blend);
-                    closed.z=Mathf.Lerp(q.z,start+(radius+q.y)*Mathf.Sin(theta),blend);
+                    float theta=Mathf.PI*.98f*Mathf.Clamp01(s/(length-start));
+                    float thickness=Mathf.Clamp(q.y-(meanY+slope*(q.z-meanZ)),-radius*.65f,radius*.65f);
+                    float blend=Mathf.SmoothStep(0,1,s/(length*.14f));
+                    closed.y=Mathf.Lerp(q.y,baseY-radius+(radius+thickness)*Mathf.Cos(theta),blend);
+                    closed.z=Mathf.Lerp(q.z,start+(radius+thickness)*Mathf.Sin(theta),blend);
                 }
                 delta[i]=inv.MultiplyVector(basis*(closed-q))*weight;deformed[i]+=delta[i];
             }

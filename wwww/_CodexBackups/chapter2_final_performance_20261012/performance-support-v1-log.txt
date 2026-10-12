@@ -1,0 +1,245 @@
+Warning Can not play a disabled audio source
+Log [Chapter2] Stage=Intro
+Error Not allowed to access triangles/indices on mesh 'tripo_node_e2dbffa6' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_33432f6c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_e2dbffa6' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_33432f6c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_e2dbffa6' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_33432f6c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_e2dbffa6' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_33432f6c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_e2dbffa6' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_33432f6c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_ecb91fad' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_3a511942' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Warning Can not play a disabled audio source
+Error Not allowed to access triangles/indices on mesh 'tripo_node_4931ae9c' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'NaturalGrip_達多·莫那' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'NaturalGrip_古慕·阿基' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'MonaRallyFist' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'NaturalGrip_巴萬·拿威' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'NaturalGrip_比胡·帖木' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Not allowed to access triangles/indices on mesh 'NaturalGrip_歐冰·拿威' (isReadable is false; Read/Write must be enabled in import settings)
+Exception ArgumentOutOfRangeException: Non-negative number required.
+Parameter name: capacity
+System.Collections.Generic.List`1[T]..ctor (System.Int32 capacity) (at <152439c387994a8da523328132967f8d>:0)
+Chapter2SpeechFace.PrepareBody (Chapter2SpeechFace+Surface surface) (at Assets/Chapter2/Chapter2SpeechFace.cs:99)
+Chapter2SpeechFace.LateUpdate () (at Assets/Chapter2/Chapter2SpeechFace.cs:86)
+
+Error Could not allocate memory: System out of memory!
+Trying to allocate: 27292656B with 32 alignment. MemoryLabel: VertexData
+Allocation happened at: Line:261 in C:\build\output\unity\unity\Runtime\Graphics\Mesh\VertexData.cpp
+Memory overview
+
+[ ALLOC_TEMP_TLS ] used: 64633360B | peak: 0B | reserved: 59015168B 
+[ ALLOC_MEMORYPROFILER ] used: 1268192B | peak: 1276504B | reserved: 2097152B 
+[ ALLOC_DEFAULT ] used: 1569715580B | peak: 0B | reserved: 1659035648B 
+[ ALLOC_TEMP_JOB_1_FRAME ] used: 0B | peak: 0B | reserved: 2097152B 
+[ ALLOC_TEMP_JOB_2_FRAMES ] used: 0B | peak: 0B | reserved: 0B 
+[ ALLOC_TEMP_JOB_4_FRAMES (JobTemp) ] used: 0B | peak: 0B | reserved: 127926272B 
+[ ALLOC_TEMP_JOB_ASYNC (Background) ] used: 1392B | peak: 0B | reserved: 50331648B 
+[ ALLOC_GFX ] used: 4938036016B | peak: 0B | reserved: 4996771840B 
+[ ALLOC_CACHEOBJECTS ] used: 873143824B | peak: 0B | reserved: 908517376B 
+[ ALLOC_TYPETREE ] used: 996200B | peak: 0B | reserved: 8388608B 
+[ ALLOC_PROFILER ] used: 770536B | peak: 775064B | reserved: 16777216B 
+[ ALLOC_PROFILER_EDITOR ] used: 0B | peak: 0B | reserved: 0B 
+

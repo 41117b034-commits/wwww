@@ -1,0 +1,17 @@
+1.590155 
+6.425877 Hilt
+13.06575 TadoOutburstRise
+13.93543 TadoOutburst
+16.43778 TadoSitBack
+18.85848 Concern
+32.62368 Fire
+49.77017 Resolve
+57.10564 EyesClosed
+61.22208 MonaRise
+62.67235 Declare
+83.52295 TadoRise
+84.93353 Stab
+87.16647 Planted
+93.24303 WarriorsRise
+95.72391 Pledge
+102.176 Nod

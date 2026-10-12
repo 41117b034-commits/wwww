@@ -440,7 +440,12 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         else if (actor && actor == watan) role = Chapter2AudioManager.Role.Watan;
         else if (speaker == "玩家") role = Chapter2AudioManager.Role.Player;
         else if (speaker == "巴萬與眾戰士") role = Chapter2AudioManager.Role.Warriors;
-        return chapterAudio ? chapterAudio.BeginLine(role, words, fallback) : fallback;
+        float seconds=chapterAudio ? chapterAudio.BeginLine(role, words, fallback) : fallback;
+        if(actor&&!actor.police)actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(words,seconds,chapterAudio);
+        else if(role==Chapter2AudioManager.Role.Warriors)
+            foreach(var participant in councilCast)
+                if(participant&&participant.speaking)participant.GetComponent<Chapter2SpeechFace>()?.BeginLine(words,seconds,chapterAudio);
+        return seconds;
     }
     IEnumerator WaitChapterVoice(float seconds)
     {

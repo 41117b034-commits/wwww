@@ -1,6 +1,8 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-10-11。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-10-12。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+
+最新第二章演出：2026-10-12 修正達多握刀手腕與指握，指定台詞「我們還要忍到什麼時候？」起身、說完坐回；更換伊婉的通用長輩女模型並調整腳／座椅；同意分支小孩持獵刀隨全員站起。白天劇情及夜間會議加入嘴唇／下巴變形與情緒表情，近距問候氣泡不觸發嘴型。Play → P 的 performance-support-release／performance-refuse-release 均完整結束且 errors=0；白天保護／砍伐流程另測通過。實際檢查範圍、警告、程序嘴型限制及證據見文末。
 
 最新角色／拒絕演出：2026-10-11 白天達多、古慕、莫那、露比、都比與夜間人物共用身分，第一章 NPC 記憶同步；阿威保持獨立帶路者。拒絕時莫那怒視、前傾並用食指指著玩家，保留同意分支的原握拳。九人27次聊天檢查、Play → P 的 final2-refuse／final-support 通過，errors=0；詳細證據與限制見文末。
 
@@ -1041,3 +1043,33 @@ Chapter2CouncilDrama 新增 knifeTip，插刀按真實刀尖位置埋入角色�
 - 測試前後11個正式檔案的SHA256一致，證據為test-source-hashes／final-source-hashes；臨時四個Editor probe與meta已移至同目錄verification-tools。
 - 未重新跑第一章、白天完整保護／砍倒後果、正式打包或實體VR；白天僅身分／模型槽位與聊天回歸，保留原後果控制程式。無commit／push。
 - 清理後重新編譯完成：Editor.log 顯示 assembly reload成功，無新增編譯錯誤；原Unity畫面確認停止播放、Full HD等比例0.78x。`final-state.json`確認正式檔案雜湊不變，Assets/Editor不再含本輪臨時probe。
+
+## 2026-10-12 第二章最後演出調整
+
+本輪只改第二章，已參考固定劇情文字第 3–5 頁，最新使用者要求優先。沒有製作第三章，沒有変更 LLM 模型或金鑰。
+
+### 實作
+
+- 達多握刀手腕順著前臂，前臂輔助骨分攤扭轉；`NaturalGrip_*.asset` 改用手指中心線彎曲形成指握。保留單刃獵刀及插刀演出。`Chapter2KnifeGripAuthoring` 重用快取網格時也重新算握點，避免第二次套用錯位。
+- `Chapter2Actor.SitBack` 與會議流程：達多說「我們還要忍到什麼時候？」之前起身，鏡頭跟隨抬高；說完回座再輪瓦旦。腳部 IK 後恢復腳掌朝向，避免座姿腳踝扭轉。
+- 圖二對應伊婉·阿比斯，原模型來自 `人/日治時期長輩女`，無法據此確認為霧社賽德克服飾，故更換專案既有部落女性長衣模型，調整身高、臉形、深土紅布色區分古慕，重設座椅大小／位置與臀高。這是遊戲美術替換，不能宣稱為經考證的 1930 年服飾復原。角色姓名與會議圓圈保留。
+- 都比·阿威加入 councilCast，同意分支持縮小獵刀一起起身及應和；拒絕分支仍坐著聆聽。原莫那指人／握拳分支、台詞、介紹、結尾保留。
+- `Chapter2SpeechFace`：使用局部臉部網格的嘴唇／下巴及眉眼形變；有配音時依音量與停頓驅動，逐句正規化低音量配音；無配音時依文字節奏／標點停頓驅動。這是程序嘴型，不是逐音素口型或新增配音。
+- `BeginChapterVoice` 連接白天 Say、阻擋、倒樹警告與所有 CouncilLines，群體回應也接各角色。倒樹後退的 Startle.Begin 會關 speaking，已在 Begin 後恢復阿威 speaking，警告說完才關閉。自由探索接近 NPC 的問候氣泡沒有接此嘴型。
+- 表情按劇情節拍：達多憤怒、瓦旦擔憂／閉眼、巴萬決心、莫那激昂／斥責／結語沉重。嘴型和既有手部握拳／指人獨立運作。
+- 臉部覆蓋用 `StoryBodyCut.hlsl` 的頭部座標遮罩去掉下方靜態臉，Body/Face shader 分別使用 2600/2599 render queue，避免眉毛與嘴唇雙層重疊。保留原身體網格與手勢網格，沒有在播放時複製高面數全身模型。兩個 shader 延伸專案已安裝的 URP Lit，仍引用原套件 HLSL；未修改 PackageCache。
+- `Chapter2FinalPerformanceAuthoring`／`Chapter2SpeechFaceAuthoring` 為留存的編輯器建置工具。較大新增網格轉 Low compression 的 binary asset，所有本輪 Chapter2 資產均低於 100,000,000 bytes。正式自由探索仍 180 秒。
+
+### 本輪驗證
+
+原專案 Unity 6000.0.58f1 的 Play Mode，以臨時 Editor 驅動器送 Input System 的 P／1／2、行走與砍伐輸入，並實際檢查引擎渲染截圖。不是實體 VR 測試。
+
+證據根目錄：`_CodexBackups/chapter2_final_performance_20261012/`。
+
+- `performance-support-release-result.json`：Complete、errors=0、warnings=2、初始 10 人皆坐、指定台詞起身／坐回 true、小孩持刀／起身 true、全 10 人起身 true、插刀／結尾字卡 true、PlayerPrefs unchanged、dirty=false、playingAfterExit=false。35 行發言都有嘴型數值紀錄，另檢視臉部、持刀、達多起身、小孩持刀和全景。
+- `performance-refuse-release-result.json`：Complete、errors=0、warnings=15；達多起身／坐回、玩家走近莫那 true，小孩留坐；檢視怒視／指向玩家與結尾。正式存檔不變，退出 Play、場景不髒。
+- `day-protect-verified-result.json`：保護巨木→槍擊→查看→強迫離開→夜景切換，completed=true、errors=0、warnings=3；包含阿威兩句護樹台詞嘴型。此輪在低音量正規化前，安靜配音振幅偏低的問題由後續 day-fell-final 重驗。
+- `day-fell-final-result.json`：介紹→探索→接人→巨木→5 次砍伐→倒樹→夜景切換，completed=true、errors=0、warnings=1。六句族人發言全有嘴型，含錄音介紹／巨木回話峰值 0.9、後退警告約 0.398。砍伐時阿威在鏡頭外、倒樹後頭身皆可見、最小樹幹淨距約 2.11m。測試把探索時間暫改 3 秒；正式 scene 仍 180 秒。
+- `final-assets.txt`：白天 6 位族人／小孩與夜間 10 人都有局部臉部網格、四個表情／嘴型 shape；警察未套用。編譯失敗 false、停止播放、場景已儲存。
+- 舊 warnings 為停用音源／載入物件遺失腳本；本輪不宣稱零警告。初期全身複製曾造成記憶體不足，已改局部臉部處理；早期 prototype／mask 測試失敗紀錄不能当作最後驗收。最終以 release 與 day-fell-final 為準。
+- 臨時測試編輯器已移至上列備份目錄的 `verification-tools/`，不留在 Assets。未執行整包建置、第一章重播、實體 VR 或另外一台電腦測試；未 commit/push。

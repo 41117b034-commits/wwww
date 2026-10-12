@@ -1,0 +1,101 @@
+{
+    "completed": true,
+    "stopped": true,
+    "dirty": false,
+    "chapter2Loaded": true,
+    "nightIntroSeen": false,
+    "introGoneBeforeDialogue": false,
+    "guideOutsideChoppingView": true,
+    "postFallFaceVisible": true,
+    "postFallBodyVisible": true,
+    "errors": 0,
+    "warnings": 1,
+    "cuts": 5,
+    "elapsed": 95.92581939697266,
+    "minTrunkClearance": 2.1113197803497316,
+    "refusalMinFireDistance": 999.0,
+    "maxRefusalSideDrift": 0.0,
+    "label": "day-fell-final",
+    "prefsBefore": "{\"treeChoice\":\"protect\",\"meetingChoice\":\"refuse\",\"woodIntegrity\":100.0,\"validCuts\":0,\"failedCuts\":0,\"casualties\":1,\"completed\":true}",
+    "prefsAfter": "{\"treeChoice\":\"protect\",\"meetingChoice\":\"refuse\",\"woodIntegrity\":100.0,\"validCuts\":0,\"failedCuts\":0,\"casualties\":1,\"completed\":true}",
+    "speech": [
+        {
+            "actor": "阿威·比胡",
+            "text": "前面就是西仔希克。這片森林，守護著我們的生活。",
+            "mouthMax": 0.8999999761581421
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "現在開始你可以自由探索，了解這裡的環境",
+            "mouthMax": 0.8526697158813477
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "沿著這條小徑，跟我來。不要離隊太遠。",
+            "mouthMax": 0.7785223722457886
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "這棵巨木是我們的守護者……真的要砍下去嗎？",
+            "mouthMax": 0.8999999761581421
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "退後……它要倒下了。",
+            "mouthMax": 0.39824172854423525
+        },
+        {
+            "actor": "阿威·比胡",
+            "text": "命令完成了。可是，我們該怎麼面對祖靈？",
+            "mouthMax": 0.772243320941925
+        }
+    ],
+    "beats": [
+        "gameplay",
+        "introduction",
+        "exploration",
+        "guide-approaching",
+        "guide-in-front",
+        "police-speaking",
+        "villager-step-forward",
+        "villager-speaking",
+        "confrontation",
+        "chopping",
+        "tree-warning",
+        "tree-falling",
+        "council-overview"
+    ],
+    "refusalRoute": [],
+    "chopHeadViewport": {
+        "x": -1.7971234321594239,
+        "y": 0.3862178325653076,
+        "z": 0.7080785632133484
+    },
+    "postFallHeadViewport": {
+        "x": 0.5016510486602783,
+        "y": 0.6037139892578125,
+        "z": 3.8721208572387697
+    },
+    "workersAfterFall": [
+        {
+            "x": -4.75,
+            "y": 0.038223836570978168,
+            "z": 9.25
+        },
+        {
+            "x": 4.949999809265137,
+            "y": 0.02033386379480362,
+            "z": 9.800000190734864
+        },
+        {
+            "x": -5.11213493347168,
+            "y": -0.02579938992857933,
+            "z": 10.21893310546875
+        }
+    ],
+    "trunkClearances": [
+        2.1113197803497316,
+        2.316859006881714,
+        2.479332208633423
+    ]
+}

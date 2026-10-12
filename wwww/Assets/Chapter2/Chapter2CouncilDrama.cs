@@ -33,6 +33,7 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
     bool drawn;
     Quaternion headBasis;
     Chapter2CouncilHands hands;
+    Transform forearmTwist1,forearmTwist2;
 
     void Start()
     {
@@ -41,6 +42,8 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
         arm=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
         elbow=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerArm,"R_Forearm","RightForeArm");
         hand=actor.Rig.RightHand;
+        foreach(var bone in animator.GetComponentsInChildren<Transform>(true))
+        {if(bone.name=="R_ForearmTwist01")forearmTwist1=bone;if(bone.name=="R_ForearmTwist02")forearmTwist2=bone;}
         hands=GetComponent<Chapter2CouncilHands>();
         if(actor.Rig.Head)headBasis=Quaternion.Inverse(actor.Rig.Head.rotation)*Quaternion.LookRotation(actor.Rig.Forward,Vector3.up);
         spine=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.Spine,"Spine","Spine1","Spine01");
@@ -174,7 +177,11 @@ public sealed class Chapter2CouncilDrama : MonoBehaviour
         Quaternion rotation=Quaternion.LookRotation(along,normal)*Quaternion.Inverse(basis);
         Vector3 current=Vector3.ProjectOnPlane(hand.rotation*(basis*Vector3.up),along).normalized;
         float roll=Vector3.SignedAngle(current,normal,along);
-        elbow.rotation=Quaternion.AngleAxis(roll*.7f*weight,along)*elbow.rotation;
+        // Spread pronation through the forearm instead of concentrating a full
+        // turn at the narrow wrist seam of the scanned character.
+        float turn=roll*weight;
+        if(forearmTwist1)forearmTwist1.rotation=Quaternion.AngleAxis(turn*.35f,along)*forearmTwist1.rotation;
+        if(forearmTwist2)forearmTwist2.rotation=Quaternion.AngleAxis(turn*.7f,along)*forearmTwist2.rotation;
         hand.rotation=Quaternion.Slerp(hand.rotation,rotation,weight);
     }
     void OnDestroy(){if(original&&gripRenderer)gripRenderer.sharedMesh=original;}

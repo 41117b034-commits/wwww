@@ -17,6 +17,8 @@ public sealed partial class Chapter2Controller
         councilCast.Clear(); councilCast.Add(mona);
         foreach (var a in leaders) if (a && !councilCast.Contains(a)) councilCast.Add(a);
         foreach (var a in conservatives) if (a && !councilCast.Contains(a)) councilCast.Add(a);
+        foreach (var a in nightGroup.GetComponentsInChildren<Chapter2Actor>(true))
+            if (a.isChild && !councilCast.Contains(a)) councilCast.Add(a);
         foreach (var a in councilCast)
         {
             var pose = a.GetComponent<Chapter2CouncilDrama>();
@@ -53,9 +55,21 @@ public sealed partial class Chapter2Controller
         if (actor) { Pose(actor, beat).speechLookTarget = player.view.transform; actor.speaking = true; actor.Rig.conversationTarget = null; }
         foreach (string line in lines)
         {
+            bool tadoOutburst=actor==tado && line=="我們還要忍到什麼時候？";
+            if(tadoOutburst)
+            {
+                actor.speaking=false;CouncilCue="TadoOutburstRise";
+                actor.StandFromSeat(0,.65f);yield return CouncilRiseShot(actor,.75f);
+                CouncilCue="TadoOutburst";actor.speaking=true;
+            }
             CouncilLineIndex++; ui.Line(actor ? CouncilSpeakerName(actor, speaker) : speaker, line);
             // Short exclamations still get a readable hold; long lines get more time.
             yield return WaitChapterVoice(BeginChapterVoice(actor, speaker, line, Mathf.Clamp(1.45f + line.Length * .14f, 2.15f, 6.8f)));
+            if(tadoOutburst)
+            {
+                actor.speaking=false;ui.Line("","");CouncilCue="TadoSitBack";
+                actor.SitBack(1.05f);yield return new WaitForSeconds(1.15f);
+            }
         }
         if (actor) actor.speaking = false;
         ui.Line("", ""); yield return new WaitForSeconds(.25f);

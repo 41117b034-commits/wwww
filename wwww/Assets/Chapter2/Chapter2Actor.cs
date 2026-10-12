@@ -23,6 +23,8 @@ public sealed class Chapter2Actor : MonoBehaviour
     public float SeatWeight { get; private set; }
     float standStarted=-1,standDuration;
     Vector3 standOrigin,standForward;
+    float sitStarted=-1,sitDuration;
+    Vector3 seatOrigin,sitOrigin;
     float fallStarted;
     Vector3 fallDirection;
     SkinnedMeshRenderer[] skins;
@@ -52,6 +54,7 @@ public sealed class Chapter2Actor : MonoBehaviour
               seatedRoot.parent && seatedRoot.parent!=transform && seatedRoot.parent!=animator.transform)
             seatedRoot=seatedRoot.parent;
         previous = transform.position;
+        seatOrigin=transform.position;
         skins=GetComponentsInChildren<SkinnedMeshRenderer>();
     }
     void Update()
@@ -60,10 +63,11 @@ public sealed class Chapter2Actor : MonoBehaviour
         if(standStarted>=0)
         {
             float progress=Mathf.Clamp01((Time.time-standStarted)/standDuration);
-            transform.position=standOrigin+standForward*(.46f*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,.95f,progress)));
+            transform.position=standOrigin+standForward*((isChild?.30f:.46f)*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,.95f,progress)));
         }
+        if(sitStarted>=0)transform.position=Vector3.Lerp(sitOrigin,seatOrigin,Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-sitStarted)/sitDuration)));
         Vector3 delta = Vector3.ProjectOnPlane(transform.position-previous,Vector3.up);
-        Rig.walking = standStarted<0 && !fallen && delta.magnitude > 0.0005f;
+        Rig.walking = standStarted<0 && sitStarted<0 && !fallen && delta.magnitude > 0.0005f;
         if (Rig.walking) Rig.Face(delta);
         Rig.speakingWeight = speaking && !fallen ? 0.65f : 0;
         if (!fallen) Rig.Ground(GroundHeight);
@@ -78,16 +82,20 @@ public sealed class Chapter2Actor : MonoBehaviour
             SeatWeight=1-Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-standStarted)/standDuration));
             if(SeatWeight<=0){seated=false;standStarted=-1;}
         }
+        if(sitStarted>=0){SeatWeight=Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-sitStarted)/sitDuration));if(SeatWeight>=1){seated=true;sitStarted=-1;}}
         if (SeatWeight>0 && leftFoot && rightFoot)
         {
             float footReach=.2f*seatedHipHeight/.54f;
             Vector3 l=leftFoot.position+Rig.Forward*(footReach*SeatWeight),r=rightFoot.position+Rig.Forward*(footReach*SeatWeight);
+            Quaternion leftSole=leftFoot.rotation,rightSole=rightFoot.rotation;
             // Council stumps are 0.44 m high. Different donor rigs have different
             // pelvis heights; keep the seated pelvis above the seat surface.
             float seatDrop=Mathf.Max(0,Rig.Hips.position.y-seatedHipHeight);
             (seatedRoot?seatedRoot:Rig.Hips).position += Vector3.down * (seatDrop*SeatWeight);
             Chapter1IncidentRig.Solve(leftThigh,leftKnee,leftFoot,l,Rig.Forward);
             Chapter1IncidentRig.Solve(rightThigh,rightKnee,rightFoot,r,Rig.Forward);
+            // Leg IK rotates the calf; the planted soles must retain their grounded orientation.
+            leftFoot.rotation=leftSole;rightFoot.rotation=rightSole;
         }
         if (fallen) PoseFall();
         if (speaking && Rig.Head) Rig.Head.rotation = Quaternion.AngleAxis(Mathf.Sin(Time.time*2.1f)*3, transform.right)*Rig.Head.rotation;
@@ -96,8 +104,14 @@ public sealed class Chapter2Actor : MonoBehaviour
     public void StandFromSeat(float delay=0,float duration=1.25f)
     {
         if(!seated)return;
+        sitStarted=-1;seatOrigin=transform.position;
         standStarted=Time.time+delay;standDuration=Mathf.Max(.1f,duration);
         standOrigin=transform.position;standForward=Rig.Forward;
+    }
+    public void SitBack(float duration=1.1f)
+    {
+        standStarted=-1;sitOrigin=transform.position;sitStarted=Time.time;sitDuration=Mathf.Max(.1f,duration);
+        seated=false;
     }
     public void BeginFall(Vector3 source)
     {

@@ -1,0 +1,37 @@
+playing=False dirty=False failed=False
+阿威·比胡 police=False face=True
+ vertices=31839 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+達多·莫那 police=False face=True
+ vertices=32869 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+古慕·阿基 police=False face=True
+ vertices=47630 shapes=4 head=mixamorig:Head body=Chapter2/Story Body queue=2600
+中村正雄 police=True face=False
+佐藤正一 police=True face=False
+田中武雄 police=True face=False
+都比·阿威 police=False face=True
+ vertices=11625 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+莫那·魯道 police=False face=True
+ vertices=43053 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+露比·巴干 police=False face=True
+ vertices=29381 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+瓦旦 police=False face=True
+ vertices=31839 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+達多·莫那 police=False face=True
+ vertices=32869 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+古慕·阿基 police=False face=True
+ vertices=47630 shapes=4 head=mixamorig:Head body=Chapter2/Story Body queue=2600
+莫那·魯道 police=False face=True
+ vertices=43053 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+巴萬·拿威 police=False face=True
+ vertices=46858 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+露比·巴干 police=False face=True
+ vertices=29381 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+比胡·帖木 police=False face=True
+ vertices=49372 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+歐冰·拿威 police=False face=True
+ vertices=40215 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+都比·阿威 police=False face=True
+ vertices=11625 shapes=4 head=Head body=Chapter2/Story Body queue=2600
+伊婉·阿比斯 police=False face=True
+ vertices=48957 shapes=4 head=mixamorig:Head body=Chapter2/Story Body queue=2600
+Exploration seconds=180

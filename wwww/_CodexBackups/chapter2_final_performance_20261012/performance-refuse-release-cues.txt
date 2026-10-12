@@ -1,0 +1,15 @@
+1.552657 
+6.410963 Hilt
+13.0834 TadoOutburstRise
+13.91783 TadoOutburst
+16.37734 TadoSitBack
+18.65301 Concern
+31.78574 Fire
+48.94198 Resolve
+56.46347 EyesClosed
+60.46809 MonaRise
+61.91651 Declare
+81.69353 PlayerApproach
+86.71827 Rest
+90.90743 Cold
+99.59386 Expel

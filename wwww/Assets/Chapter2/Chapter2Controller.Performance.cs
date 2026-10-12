@@ -34,7 +34,6 @@ public sealed partial class Chapter2Controller
         CameraBeat = "tree-warning";
         ui.Line(workers[0].DisplayName, "退後……它要倒下了。");
         float warningEnd = Time.unscaledTime + BeginChapterVoice(workers[0], "族人", "退後……它要倒下了。", 2.25f);
-        workers[0].speaking = true;
         Vector3 fallSide=Vector3.Cross(Vector3.up,TreeFallDirection).normalized;
         for (int i = 0; i < workers.Length; i++)
         {
@@ -43,6 +42,8 @@ public sealed partial class Chapter2Controller
             Vector3 retreat=fallSide*(side>=0?1:-1);
             workers[i].GetComponent<Chapter2StartleReaction>().Begin(sacredTree,i,retreat);
         }
+        // Startle resets speaking; keep the warning alive while retreating.
+        workers[0].speaking = true;
         yield return new WaitForSeconds(2.25f);
         while (Time.unscaledTime < warningEnd) yield return null;
         if (chapterAudio) chapterAudio.StopVoice();
