@@ -2,6 +2,8 @@
 
 更新日期：2026-10-12。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
+第二章預覽比例固定檢查：2026-10-12 再次修復 Game View 水平約5倍／垂直1倍的拉伸，一般與放大視窗皆已由原 Unity Editor 校正及儲存。新增 `Assets/Editor/Chapter2GameViewScaleGuard.cs`，第二章開啟時僅自動修復兩軸倍率不一致或無效的預覽，保留正常手動縮放。以後第二章工作交接前，確認一般／放大 Game View 的水平、垂直倍率一致且畫面置中；不要用改角色尺寸或攝影機投影補償預覽拉伸。手動恢復選單為 `Tools > Chapter 2 > Restore Game Preview Proportions`。
+
 最新第二章演出：2026-10-12 修正達多握刀手腕與指握，指定台詞「我們還要忍到什麼時候？」起身、說完坐回；更換伊婉的通用長輩女模型並調整腳／座椅；同意分支小孩持獵刀隨全員站起。白天劇情及夜間會議加入嘴唇／下巴變形與情緒表情，近距問候氣泡不觸發嘴型。Play → P 的 performance-support-release／performance-refuse-release 均完整結束且 errors=0；白天保護／砍伐流程另測通過。實際檢查範圍、警告、程序嘴型限制及證據見文末。
 
 最新角色／拒絕演出：2026-10-11 白天達多、古慕、莫那、露比、都比與夜間人物共用身分，第一章 NPC 記憶同步；阿威保持獨立帶路者。拒絕時莫那怒視、前傾並用食指指著玩家，保留同意分支的原握拳。九人27次聊天檢查、Play → P 的 final2-refuse／final-support 通過，errors=0；詳細證據與限制見文末。
@@ -1073,3 +1075,11 @@ Chapter2CouncilDrama 新增 knifeTip，插刀按真實刀尖位置埋入角色�
 - `final-assets.txt`：白天 6 位族人／小孩與夜間 10 人都有局部臉部網格、四個表情／嘴型 shape；警察未套用。編譯失敗 false、停止播放、場景已儲存。
 - 舊 warnings 為停用音源／載入物件遺失腳本；本輪不宣稱零警告。初期全身複製曾造成記憶體不足，已改局部臉部處理；早期 prototype／mask 測試失敗紀錄不能当作最後驗收。最終以 release 與 day-fell-final 為準。
 - 臨時測試編輯器已移至上列備份目錄的 `verification-tools/`，不留在 Assets。未執行整包建置、第一章重播、實體 VR 或另外一台電腦測試；未 commit/push。
+
+## 2026-10-12 第二章 Game 預覽比例再次修復
+
+- 使用者回報第二章比例每次工作後未恢復。當下 `default-6000.dwlt` 與 `CurrentMaximizeLayout.dwlt` 的 Game View ZoomArea 再次存為約 `(5, 1)`；這是 Editor 預覽拉伸，非人物或攝影機比例。
+- 原 Unity 6000.0.58f1 載入編輯器校正工具後，一般視窗倍率 `(0.316898, 0.316898)`、放大視窗 `(0.777546, 0.777546)`。切換一般 → 放大 → 原一般配置後，兩軸皆一致；Unity 保存的兩份本機配置均已恢復等比例、置中。保留原 Full HD 輸出選擇。
+- `Chapter2GameViewScaleGuard` 每秒在第二章檢查已開啟的 Game View，只修復不一致／無效倍率；使用 Unity 本身的 ZoomArea 配置與置中方法，不在正常手動縮放時強制拉回適合大小。僅編輯器程式，不進遊戲建置。內部 API 已對照本機 Unity 組件；未來升級 Unity 時須重新核對。
+- 證據：`_CodexBackups/game_view_scale_20261012/live-verification.txt`、四份 Unity 保存的檢查配置與原始配置備份。原 Editor 編譯成功，檢查時 `compilationFailed=false`、`playing=false`、`dirty=false`。本次為實際 Editor 狀態／視窗切換驗證；電腦操作工具初始化失敗，未取得修復後原生視窗截圖，不宣稱人工畫面驗收。
+- 未修改第二章場景、角色、攝影機或劇情；場景 SHA-256 前後一致。未重跑劇情分支、LLM、打包或 VR。臨時 `Chapter2GameViewScaleProbe` 移至上述備份資料夾的 `verification-tools/`，正式保留自動校正工具及 meta。

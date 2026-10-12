@@ -1,0 +1,4 @@
+initial-corrected scale=(0.316898, 0.316898) translation=(348.60, 136.90) maximized=False position=(x:352.00, y:79.20, width:697.20, height:294.80) playing=False dirty=False compilationFailed=False
+normal scale=(0.316898, 0.316898) translation=(348.60, 136.90) maximized=False position=(x:352.00, y:79.20, width:697.20, height:294.80) playing=False dirty=False compilationFailed=False
+maximized scale=(0.777546, 0.777546) translation=(768.00, 335.90) maximized=True position=(x:0.00, y:79.20, width:1536.00, height:692.80) playing=False dirty=False compilationFailed=False
+restored scale=(0.316898, 0.316898) translation=(348.60, 136.90) maximized=False position=(x:352.00, y:79.20, width:697.20, height:294.80) playing=False dirty=False compilationFailed=False

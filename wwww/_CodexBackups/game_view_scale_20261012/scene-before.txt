@@ -1,0 +1,6 @@
+
+Algorithm : SHA256
+Hash      : 8905E070310D920918BA4E0DBEEB5B619EC4E22E07D1C92EFD5064A6EF8A9A9D
+Path      : C:\Users\jimmy\畢專_霧社事件\wwww\wwww\Assets\Scenes\第二章.unity
+
+
