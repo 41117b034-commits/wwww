@@ -9,6 +9,7 @@ public sealed class Chapter3Player : MonoBehaviour
 {
     public Camera view;
     public Chapter3Controller chapter;
+    public Chapter3StationController station;
     public bool canMove, canLook;
     public float speed = 2.8f;
     public bool IsVR { get; private set; }
@@ -55,6 +56,7 @@ public sealed class Chapter3Player : MonoBehaviour
         if (!canMove || !motor || !motor.enabled) return;
         Vector3 next = transform.position + motion;
         if (chapter) next = chapter.Constrain(transform.position, next);
+        else if (station) next = station.Constrain(transform.position, next);
         motor.Move(next - transform.position);
         if (transform.position.y < -3) Warp(new Vector3(0, .1f, 0), Vector3.forward * 3);
     }

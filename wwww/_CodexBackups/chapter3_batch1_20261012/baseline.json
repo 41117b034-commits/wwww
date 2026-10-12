@@ -1,0 +1,37 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "13D5C5E88F0C0E9882FA8A984C909DE2F347F3777D187732B1EA1A76B6A420E7",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第三章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "8905E070310D920918BA4E0DBEEB5B619EC4E22E07D1C92EFD5064A6EF8A9A9D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第一章新版警察.unity"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1787EA100E0A11FD6A3C90CB7F162A645A97877BFD050956F4F5792EAA5A6C7A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "DC78E99A30D09AB1BCAC42A7C1F014E211F87B0AD5EF16529027D585897BD23E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Player.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "77808EE2FCC6AF9CCFF350706F6BCE711ED9B847FCABFD45838A356016A839BE",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter2GameViewScaleGuard.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\ProjectSettings\\EditorBuildSettings.asset"
+  }
+]

@@ -1,0 +1,1 @@
+2026-10-12: Unity Game View was focused and a pickup prompt was visible. Sky native e / E key injection did not advance Equipment. Native keyboard pickup/departure remain unverified; no runtime exception was reported. The full integration run used Unity Input System events and passed. Native attempt was stopped without changing production input or API settings.

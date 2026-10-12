@@ -1,0 +1,38 @@
+{
+    "mode": "test-full",
+    "completed": true,
+    "transitioned": true,
+    "earlyRifleBlocked": true,
+    "farRifleBlocked": true,
+    "duplicateRifleBlocked": true,
+    "earlyExitBlocked": true,
+    "waitingObserved": true,
+    "keyPickup": true,
+    "keyDeparture": true,
+    "boundarySlides": true,
+    "elapsed": 139.7217254638672,
+    "stages": [
+        "Arrival",
+        "Approach",
+        "Briefing",
+        "Equipment",
+        "Regroup",
+        "Departure",
+        "SchoolHandoff"
+    ],
+    "lines": [
+        "到了，莫那在前面。跟我來。",
+        "莫那，我們到了。",
+        "帶上槍。到霧社去，跟達多會合。",
+        "巴萬，把你的人帶好。",
+        "知道了。",
+        "槍在那邊。我在這裡等你。",
+        "把槍帶好。這是單發的，打完一發要重新裝。",
+        "好了嗎？我跟你一起走。",
+        "去吧。",
+        "比胡，跟上。我們到霧社去。",
+        "往前就是霧社。到學校外面，再和達多會合。",
+        "我們一起走。"
+    ],
+    "errors": []
+}

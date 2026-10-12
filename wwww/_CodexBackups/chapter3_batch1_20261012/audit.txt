@@ -1,0 +1,9 @@
+scene=Assets/Scenes/第三章_駐在所.unity
+playing=False
+dirty=False
+compileFailed=False
+missingScripts=0
+missingMeshes=0
+actors=4
+state=Arrival
+rifle=False

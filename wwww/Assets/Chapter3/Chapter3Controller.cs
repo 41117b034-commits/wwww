@@ -197,8 +197,15 @@ public sealed class Chapter3Controller : MonoBehaviour
         ui.Say("",null);ui.hint.text="";
         for(float t=0;t<1.8f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.8f);yield return null;}
         ui.fade.color=Color.black;CurrentStage=Stage.Arrival;player.canLook=false;
-        ui.objective.text="隊伍正前往駐在所";ui.ending.SetActive(true);
-        // This is a part handoff, never a Chapter 3 completion or a Pihu rescue result.
+        ui.objective.text="隊伍正前往駐在所";
+        // Keep the chapter running across maps; this is not a completion or rescue result.
+        if(Application.CanStreamedLevelBeLoaded("第三章_駐在所"))
+            yield return SceneManager.LoadSceneAsync("第三章_駐在所");
+        else
+        {
+            ui.ending.SetActive(true);
+            Debug.LogError("[Chapter3] 駐在所場景未加入 Build Settings。");
+        }
     }
     IEnumerator WalkTo(Vector3 target)
     {

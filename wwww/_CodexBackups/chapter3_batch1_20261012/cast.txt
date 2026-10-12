@@ -1,0 +1,23 @@
+DONOR 0 瓦旦 Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx,Assets/Chapter2/Poses/Speech/77a533fa78bb9ad40be5d2f81b151c5a_-49170492560104606.asset
+DONOR 1 達多·莫那 Assets/人/畢專 賽德克青年/原住民青年5/tripo_convert_3a511942-04bb-4117-b3a8-0ffd179e0ffe.fbx,Assets/Chapter2/Poses/Speech/4e3eb271119974a48936b1c632085f95_6728425135894765629.asset
+DONOR 2 古慕·阿基 Assets/人/部落女/部落女性2/部落女姓2.fbx,Assets/Chapter2/Poses/Speech/ff5a8aa4e4258ce47a0f818a1c8b3033_4979540956183789098.asset
+DONOR 3 巴萬·拿威 Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx,Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795.asset
+DONOR 4 伊婉·阿比斯 Assets/Chapter2/Poses/IwanCouncilElder.asset,Assets/Chapter2/Poses/Speech/df0a1678377f25240802685fcc2a587d_1.asset
+DONOR 5 露比·巴干 Assets/人/部落女/部落女性1/部落女性1.fbx,Assets/Chapter2/Poses/Speech/12978432ad85b574aaff1d27b32dc372_-5447701298580032725.asset
+比胡·帖木 pos=(1.60, 0.00, -17.00) scale=(1.71, 1.71, 1.71)
+  tripo_node_9c8dfc1a enabled=True active=True mesh=Assets/人/畢專 賽德克青年/原住民青年2/tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx bounds=Center: (1.62, 0.83, -16.98), Extents: (0.41, 0.86, 0.24) root=Root
+  Story face enabled=True active=True mesh=Assets/Chapter2/Poses/Speech/04a74717488d6ae488d8cef381fb8b28_215812804378155711.asset bounds=Center: (1.60, 1.52, -17.08), Extents: (0.11, 0.14, 0.08) root=Root
+莫那·魯道 pos=(0.00, 0.00, 1.40) scale=(1.72, 1.72, 1.72)
+  tripo_node_e2dbffa6 enabled=True active=True mesh=Assets/人/畢專 賽德克青年/長老/tripo_convert_e2dbffa6-7bf3-4f0f-b451-66045b04b8d2.fbx bounds=Center: (0.02, 0.84, 1.40), Extents: (0.32, 0.86, 0.31) root=Root
+  Story face enabled=True active=True mesh=Assets/Chapter2/Poses/Speech/e09d2108b7ed0394e89c55b572884218_-2682002590510626901.asset bounds=Center: (0.00, 1.51, 1.31), Extents: (0.12, 0.14, 0.08) root=Root
+瓦旦 pos=(5.80, 0.00, 1.00) scale=(1.72, 1.72, 1.72)
+  tripo_node_4931ae9c enabled=True active=True mesh=Assets/人/畢專 賽德克青年/ancient+robe+character+3d+model/tripo_convert_4931ae9c-38de-4a6d-a959-060aa87489e6.fbx bounds=Center: (5.80, 0.84, 0.99), Extents: (0.79, 0.86, 0.26) root=Root
+  Story face enabled=True active=True mesh=Assets/Chapter2/Poses/Speech/77a533fa78bb9ad40be5d2f81b151c5a_-49170492560104606.asset bounds=Center: (5.79, 1.55, 0.92), Extents: (0.10, 0.12, 0.07) root=Root
+巴萬·拿威 pos=(0.00, 0.00, -15.00) scale=(1.71, 1.71, 1.71)
+  tripo_node_f32c0c9b enabled=True active=True mesh=Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx bounds=Center: (0.07, 0.83, -14.99), Extents: (0.38, 0.86, 0.28) root=Root
+  Story face enabled=True active=True mesh=Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795.asset bounds=Center: (0.09, 1.52, -15.08), Extents: (0.12, 0.13, 0.10) root=Root
+sign 駐
+在
+所 size=(0.25, 0.98, 0.00)
+sign 霧社 → size=(0.95, 0.44, 0.55)
+sign 領  槍 size=(0.58, 0.30, 0.00)
