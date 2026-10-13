@@ -1,0 +1,58 @@
+[
+  {
+    "mode": "test-cancel",
+    "completed": true,
+    "checks": 19,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:12:06.8306813+08:00"
+  },
+  {
+    "mode": "test-offline",
+    "completed": true,
+    "checks": 21,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:14:59.8145389+08:00"
+  },
+  {
+    "mode": "test-ready",
+    "completed": true,
+    "checks": 22,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:05:28.4486308+08:00"
+  },
+  {
+    "mode": "test-refuse-offline",
+    "completed": true,
+    "checks": 23,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:22:26.7185364+08:00"
+  },
+  {
+    "mode": "test-refuse",
+    "completed": true,
+    "checks": 23,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:08:24.0580563+08:00"
+  },
+  {
+    "mode": "test-road",
+    "completed": true,
+    "checks": 24,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T16:24:03.0099690+08:00"
+  },
+  {
+    "mode": "test-village",
+    "completed": true,
+    "checks": 11,
+    "errors": 0,
+    "warnings": 0,
+    "written": "2026-10-13T15:50:22.7663014+08:00"
+  }
+]

@@ -40,6 +40,7 @@ public sealed class Chapter3Flow : MonoBehaviour
     }
     void LeaveCurrent()
     {
+        Chapter3PickupArrow.Hide(ui);
         village.Suspend();station.Suspend();combat.Suspend();
         if(school)school.Suspend();
         ui.input.DeactivateInputField();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
@@ -50,16 +51,19 @@ public sealed class Chapter3Flow : MonoBehaviour
     }
     public void EnterStation()
     {
+        if(station.RefusalCommitted)return;
         LeaveCurrent();Region="Station";Transitions++;stationRegion.SetActive(true);
         if(stationStarted)station.Begin();stationStarted=true;
         // On its first activation Start() performs the initialization.
     }
     public void EnterCombat()
     {
+        if(station.RefusalCommitted)return;
         LeaveCurrent();Region="Combat";Transitions++;combatRegion.SetActive(true);combat.Begin();
     }
     public void EnterSchool()
     {
+        if(station.RefusalCommitted)return;
         if(!school||!schoolRegion)return;
         LeaveCurrent();Region="School";Transitions++;schoolRegion.SetActive(true);school.Begin();
     }

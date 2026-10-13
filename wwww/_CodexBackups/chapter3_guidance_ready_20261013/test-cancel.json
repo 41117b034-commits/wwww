@@ -1,0 +1,31 @@
+{
+    "mode": "test-cancel",
+    "completed": true,
+    "elapsed": 25.31340789794922,
+    "checks": [
+        "single scene=True",
+        "rifle arrow visible=True",
+        "departure locked without rifle=True",
+        "rifle hides marker=True",
+        "E opens free text instead of departing=True",
+        "shared opening listener inactive=True",
+        "empty readiness blocked=True",
+        "negative intent 不好=True",
+        "negative intent 還沒=True",
+        "negative intent 不願意=True",
+        "negative intent 没有=True",
+        "negative intent not ready=True",
+        "positive intent 是=True",
+        "positive intent 好=True",
+        "positive intent 準備好了=True",
+        "positive intent 走吧=True",
+        "positive intent yes=True",
+        "pending reply cannot advance another region=True",
+        "station reset after cancellation=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "final fallback=False decision=Unclear 槍帶好了。接下來要跟隊伍出發，你準備好了嗎？"
+    ]
+}

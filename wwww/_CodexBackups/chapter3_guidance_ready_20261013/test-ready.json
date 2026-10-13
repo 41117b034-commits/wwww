@@ -1,0 +1,36 @@
+{
+    "mode": "test-ready",
+    "completed": true,
+    "elapsed": 64.2542495727539,
+    "checks": [
+        "single scene=True",
+        "rifle arrow visible=True",
+        "departure locked without rifle=True",
+        "rifle hides marker=True",
+        "E opens free text instead of departing=True",
+        "shared opening listener inactive=True",
+        "empty readiness blocked=True",
+        "negative intent 不好=True",
+        "negative intent 還沒=True",
+        "negative intent 不願意=True",
+        "negative intent 没有=True",
+        "negative intent not ready=True",
+        "positive intent 是=True",
+        "positive intent 好=True",
+        "positive intent 準備好了=True",
+        "positive intent 走吧=True",
+        "positive intent yes=True",
+        "unclear reply accepted=True",
+        "unclear stays in conversation=True",
+        "ready duplicate blocked=True",
+        "affirmative continues story=True",
+        "ready branch reaches combat in same scene=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "clarify fallback=True decision=Unclear 你是準備好現在出發，還是還沒準備好？告訴我你的決定。",
+        "ready fallback=False decision=Ready 別怕，跟緊我們，我們走吧。",
+        "final fallback=False decision=Ready 別怕，跟緊我們，我們走吧。"
+    ]
+}

@@ -29,6 +29,8 @@ public sealed class Chapter3Controller : MonoBehaviour
     public string LastReply { get; private set; }
     public string FeelingCue { get; private set; } = "neutral";
     public string CurrentLine { get; private set; }
+    public const int RequiredTurns = 2;
+    Chapter3RoadBoundary roadBoundary;
     readonly List<Chapter2LocalDialogue.Message> history = new List<Chapter2LocalDialogue.Message>();
     Keyboard imeKeyboard;
     bool composing, requestFinished;
@@ -39,6 +41,7 @@ public sealed class Chapter3Controller : MonoBehaviour
         if (!player || !ui || !bawan || !pihu || !dialogue || !knifePickup || trail == null || trail.Length < 8)
         { Debug.LogError("[Chapter3] Missing village scene references.",this); enabled=false;return; }
         player.chapter=this;
+        roadBoundary=new Chapter3RoadBoundary(flow?flow.villageRegion.transform:transform.root);
         ui.send.onClick.AddListener(()=>SubmitReply(ui.input.text));
         ui.input.onSubmit.AddListener(SubmitFromInput);
         ui.depart.onClick.AddListener(()=>Depart());
@@ -75,7 +78,7 @@ public sealed class Chapter3Controller : MonoBehaviour
             imeKeyboard=Keyboard.current;if(imeKeyboard!=null)imeKeyboard.onIMECompositionChange+=Composition;
         }
         if(composing||!string.IsNullOrEmpty(Input.compositionString))compositionFrame=Time.frameCount;
-        if(CurrentStage==Stage.Conversation && CompletedTurns==3)ui.depart.interactable=Time.unscaledTime>=readableAfter;
+        if(CurrentStage==Stage.Conversation && CompletedTurns==RequiredTurns)ui.depart.interactable=Time.unscaledTime>=readableAfter;
         if(CurrentStage==Stage.Equipment)
         {
             float d=FlatDistance(player.transform.position,knifePickup.position);
@@ -88,11 +91,11 @@ public sealed class Chapter3Controller : MonoBehaviour
     {
         if(composing||!string.IsNullOrEmpty(Input.compositionString)||Time.frameCount<=compositionFrame+1||!SubmitReply(value))StartCoroutine(Refocus());
     }
-    IEnumerator Refocus(){yield return null;if(CurrentStage==Stage.Conversation&&!WaitingForReply&&CompletedTurns<3)ui.input.ActivateInputField();}
+    IEnumerator Refocus(){yield return null;if(isActiveAndEnabled&&CurrentStage==Stage.Conversation&&!WaitingForReply&&CompletedTurns<RequiredTurns)ui.input.ActivateInputField();}
     public bool SubmitReply(string question)
     {
         question=question?.Trim();
-        if(CurrentStage!=Stage.Conversation||WaitingForReply||CompletedTurns>=3||string.IsNullOrWhiteSpace(question))return false;
+        if(!isActiveAndEnabled||CurrentStage!=Stage.Conversation||WaitingForReply||CompletedTurns>=RequiredTurns||string.IsNullOrWhiteSpace(question))return false;
         if(question.Length>160)question=question.Substring(0,160);
         RememberFeeling(question);
         WaitingForReply=true;ui.input.interactable=ui.send.interactable=false;
@@ -119,11 +122,11 @@ public sealed class Chapter3Controller : MonoBehaviour
         }
         else GeneratedReplies++;
         CompletedTurns++;WaitingForReply=false;
-        if(CompletedTurns==3)answer+="\n把刀帶上。走在我和比胡身邊，我們一起出發。";
-        LastReply=answer;ui.response.text=answer;ui.progress.text=$"交談  {CompletedTurns} / 3";
+        if(CompletedTurns==RequiredTurns)answer+="\n把刀帶上。走在我和比胡身邊，我們一起出發。";
+        LastReply=answer;ui.response.text=answer;ui.progress.text=$"交談  {CompletedTurns} / {RequiredTurns}";
         ui.status.text=fallback?"連線暫時無法回應，已接續預寫對話。": "聽完巴萬的話，再告訴他你的想法。";
         Speak(bawan,answer,Mathf.Clamp(answer.Length*.075f,3,9));
-        if(CompletedTurns==3)
+        if(CompletedTurns==RequiredTurns)
         {
             ui.input.gameObject.SetActive(false);ui.send.gameObject.SetActive(false);ui.depart.gameObject.SetActive(true);
             readableAfter=Time.unscaledTime+2;ui.depart.interactable=false;
@@ -134,8 +137,7 @@ public sealed class Chapter3Controller : MonoBehaviour
     string Persona()
     {
         string beat=CompletedTurns==0?"這是第一輪，先直接接住玩家這次的情緒或問題，可自然問一句；不要假設他害怕。":
-            CompletedTurns==1?"這是第二輪，依玩家實際回答接話。若他有問題先回答；若很堅定，不要重複問他怕不怕。":
-            "這是第三輪，先簡短回應玩家這次的話，再自然收束。不要再反問；出發指示由遊戲另外接上。";
+            "這是第二輪，也是最後一輪。先直接回答玩家這次的問題或情緒，再簡短收束，不要再反問，也不要重複問他怕不怕。出發指示由遊戲另外接上。";
         return "你是歷史題材遊戲中的虛構賽德克青年巴萬·拿威（Bawan Nawi），玩家的同伴。用繁體中文第一人稱直接對玩家說話，每次1至2句、不超過65字。不要旁白、動作括號、列表或AI自我介紹。你剛才先問玩家：『我們要出發了。接下來會有戰鬥，你準備好了嗎？』"+
             "場景是1930年霧社事件起義當天清晨，部落出口。昨夜的秘密會議已結束，隊伍將沿山路出發前往駐在所；眼前比胡·帖木也在整裝。你巴萬負責領路，比胡在側後同行；玩家跟不上時你會停下等，不會催他走快，也不要說你跟著比胡走。玩家還沒領刀，現在沒有步槍。你沉穩但也有壓力，不用英雄口號，不美化殺戮。"+
             "不預知比胡受傷、生死或未來日軍鎮壓，不杜撰史實、祭儀與任務承諾。莫那和達多不在眼前。可以安慰、回答眼前問題，不能承諾絕對安全。玩家害怕或拒絕不會改變既定出發流程，但應先承認他的感受，邀他跟緊同伴。"+
@@ -150,7 +152,7 @@ public sealed class Chapter3Controller : MonoBehaviour
     }
     string Fallback()
     {
-        if(CompletedTurns==2)return FeelingCue=="worried"?"我聽見了。路上別落單，有事就叫我。":"好，我記住你說的了。路上我們彼此照應。";
+        if(CompletedTurns==RequiredTurns-1)return FeelingCue=="worried"?"我聽見了。路上別落單，有事就叫我。":"好，我記住你說的了。路上我們彼此照應。";
         if(FeelingCue=="worried")return CompletedTurns==0?"我也不知道前面會怎樣。你現在最掛心的是什麼？":"不用把話都藏著。走在我身旁，有事就叫我。";
         if(FeelingCue=="family")return "我也放不下家裡的人。我們先照顧好身邊的同伴，一起走。";
         if(FeelingCue=="ready")return CompletedTurns==0?"好。路上留意同伴；出發前，你還有什麼想問的？":"我知道你的心意。前面要互相照應，別一個人衝太遠。";
@@ -158,14 +160,16 @@ public sealed class Chapter3Controller : MonoBehaviour
     }
     public bool Depart()
     {
-        if(CurrentStage!=Stage.Conversation||CompletedTurns!=3||WaitingForReply||Time.unscaledTime<readableAfter)return false;
+        if(!isActiveAndEnabled||CurrentStage!=Stage.Conversation||CompletedTurns!=RequiredTurns||WaitingForReply||Time.unscaledTime<readableAfter)return false;
         ui.chat.SetActive(false);bawan.speaking=false;CurrentStage=Stage.Equipment;
-        ui.objective.text="到木桌旁領取獵刀";player.canMove=player.canLook=true;return true;
+        ui.objective.text="到木桌旁領取獵刀";player.canMove=player.canLook=true;
+        Chapter3PickupArrow.Show(ui,knifePickup);return true;
     }
     public bool TakeKnife()
     {
         if(CurrentStage!=Stage.Equipment||HasKnife||FlatDistance(player.transform.position,knifePickup.position)>2)return false;
         HasKnife=true;knifePickup.gameObject.SetActive(false);
+        Chapter3PickupArrow.Hide(ui);
         // Equipment is carried sheathed; fighting and rifle handling belong to the next part.
         ui.hint.text="已帶上獵刀";StartCoroutine(Departure());return true;
     }
@@ -266,15 +270,10 @@ public sealed class Chapter3Controller : MonoBehaviour
     }
     bool Walkable(Vector3 p)
     {
-        if(p.x>=-14&&p.x<=14&&p.z>=-12&&p.z<=14)return true;
-        float best=float.MaxValue;
-        for(int i=1;i<trail.Length;i++)
-        {
-            Vector3 a=trail[i-1],b=trail[i];a.y=b.y=p.y;
-            float t=Vector3.Dot(p-a,b-a)/(b-a).sqrMagnitude;Vector3 q=Vector3.Lerp(a,b,Mathf.Clamp01(t));
-            best=Mathf.Min(best,(p-q).sqrMagnitude);
-        }
-        return best<=9;
+        // Match the visible departure clearing, then keep the whole player on the road ribbon.
+        if(p.x*p.x/(8.6f*8.6f)+(p.z-1)*(p.z-1)/(9.6f*9.6f)<=1)return true;
+        float radius=player.GetComponent<CharacterController>().radius+.06f;
+        return roadBoundary!=null&&roadBoundary.Contains(p,radius);
     }
     static float FlatDistance(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
     void OnDestroy()

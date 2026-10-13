@@ -1,0 +1,37 @@
+{
+    "mode": "test-road",
+    "completed": true,
+    "elapsed": 24.3592586517334,
+    "checks": [
+        "single scene=True",
+        "blank reply ignored=True",
+        "first reply accepted=True",
+        "duplicate while pending blocked=True",
+        "one reply is not enough=True",
+        "second reply accepted=True",
+        "exactly two replies=True",
+        "two replies unlock knife=True",
+        "far pickup blocked=True",
+        "E collects knife and hides arrow=True",
+        "road segment 2 side -1 stays on visible road=True",
+        "road segment 2 side 1 stays on visible road=True",
+        "road segment 3 side -1 stays on visible road=True",
+        "road segment 3 side 1 stays on visible road=True",
+        "road segment 4 side -1 stays on visible road=True",
+        "road segment 4 side 1 stays on visible road=True",
+        "road segment 5 side -1 stays on visible road=True",
+        "road segment 5 side 1 stays on visible road=True",
+        "road segment 6 side -1 stays on visible road=True",
+        "road segment 6 side 1 stays on visible road=True",
+        "road segment 7 side -1 stays on visible road=True",
+        "road segment 7 side 1 stays on visible road=True",
+        "road segment 8 side -1 stays on visible road=True",
+        "road segment 8 side 1 stays on visible road=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "opening1 generated=0 好。路上留意同伴；出發前，你還有什麼想問的？",
+        "opening2 generated=0 好，我記住你說的了。路上我們彼此照應。\n把刀帶上。走在我和比胡身邊，我們一起出發。"
+    ]
+}

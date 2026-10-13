@@ -1,0 +1,35 @@
+{
+    "mode": "test-refuse-offline",
+    "completed": true,
+    "elapsed": 37.84302520751953,
+    "checks": [
+        "single scene=True",
+        "rifle arrow visible=True",
+        "departure locked without rifle=True",
+        "rifle hides marker=True",
+        "E opens free text instead of departing=True",
+        "shared opening listener inactive=True",
+        "empty readiness blocked=True",
+        "negative intent 不好=True",
+        "negative intent 還沒=True",
+        "negative intent 不願意=True",
+        "negative intent 没有=True",
+        "negative intent not ready=True",
+        "positive intent 是=True",
+        "positive intent 好=True",
+        "positive intent 準備好了=True",
+        "positive intent 走吧=True",
+        "positive intent yes=True",
+        "negative enters refusal=True",
+        "refusal cannot skip into combat=True",
+        "Mona approaches and faces player=True",
+        "angry face and gesture active=True",
+        "final authored line completes before stopping=True",
+        "game stops Play Mode after refusal=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "refuse fallback=True decision=NotReady 我聽見了。你現在還沒準備好。"
+    ]
+}

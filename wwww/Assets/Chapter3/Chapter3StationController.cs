@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // Station story within the single Chapter 3 scene.
 public sealed class Chapter3StationController : MonoBehaviour
 {
-    public enum Stage { Arrival, Approach, Briefing, Equipment, Regroup, Departure, SchoolHandoff }
+    public enum Stage { Arrival, Approach, Briefing, Equipment, Regroup, Departure, SchoolHandoff, Readiness, Refused, Ended }
     public Chapter3Player player;
     public Chapter3Flow flow;
     public Chapter3Presentation ui;
@@ -21,6 +21,11 @@ public sealed class Chapter3StationController : MonoBehaviour
     public string CurrentLine { get; private set; }
     public int Waypoint { get; private set; }
     bool equipmentBusy;
+    public Chapter3ReadinessConversation Readiness {get;private set;}
+    public bool RefusalCommitted => CurrentStage==Stage.Refused||CurrentStage==Stage.Ended;
+    Chapter3MonaRebuke rebuke;
+    readonly Chapter3PathMotor monaMotor=new Chapter3PathMotor();
+    Vector3 monaHome;
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor();
 
     void Start()
@@ -28,6 +33,9 @@ public sealed class Chapter3StationController : MonoBehaviour
         if(!player || !ui || !bawan || !pihu || !mona || !riflePickup || !rifleFocus || approachPath.Length<2 || departurePath.Length<2)
         { Debug.LogError("[Chapter3Station] Missing scene references.");enabled=false;return; }
         player.station=this;player.chapter=null;
+        monaHome=mona.transform.position;
+        Readiness=gameObject.AddComponent<Chapter3ReadinessConversation>();
+        rebuke=mona.gameObject.AddComponent<Chapter3MonaRebuke>();rebuke.listener=player.transform;
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
         Begin();
@@ -35,6 +43,9 @@ public sealed class Chapter3StationController : MonoBehaviour
     public void Begin()
     {
         StopAllCoroutines();HasRifle=false;equipmentBusy=false;CompanionsWaiting=false;Waypoint=0;CurrentLine=null;
+        if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;
+        monaMotor.Reset();mona.transform.position=monaHome;
+        Chapter3PickupArrow.Hide(ui);
         bawanMotor.Reset();pihuMotor.Reset();
         bawan.speaking=pihu.speaking=mona.speaking=false;
         bawan.transform.position=new Vector3(0,0,-15);pihu.transform.position=new Vector3(1.6f,0,-17);
@@ -56,7 +67,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         else if(CurrentStage==Stage.Regroup)
         {
             bool near=Flat(player.transform.position,bawan.transform.position)<=3;
-            ui.hint.text=near?"按 E 告訴巴萬：準備好了，出發。":"步槍已攜帶。走到巴萬身旁，準備前往霧社。";
+            ui.hint.text=near?"按 E 與巴萬交談，告訴他你是否準備好了。":"步槍已攜帶。走到巴萬身旁，確認是否出發。";
             if(player.ActionPressed)ConfirmDeparture();
         }
     }
@@ -84,12 +95,14 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Say(bawan,"知道了。",lineSeconds);
         yield return Say(pihu,"槍在那邊。我在這裡等你。",lineSeconds);
         CurrentStage=Stage.Equipment;player.canMove=true;ui.objective.text="到木桌領取步槍";
+        Chapter3PickupArrow.Show(ui,rifleFocus);
         player.FocusOn(rifleFocus.position+Vector3.up*.2f);
     }
     public bool TakeRifle()
     {
         if(CurrentStage!=Stage.Equipment || HasRifle || equipmentBusy || Flat(player.transform.position,rifleFocus.position)>2)return false;
         HasRifle=true;equipmentBusy=true;riflePickup.gameObject.SetActive(false);
+        Chapter3PickupArrow.Hide(ui);
         StartCoroutine(Equipment());return true;
     }
     IEnumerator Equipment()
@@ -104,7 +117,48 @@ public sealed class Chapter3StationController : MonoBehaviour
     public bool ConfirmDeparture()
     {
         if(CurrentStage!=Stage.Regroup || !HasRifle || Flat(player.transform.position,bawan.transform.position)>3)return false;
-        CurrentStage=Stage.Departure;StartCoroutine(Depart());return true;
+        CurrentStage=Stage.Readiness;player.canMove=player.canLook=false;ui.objective.text="告訴巴萬，你是否準備好出發";
+        player.FocusOn(bawan.transform.position+Vector3.up*1.2f);
+        Readiness.Begin(this,decision=>
+        {
+            if(CurrentStage!=Stage.Readiness)return;
+            if(decision==Chapter3ReadinessConversation.Decision.Ready){CurrentStage=Stage.Departure;player.canLook=true;StartCoroutine(Depart());}
+            else if(decision==Chapter3ReadinessConversation.Decision.NotReady){CurrentStage=Stage.Refused;StartCoroutine(RefuseDeparture());}
+        });return true;
+    }
+    IEnumerator RefuseDeparture()
+    {
+        ui.hint.text="";ui.objective.text="莫那走到你面前";player.canMove=player.canLook=false;
+        Vector3 direction=Vector3.ProjectOnPlane(mona.transform.position-player.transform.position,Vector3.up).normalized;
+        if(direction.sqrMagnitude<.01f)direction=Vector3.forward;
+        Vector3 target=mona.transform.position;float best=float.MaxValue;
+        // A player can answer beside the steps or the table: choose an open standing spot.
+        for(int i=0;i<12;i++)
+        {
+            Vector3 candidate=player.transform.position+Quaternion.Euler(0,i*30,0)*direction*1.6f;candidate.y=0;
+            if(!Chapter3PathMotor.Clear(candidate,candidate))continue;
+            float distance=(candidate-mona.transform.position).sqrMagnitude;
+            if(distance<best){best=distance;target=candidate;}
+        }
+        // Step around the companion and courtyard props; never warp through them.
+        float approachDeadline=Time.time+8;
+        while(Flat(mona.transform.position,target)>.15f&&Time.time<approachDeadline)
+        {monaMotor.Move(mona,target,1.65f);player.FocusOn(mona.transform.position+Vector3.up*1.25f);yield return null;}
+        rebuke.Rebuking=true;
+        yield return Say(mona,"槍都拿了，現在才說沒準備好？抬起頭，看著我！",lineSeconds+1);
+        yield return Say(mona,"同行的人要把性命交在彼此手上。你連自己的心都沒定下來，憑什麼要他們放心把背後交給你！",lineSeconds+4);
+        yield return Say(mona,"今天你不准跟來。把槍留下，回家休息！想清楚自己能承擔什麼，再來見我。",lineSeconds+3);
+        rebuke.Rebuking=false;HasRifle=false;ui.hint.text="你留在部落，沒有隨隊出發。";
+        yield return new WaitForSeconds(1.5f);yield return Fade(true,1.5f);
+        CurrentStage=Stage.Ended;ui.objective.text="此次行動結束";
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying=false;
+#else
+        // A standalone player has no Play Mode; retain a legible, non-progressing ending.
+        var labels=ui.ending.GetComponentsInChildren<Text>(true);int i=0;
+        foreach(var label in labels)if(!label.GetComponentInParent<Button>())label.text=i++==0?"此次行動結束":"你尚未準備好出發。\n莫那讓你留下，回家休息。";
+        ui.ending.SetActive(true);
+#endif
     }
     IEnumerator Depart()
     {
@@ -186,5 +240,5 @@ public sealed class Chapter3StationController : MonoBehaviour
         return false;
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
-    public void Suspend(){StopAllCoroutines();bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}
+    public void Suspend(){StopAllCoroutines();if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}
 }
