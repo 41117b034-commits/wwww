@@ -1,0 +1,32 @@
+{
+    "mode": "test-bawan",
+    "completed": true,
+    "elapsed": 136.0090789794922,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "escort command rejected on Bawan branch=True",
+        "cannot dismantle while guard lives=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "released hold cancels progress=True",
+        "held E opens first barricade=True",
+        "first gate removed=True",
+        "reload starts=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "both gates trigger regroup=True",
+        "three companions reunited and no injuries=True",
+        "weapons hidden and batch four completion card=True",
+        "mission retained at reunion=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

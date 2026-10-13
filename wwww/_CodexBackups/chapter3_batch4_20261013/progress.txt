@@ -1,0 +1,2 @@
+test-shortcuts school replay
+state AwaitingTado step 0 hp 100 B (-1.40, 0.05, -19.70) P (1.40, 0.03, -20.80) T (-4.70, 0.02, -5.00)

@@ -1,0 +1,26 @@
+{
+    "mode": "test-pihu",
+    "completed": false,
+    "elapsed": 107.10398864746094,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "escort waits for command=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "Pihu first crossing command=True",
+        "first crossing completed with both allies=True",
+        "reload starts=True"
+    ],
+    "errors": [
+        "System.Exception: shot blocked by 東側厚木掩體 from (27.15, 0.01, 50.75) to (30.00, 0.09, 61.00)\r\n  at Chapter3Batch4Probe+<Shoot>d__13.MoveNext () [0x0018f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:164 \r\n  at Chapter3Batch4Probe+<Guard>d__11.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:48 "
+    ],
+    "warnings": []
+}

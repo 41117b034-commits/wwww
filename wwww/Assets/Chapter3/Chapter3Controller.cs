@@ -176,32 +176,18 @@ public sealed class Chapter3Controller : MonoBehaviour
     IEnumerator Departure()
     {
         CurrentStage=Stage.Departure;player.canMove=false;player.canLook=true;
-        yield return Say(pihu,"你昨晚有睡嗎？我一直聽著外面的聲音。",lineSeconds+1);
-        yield return Say(bawan,"比胡，跟上。大家一起走。",lineSeconds);
+        yield return Say(bawan,"走吧，跟緊我們。",lineSeconds);
         CurrentStage=Stage.Trail;player.canMove=true;ui.objective.text="跟隨巴萬與比胡走進山林";
         ui.Say("",null);
-        for(int i=1;i<trail.Length;i++)
+        // Reach the first large bend, then cut to the outpost. The remaining
+        // forest is background scenery; no repeated stops on this short walk.
+        for(int i=1;i<=Mathf.Min(4,trail.Length-1);i++)
         {
             TrailPoint=i;
             yield return WalkTo(trail[i]);
-            if(i==3)
-            {
-                yield return Gather();
-                yield return Say(pihu,"你今天走得比平常快。",lineSeconds);
-                string callback=FeelingCue=="worried"?"剛才你說的，我記著。別急，我們在這裡等你。":FeelingCue=="family"?"還在想家裡的人嗎？先跟緊我們，路上彼此照應。":"跟得上嗎？我們一起走。";
-                yield return Say(bawan,callback,lineSeconds+1);
-            }
-            if(i==6)
-            {
-                yield return Gather();
-                var strap=pihu.GetComponent<Chapter3CompanionGesture>();if(strap)strap.AdjustStrap(lineSeconds*2);
-                yield return Say(pihu,"等等我，這條帶子又鬆了。",lineSeconds);
-                yield return Say(bawan,"人齊了再走。",lineSeconds);
-                yield return Say(pihu,"好了。這次我走你旁邊。",lineSeconds);
-            }
         }
         yield return Gather();player.canMove=false;
-        yield return Say(bawan,"前面就是往駐在所的路。壓低聲音，跟緊。",lineSeconds+1);
+        yield return Say(bawan,"前面就是駐在所，壓低聲音。",lineSeconds);
         ui.Say("",null);ui.hint.text="";
         for(float t=0;t<1.8f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.8f);yield return null;}
         ui.fade.color=Color.black;CurrentStage=Stage.Arrival;player.canLook=false;

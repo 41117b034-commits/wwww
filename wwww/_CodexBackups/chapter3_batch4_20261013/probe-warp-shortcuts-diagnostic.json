@@ -1,0 +1,25 @@
+{
+    "mode": "test-shortcuts",
+    "completed": false,
+    "elapsed": 91.73121643066406,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "old combat owns weapon service=True",
+        "old combat rifle ready=True",
+        "old combat rifle defeats guard=True",
+        "old combat down state=True",
+        "old combat retry resets=True"
+    ],
+    "errors": [
+        "System.Exception: timeout old combat handoff\r\n  at Chapter3Batch4Probe+<Wait>d__17.MoveNext () [0x00038] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:201 \r\n  at Chapter3Batch4Probe+<Guard>d__11.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:48 "
+    ],
+    "warnings": []
+}

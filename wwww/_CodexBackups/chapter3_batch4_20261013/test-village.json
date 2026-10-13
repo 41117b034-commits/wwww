@@ -1,0 +1,15 @@
+{
+    "mode": "test-village",
+    "completed": true,
+    "elapsed": 27.472421646118165,
+    "checks": [
+        "two replies unlock pickup=True",
+        "knife collected=True",
+        "only first four waypoints used=True",
+        "no repeated trail dialogue=True",
+        "short route reaches outpost under 30 seconds=True",
+        "walk and exit seconds=20.01511"
+    ],
+    "errors": [],
+    "warnings": []
+}

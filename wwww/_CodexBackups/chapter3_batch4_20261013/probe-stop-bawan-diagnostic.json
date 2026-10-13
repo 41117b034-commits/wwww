@@ -1,0 +1,31 @@
+{
+    "mode": "test-bawan",
+    "completed": false,
+    "elapsed": 150.3084716796875,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "escort command rejected on Bawan branch=True",
+        "cannot dismantle while guard lives=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "released hold cancels progress=True",
+        "held E opens first barricade=True",
+        "first gate removed=True",
+        "reload starts=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "both gates trigger regroup=True"
+    ],
+    "errors": [
+        "System.Exception: stuck walk to rendezvous at (-3.76, 0.01, 76.73) target (0.00, 0.00, 78.00)\r\n  at Chapter3Batch4Probe+<Walk>d__15.MoveNext () [0x00062] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:173 \r\n  at Chapter3Batch4Probe+<Guard>d__11.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch4Probe.cs:48 "
+    ],
+    "warnings": []
+}

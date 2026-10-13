@@ -35,7 +35,7 @@ public sealed class Chapter3Player : MonoBehaviour
         right.TryGetFeatureValue(CommonUsages.triggerButton, out bool trigger);
         ActionPressed = Keyboard.current?.eKey.wasPressedThisFrame == true || (trigger && !previousTrigger);
         previousTrigger = trigger;
-        if (!IsVR && canLook && (Mouse.current?.rightButton.isPressed == true || (combat && Cursor.lockState==CursorLockMode.Locked)))
+        if (!IsVR && canLook && (Mouse.current?.rightButton.isPressed == true || ((combat || (school&&school.Battle&&school.Battle.Fighting)) && Cursor.lockState==CursorLockMode.Locked)))
         {
             var d = Mouse.current.delta.ReadValue() * .08f;
             transform.Rotate(0, d.x, 0); pitch = Mathf.Clamp(pitch - d.y, -70, 70);

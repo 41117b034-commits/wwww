@@ -1,0 +1,27 @@
+{
+    "mode": "test-pihu-retry",
+    "completed": true,
+    "elapsed": 71.13888549804688,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "Bawan interaction rejected on Pihu branch=True",
+        "E orders advance=True",
+        "enemy fire causes visible escort pressure=True",
+        "E orders return to cover=True",
+        "return retains crossing=True",
+        "pressure fails without Pihu death=True",
+        "retry preserves Pihu task and resets pressure=True",
+        "retry recreates two living guards=True",
+        "health retry also retains task=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

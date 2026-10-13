@@ -21,13 +21,16 @@ public sealed class Chapter3Combat : MonoBehaviour
     public Vector3 spawn=new Vector3(0,.08f,-8);
     public float lineSeconds=4;
     public Stage CurrentStage {get;private set;}
-    public bool Fighting=>CurrentStage==Stage.Fighting;
+    public Chapter3SchoolBattle SchoolEncounter {get;set;}
+    public bool Fighting=>SchoolEncounter?SchoolEncounter.Fighting:CurrentStage==Stage.Fighting;
     public int Health {get;private set;}=100;
     public int Retries {get;private set;}
     public int DefeatedCount {get;private set;}
     public bool Complete=>CurrentStage==Stage.Complete;
-    public readonly List<Chapter3Enemy> Enemies=new List<Chapter3Enemy>();
-    public Chapter3CompanionReaction[] Companions {get;private set;}
+    readonly List<Chapter3Enemy> localEnemies=new List<Chapter3Enemy>();
+    Chapter3CompanionReaction[] localCompanions;
+    public List<Chapter3Enemy> Enemies=>SchoolEncounter?SchoolEncounter.Enemies:localEnemies;
+    public Chapter3CompanionReaction[] Companions=>SchoolEncounter?SchoolEncounter.Companions:localCompanions;
     public bool EscortWaiting {get;private set;}
     readonly Chapter3PathMotor leaderMotor=new Chapter3PathMotor(),rearMotor=new Chapter3PathMotor();
     float warningUntil;
@@ -35,7 +38,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     bool clearedRoutine;
     public void Begin()
     {
-        StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
+        SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
         player.canMove=player.canLook=false;weapons.gameObject.SetActive(false);
         StartCoroutine(Introduction());
     }
@@ -59,7 +62,7 @@ public sealed class Chapter3Combat : MonoBehaviour
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
         warningUntil=0;EscortWaiting=false;leaderMotor.Reset();rearMotor.Reset();
         bawan.transform.position=new Vector3(-5.1f,0,-5);pihu.transform.position=new Vector3(5.2f,0,-6);
-        Companions=new[]{bawan.GetComponent<Chapter3CompanionReaction>(),pihu.GetComponent<Chapter3CompanionReaction>()};
+        localCompanions=new[]{bawan.GetComponent<Chapter3CompanionReaction>(),pihu.GetComponent<Chapter3CompanionReaction>()};
         foreach(var companion in Companions)if(companion)companion.ResetReaction();
         foreach(var enemy in Enemies)if(enemy){enemy.gameObject.SetActive(false);Destroy(enemy.gameObject);}Enemies.Clear();
         foreach(var template in enemyTemplates)
@@ -80,7 +83,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     public void Suspend()
     {
-        StopAllCoroutines();CurrentStage=Stage.Inactive;
+        SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;
         if(weapons)weapons.Suspend();if(hud)hud.SetActive(false);if(downPanel)downPanel.SetActive(false);if(hurtOverlay)hurtOverlay.color=Color.clear;
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;
     }
@@ -110,6 +113,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     public void Damage(int amount,Vector3 source)
     {
+        if(SchoolEncounter){SchoolEncounter.Damage(amount,source);return;}
         if(!Fighting)return;
         Health=Mathf.Max(0,Health-amount);hurtAt=Time.time;
         if(Health>0)return;
@@ -117,9 +121,10 @@ public sealed class Chapter3Combat : MonoBehaviour
         downPanel.SetActive(true);ui.hint.text="R 從交戰前重試";ui.objective.text="你受傷倒下了";
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
-    public void EnemyDefeated(){DefeatedCount++;}
+    public void EnemyDefeated(){if(!SchoolEncounter)DefeatedCount++;}
     public void CompanionWarning(string speaker,string line,float duration)
     {
+        if(SchoolEncounter){SchoolEncounter.Notice(speaker,line,duration);return;}
         if(!Fighting)return;
         warningUntil=Time.time+duration;ui.Say(speaker,line);
     }
@@ -183,7 +188,8 @@ public sealed class Chapter3Combat : MonoBehaviour
         Vector3 d=to-from;
         foreach(var hit in Physics.RaycastAll(from,d.normalized,d.magnitude,~0,QueryTriggerInteraction.Ignore))
         {
-            if(hit.collider.transform.IsChildOf(player.transform)||hit.collider.transform.IsChildOf(source.transform))continue;
+            if(hit.collider.transform.IsChildOf(player.transform)||hit.collider.transform.IsChildOf(source.transform)||
+                (source.escortTarget&&hit.collider.transform.IsChildOf(source.escortTarget)))continue;
             return false;
         }
         return true;

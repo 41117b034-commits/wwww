@@ -7,6 +7,9 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public Chapter2Actor actor;
     public Chapter2Rifle rifle;
     public bool advances;
+    // School cover mission targets the moving escort. Null preserves the
+    // original mountain encounter's player-only targeting.
+    public Transform escortTarget;
     public int Health { get; private set; }=100;
     public bool Defeated=>Health<=0;
     public bool Telegraphing { get; private set; }
@@ -27,9 +30,11 @@ public sealed class Chapter3Enemy : MonoBehaviour
     void Update()
     {
         if(!combat||!combat.Fighting||Defeated)return;
-        actor.Face(combat.player.transform.position);
-        float distance=Vector3.Distance(AimPoint,combat.playerTarget.position);
-        bool visible=distance<32&&combat.ClearLine(AimPoint,combat.playerTarget.position,this);
+        Vector3 target=escortTarget?escortTarget.position+Vector3.up*1.05f:combat.playerTarget.position;
+        actor.Face(target);
+        if(rifle){rifle.aimTarget=escortTarget?null:combat.playerTarget;rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;}
+        float distance=Vector3.Distance(AimPoint,target);
+        bool visible=distance<32&&combat.ClearLine(AimPoint,target,this);
         if(advances&&distance>2.6f&&distance<22&&!Telegraphing)
         {
             Vector3 direction=Vector3.ProjectOnPlane(combat.player.transform.position-transform.position,Vector3.up).normalized;
@@ -43,8 +48,11 @@ public sealed class Chapter3Enemy : MonoBehaviour
         if(Telegraphing&&Time.time-raisedAt>=1.45f)
         {
             // Recheck actual cover when the shot lands, not only when aiming starts.
-            if(combat.ClearLine(AimPoint,combat.playerTarget.position,this))
-            {Shots++;if(rifle)rifle.Fire();if(combat.weapons.shotClip)reportAudio.PlayOneShot(combat.weapons.shotClip);combat.Damage(25,AimPoint);}
+            if(combat.ClearLine(AimPoint,target,this))
+            {
+                Shots++;if(rifle)rifle.Fire();if(combat.weapons.shotClip)reportAudio.PlayOneShot(combat.weapons.shotClip);
+                if(escortTarget&&combat.SchoolEncounter)combat.SchoolEncounter.EscortHit();else combat.Damage(25,AimPoint);
+            }
             Telegraphing=false;nextAttack=Time.time+attackInterval;
         }
     }

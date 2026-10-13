@@ -1,0 +1,28 @@
+{
+    "mode": "test-physics",
+    "completed": true,
+    "elapsed": 49.564449310302737,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "new barricade physically blocks player=True",
+        "new crate physically blocks player=True",
+        "crate blocks incoming ray=True",
+        "civilian lies on real shot ray=True",
+        "civilian shot blocked without ammo use=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "first gate opened before retry=True",
+        "Bawan retry restores closed solid gates=True",
+        "retry rejects while alive=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

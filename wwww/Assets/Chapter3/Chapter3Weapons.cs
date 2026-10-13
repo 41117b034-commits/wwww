@@ -68,6 +68,8 @@ public sealed class Chapter3Weapons : MonoBehaviour
             const string warning="不能拿槍攻擊你的夥伴。";
             Notice(warning,3);combat.CompanionWarning("系統提醒",warning,3);busyUntil=Time.time+.4f;return false;
         }
+        if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
+        {Notice("不要向運動會的人群開槍，沿任務路線前進。",3);busyUntil=Time.time+.4f;return false;}
         if(!Loaded){Notice(Reserve>0?"空膛，按 R 裝入一發。":"彈藥用盡，到身後木箱按 E 補給。");busyUntil=Time.time+.25f;return false;}
         Loaded=false;Shots++;firedAt=Time.time;busyUntil=Time.time+.48f;
         if(audioSource&&shotClip)audioSource.PlayOneShot(shotClip,.65f);

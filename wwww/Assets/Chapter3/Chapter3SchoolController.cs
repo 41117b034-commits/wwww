@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Batch 3 is the walkable school and rendezvous space. Mission choices and the
-// outbreak are added in batch 4; exploring this map never writes story results.
+// Single-school owner. Batch 4 takes over following and objectives after Tado.
 public sealed class Chapter3SchoolController : MonoBehaviour
 {
     public Chapter3Flow flow;
@@ -19,6 +18,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     public bool Exploring { get; private set; }
     public bool MetTado { get; private set; }
     public bool[] Visited { get; private set; }
+    public Chapter3SchoolBattle Battle {get;private set;}
     readonly Chapter3PathMotor[] motors = {new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly List<Vector3> trail = new List<Vector3>();
     readonly int[] trailIndex = new int[2];
@@ -35,18 +35,22 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         bawan.transform.position=spawn+new Vector3(-1.4f,-spawn.y,-1.7f);
         pihu.transform.position=spawn+new Vector3(1.4f,-spawn.y,-2.8f);
         bawan.facing=pihu.facing=Vector3.forward;bawan.speaking=pihu.speaking=tado.speaking=false;
+        tado.transform.position=new Vector3(-4.7f,0,-5);
         player.chapter=null;player.station=null;player.combat=null;player.school=this;
-        // Companions yield to the player when backtracking in narrow passages.
-        // Static scenery and the spectators retain their physical collision.
+        // Solid companions keep the camera out of their heads. Mission walking
+        // also gives the player room when a companion crosses their position.
         var body=player.GetComponent<CharacterController>();
-        foreach(var actor in new[]{bawan,pihu})
+        foreach(var actor in new[]{bawan,pihu,tado})
             foreach(var collider in actor.GetComponentsInChildren<Collider>())
-                Physics.IgnoreCollision(body,collider,true);
+                Physics.IgnoreCollision(body,collider,false);
         player.Warp(spawn,new Vector3(0,2,28));player.speed=2.8f;player.canMove=player.canLook=false;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
         ui.objective.text="霧社公學校 · 運動會";
         previousFogDensity=RenderSettings.fogDensity;previousSun=RenderSettings.sun;lightingSet=true;
         RenderSettings.fogDensity=.0065f;if(sun)RenderSettings.sun=sun;
+        if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
+        if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
+        Battle.Begin(this);
         StartCoroutine(Arrival());
     }
     IEnumerator Arrival()
@@ -58,6 +62,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     public void Suspend()
     {
         StopAllCoroutines();Exploring=false;
+        if(Battle)Battle.Suspend();
         if(lightingSet){RenderSettings.fogDensity=previousFogDensity;RenderSettings.sun=previousSun;lightingSet=false;}
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;if(tado)tado.speaking=false;
     }
@@ -65,6 +70,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     {
         if(!Exploring)return;
         ui.ConfigureVR(player.IsVR);
+        if(Battle&&Battle.OwnsFlow)return;
         if(lineUntil>0&&(Time.time>lineUntil||(Time.time>lineBegan+.25f&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)))
         {lineUntil=0;ui.Say("",null);bawan.speaking=pihu.speaking=tado.speaking=false;}
         var position=player.transform.position;
@@ -79,13 +85,12 @@ public sealed class Chapter3SchoolController : MonoBehaviour
             if(distance<4)Visited[i]=true;
         }
         Area=nearest<0?"校門前":landmarks[nearest].name;
-        ui.objective.text=Area;
+        ui.objective.text="到校門旁與達多會合";
         bool nearTado=Flat(position,tado.transform.position)<3;
-        ui.hint.text=nearTado?"E 與達多交談  ·  WASD 移動  ·  按住右鍵環視":"WASD 移動  ·  按住右鍵環視  ·  沿校舍兩側小路可到校後與林間";
+        ui.hint.text=nearTado?"E 與達多交談  ·  WASD 移動  ·  按住右鍵環視":"走向校門左側的達多 · WASD 移動 · 按住右鍵環視";
         if(nearTado&&player.ActionPressed&&lineUntil<=0)
         {
-            MetTado=true;tado.Face(position);
-            Speak(tado,"先看清這裡的路。西側穿過校舍外廊，東側沿石牆和倉房，都通往校後空地。",7.5f);
+            MetTado=true;lineUntil=0;bawan.speaking=pihu.speaking=tado.speaking=false;Battle.MeetTado();
         }
     }
     void Follow(Chapter2Actor actor,int index,float gap)
@@ -112,6 +117,6 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(line,seconds,null);
     }
     public Vector3 Constrain(Vector3 current,Vector3 desired)
-    {desired.x=Mathf.Clamp(desired.x,-43,43);desired.z=Mathf.Clamp(desired.z,-23,113);return desired;}
+    {desired.x=Mathf.Clamp(desired.x,-43,43);desired.z=Mathf.Clamp(desired.z,-23,113);return Battle?Battle.Constrain(current,desired):desired;}
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
 }

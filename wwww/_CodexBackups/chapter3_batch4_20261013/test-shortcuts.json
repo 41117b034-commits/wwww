@@ -1,0 +1,25 @@
+{
+    "mode": "test-shortcuts",
+    "completed": true,
+    "elapsed": 66.13831329345703,
+    "checks": [
+        "single scene camera listener=True",
+        "calm sports day before mission=True",
+        "mission cannot be chosen early=True",
+        "E begins watching sport=True",
+        "outbreak follows choice=True",
+        "choice is committed=True",
+        "shared weapons point to school encounter=True",
+        "two guards and three allies=True",
+        "new solid scenery collides=True",
+        "old combat owns weapon service=True",
+        "old combat rifle ready=True",
+        "old combat rifle defeats guard=True",
+        "old combat down state=True",
+        "old combat retry resets=True",
+        "handoff resets school story=True",
+        "no duplicated props or menus on replay=True"
+    ],
+    "errors": [],
+    "warnings": []
+}
