@@ -41,7 +41,7 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         ui.input.interactable=ui.send.interactable=true;ui.input.text="";ui.progress.gameObject.SetActive(false);
         const string greeting="我們到駐在所了。莫那在前面；見他之前，你有什麼想說的？";
         history.Add(new Chapter2LocalDialogue.Message("assistant",greeting));
-        ui.response.text=greeting;ui.status.text="輸入你的回答，按 Enter 或「送出」。";
+        Chapter3ConversationHistory.Get(ui).Begin(station.bawan.DisplayName,greeting);ui.status.text="輸入你的回答，按 Enter 或「送出」。";
         Speak(greeting);StartCoroutine(Refocus());
     }
     void Send(){if(Active)SubmitReply(ui.input.text);}
@@ -65,6 +65,7 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         if(!Active||!isActiveAndEnabled||WaitingForReply||CompletedTurns>=2||string.IsNullOrWhiteSpace(text))return false;
         if(text.Length>160)text=text.Substring(0,160);
         WaitingForReply=true;ui.input.interactable=ui.send.interactable=false;ui.input.text="";
+        Chapter3ConversationHistory.Get(ui).Append("你",text);
         frameBudget.Begin(station.player.IsVR);
         ui.status.text="巴萬正在回應……";StartCoroutine(Respond(text));return true;
     }
@@ -87,8 +88,7 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         }
         else GeneratedReplies++;
         CompletedTurns++;WaitingForReply=false;
-        if(CompletedTurns==2)answer+="\n莫那在前面。跟我來。";
-        ui.response.text=answer;ui.status.text=fallback?"連線暫時無法回應，已接續預寫對話。":"聽完巴萬的話，再告訴他你的想法。";
+        Chapter3ConversationHistory.Get(ui).Append(station.bawan.DisplayName,answer);ui.status.text=fallback?"連線暫時無法回應，已接續預寫對話。":"聽完巴萬的話，再告訴他你的想法。";
         Speak(answer);
         if(CompletedTurns<2){ui.input.interactable=ui.send.interactable=true;StartCoroutine(Refocus());yield break;}
         ui.input.DeactivateInputField();ui.input.gameObject.SetActive(false);ui.send.gameObject.SetActive(false);

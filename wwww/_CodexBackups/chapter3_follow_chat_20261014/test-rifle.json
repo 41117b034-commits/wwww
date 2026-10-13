@@ -1,0 +1,40 @@
+{
+    "mode": "test-rifle",
+    "completed": true,
+    "elapsed": 90.1493911743164,
+    "checks": [
+        "arrival subtitle and objective before chat=True",
+        "question visible during request=True",
+        "answer appended to question=True",
+        "typing second question retains first exchange=True",
+        "both questions and replies retained=True",
+        "removed duplicate escort tail=True",
+        "scroll content taller than viewport=True",
+        "wheel callback scrolls to previous questions=True",
+        "yellow ground marks appear during escort=True",
+        "initial wait 巴萬·拿威=True",
+        "initial wait 比胡·帖木=True",
+        "Mona gathering wait 巴萬·拿威=True",
+        "Mona gathering wait 比胡·帖木=True",
+        "markers hidden during choice=True",
+        "pickup opens readiness=True",
+        "companions stay put after pickup=True",
+        "weapon readiness 巴萬·拿威=True",
+        "weapon readiness 比胡·帖木=True",
+        "readiness also retains question=True",
+        "road wait 巴萬·拿威=True",
+        "road wait 比胡·帖木=True",
+        "no companion backtrack loop=True",
+        "ground marks removed for arrival dialogue=True",
+        "road end dialogue 巴萬·拿威=True",
+        "road end dialogue 比胡·帖木=True",
+        "weapon preserved into combat=True",
+        "no route marks after leaving station=True",
+        "new run clears old questions and markers=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "Pihu reverse projection total=0"
+    ]
+}

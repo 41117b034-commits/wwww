@@ -34,6 +34,8 @@ public sealed class Chapter3StationController : MonoBehaviour
     readonly Chapter3PathMotor monaMotor=new Chapter3PathMotor();
     Vector3 monaHome;
     Chapter3StationRoadBoundary roadBoundary;
+    public Chapter3RouteGuide RouteGuide {get;private set;}
+    bool attendingPlayer;
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor();
 
     void Start()
@@ -43,6 +45,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         player.station=this;player.chapter=null;
         monaHome=mona.transform.position;
         roadBoundary=new Chapter3StationRoadBoundary(flow?flow.stationRegion.transform:transform.parent);
+        RouteGuide=gameObject.AddComponent<Chapter3RouteGuide>();
         Readiness=gameObject.AddComponent<Chapter3ReadinessConversation>();
         Opening=gameObject.AddComponent<Chapter3OpeningConversation>();
         Choice=Chapter3WeaponChoiceUI.Build(ui);
@@ -55,7 +58,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     public void Begin()
     {
-        StopAllCoroutines();HasRifle=HasKnife=false;ChosenWeapon=null;equipmentBusy=false;CompanionsWaiting=false;Waypoint=0;CurrentLine=null;
+        StopAllCoroutines();attendingPlayer=false;if(RouteGuide)RouteGuide.Hide();HasRifle=HasKnife=false;ChosenWeapon=null;equipmentBusy=false;CompanionsWaiting=false;Waypoint=0;CurrentLine=null;
         if(flow)flow.ClearEquipment();if(Opening)Opening.Cancel();if(Choice)Choice.gameObject.SetActive(false);
         if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;
         monaMotor.Reset();mona.transform.position=monaHome;
@@ -92,6 +95,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     void LateUpdate()
     {
+        if(attendingPlayer||CompanionsWaiting){FacePlayer(bawan);FacePlayer(pihu);}
         // Escort coroutines also write the hint; apply this warning after them.
         if(HasWeapon&&CurrentStage!=Stage.Refused&&CurrentStage!=Stage.Ended)
         {
@@ -103,6 +107,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     {
         CurrentStage=Stage.Arrival;player.canMove=player.canLook=false;
         ui.objective.text="馬赫坡駐在所 · 清晨";
+        ui.Say("","馬赫坡駐在所 · 清晨");
         ui.fade.color=Color.black;
         yield return Fade(false,1.8f);
         // Keep the establishing shot and place/time legible before opening chat.
@@ -114,12 +119,13 @@ public sealed class Chapter3StationController : MonoBehaviour
     IEnumerator ApproachMona()
     {
         player.canLook=true;
-        yield return Say(bawan,"到了，莫那在前面。跟我來。",lineSeconds);
+        yield return Say(bawan,"先去見莫那，聽他安排。跟我來。",lineSeconds);
         CurrentStage=Stage.Approach;player.canMove=true;
         ui.objective.text="跟隨巴萬，與莫那會合";
         yield return Escort(approachPath);
         yield return Gather();
         CurrentStage=Stage.Briefing;player.canMove=false;ui.hint.text="";
+        attendingPlayer=false;
         // Step aside so the player can see Mona during the handoff.
         Vector3 left=new Vector3(-1.9f,0,-.4f),right=new Vector3(1.9f,0,-1);
         while(Flat(bawan.transform.position,left)>.1f||Flat(pihu.transform.position,right)>.1f)
@@ -163,18 +169,7 @@ public sealed class Chapter3StationController : MonoBehaviour
             if(CurrentStage!=Stage.Readiness)return;
             if(decision==Chapter3ReadinessConversation.Decision.Ready){CurrentStage=Stage.Departure;player.canLook=true;StartCoroutine(Depart());}
             else if(decision==Chapter3ReadinessConversation.Decision.NotReady){CurrentStage=Stage.Refused;StartCoroutine(RefuseDeparture());}
-        });StartCoroutine(BringBawanForReadiness());return true;
-    }
-    IEnumerator BringBawanForReadiness()
-    {
-        // Open chat immediately while Bawan steps into a clear nearby speaking spot.
-        Vector3 toward=Vector3.ProjectOnPlane(new Vector3(0,0,-5)-player.transform.position,Vector3.up).normalized;
-        Vector3 target=player.transform.position+toward*2.25f;target.y=0;
-        if(!Chapter3PathMotor.Clear(target,target))yield break;
-        float deadline=Time.time+6;
-        while(CurrentStage==Stage.Readiness&&Time.time<deadline&&Flat(bawan.transform.position,target)>.15f)
-        {MoveActor(bawan,target,1.8f);player.FocusOn(bawan.transform.position+Vector3.up*1.2f);yield return null;}
-        if(CurrentStage==Stage.Readiness){bawan.Face(player.transform.position);player.FocusOn(bawan.transform.position+Vector3.up*1.2f);}
+        });attendingPlayer=true;return true;
     }
     IEnumerator RefuseDeparture()
     {
@@ -227,6 +222,11 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     IEnumerator Escort(Vector3[] route)
     {
+        attendingPlayer=false;bawanMotor.Reset();pihuMotor.Reset();
+        RouteGuide.Show(bawan.transform.position,route);
+        // Pihu waits for the leader to pass his existing position instead of
+        // reversing to a newly rotated formation slot at every corner.
+        float pihuStart=RouteGuide.Project(pihu.transform.position,6),leaderProgress=0;
         for(int i=0;i<route.Length;i++)
         {
             Waypoint=i;
@@ -236,11 +236,18 @@ public sealed class Chapter3StationController : MonoBehaviour
                 ui.hint.text=CompanionsWaiting?"巴萬與比胡正在等你，走近他們。":HasWeapon?WeaponName+"已攜帶 · 跟上同伴":"跟上巴萬，先去見莫那";
                 if(!CompanionsWaiting)
                 {
-                    Vector3 direction=Vector3.ProjectOnPlane(route[i]-bawan.transform.position,Vector3.up).normalized;
                     MoveActor(bawan,route[i],1.75f);
-                    MoveActor(pihu,bawan.transform.position-direction*1.7f+Vector3.Cross(Vector3.up,direction)*1.25f,2.05f);
+                    leaderProgress=Mathf.Max(leaderProgress,RouteGuide.Project(bawan.transform.position,leaderProgress+2));
+                    float rearProgress=Mathf.Max(0,leaderProgress-1.6f);
+                    if(rearProgress>=pihuStart)
+                    {
+                        Vector3 target=RouteGuide.SampleBeside(rearProgress,.9f);
+                        if(Flat(pihu.transform.position,target)>.12f)MoveActor(pihu,target,2.05f);
+                        else FacePlayer(pihu);
+                    }
+                    else FacePlayer(pihu);
                 }
-                else {bawan.Face(player.transform.position);pihu.Face(player.transform.position);}
+                else {FacePlayer(bawan);FacePlayer(pihu);}
                 yield return null;
             }
         }
@@ -248,19 +255,28 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     IEnumerator Gather()
     {
+        attendingPlayer=true;
         while(Flat(player.transform.position,bawan.transform.position)>3.8f)
-        {CompanionsWaiting=true;ui.hint.text="同伴在前方等你，走近後繼續。";bawan.Face(player.transform.position);yield return null;}
+        {CompanionsWaiting=true;ui.hint.text="同伴在前方等你，走近後繼續。";yield return null;}
+        attendingPlayer=false;CompanionsWaiting=false;
         // Let the rear companion finish arriving before starting the dialogue.
         Vector3 target=bawan.transform.position+new Vector3(1.5f,0,-1.3f);
         while(Flat(pihu.transform.position,target)>.15f){MoveActor(pihu,target,2.05f);yield return null;}
-        CompanionsWaiting=false;
+        CompanionsWaiting=false;attendingPlayer=true;RouteGuide.Hide();
+    }
+    void FacePlayer(Chapter2Actor actor)
+    {
+        Vector3 target=Vector3.ProjectOnPlane(player.transform.position-actor.transform.position,Vector3.up);
+        Vector3 facing=Vector3.RotateTowards(actor.facing.normalized,target.normalized,140*Mathf.Deg2Rad*Time.deltaTime,0);
+        actor.Face(actor.transform.position+facing);
     }
     void MoveActor(Chapter2Actor actor,Vector3 target,float speed)
     {(actor==bawan?bawanMotor:pihuMotor).Move(actor,target,speed);}
     IEnumerator Say(Chapter2Actor actor,string line,float seconds)
     {
         CurrentLine=line;ui.Say(actor.DisplayName,line);actor.Face(player.transform.position);actor.speaking=true;
-        foreach(var other in new[]{bawan,pihu,mona})if(other!=actor)other.Face(actor.transform.position);
+        attendingPlayer=true;
+        if(actor!=mona)mona.Face(actor.transform.position);
         player.FocusOn(actor.transform.position+Vector3.up*1.2f);
         var face=actor.GetComponent<Chapter2SpeechFace>();if(face)face.BeginLine(line,seconds,null);
         yield return Chapter3Flow.WaitForLine(seconds);
@@ -287,5 +303,5 @@ public sealed class Chapter3StationController : MonoBehaviour
         return roadBoundary.Contains(p,player.GetComponent<CharacterController>().radius+.04f,departing);
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
-    public void Suspend(){StopAllCoroutines();if(Opening)Opening.Cancel();if(Choice)Choice.gameObject.SetActive(false);if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}
+    public void Suspend(){StopAllCoroutines();attendingPlayer=false;CompanionsWaiting=false;if(RouteGuide)RouteGuide.Hide();if(Opening)Opening.Cancel();if(Choice)Choice.gameObject.SetActive(false);if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}
 }

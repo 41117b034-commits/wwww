@@ -41,7 +41,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         ui.input.interactable=ui.send.interactable=true;ui.input.text="";
         LastReply=station.WeaponName+"拿好了。接下來要跟隊伍出發，你準備好了嗎？";
         history.Add(new Chapter2LocalDialogue.Message("assistant",LastReply));
-        ui.response.text=LastReply;ui.status.text="直接輸入你的回答，再按 Enter 或「送出」。";
+        Chapter3ConversationHistory.Get(ui).Begin(station.bawan.DisplayName,LastReply);ui.status.text="直接輸入你的回答，再按 Enter 或「送出」。";
         ui.hint.text="";Speak(LastReply,5);StartCoroutine(Refocus());
     }
     bool bound;
@@ -66,6 +66,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         if(!Active||WaitingForReply||!isActiveAndEnabled||string.IsNullOrWhiteSpace(text))return false;
         if(text.Length>160)text=text.Substring(0,160);
         WaitingForReply=true;ui.input.interactable=ui.send.interactable=false;ui.input.text="";
+        Chapter3ConversationHistory.Get(ui).Append("你",text);
         frameBudget.Begin(station.player.IsVR);
         ui.status.text="巴萬正在聽你的回答……";StartCoroutine(Respond(text));return true;
     }
@@ -93,7 +94,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
             if(known!=null)spoken=known+"你準備好現在出發了嗎？";
         }
         if(string.IsNullOrWhiteSpace(spoken))spoken=decision==Decision.Ready?"好，我聽清楚了。我們彼此照應。":decision==Decision.NotReady?"我聽見了。你現在還沒準備好。":"你是準備好現在出發，還是還沒準備好？告訴我你的決定。";
-        LastDecision=decision;LastReply=spoken;ui.response.text=spoken;
+        LastDecision=decision;LastReply=spoken;Chapter3ConversationHistory.Get(ui).Append(station.bawan.DisplayName,spoken);
         ui.status.text=UsedFallback?"連線暫時無法回應，已使用預寫回應。":decision==Decision.Unclear?"請說明你現在是否準備好出發。":"";
         Speak(spoken,Mathf.Clamp(spoken.Length*.09f,2.5f,5));
         if(decision==Decision.Unclear)

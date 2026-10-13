@@ -1,0 +1,27 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "526C84B010091F13965B8EBFB500F9EA64298F4FDFB5116AB0D98815C0157213",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3StationController.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D5FD25129FEF00C7B9816EF584E96466D5ABF0D3B5384194FAB16398CBFC8D69",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3OpeningConversation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "FABFD62C0FA1E2254EFD46E48D1554513B66528C05A72BAEEB93FE0A62E6E2B3",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ReadinessConversation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "B5FB23934D6AFDB374759964A3AEA4A4135E315BC96BE14ADF5F98076F424D55",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ConversationHistory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "373FD1F74C28FCD70F5E446A67197D2592610E54CFBC14CEA75C050FAA54AB2D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3RouteGuide.cs"
+  }
+]
