@@ -1,0 +1,15 @@
+{
+    "mode": "test-school-knife-bawan",
+    "completed": false,
+    "elapsed": 61.96282196044922,
+    "checks": [
+        "knife only mission inventory=True",
+        "guard killed by actual knife swings=True",
+        "knife clears first barricade=False"
+    ],
+    "errors": [
+        "System.Exception: knife clears first barricade\r\n  at Chapter3OpeningProbe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningProbe.cs:222 \r\n  at Chapter3OpeningProbe+<KnifeMission>d__15.MoveNext () [0x00392] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningProbe.cs:177 \r\n  at Chapter3OpeningProbe+<Guard>d__13.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningProbe.cs:53 "
+    ],
+    "warnings": [],
+    "replies": []
+}

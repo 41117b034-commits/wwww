@@ -117,10 +117,18 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         player.chapter=null;player.station=null;player.combat=null;player.school=school;player.speed=2.8f;
         player.Warp(new Vector3(-2,.06f,-6),new Vector3(Selected==Mission.Bawan?-23:25,1.2f,-4));
         var positions=Selected==Mission.Bawan?new[]{P(-25.7f,22),P(-28,53)}:new[]{P(29,33),P(30,61)};
+        // A knife-only player must reach each guard without crossing a locked
+        // barricade or the current cover checkpoint. Keep rifle positions intact.
+        bool knifeOnly=school.flow.CarriedWeapon==Chapter3Weapons.Weapon.Knife;
+        if(knifeOnly)
+            positions=Selected==Mission.Bawan?new[]{P(-25.7f,14.4f),P(-28,44.4f)}:new[]{P(29,27.8f),P(30,58.5f)};
         for(int i=0;i<positions.Length;i++)
         {
             var go=Instantiate(combat.enemyTemplates[i%combat.enemyTemplates.Length],enemiesRoot);go.name="校側警察 · "+(i+1);
             go.transform.position=positions[i];var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=combat;enemy.advances=false;enemy.attackInterval=4.5f;enemy.escortTarget=null;
+            // Close-quarters staging leaves time to approach with a knife.
+            // Damage, telegraph and fire cadence remain the same.
+            enemy.engagementRange=knifeOnly?12:32;
             Enemies.Add(enemy);go.SetActive(true);
         }
         CurrentStage=Stage.Fighting;Menu.Hide();ui.Say("",null);ui.fade.color=Color.clear;
@@ -143,7 +151,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         if(Selected==Mission.Bawan)UpdateBreakthrough();else UpdateCover();
         if(!Fighting)return;
         MoveOtherSquad();
-        bool supply=Flat(player.transform.position,Ammo.position)<2;
+        bool supply=combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2;
         if(supply&&player.ActionPressed)combat.weapons.Refill();
         if(supply)ui.hint.text="E 補充備彈   ·   R 單發裝填";
         player.speed=combat.weapons.Aiming?1.7f:2.8f;
@@ -163,7 +171,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         bool held=Keyboard.current?.eKey.isPressed==true;
         WorkBarricade(held,Time.deltaTime);
         if(!Fighting)return;
-        ui.hint.text=near?(guard?"先清除路障後的守衛":"按住 E 拆開橫木 · 放開會中止"):"跟上巴萬 · 1 獵刀 · 2 步槍 · 左鍵攻擊 · 右鍵瞄準 · R 裝填";
+        ui.hint.text=near?(guard?"先清除路障後的守衛":"按住 E 拆開橫木 · 放開會中止"):"跟上巴萬 · "+combat.weapons.Controls;
         combat.combatText.text=near&&!guard?"拆除路障  "+Mathf.FloorToInt(WorkProgress/1.8f*100)+"%":"打通西側通道\n守衛 "+DefeatedCount()+" / 2  ·  路障 "+Step+" / 2";
     }
     public bool WorkBarricade(bool held,float delta)
@@ -221,7 +229,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         string order=!AtCrossing?"先跟比胡到東側掩體":Returning?"隊伍撤回掩體中":Advancing?"隊伍正在穿越 · E 撤回掩體":"隊伍待命 · E 下令前進";
         bool danger=Enemies.Exists(e=>e&&!e.Defeated&&e.Telegraphing);
         combat.combatText.text=order+"\n隊伍受壓 "+EscortPressure+" / 3"+(danger?"  ·  警察正在瞄準！":"");
-        ui.hint.text="E 指揮前進／撤回 · 左鍵攻擊 · 右鍵瞄準 · R 裝填 · 1／2 換武器";
+        ui.hint.text="E 指揮前進／撤回 · "+combat.weapons.Controls;
     }
     public bool CommandEscort()
     {

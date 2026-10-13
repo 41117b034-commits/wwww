@@ -24,7 +24,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
     Keyboard keyboard;
     int version,speechVersion,compositionFrame=-10;
     bool composing;
-    const string Persona="你是1930年霧社事件題材遊戲中的虛構青年巴萬·拿威。現在在駐在所，玩家已領到步槍；你剛問『槍帶好了。接下來要跟隊伍出發，你準備好了嗎？』。"+
+    string Persona=>"你是1930年霧社事件題材遊戲中的虛構青年巴萬·拿威。現在在駐在所，玩家只領到一把"+station.WeaponName+"，沒有另一種武器；你剛問『武器拿好了。接下來要跟隊伍出發，你準備好了嗎？』。"+
         "巴萬和比胡要帶玩家沿山路前往霧社學校外與達多會合，前面可能有戰鬥，不是巡邏或狩獵。莫那留在駐在所。"+
         "辨識玩家這次回答是否願意現在出發。只能輸出一行：READY|一句繁體中文回應，或 NOT_READY|一句繁體中文回應，或 UNCLEAR|一句繁體中文澄清。"+
         "是、好、願意、走吧、雖然緊張但準備好了是READY；還沒、不好、不願意、想回家、等一下是NOT_READY。單純害怕、提問、相互矛盾、假設、引用別人的話、玩笑或離題是UNCLEAR，不要猜。"+
@@ -40,7 +40,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         ui.Say("",null);ui.chat.SetActive(true);ui.depart.gameObject.SetActive(false);
         ui.input.gameObject.SetActive(true);ui.send.gameObject.SetActive(true);
         ui.input.interactable=ui.send.interactable=true;ui.input.text="";
-        LastReply="槍帶好了。接下來要跟隊伍出發，你準備好了嗎？";
+        LastReply=station.WeaponName+"拿好了。接下來要跟隊伍出發，你準備好了嗎？";
         ui.response.text=LastReply;ui.status.text="直接輸入你的回答，再按 Enter 或「送出」。";
         ui.hint.text="";Speak(LastReply,5);StartCoroutine(Refocus());
     }

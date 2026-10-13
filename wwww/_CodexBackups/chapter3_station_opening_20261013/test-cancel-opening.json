@@ -1,0 +1,17 @@
+{
+    "mode": "test-cancel-opening",
+    "completed": true,
+    "elapsed": 7.14703369140625,
+    "checks": [
+        "Play begins at station without village=True",
+        "one scene camera and listener=True",
+        "opening matches arrival viewpoint=True",
+        "knife right rifle left=True",
+        "cannot collect or choose before briefing=True",
+        "opening cancellation cannot advance school=True",
+        "reentry resets opening and weapons=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": []
+}

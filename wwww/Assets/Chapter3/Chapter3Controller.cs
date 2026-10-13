@@ -47,11 +47,19 @@ public sealed class Chapter3Controller : MonoBehaviour
         ui.depart.onClick.AddListener(()=>Depart());
         if(!flow)
         {
-            ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章"));
+            ui.replay.onClick.AddListener(ReplayPart);
             ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
         }
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         StartCoroutine(Opening());
+    }
+    void ReplayPart()
+    {
+#if UNITY_EDITOR
+        UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(SceneManager.GetActiveScene().path,new LoadSceneParameters(LoadSceneMode.Single));
+#else
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+#endif
     }
     IEnumerator Opening()
     {
@@ -193,7 +201,7 @@ public sealed class Chapter3Controller : MonoBehaviour
         ui.fade.color=Color.black;CurrentStage=Stage.Arrival;player.canLook=false;
         ui.objective.text="隊伍正前往駐在所";
         if(flow) flow.EnterStation();
-        else Debug.LogError("[Chapter3] Missing single-scene flow.");
+        else {ui.fade.color=Color.clear;ui.ending.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}
     }
     IEnumerator WalkTo(Vector3 target)
     {

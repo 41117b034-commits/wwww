@@ -1,0 +1,6 @@
+scene=Assets/Scenes/第三章.unity
+dirty=False
+playing=False
+compileFailed=False
+missingScripts=0
+missingMeshes=0

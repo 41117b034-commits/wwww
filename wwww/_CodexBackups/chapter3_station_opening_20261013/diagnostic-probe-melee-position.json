@@ -1,0 +1,15 @@
+{
+    "mode": "test-school-knife-bawan",
+    "completed": false,
+    "elapsed": 105.14935302734375,
+    "checks": [
+        "knife only mission inventory=True",
+        "guard killed by actual knife swings=True",
+        "knife clears first barricade=True"
+    ],
+    "errors": [
+        "System.Exception: stuck west guard two (-27.64, 0.01, 43.19)\r\n  at Chapter3OpeningProbe+<Walk>d__21.MoveNext () [0x00080] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningProbe.cs:217 \r\n  at Chapter3OpeningProbe+<Guard>d__13.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningProbe.cs:53 "
+    ],
+    "warnings": [],
+    "replies": []
+}

@@ -30,7 +30,9 @@ public sealed class Chapter3Weapons : MonoBehaviour
     public void ResetEquipment()
     {
         Initialize();StopAllCoroutines();Loaded=true;Reserve=8;Reloading=false;Aiming=false;aimWeight=0;
-        Selected=Weapon.Rifle;busyUntil=0;firedAt=swingAt=-10;Feedback="";ReloadProgress=0;
+        // Debug jumps choose a rifle only when no story choice has been made.
+        if(combat.flow&&!combat.flow.CarriedWeapon.HasValue)combat.flow.Carry(Weapon.Rifle);
+        Selected=combat.flow?combat.flow.CarriedWeapon.Value:Weapon.Rifle;busyUntil=0;firedAt=swingAt=-10;Feedback="";ReloadProgress=0;
         Shots=Slashes=Reloads=0;gameObject.SetActive(true);if(flash)flash.SetActive(false);
         if(bolt)bolt.localPosition=boltHome;
         if(cartridge)cartridge.gameObject.SetActive(false);if(spentCase)spentCase.gameObject.SetActive(false);
@@ -55,7 +57,10 @@ public sealed class Chapter3Weapons : MonoBehaviour
     }
     public bool Select(Weapon weapon)
     {
-        if(!Ready)return false;Selected=weapon;Aiming=false;busyUntil=Time.time+.22f;return true;
+        if(!Ready)return false;
+        if(combat.flow&&combat.flow.CarriedWeapon.HasValue&&weapon!=combat.flow.CarriedWeapon.Value)
+        {Notice("只能持有一種武器，你沒有攜帶這把武器。",3);return false;}
+        Selected=weapon;Aiming=false;busyUntil=Time.time+.22f;return true;
     }
     public bool Attack()
     {
@@ -121,7 +126,8 @@ public sealed class Chapter3Weapons : MonoBehaviour
         Reloading=false;ReloadProgress=0;if(bolt)bolt.localPosition=boltHome;
     }
     public bool Refill()
-    {if(!combat.Fighting||Reloading||Reserve>=8)return false;Reserve=8;Notice("取得備用彈藥，按 R 裝填。");return true;}
+    {if(!combat.Fighting||Selected!=Weapon.Rifle||Reloading||Reserve>=8)return false;Reserve=8;Notice("取得備用彈藥，按 R 裝填。");return true;}
+    public string Controls => Selected==Weapon.Knife ? "左鍵揮刀 · Esc 放開滑鼠" : "左鍵射擊 · 右鍵瞄準 · R 單發裝填 · Esc 放開滑鼠";
     void Notice(string text,float seconds=1.6f){Feedback=text;feedbackUntil=Time.time+seconds;}
     void LateUpdate()
     {

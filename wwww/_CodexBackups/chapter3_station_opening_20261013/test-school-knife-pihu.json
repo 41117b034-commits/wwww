@@ -1,0 +1,18 @@
+{
+    "mode": "test-school-knife-pihu",
+    "completed": true,
+    "elapsed": 149.66700744628907,
+    "checks": [
+        "knife only mission inventory=True",
+        "guard killed by actual knife swings=True",
+        "knife branch can command first crossing=True",
+        "guard killed by actual knife swings=True",
+        "knife branch can command second crossing=True",
+        "both school enemies defeated by knife=True",
+        "knife branch reaches three-person reunion=True",
+        "remaining health=50"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": []
+}

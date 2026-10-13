@@ -14,13 +14,19 @@ public sealed class Chapter3Flow : MonoBehaviour
     public Chapter3SchoolController school;
     public Chapter3Player player;
     public Chapter3Presentation ui;
+    public bool startAtStation;
+    public Chapter3Weapons.Weapon? CarriedWeapon { get; private set; }
+    public void Carry(Chapter3Weapons.Weapon weapon) { CarriedWeapon=weapon; }
+    public void ClearEquipment() { CarriedWeapon=null; }
     public string Region { get; private set; } = "Village";
     public int Transitions { get; private set; }
     bool stationStarted;
     void Awake()
     {
-        village.flow=this;station.flow=this;combat.flow=this;
-        villageRegion.SetActive(true);stationRegion.SetActive(false);combatRegion.SetActive(false);
+        if(village)village.flow=this;station.flow=this;combat.flow=this;
+        if(villageRegion)villageRegion.SetActive(!startAtStation);
+        stationRegion.SetActive(startAtStation);combatRegion.SetActive(false);
+        if(startAtStation){Region="Station";stationStarted=true;}
         if(schoolRegion)schoolRegion.SetActive(false);
         if(school)school.flow=this;
     }
@@ -41,10 +47,10 @@ public sealed class Chapter3Flow : MonoBehaviour
     void LeaveCurrent()
     {
         Chapter3PickupArrow.Hide(ui);
-        village.Suspend();station.Suspend();combat.Suspend();
+        if(village)village.Suspend();station.Suspend();combat.Suspend();
         if(school)school.Suspend();
         ui.input.DeactivateInputField();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
-        villageRegion.SetActive(false);stationRegion.SetActive(false);combatRegion.SetActive(false);
+        if(villageRegion)villageRegion.SetActive(false);stationRegion.SetActive(false);combatRegion.SetActive(false);
         if(schoolRegion)schoolRegion.SetActive(false);
         player.chapter=null;player.station=null;player.combat=null;player.school=null;
         player.view.fieldOfView=60;player.speed=2.8f;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;

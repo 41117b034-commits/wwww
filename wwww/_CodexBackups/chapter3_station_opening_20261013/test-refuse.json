@@ -1,0 +1,38 @@
+{
+    "mode": "test-refuse",
+    "completed": true,
+    "elapsed": 46.80080032348633,
+    "checks": [
+        "Play begins at station without village=True",
+        "one scene camera and listener=True",
+        "opening matches arrival viewpoint=True",
+        "knife right rifle left=True",
+        "cannot collect or choose before briefing=True",
+        "empty opening rejected=True",
+        "duplicate opening rejected=True",
+        "one answer still stays at opening=True",
+        "exactly two exchanges=True",
+        "no continue button after two answers=True",
+        "Mona explains police attack=True",
+        "choice visible and world paused=True",
+        "choice commits once=True",
+        "yellow arrow targets chosen weapon=True",
+        "far pickup rejected=True",
+        "wrong choice cannot be picked up=True",
+        "pickup immediately opens readiness without second E=True",
+        "inventory contains exactly one weapon=True",
+        "picked model hidden other remains=True",
+        "readiness names carried weapon=True",
+        "second weapon blocked during readiness=True",
+        "refusal cannot be skipped=True",
+        "Mona close and angry=True",
+        "game stops Play after refusal=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "我在聽。見莫那之前，你還想問什麼？",
+        "好，我記住你說的了。接下來我們彼此照應。\n莫那在前面。跟我來。",
+        "generated=0 fallback=2"
+    ]
+}

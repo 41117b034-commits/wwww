@@ -1,0 +1,98 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Bystander.cs",
+    "Hash": "F494803170DE64791EC191101D079D8280F0E5B875F9E02E516CE9D78E6EDA3E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Combat.cs",
+    "Hash": "632A7B87845F212A0072C0E8A7053898C3152C4A3024C56037FE7D1A2DA23E87"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CompanionGesture.cs",
+    "Hash": "81039E7AA4F104D236C53BBB808B46FD2689DADADCF989A3F39139AF3EA12A10"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CompanionReaction.cs",
+    "Hash": "66FAC3E4063AD59E21AB058618AF8E3175C4D59F07D4501F8075D137F9E31494"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Controller.cs",
+    "Hash": "95C212D48AD43D713AC6B37BDEACF201399B44912A9239768304953E11836650"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Enemy.cs",
+    "Hash": "3706694BABD05EFF2D17FC14725A916F0EFAEF851D92DFF29B468F4720A9EE43"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs",
+    "Hash": "BFBC2810C4DFD1B7036A7594E28B58688B6837E972045ADDE0F1E09EA0A060AD"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3MissionUI.cs",
+    "Hash": "55C7E921A308C8D127AF7F5BB5B786F89A0CDF5B1375D9F3E980D4F38941A462"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3MonaRebuke.cs",
+    "Hash": "88FD8F0250CA916906A8EAE85CBF0B3870C0763852B7A36E3A5C079FB60F6A46"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3OpeningConversation.cs",
+    "Hash": "22F4B9332D9217CBF93F55AABB9EB61F228E1C7A13DDF14A1F4314D02E67D8B5"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3PathMotor.cs",
+    "Hash": "75C8352CDB021F7FB0E9C3DDC23CE8DD6D28867F0E44190FBC584345D24C5317"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3PickupArrow.cs",
+    "Hash": "C6AB4EE9C5C3C620BA58CE91B0FDC4F41682192FDA16E7FCFF27F0C06683418C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Player.cs",
+    "Hash": "3C2F72FFE0FFCD3A85B4390CA3ED3DB8BE7C7AA07427AB65A93E211691EE73A7"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Presentation.cs",
+    "Hash": "BED4E4983F77F2BF33BC5073B4471092AF3234B858452D85F50BD3B88455111E"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ReadinessConversation.cs",
+    "Hash": "A46EE07FE81C2CAC3B5873BB61E9A3581C735BF1B4EBCF89F237BEDD0AD3EB5D"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3RoadBoundary.cs",
+    "Hash": "523B0BD894744752B371E4A592C4B35CACD17DB71E3D21A4A80352B02F75FE15"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.cs",
+    "Hash": "6531D621AA0588965BAEA218ED1FBE9454A59496FB5D4A564BAA6B07310087BF"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.cs",
+    "Hash": "D5372ABC9E793399A81CC2C92E4C2FF5C03B2353401D9A7A2B0EDA5DD2BB4223"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs",
+    "Hash": "5598926A481F8CE0AA850BA5A71043FB2B1F1A1BD63530997088F290A5190DA6"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolSigns.cs",
+    "Hash": "52CDA8123A7D01D853081C18B185067673A972216B831F42EE1841C2C63F1F60"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3StationController.cs",
+    "Hash": "D628A2C174337BDF8B6F9F729E1C7D6D8611B91C03D5C060962AD4D4828AAFD6"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ViewArm.cs",
+    "Hash": "92669A1868DA88155247F9A9910398AE4FB8EBB7E7A10AA511ADD54F4B2C0471"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3WeaponChoiceUI.cs",
+    "Hash": "C1B0956CB1AD93E69B8FB976DF9C2633F3B4E3CCF310E7D2309DD9C5D53B6E7C"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Weapons.cs",
+    "Hash": "EB6334C5E21FBFF5D47E44999EEA63627F76B5EBA130AA837D8BF5F68AE8185D"
+  }
+]

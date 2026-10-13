@@ -1,0 +1,18 @@
+{
+    "mode": "test-school-knife-bawan",
+    "completed": true,
+    "elapsed": 121.2164306640625,
+    "checks": [
+        "knife only mission inventory=True",
+        "guard killed by actual knife swings=True",
+        "knife clears first barricade=True",
+        "guard killed by actual knife swings=True",
+        "knife clears second barricade=True",
+        "both school enemies defeated by knife=True",
+        "knife branch reaches three-person reunion=True",
+        "remaining health=50"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": []
+}

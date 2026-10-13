@@ -1,0 +1,26 @@
+[
+  {
+    "Manifest": "runtime-validation-hashes.json",
+    "Count": 24,
+    "Unchanged": true,
+    "ChangedPaths": [
+      null
+    ]
+  },
+  {
+    "Manifest": "scene-validation-hashes.json",
+    "Count": 2,
+    "Unchanged": true,
+    "ChangedPaths": [
+      null
+    ]
+  },
+  {
+    "Manifest": "protected-before.json",
+    "Count": 3,
+    "Unchanged": true,
+    "ChangedPaths": [
+      null
+    ]
+  }
+]

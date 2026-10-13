@@ -1,0 +1,15 @@
+{
+    "mode": "test-archive",
+    "completed": true,
+    "elapsed": 34.19676208496094,
+    "checks": [
+        "archive has village and no main flow=True",
+        "archive pickup unlocked=True",
+        "archive retains original knife=True",
+        "archive ends with replay card=True",
+        "archive replays without Build Settings entry=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": []
+}

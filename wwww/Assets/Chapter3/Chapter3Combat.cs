@@ -47,7 +47,7 @@ public sealed class Chapter3Combat : MonoBehaviour
         ui.fade.color=Color.black;ui.objective.text="前往霧社 · 山路遭遇";
         for(float t=0;t<1.2f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,1-t/1.2f);yield return null;}ui.fade.color=Color.clear;
         yield return Say(bawan,"前面有巡警。靠著岩石走，別站在路中央。",lineSeconds);
-        yield return Say(pihu,"近了用刀。槍打完一發，就要再裝一發。",lineSeconds);
+        yield return Say(pihu,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。",lineSeconds);
         StartFighting();
     }
     void StartFighting()
@@ -102,11 +102,11 @@ public sealed class Chapter3Combat : MonoBehaviour
         if(Fighting)
         {
             player.speed=weapons.Aiming?1.7f:2.8f;
-            bool near=Vector3.Distance(player.transform.position,ammoPoint.position)<2.2f;
+            bool near=weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Vector3.Distance(player.transform.position,ammoPoint.position)<2.2f;
             if(near&&player.ActionPressed)weapons.Refill();
             string warning=Enemies.Exists(e=>e&&!e.Defeated&&e.Telegraphing)?"警察正在瞄準，移到岩石或木箱後！":"利用掩體接近敵人";
             combatText.text=weapons.Reloading?"單發裝填  "+Mathf.CeilToInt(weapons.ReloadProgress*100)+"%":!string.IsNullOrEmpty(weapons.Feedback)?weapons.Feedback:progress+"\n"+warning;
-            ui.hint.text=near?"E 補充備彈   ｜   1 獵刀 · 2 步槍 · 左鍵攻擊 · 右鍵瞄準 · R 裝填":"WASD 移動 · 1 獵刀 · 2 步槍 · 左鍵攻擊 · 右鍵瞄準 · R 裝填 · Esc 放開滑鼠";
+            ui.hint.text=(near?"E 補充備彈   ｜   ":"WASD 移動 · ")+weapons.Controls;
             if(DefeatedCount==enemyTemplates.Length&&!clearedRoutine){clearedRoutine=true;StartCoroutine(ClearEncounter());}
         }
         hurtOverlay.color=new Color(.6f,.025f,.01f,Mathf.Clamp01(1-(Time.time-hurtAt)/.7f)*.32f);

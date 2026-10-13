@@ -16,6 +16,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public int Shots { get; private set; }
     public Vector3 AimPoint=>transform.position+Vector3.up*1.05f;
     public float attackInterval=4.5f;
+    public float engagementRange=32;
     float nextAttack,raisedAt,hitAt=-20;
     AudioSource reportAudio;
     Vector3 fallGrip,fallenWeaponPosition;
@@ -34,7 +35,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
         actor.Face(target);
         if(rifle){rifle.aimTarget=escortTarget?null:combat.playerTarget;rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;}
         float distance=Vector3.Distance(AimPoint,target);
-        bool visible=distance<32&&combat.ClearLine(AimPoint,target,this);
+        bool visible=distance<engagementRange&&combat.ClearLine(AimPoint,target,this);
         if(advances&&distance>2.6f&&distance<22&&!Telegraphing)
         {
             Vector3 direction=Vector3.ProjectOnPlane(combat.player.transform.position-transform.position,Vector3.up).normalized;
