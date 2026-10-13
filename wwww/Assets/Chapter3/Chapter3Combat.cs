@@ -155,6 +155,7 @@ public sealed class Chapter3Combat : MonoBehaviour
         player.canMove=player.canLook=false;
         for(float t=0;t<1.4f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.4f);yield return null;}
         ui.fade.color=Color.black;hud.SetActive(false);ui.Say("",null);ui.hint.text="";CurrentStage=Stage.Complete;
+        if(flow&&flow.school){flow.EnterSchool();yield break;}
         var texts=ui.ending.GetComponentsInChildren<Text>();texts[0].text="繼續前往霧社";texts[1].text="巴萬與比胡都在隊伍中。\n\n下一段：學校與運動會場";
         ui.replay.GetComponentInChildren<Text>().text="重玩第三章";ui.ending.SetActive(true);
         // Batch 3 continues here; never write chapter completion or Pihu's later outcome.

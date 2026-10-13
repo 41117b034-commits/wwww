@@ -1,0 +1,17 @@
+{
+    "mode": "test-dialogue",
+    "completed": true,
+    "elapsed": 11.851048469543457,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "Space skips school arrival line=True",
+        "meet Tado walkable=True",
+        "E starts Tado explanation=True",
+        "Space skips Tado explanation=True",
+        "repeated F8 resets greeting=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

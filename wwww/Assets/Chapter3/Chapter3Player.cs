@@ -12,6 +12,7 @@ public sealed class Chapter3Player : MonoBehaviour
     public Chapter3Controller chapter;
     public Chapter3StationController station;
     public Chapter3Combat combat;
+    public Chapter3SchoolController school;
     public bool canMove, canLook;
     public float speed = 2.8f;
     public bool IsVR { get; private set; }
@@ -60,8 +61,9 @@ public sealed class Chapter3Player : MonoBehaviour
         if (chapter) next = chapter.Constrain(transform.position, next);
         else if (station) next = station.Constrain(transform.position, next);
         else if (combat) next = combat.Constrain(transform.position, next);
+        else if (school) next = school.Constrain(transform.position, next);
         motor.Move(next - transform.position);
-        if (transform.position.y < -3) Warp(combat?combat.spawn:new Vector3(0,.1f,0),Vector3.forward*3);
+        if (transform.position.y < -3) Warp(school?school.spawn:combat?combat.spawn:new Vector3(0,.1f,0),school?school.spawn+Vector3.forward*12:Vector3.forward*3);
     }
     public void Warp(Vector3 position, Vector3 lookAt)
     {

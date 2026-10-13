@@ -7,10 +7,11 @@ using UnityEngine.UI;
 // Regions are serialized together in 第三章.unity. Switching never loads another map.
 public sealed class Chapter3Flow : MonoBehaviour
 {
-    public GameObject villageRegion, stationRegion, combatRegion;
+    public GameObject villageRegion, stationRegion, combatRegion, schoolRegion;
     public Chapter3Controller village;
     public Chapter3StationController station;
     public Chapter3Combat combat;
+    public Chapter3SchoolController school;
     public Chapter3Player player;
     public Chapter3Presentation ui;
     public string Region { get; private set; } = "Village";
@@ -20,6 +21,8 @@ public sealed class Chapter3Flow : MonoBehaviour
     {
         village.flow=this;station.flow=this;combat.flow=this;
         villageRegion.SetActive(true);stationRegion.SetActive(false);combatRegion.SetActive(false);
+        if(schoolRegion)schoolRegion.SetActive(false);
+        if(school)school.flow=this;
     }
     void Start()
     {
@@ -33,13 +36,16 @@ public sealed class Chapter3Flow : MonoBehaviour
         // Function keys never insert letters into the opening conversation / IME.
         if(k.f6Key.wasPressedThisFrame)EnterStation();
         else if(k.f7Key.wasPressedThisFrame)EnterCombat();
+        else if(k.f8Key.wasPressedThisFrame)EnterSchool();
     }
     void LeaveCurrent()
     {
         village.Suspend();station.Suspend();combat.Suspend();
+        if(school)school.Suspend();
         ui.input.DeactivateInputField();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
         villageRegion.SetActive(false);stationRegion.SetActive(false);combatRegion.SetActive(false);
-        player.chapter=null;player.station=null;player.combat=null;
+        if(schoolRegion)schoolRegion.SetActive(false);
+        player.chapter=null;player.station=null;player.combat=null;player.school=null;
         player.view.fieldOfView=60;player.speed=2.8f;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public void EnterStation()
@@ -51,6 +57,11 @@ public sealed class Chapter3Flow : MonoBehaviour
     public void EnterCombat()
     {
         LeaveCurrent();Region="Combat";Transitions++;combatRegion.SetActive(true);combat.Begin();
+    }
+    public void EnterSchool()
+    {
+        if(!school||!schoolRegion)return;
+        LeaveCurrent();Region="School";Transitions++;schoolRegion.SetActive(true);school.Begin();
     }
     public static IEnumerator WaitForLine(float seconds)
     {

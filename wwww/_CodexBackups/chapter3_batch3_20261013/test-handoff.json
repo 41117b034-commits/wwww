@@ -1,0 +1,12 @@
+{
+    "mode": "test-handoff",
+    "completed": true,
+    "elapsed": 28.381040573120118,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "combat exits into school in same scene=True",
+        "school has player control=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

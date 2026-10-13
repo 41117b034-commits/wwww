@@ -1,0 +1,15 @@
+{
+    "mode": "test-collisions",
+    "completed": false,
+    "elapsed": 10.221153259277344,
+    "checks": [
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "school fence blocks CharacterController=True",
+        "east masonry blocks CharacterController=False"
+    ],
+    "errors": [
+        "System.Exception: east masonry blocks CharacterController\r\n  at Chapter3SchoolProbe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SchoolProbe.cs:166 \r\n  at Chapter3SchoolProbe+<Push>d__13.MoveNext () [0x000e1] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SchoolProbe.cs:143 \r\n  at Chapter3SchoolProbe+<Guard>d__11.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SchoolProbe.cs:59 "
+    ],
+    "warnings": []
+}

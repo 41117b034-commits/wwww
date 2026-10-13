@@ -1,0 +1,1 @@
+cloth normals repaired; mesh assets serialized as binary

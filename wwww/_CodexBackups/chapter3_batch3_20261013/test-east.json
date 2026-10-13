@@ -1,0 +1,19 @@
+{
+    "mode": "test-east",
+    "completed": true,
+    "elapsed": 81.97193145751953,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "meet Tado walkable=True",
+        "Tado can be greeted=True",
+        "test-east walkable=True",
+        "both companions reach reunion=True",
+        "rescue path walkable=True",
+        "shelter reached with both companions=True",
+        "no invented combat or injury state=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

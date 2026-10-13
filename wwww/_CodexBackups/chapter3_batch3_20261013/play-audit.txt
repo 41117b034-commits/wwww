@@ -1,0 +1,12 @@
+scene=Assets/Scenes/第三章.unity
+dirty=False
+playing=True
+compileFailed=False
+sceneCount=1
+missingScripts=0
+missingMeshes=0
+missingSkinnedMeshes=0
+schoolObjects=1902
+schoolColliders=1119
+schoolRenderers=428
+schoolVertices=18690451

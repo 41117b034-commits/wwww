@@ -1,0 +1,21 @@
+{
+    "mode": "test-collisions",
+    "completed": true,
+    "elapsed": 27.580821990966798,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "school fence blocks CharacterController=True",
+        "east masonry blocks CharacterController=True",
+        "school wall blocks CharacterController=True",
+        "tree trunk blocks CharacterController=True",
+        "rock surface blocks CharacterController=True",
+        "crate blocks CharacterController=True",
+        "north boundary blocks CharacterController=True",
+        "open school gate walkable=True",
+        "gate remains passable=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

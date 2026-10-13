@@ -1,0 +1,16 @@
+{
+    "mode": "test-layout",
+    "completed": true,
+    "elapsed": 7.909268379211426,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "school map has seven landmarks=True",
+        "all fence rails are solid=True",
+        "all rock objects have colliders=True",
+        "twenty four spectators and two runners=True"
+    ],
+    "errors": [],
+    "warnings": []
+}

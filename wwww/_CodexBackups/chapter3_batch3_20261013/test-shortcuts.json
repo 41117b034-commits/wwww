@@ -1,0 +1,16 @@
+{
+    "mode": "test-shortcuts",
+    "completed": true,
+    "elapsed": 15.209753036499024,
+    "checks": [
+        "school meshes and collision meshes resolve=True",
+        "F8 enters school=True",
+        "single scene camera listener=True",
+        "repeat F8 does not duplicate content=True",
+        "station disables school and restores movement owner=True",
+        "combat has exactly three enemies=True",
+        "school disables weapons and resets camera=True"
+    ],
+    "errors": [],
+    "warnings": []
+}
