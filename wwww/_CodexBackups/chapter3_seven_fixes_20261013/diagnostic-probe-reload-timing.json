@@ -1,0 +1,19 @@
+{
+    "mode": "test-combat-rifle",
+    "completed": false,
+    "elapsed": 6.439337730407715,
+    "checks": [
+        "health starts at 100 with correct label=True",
+        "all three officers present=True",
+        "rifle keeps concurrent officers=True",
+        "friendly reaction uses NPC name and requested line=True",
+        "friendly attack never consumes rifle ammunition=True",
+        "rifle officer down 0=True",
+        "rifle officer down 1=False"
+    ],
+    "errors": [
+        "System.Exception: rifle officer down 1\r\n  at Chapter3SevenProbe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SevenProbe.cs:313 \r\n  at Chapter3SevenProbe+<CombatFixes>d__17.MoveNext () [0x007cf] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SevenProbe.cs:231 \r\n  at Chapter3SevenProbe+<Guard>d__13.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SevenProbe.cs:53 "
+    ],
+    "warnings": [],
+    "replies": []
+}

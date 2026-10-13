@@ -18,6 +18,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public float attackInterval=4.5f;
     public float engagementRange=32;
     float nextAttack,raisedAt,hitAt=-20;
+    bool attackGranted;
     AudioSource reportAudio;
     Vector3 fallGrip,fallenWeaponPosition;
     Quaternion fallRotation,fallenWeaponRotation;
@@ -31,6 +32,10 @@ public sealed class Chapter3Enemy : MonoBehaviour
     void Update()
     {
         if(!combat||!combat.Fighting||Defeated)return;
+        if(!combat.CanAttack(this))
+        {attackGranted=false;Telegraphing=false;if(rifle){rifle.aim=0;rifle.lowered=.8f;}return;}
+        bool knife=combat.weapons.Selected==Chapter3Weapons.Weapon.Knife;
+        if(!attackGranted){attackGranted=true;nextAttack=Time.time+(knife?3.5f:2);}
         Vector3 target=escortTarget?escortTarget.position+Vector3.up*1.05f:combat.playerTarget.position;
         actor.Face(target);
         if(rifle){rifle.aimTarget=escortTarget?null:combat.playerTarget;rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;}
@@ -46,15 +51,15 @@ public sealed class Chapter3Enemy : MonoBehaviour
         if(!visible){Telegraphing=false;if(rifle)rifle.aim=0;return;}
         if(!Telegraphing&&Time.time>=nextAttack){Telegraphing=true;raisedAt=Time.time;}
         if(rifle)rifle.aim=Telegraphing?Mathf.Clamp01((Time.time-raisedAt)*2):.15f;
-        if(Telegraphing&&Time.time-raisedAt>=1.45f)
+        if(Telegraphing&&Time.time-raisedAt>=(knife?2.2f:1.45f))
         {
             // Recheck actual cover when the shot lands, not only when aiming starts.
             if(combat.ClearLine(AimPoint,target,this))
             {
                 Shots++;if(rifle)rifle.Fire();if(combat.weapons.shotClip)reportAudio.PlayOneShot(combat.weapons.shotClip);
-                if(escortTarget&&combat.SchoolEncounter)combat.SchoolEncounter.EscortHit();else combat.Damage(25,AimPoint);
+                if(escortTarget&&combat.SchoolEncounter)combat.SchoolEncounter.EscortHit();else combat.Damage(20,AimPoint);
             }
-            Telegraphing=false;nextAttack=Time.time+attackInterval;
+            Telegraphing=false;nextAttack=Time.time+(knife?Mathf.Max(6.5f,attackInterval):attackInterval);
         }
     }
     public void Hit(int damage,Vector3 from)

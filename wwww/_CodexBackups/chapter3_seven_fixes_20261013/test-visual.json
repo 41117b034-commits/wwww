@@ -1,0 +1,14 @@
+{
+    "mode": "test-visual",
+    "completed": true,
+    "elapsed": 5.487329483032227,
+    "checks": [
+        "title is visible before conversation=True",
+        "conversation starts after establishing shot=True",
+        "world lettering depth material=True",
+        "road sign centered=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": []
+}

@@ -100,7 +100,7 @@ public static class Chapter2CloudGemma
 
     static Content TextContent(string role, string text) => new Content { role = role, parts = new[] { new Part { text = text } } };
 
-    public static string BuildBody(string persona, List<Chapter2LocalDialogue.Message> history, string question)
+    public static string BuildBody(string persona, List<Chapter2LocalDialogue.Message> history, string question,int maxTokens=256,float temperature=.65f)
     {
         var contents = new List<Content>();
         foreach (var message in history)
@@ -109,7 +109,7 @@ public static class Chapter2CloudGemma
                 contents.Add(TextContent(message.role == "assistant" ? "model" : "user", message.content));
         }
         contents.Add(TextContent("user", question));
-        return JsonUtility.ToJson(new Request { systemInstruction = new Instruction { parts = new[] { new Part { text = persona } } }, contents = contents.ToArray() });
+        return JsonUtility.ToJson(new Request { systemInstruction = new Instruction { parts = new[] { new Part { text = persona } } }, contents = contents.ToArray(),generationConfig=new Generation{maxOutputTokens=maxTokens,temperature=temperature} });
     }
 
     public static UnityWebRequest CreateRequest(string model, string key, string body)

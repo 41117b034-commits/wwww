@@ -1,0 +1,37 @@
+[
+  {
+    "Report": "test-visual",
+    "Completed": true,
+    "Checks": 4,
+    "Errors": 0,
+    "Warnings": 0
+  },
+  {
+    "Report": "test-combat-knife",
+    "Completed": true,
+    "Checks": 20,
+    "Errors": 0,
+    "Warnings": 0
+  },
+  {
+    "Report": "test-combat-rifle",
+    "Completed": true,
+    "Checks": 13,
+    "Errors": 0,
+    "Warnings": 0
+  },
+  {
+    "Report": "test-live",
+    "Completed": true,
+    "Checks": 43,
+    "Errors": 0,
+    "Warnings": 0
+  },
+  {
+    "Report": "test-cancel-opening",
+    "Completed": true,
+    "Checks": 9,
+    "Errors": 0,
+    "Warnings": 0
+  }
+]

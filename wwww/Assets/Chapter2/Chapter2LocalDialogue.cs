@@ -37,6 +37,8 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
     public bool Busy { get; private set; }
     public bool Ready { get; private set; }
     public string LastError { get; private set; }
+    public long LastResponseCode { get; private set; }
+    public float LastRequestSeconds { get; private set; }
     public string Provider => cloudConfig != null && cloudConfig.enabled ? "Free cloud Gemma: " + cloudConfig.model : "Local: " + settings.model;
     UnityWebRequest activeRequest;
     System.Diagnostics.Process ownedProcess;
@@ -135,22 +137,23 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         return AskWithPersona(Persona(npc), history, question, done);
     }
     // A later chapter supplies its own knowledge and scene boundaries; transport stays shared.
-    public IEnumerator AskWithPersona(string persona,List<Message> history,string question,Action<string,string> done)
+    public IEnumerator AskWithPersona(string persona,List<Message> history,string question,Action<string,string> done,int timeoutSeconds=75,int maxTokens=0,float temperature=.65f)
     {
         if(Busy){done(null,"請等對方回答完再提問。");yield break;}
         Busy=true;
+        float requestStarted=Time.realtimeSinceStartup;LastResponseCode=0;LastRequestSeconds=0;
         if(!Ready)yield return Prepare();
         if(!Ready){Busy=false;done(null,LastError);yield break;}
         string answer=null,error=null;
         bool cloud=cloudConfig != null && cloudConfig.enabled;
         UnityWebRequest pending;
         if(cloud)
-            pending=Chapter2CloudGemma.CreateRequest(cloudConfig.model,cloudKey,Chapter2CloudGemma.BuildBody(persona,history,question));
+            pending=Chapter2CloudGemma.CreateRequest(cloudConfig.model,cloudKey,Chapter2CloudGemma.BuildBody(persona,history,question,maxTokens>0?maxTokens:256,temperature));
         else
         {
             var messages=new List<Message>{new Message("system",persona)};
             messages.AddRange(history);messages.Add(new Message("user",question));
-            var body=new Request{model=settings.model,messages=messages.ToArray()};
+            var body=new Request{model=settings.model,messages=messages.ToArray(),max_tokens=maxTokens>0?maxTokens:160,temperature=temperature};
             pending=new UnityWebRequest(settings.endpoint,"POST");
             pending.uploadHandler=new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(body)));
             pending.downloadHandler=new DownloadHandlerBuffer();pending.SetRequestHeader("Content-Type","application/json");
@@ -158,8 +161,10 @@ public sealed class Chapter2LocalDialogue : MonoBehaviour
         }
         using(var request=pending)
         {
+            request.timeout=Mathf.Min(request.timeout,Mathf.Max(1,timeoutSeconds));
             activeRequest=request;
             yield return request.SendWebRequest();
+            LastResponseCode=request.responseCode;LastRequestSeconds=Time.realtimeSinceStartup-requestStarted;
             if(request.result!=UnityWebRequest.Result.Success)
             {error=cloud?Chapter2CloudGemma.HttpError(request.responseCode):"對方暫時無法回覆，請稍後再試。";Ready=false;}
             else if(cloud)

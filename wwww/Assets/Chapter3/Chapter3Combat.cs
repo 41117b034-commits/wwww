@@ -92,10 +92,10 @@ public sealed class Chapter3Combat : MonoBehaviour
         if(CurrentStage==Stage.Inactive)return;
         if(warningUntil>0&&Time.time>=warningUntil){warningUntil=0;ui.Say("",null);}
         playerTarget.position=player.view.transform.position-Vector3.up*.38f;
+        healthText.text="生命值  "+Health+" / 100";
         if(CurrentStage==Stage.Down)
         {if(Keyboard.current?.rKey.wasPressedThisFrame==true)Retry();return;}
         ui.ConfigureVR(player.IsVR);
-        healthText.text="體力  "+Health+" / 100";
         ammoText.text=weapons.Selected==Chapter3Weapons.Weapon.Rifle ? "村田十八年式  "+(weapons.Loaded?"1":"0")+" / 1   備彈 "+weapons.Reserve : "獵刀";
         crosshair.text=Fighting?(weapons.Aiming?"·":"+"):"";
         string progress="前方巡警  "+DefeatedCount+" / "+enemyTemplates.Length;
@@ -122,6 +122,14 @@ public sealed class Chapter3Combat : MonoBehaviour
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public void EnemyDefeated(){if(!SchoolEncounter)DefeatedCount++;}
+    public bool CanAttack(Chapter3Enemy enemy)
+    {
+        if(!Fighting)return false;
+        if(SchoolEncounter||weapons.Selected!=Chapter3Weapons.Weapon.Knife)return true;
+        // Knife encounter: only the first surviving officer may aim or fire.
+        foreach(var officer in localEnemies)if(officer&&!officer.Defeated)return officer==enemy;
+        return false;
+    }
     public void CompanionWarning(string speaker,string line,float duration)
     {
         if(SchoolEncounter){SchoolEncounter.Notice(speaker,line,duration);return;}
@@ -131,6 +139,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     IEnumerator ClearEncounter()
     {
         CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=2.8f;player.view.fieldOfView=60;
+        hud.SetActive(false);
         yield return new WaitForSeconds(2);
         yield return Say(bawan,"前面的路通了。比胡，看看大家有沒有跟上。",lineSeconds);
         yield return Say(pihu,"我在。走吧，到學校外和達多會合。",lineSeconds);

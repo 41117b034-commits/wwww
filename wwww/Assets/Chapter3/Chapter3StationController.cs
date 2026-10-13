@@ -33,6 +33,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     Chapter3MonaRebuke rebuke;
     readonly Chapter3PathMotor monaMotor=new Chapter3PathMotor();
     Vector3 monaHome;
+    Chapter3StationRoadBoundary roadBoundary;
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor();
 
     void Start()
@@ -41,6 +42,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         { Debug.LogError("[Chapter3Station] Missing scene references.");enabled=false;return; }
         player.station=this;player.chapter=null;
         monaHome=mona.transform.position;
+        roadBoundary=new Chapter3StationRoadBoundary(flow?flow.stationRegion.transform:transform.parent);
         Readiness=gameObject.AddComponent<Chapter3ReadinessConversation>();
         Opening=gameObject.AddComponent<Chapter3OpeningConversation>();
         Choice=Chapter3WeaponChoiceUI.Build(ui);
@@ -66,6 +68,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         player.Warp(new Vector3(0,.06f,-18),bawan.transform.position+Vector3.up*1.2f);
         bawan.Face(player.transform.position);
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
+        Opening.PrepareService();
         StartCoroutine(Arrival());
     }
     void Update()
@@ -102,6 +105,8 @@ public sealed class Chapter3StationController : MonoBehaviour
         ui.objective.text="馬赫坡駐在所 · 清晨";
         ui.fade.color=Color.black;
         yield return Fade(false,1.8f);
+        // Keep the establishing shot and place/time legible before opening chat.
+        yield return new WaitForSecondsRealtime(3);
         CurrentStage=Stage.Conversation;
         ui.objective.text="馬赫坡駐在所 · 和巴萬交談";
         Opening.Begin(this,()=>{if(CurrentStage==Stage.Conversation)StartCoroutine(ApproachMona());});
@@ -214,7 +219,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Escort(departurePath);yield return Gather();
         player.canMove=false;
         yield return Say(bawan,"往前就是霧社。到學校外面，再和達多會合。",lineSeconds+1);
-        yield return Say(pihu,"我們一起走。",lineSeconds);
+        yield return Say(pihu,"前面山路有日本警察擋著。先突破他們，再去學校外和達多會合。",lineSeconds+2);
         ui.Say("",null);ui.hint.text="";yield return Fade(true,1.5f);
         CurrentStage=Stage.SchoolHandoff;player.canLook=false;
         ui.objective.text="前往霧社的山路";
@@ -265,24 +270,21 @@ public sealed class Chapter3StationController : MonoBehaviour
     {for(float t=0;t<duration;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,black?t/duration:1-t/duration);yield return null;}ui.fade.color=black?Color.black:Color.clear;}
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
-        if(Walkable(desired))return desired;
         Vector3 p=current;p.y=desired.y;
-        if(Walkable(new Vector3(desired.x,desired.y,current.z)))p.x=desired.x;
-        if(Walkable(new Vector3(p.x,desired.y,desired.z)))p.z=desired.z;
+        int steps=Mathf.Max(1,Mathf.CeilToInt(Flat(current,desired)/.12f));
+        Vector3 step=(desired-current)/steps;step.y=0;
+        for(int i=0;i<steps;i++)
+        {
+            if(Walkable(p+step)){p+=step;continue;}
+            Vector3 alongX=p+new Vector3(step.x,0,0);if(Walkable(alongX))p=alongX;
+            Vector3 alongZ=p+new Vector3(0,0,step.z);if(Walkable(alongZ))p=alongZ;
+        }
         return p;
     }
     bool Walkable(Vector3 p)
     {
-        if(p.x>=-10 && p.x<=10 && p.z>=-24 && p.z<=2.7f)return true;
-        // Keep the final trail gated until equipment and readiness are confirmed.
-        if(CurrentStage!=Stage.Departure && CurrentStage!=Stage.SchoolHandoff)return false;
-        for(int i=1;i<departurePath.Length;i++)
-        {
-            Vector3 a=departurePath[i-1],b=departurePath[i];a.y=b.y=p.y;
-            float t=Vector3.Dot(p-a,b-a)/(b-a).sqrMagnitude;
-            if((p-Vector3.Lerp(a,b,Mathf.Clamp01(t))).sqrMagnitude<=8.4f)return true;
-        }
-        return false;
+        bool departing=CurrentStage==Stage.Departure||CurrentStage==Stage.SchoolHandoff;
+        return roadBoundary.Contains(p,player.GetComponent<CharacterController>().radius+.04f,departing);
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
     public void Suspend(){StopAllCoroutines();if(Opening)Opening.Cancel();if(Choice)Choice.gameObject.SetActive(false);if(Readiness)Readiness.Cancel();if(rebuke)rebuke.Rebuking=false;bawan.speaking=pihu.speaking=mona.speaking=false;CurrentLine=null;}

@@ -39999,7 +39999,7 @@ Transform:
   m_GameObject: {fileID: 362185843}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.43, z: -0.11}
+  m_LocalPosition: {x: 0, y: 1.35, z: -0.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40017,7 +40017,7 @@ TextMesh:
   m_OffsetZ: 0
   m_CharacterSize: 0.048
   m_LineSpacing: 1
-  m_Anchor: 1
+  m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
   m_FontSize: 70
@@ -116264,6 +116264,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1048768022}
+  - component: {fileID: 1048768023}
   m_Layer: 0
   m_Name: "02 \u99D0\u5728\u6240"
   m_TagString: Untagged
@@ -116296,6 +116297,20 @@ Transform:
   - {fileID: 309245497}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1048768023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1048768021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46edec6846c8ab943a8ebbff722d6197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  font: {fileID: 12800000, guid: ecc4fa25ccb938b4699941381df42df8, type: 3}
+  worldTextShader: {fileID: 4800000, guid: db1620d195496444e973acae09bdf528, type: 3}
 --- !u!1 &1049596127
 GameObject:
   m_ObjectHideFlags: 0
@@ -118255,6 +118270,7 @@ MonoBehaviour:
   advances: 0
   escortTarget: {fileID: 0}
   attackInterval: 4.5
+  engagementRange: 32
 --- !u!136 &1068718363
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -138144,6 +138160,7 @@ MonoBehaviour:
   advances: 0
   escortTarget: {fileID: 0}
   attackInterval: 4.5
+  engagementRange: 32
 --- !u!136 &1242706318
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -153283,6 +153300,7 @@ GameObject:
   - component: {fileID: 1366514924}
   - component: {fileID: 1366514923}
   - component: {fileID: 1366514922}
+  - component: {fileID: 1366514925}
   m_Layer: 0
   m_Name: "03 \u5C71\u8DEF\u77ED\u4EA4\u6230"
   m_TagString: Untagged
@@ -153637,6 +153655,20 @@ Transform:
   - {fileID: 1362129710}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1366514925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366514921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46edec6846c8ab943a8ebbff722d6197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  font: {fileID: 12800000, guid: ecc4fa25ccb938b4699941381df42df8, type: 3}
+  worldTextShader: {fileID: 4800000, guid: db1620d195496444e973acae09bdf528, type: 3}
 --- !u!1 &1367071337
 GameObject:
   m_ObjectHideFlags: 0
@@ -238939,6 +238971,7 @@ MonoBehaviour:
   advances: 1
   escortTarget: {fileID: 0}
   attackInterval: 4.5
+  engagementRange: 32
 --- !u!136 &2126355559
 CapsuleCollider:
   m_ObjectHideFlags: 0

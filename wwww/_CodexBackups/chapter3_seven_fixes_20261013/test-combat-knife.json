@@ -1,0 +1,32 @@
+{
+    "mode": "test-combat-knife",
+    "completed": true,
+    "elapsed": 40.71415710449219,
+    "checks": [
+        "health starts at 100 with correct label=True",
+        "all three officers present=True",
+        "only first officer enabled=True",
+        "actual bullet removes exactly twenty=True",
+        "slower knife cadence and no simultaneous attacks=True",
+        "friendly reaction uses NPC name and requested line=True",
+        "friendly attack never consumes rifle ammunition=True",
+        "guard killed by actual knife swings=True",
+        "next officer only after prior defeated 0=True",
+        "next officer has grace period 0=True",
+        "guard killed by actual knife swings=True",
+        "next officer only after prior defeated 1=True",
+        "next officer has grace period 1=True",
+        "guard killed by actual knife swings=True",
+        "HUD disappears immediately after all three=True",
+        "HUD stays hidden while following=True",
+        "HUD restored on new encounter=True",
+        "zero displayed on defeat=True",
+        "retry resets health and officers=True",
+        "retry restores attack order=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "no next shot for 5.005403 seconds"
+    ]
+}

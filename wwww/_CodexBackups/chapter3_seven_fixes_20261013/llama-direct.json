@@ -1,0 +1,23 @@
+{
+  "seconds": 2.9021181,
+  "answer": "我們現在正駐在馬赫坡的駐在所，接下來我們要去見莫那，再前往霧社學校外。",
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 60,
+    "total_tokens": 88,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 60,
+    "prompt_ms": 1215.258,
+    "prompt_per_token_ms": 20.2543,
+    "prompt_per_second": 49.372232069239615,
+    "predicted_n": 28,
+    "predicted_ms": 1632.514,
+    "predicted_per_token_ms": 60.46348148148148,
+    "predicted_per_second": 16.538908701548657
+  }
+}

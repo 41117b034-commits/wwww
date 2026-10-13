@@ -1,0 +1,23 @@
+{
+  "seconds": 8.764999999999418,
+  "answer": "我們到了馬赫坡駐在所。莫那在前面，他看起來很堅定。你打算先去跟莫那說什麼？",
+  "usage": {
+    "completion_tokens": 31,
+    "prompt_tokens": 287,
+    "total_tokens": 318,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 287,
+    "prompt_ms": 6505.566,
+    "prompt_per_token_ms": 22.667477351916375,
+    "prompt_per_second": 44.116069224414915,
+    "predicted_n": 31,
+    "predicted_ms": 2183.87,
+    "predicted_per_token_ms": 72.79566666666666,
+    "predicted_per_second": 13.737081419681575
+  }
+}

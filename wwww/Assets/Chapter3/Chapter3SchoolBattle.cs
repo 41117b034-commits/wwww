@@ -155,7 +155,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         if(supply&&player.ActionPressed)combat.weapons.Refill();
         if(supply)ui.hint.text="E 補充備彈   ·   R 單發裝填";
         player.speed=combat.weapons.Aiming?1.7f:2.8f;
-        combat.healthText.text="體力  "+Health+" / 100";
+        combat.healthText.text="生命值  "+Health+" / 100";
         var w=combat.weapons;combat.ammoText.text=w.Selected==Chapter3Weapons.Weapon.Rifle?"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve:"獵刀";
         combat.crosshair.text=w.Aiming?"·":"+";
         if(w.Reloading)combat.combatText.text+="\n單發裝填  "+Mathf.CeilToInt(w.ReloadProgress*100)+"%";

@@ -1,0 +1,26 @@
+{
+    "mode": "test-diagnose-warm",
+    "completed": true,
+    "elapsed": 22.17521858215332,
+    "checks": [],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "我們現在在哪裡？接下來要去哪裡？ => 這裡是馬赫坡駐在所。我們先聽莫那的安排，再沿山路去霧社學校外和達多會合。 seconds=12.13013",
+        "provider=Local: wushe-npc http=0 seconds=12.08352 error=對方暫時無法回覆，請稍後再試。",
+        "你叫什麼名字？ => 我是賽德克青年巴萬。\n莫那在前面。跟我來。 seconds=5.204678",
+        "provider=Local: wushe-npc http=200 seconds=5.128582 error=",
+        "road=前往霧社的土路 1 (2.75, -0.08, -2.25) size=(3.30, 0.15, 6.70) rotation=(0.00, 105.26, 0.00)",
+        "road=前往霧社的土路 2 (7.00, -0.08, -2.00) size=(3.30, 0.15, 4.61) rotation=(0.00, 56.31, 0.00)",
+        "road=前往霧社的土路 3 (8.50, -0.08, 1.00) size=(3.30, 0.15, 5.00) rotation=(0.00, 0.00, 0.00)",
+        "road=前往霧社的土路 4 (10.75, -0.08, 3.00) size=(3.30, 0.15, 5.50) rotation=(0.00, 90.00, 0.00)",
+        "road=前往霧社的土路 5 (13.50, -0.08, 1.50) size=(3.30, 0.15, 4.16) rotation=(0.00, 161.57, 0.00)",
+        "road=前往霧社的土路 6 (14.50, -0.08, -4.00) size=(3.30, 0.15, 9.06) rotation=(0.00, 172.88, 0.00)",
+        "road=前往霧社的土路 7 (18.50, -0.08, -6.00) size=(3.30, 0.15, 9.06) rotation=(0.00, 60.26, 0.00)",
+        "road=前往霧社的土路 8 (26.00, -0.08, 0.00) size=(3.30, 0.15, 12.31) rotation=(0.00, 45.00, 0.00)",
+        "road=前往霧社的土路 9 (31.00, -0.08, 8.00) size=(3.30, 0.15, 9.25) rotation=(0.00, 14.04, 0.00)",
+        "text=駐\n在\n所 (0.05, 2.79, 4.20) anchor=UpperCenter shader=Chapter3/School World Text",
+        "text=領  槍 (-4.80, 0.59, -1.04) anchor=UpperCenter shader=Chapter3/School World Text",
+        "text=霧社 → (0.00, 1.35, -0.11) anchor=MiddleCenter shader=Chapter3/School World Text"
+    ]
+}

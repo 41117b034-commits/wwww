@@ -70,8 +70,8 @@ public sealed class Chapter3Weapons : MonoBehaviour
         bool traced=combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit);
         if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
         {
-            const string warning="不能拿槍攻擊你的夥伴。";
-            Notice(warning,3);combat.CompanionWarning("系統提醒",warning,3);busyUntil=Time.time+.4f;return false;
+            hit.collider.GetComponentInParent<Chapter3CompanionReaction>().WarnAgainstAttack();
+            busyUntil=Time.time+.4f;return false;
         }
         if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
         {Notice("不要向運動會的人群開槍，沿任務路線前進。",3);busyUntil=Time.time+.4f;return false;}
@@ -109,7 +109,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
             if(combat.Trace(view.position,to.normalized,d+.1f,out var hit)&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>()==companion)
             {friend=companion;nearest=d;}
         }
-        if(friend){friend.KnifeHit();Notice("他是你的夥伴，請攻擊前方的日本警察。",3);}
+        if(friend){friend.KnifeHit();}
         else if(victim){victim.Hit(60,view.position);Notice("獵刀命中");}else Notice("沒有擊中，靠近再揮刀。");
     }
     public bool Reload()
