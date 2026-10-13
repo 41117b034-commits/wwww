@@ -16825,7 +16825,7 @@ MonoBehaviour:
     role: 4
     chinese: "\u7236\u89AA\uFF01"
     clip: {fileID: 8300000, guid: e2f4d7de88b2e3e49aa87d4cb2ab9f6a, type: 3}
-    volumeDb: 15
+    volumeDb: 12
   - id: C2_013
     role: 4
     chinese: "\u65E5\u672C\u4EBA\u903C\u6211\u5011\u780D\u5DE8\u6728\u3001\u6263\u5DE5\u8CC7\uFF0C"
@@ -16834,8 +16834,8 @@ MonoBehaviour:
   - id: C2_014
     role: 4
     chinese: "\u9023\u656C\u9152\u90FD\u8981\u88AB\u6253\uFF01"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: 1f3e42e6610fd114bbd7a158693ad18a, type: 3}
+    volumeDb: 12
   - id: C2_015
     role: 4
     chinese: "\u6211\u5011\u9084\u8981\u5FCD\u5230\u4EC0\u9EBC\u6642\u5019\uFF1F"
