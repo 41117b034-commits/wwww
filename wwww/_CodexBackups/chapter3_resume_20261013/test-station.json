@@ -1,0 +1,24 @@
+{
+    "mode": "test-station",
+    "completed": true,
+    "elapsed": 70.15340423583985,
+    "checks": [
+        "conversation counter hidden=True",
+        "fence blocks outward player movement=True",
+        "fence blocks inward player movement=True",
+        "full station exit follows safe route=True",
+        "single chapter scene=True"
+    ],
+    "errors": [],
+    "stages": [
+        "Village:Opening",
+        "Village:Conversation",
+        "Station:Arrival",
+        "Station:Approach",
+        "Station:Briefing",
+        "Station:Equipment",
+        "Station:Regroup",
+        "Station:Departure",
+        "Combat:Intro"
+    ]
+}

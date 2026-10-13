@@ -1,0 +1,17 @@
+{
+    "mode": "test-combat",
+    "completed": false,
+    "elapsed": 5.666677951812744,
+    "checks": [
+        "F7 enters fighting=True",
+        "knife companion reacts=False"
+    ],
+    "errors": [
+        "System.Exception: knife companion reacts\r\n  at Chapter3FixesProbe.Check (System.String name, System.Boolean success) [0x0002b] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:221 \r\n  at Chapter3FixesProbe.Combat (Chapter3Flow f) [0x00120] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:141 \r\n  at Chapter3FixesProbe.Tick () [0x00554] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:80 "
+    ],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting"
+    ]
+}

@@ -1,0 +1,1 @@
+test-escort-ahead step=3 Combat:Complete player=(0.00, 0.04, 29.50) bawan=(0.00, 0.05, 27.82) pihu=(1.20, 0.03, 26.12)

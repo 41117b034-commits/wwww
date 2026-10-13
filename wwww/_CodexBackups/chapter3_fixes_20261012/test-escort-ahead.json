@@ -1,0 +1,18 @@
+{
+    "mode": "test-escort-ahead",
+    "completed": true,
+    "elapsed": 20.00005531311035,
+    "checks": [
+        "camera faces forward at test-escort-ahead=True",
+        "both companions finish escort=True",
+        "still one scene=True"
+    ],
+    "errors": [],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting",
+        "Combat:Cleared",
+        "Combat:Complete"
+    ]
+}

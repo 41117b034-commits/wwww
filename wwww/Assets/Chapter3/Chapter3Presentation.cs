@@ -10,6 +10,7 @@ public sealed class Chapter3Presentation : MonoBehaviour
     public Button send, depart, replay, menu;
     public Image fade;
     bool vr;
+    void Awake(){if(progress)progress.gameObject.SetActive(false);}
     public void ConfigureVR(bool enabled)
     {
         if (vr == enabled) return;
@@ -45,7 +46,7 @@ public sealed class Chapter3Presentation : MonoBehaviour
         var chat = Panel(go.transform,"巴萬出發前交談",new Vector2(.1f,.03f),new Vector2(.9f,.42f),new Color(.024f,.037f,.032f,.97f));
         ui.chat = chat.gameObject;
         Label(chat,"巴萬·拿威",font,29,new Vector2(.035f,.82f),new Vector2(.5f,.98f)).color = new Color(.94f,.81f,.54f);
-        ui.progress = Label(chat,"交談  0 / 3",font,24,new Vector2(.74f,.82f),new Vector2(.97f,.98f)); ui.progress.alignment = TextAnchor.MiddleRight;
+        ui.progress = Label(chat,"",font,24,new Vector2(.74f,.82f),new Vector2(.97f,.98f)); ui.progress.gameObject.SetActive(false);
         ui.response = Label(chat,"",font,29,new Vector2(.035f,.38f),new Vector2(.965f,.81f)); ui.response.alignment = TextAnchor.UpperLeft;
         ui.response.resizeTextForBestFit = true; ui.response.resizeTextMinSize = 23; ui.response.resizeTextMaxSize = 29;
         var field = Panel(chat,"輸入回答",new Vector2(.035f,.14f),new Vector2(.795f,.32f),new Color(.12f,.16f,.14f,1));

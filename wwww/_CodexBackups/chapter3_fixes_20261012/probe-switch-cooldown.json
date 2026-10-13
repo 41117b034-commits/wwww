@@ -1,0 +1,22 @@
+{
+    "mode": "test-combat",
+    "completed": false,
+    "elapsed": 7.027886390686035,
+    "checks": [
+        "F7 enters fighting=True",
+        "knife companion reacts=True",
+        "knife warning subtitle=True",
+        "loaded friendly shot blocked=True",
+        "gun system warning=True",
+        "Pihu friendly shot also blocked=True",
+        "Pihu knife reaction=False"
+    ],
+    "errors": [
+        "System.Exception: Pihu knife reaction\r\n  at Chapter3FixesProbe.Check (System.String name, System.Boolean success) [0x0002b] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:231 \r\n  at Chapter3FixesProbe.Combat (Chapter3Flow f) [0x002fb] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:159 \r\n  at Chapter3FixesProbe.PlayTick () [0x003ef] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:85 "
+    ],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting"
+    ]
+}

@@ -1,0 +1,5 @@
+UserSettings/Layouts/CurrentMaximizeLayout.dwlt:109:    m_Scale: {x: 0.3159722, y: 0.3159722}
+UserSettings/Layouts/CurrentMaximizeLayout.dwlt:110:    m_Translation: {x: 348.59998, y: 136.5}
+UserSettings/Layouts/CurrentMaximizeLayout.dwlt:902:      m_Scale: 1
+UserSettings/Layouts/default-6000.dwlt:200:    m_Scale: {x: 0.7775463, y: 0.7775463}
+UserSettings/Layouts/default-6000.dwlt:201:    m_Translation: {x: 768, y: 335.9}

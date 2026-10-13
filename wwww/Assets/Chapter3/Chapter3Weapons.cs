@@ -61,11 +61,17 @@ public sealed class Chapter3Weapons : MonoBehaviour
     {
         if(!Ready)return false;
         if(Selected==Weapon.Knife){Slashes++;swingAt=Time.time;busyUntil=Time.time+.68f;StartCoroutine(Slash());return true;}
+        var camera=combat.player.view;
+        bool traced=combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit);
+        if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
+        {
+            const string warning="不能拿槍攻擊你的夥伴。";
+            Notice(warning,3);combat.CompanionWarning("系統提醒",warning,3);busyUntil=Time.time+.4f;return false;
+        }
         if(!Loaded){Notice(Reserve>0?"空膛，按 R 裝入一發。":"彈藥用盡，到身後木箱按 E 補給。");busyUntil=Time.time+.25f;return false;}
         Loaded=false;Shots++;firedAt=Time.time;busyUntil=Time.time+.48f;
         if(audioSource&&shotClip)audioSource.PlayOneShot(shotClip,.65f);
-        var camera=combat.player.view;
-        if(combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit))
+        if(traced)
         {
             var enemy=hit.collider.GetComponentInParent<Chapter3Enemy>();
             if(enemy){enemy.Hit(100,camera.transform.position);Notice("命中");}else Notice("擊中掩體");
@@ -87,7 +93,17 @@ public sealed class Chapter3Weapons : MonoBehaviour
             if(combat.Trace(view.position,to.normalized,d+.1f,out var hit)&&hit.collider.GetComponentInParent<Chapter3Enemy>()==enemy)
             {victim=enemy;nearest=d;}
         }
-        if(victim){victim.Hit(60,view.position);Notice("獵刀命中");}else Notice("沒有擊中，靠近再揮刀。");
+        Chapter3CompanionReaction friend=null;
+        foreach(var companion in combat.Companions)
+        {
+            if(!companion)continue;
+            Vector3 to=companion.AimPoint-view.position;float d=to.magnitude;
+            if(d>nearest||Vector3.Angle(view.forward,to)>42)continue;
+            if(combat.Trace(view.position,to.normalized,d+.1f,out var hit)&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>()==companion)
+            {friend=companion;nearest=d;}
+        }
+        if(friend){friend.KnifeHit();Notice("他是你的夥伴，請攻擊前方的日本警察。",3);}
+        else if(victim){victim.Hit(60,view.position);Notice("獵刀命中");}else Notice("沒有擊中，靠近再揮刀。");
     }
     public bool Reload()
     {
@@ -104,7 +120,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
     }
     public bool Refill()
     {if(!combat.Fighting||Reloading||Reserve>=8)return false;Reserve=8;Notice("取得備用彈藥，按 R 裝填。");return true;}
-    void Notice(string text){Feedback=text;feedbackUntil=Time.time+1.6f;}
+    void Notice(string text,float seconds=1.6f){Feedback=text;feedbackUntil=Time.time+seconds;}
     void LateUpdate()
     {
         if(!combat||!combat.Fighting)return;

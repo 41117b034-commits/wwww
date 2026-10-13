@@ -1,0 +1,1 @@
+2026-10-13 原 Unity 視窗可操作：桌面工具 Ctrl+P 可啟停 Play、滑鼠點擊 Game 可見。F6 兩次（含點擊 Game 後）及 F7 一次均未造成遊戲跳段；不把桌面工具 SendInput 當成真人鍵盤驗證。正式快捷鍵已由原專案 Play Mode 的 Unity Input System 事件通過。沒有為配合工具注入而修改遊戲輸入。

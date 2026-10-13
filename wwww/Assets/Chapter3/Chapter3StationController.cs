@@ -21,6 +21,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     public string CurrentLine { get; private set; }
     public int Waypoint { get; private set; }
     bool equipmentBusy;
+    readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor();
 
     void Start()
     {
@@ -34,6 +35,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     public void Begin()
     {
         StopAllCoroutines();HasRifle=false;equipmentBusy=false;CompanionsWaiting=false;Waypoint=0;CurrentLine=null;
+        bawanMotor.Reset();pihuMotor.Reset();
         bawan.speaking=pihu.speaking=mona.speaking=false;
         bawan.transform.position=new Vector3(0,0,-15);pihu.transform.position=new Vector3(1.6f,0,-17);
         bawan.Face(Vector3.zero);pihu.Face(Vector3.zero);mona.Face(new Vector3(0,0,-3));
@@ -150,7 +152,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         CompanionsWaiting=false;
     }
     void MoveActor(Chapter2Actor actor,Vector3 target,float speed)
-    {target.y=0;actor.transform.position=Vector3.MoveTowards(actor.transform.position,target,speed*Time.deltaTime);actor.GroundHeight=0;}
+    {(actor==bawan?bawanMotor:pihuMotor).Move(actor,target,speed);}
     IEnumerator Say(Chapter2Actor actor,string line,float seconds)
     {
         CurrentLine=line;ui.Say(actor.DisplayName,line);actor.Face(player.transform.position);actor.speaking=true;

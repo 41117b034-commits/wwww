@@ -27,6 +27,10 @@ public sealed class Chapter3Combat : MonoBehaviour
     public int DefeatedCount {get;private set;}
     public bool Complete=>CurrentStage==Stage.Complete;
     public readonly List<Chapter3Enemy> Enemies=new List<Chapter3Enemy>();
+    public Chapter3CompanionReaction[] Companions {get;private set;}
+    public bool EscortWaiting {get;private set;}
+    readonly Chapter3PathMotor leaderMotor=new Chapter3PathMotor(),rearMotor=new Chapter3PathMotor();
+    float warningUntil;
     float hurtAt=-10;
     bool clearedRoutine;
     public void Begin()
@@ -53,6 +57,10 @@ public sealed class Chapter3Combat : MonoBehaviour
     void ResetCheckpoint()
     {
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
+        warningUntil=0;EscortWaiting=false;leaderMotor.Reset();rearMotor.Reset();
+        bawan.transform.position=new Vector3(-5.1f,0,-5);pihu.transform.position=new Vector3(5.2f,0,-6);
+        Companions=new[]{bawan.GetComponent<Chapter3CompanionReaction>(),pihu.GetComponent<Chapter3CompanionReaction>()};
+        foreach(var companion in Companions)if(companion)companion.ResetReaction();
         foreach(var enemy in Enemies)if(enemy){enemy.gameObject.SetActive(false);Destroy(enemy.gameObject);}Enemies.Clear();
         foreach(var template in enemyTemplates)
         {
@@ -79,6 +87,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     void Update()
     {
         if(CurrentStage==Stage.Inactive)return;
+        if(warningUntil>0&&Time.time>=warningUntil){warningUntil=0;ui.Say("",null);}
         playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         if(CurrentStage==Stage.Down)
         {if(Keyboard.current?.rKey.wasPressedThisFrame==true)Retry();return;}
@@ -98,14 +107,6 @@ public sealed class Chapter3Combat : MonoBehaviour
             if(DefeatedCount==enemyTemplates.Length&&!clearedRoutine){clearedRoutine=true;StartCoroutine(ClearEncounter());}
         }
         hurtOverlay.color=new Color(.6f,.025f,.01f,Mathf.Clamp01(1-(Time.time-hurtAt)/.7f)*.32f);
-        if(CurrentStage==Stage.Cleared&&player.canMove)
-        {
-            foreach(var companion in new[]{bawan,pihu})
-            {
-                var target=player.transform.position+new Vector3(companion==bawan?-1.4f:1.4f,0,-2.2f);target.y=0;
-                companion.transform.position=Vector3.MoveTowards(companion.transform.position,target,2.7f*Time.deltaTime);
-            }
-        }
     }
     public void Damage(int amount,Vector3 source)
     {
@@ -117,15 +118,40 @@ public sealed class Chapter3Combat : MonoBehaviour
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public void EnemyDefeated(){DefeatedCount++;}
+    public void CompanionWarning(string speaker,string line,float duration)
+    {
+        if(!Fighting)return;
+        warningUntil=Time.time+duration;ui.Say(speaker,line);
+    }
     IEnumerator ClearEncounter()
     {
-        CurrentStage=Stage.Cleared;weapons.Suspend();player.canMove=false;player.view.fieldOfView=60;
+        CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=2.8f;player.view.fieldOfView=60;
         yield return new WaitForSeconds(2);
         yield return Say(bawan,"前面的路通了。比胡，看看大家有沒有跟上。",lineSeconds);
         yield return Say(pihu,"我在。走吧，到學校外和達多會合。",lineSeconds);
-        player.canMove=player.canLook=true;ui.objective.text="走到前方路口，繼續前往學校";ui.hint.text="WASD 移動 · 按住滑鼠右鍵環視";combatText.text="巡警已退下，與同伴離開這段山路。";
+        // Face up the same road as the police encounter. Bring the leader into
+        // that view, then let him lead towards the school instead of following behind.
+        Vector3 forwardView=exitPoint.position+Vector3.up*1.4f;
+        forwardView.z=Mathf.Max(forwardView.z,player.transform.position.z+8);
+        player.FocusOn(forwardView);
+        ui.objective.text="與同伴會合，準備繼續向前";combatText.text="巴萬正在前方集合，比胡會跟上。";
+        Vector3 rally=new Vector3(0,0,Mathf.Clamp(player.transform.position.z+3,-3,25));
+        Vector3 rear=rally+new Vector3(1.2f,0,-1.7f);
+        while(Flat(bawan.transform.position,rally)>.18f||Flat(pihu.transform.position,rear)>.18f)
+        {leaderMotor.Move(bawan,rally,3.2f);rearMotor.Move(pihu,rear,3.4f);yield return null;}
+        bawan.Face(exitPoint.position);pihu.Face(exitPoint.position);
+        player.canMove=player.canLook=true;ui.objective.text="跟隨巴萬向前走，前往學校";combatText.text="巡警已退下，巴萬在前方帶路。";
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
-        while(Vector3.Distance(Vector3.ProjectOnPlane(player.transform.position-exitPoint.position,Vector3.up),Vector3.zero)>2.5f)yield return null;
+        while(Flat(player.transform.position,exitPoint.position)>2.5f||Flat(bawan.transform.position,exitPoint.position)>.35f||Flat(pihu.transform.position,exitPoint.position)>2.3f)
+        {
+            EscortWaiting=Flat(player.transform.position,bawan.transform.position)>5.5f;
+            ui.hint.text=EscortWaiting?"巴萬在前方等你，走近後繼續。":"跟上巴萬 · WASD 移動 · 按住滑鼠右鍵環視";
+            if(!EscortWaiting)leaderMotor.Move(bawan,exitPoint.position,1.85f);
+            else bawan.Face(player.transform.position);
+            rearMotor.Move(pihu,bawan.transform.position+new Vector3(1.2f,0,-1.7f),2.3f);
+            yield return null;
+        }
+        EscortWaiting=false;
         player.canMove=player.canLook=false;
         for(float t=0;t<1.4f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.4f);yield return null;}
         ui.fade.color=Color.black;hud.SetActive(false);ui.Say("",null);ui.hint.text="";CurrentStage=Stage.Complete;
@@ -133,6 +159,7 @@ public sealed class Chapter3Combat : MonoBehaviour
         ui.replay.GetComponentInChildren<Text>().text="重玩第三章";ui.ending.SetActive(true);
         // Batch 3 continues here; never write chapter completion or Pihu's later outcome.
     }
+    static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
     IEnumerator Say(Chapter2Actor actor,string text,float duration)
     {
         ui.Say(actor.DisplayName,text);actor.speaking=true;actor.Face(player.transform.position);player.FocusOn(actor.transform.position+Vector3.up*1.2f);

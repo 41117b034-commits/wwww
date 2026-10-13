@@ -1,0 +1,37 @@
+{
+    "mode": "test-combat",
+    "completed": true,
+    "elapsed": 44.917293548583987,
+    "checks": [
+        "F7 enters fighting=True",
+        "knife companion reacts=True",
+        "knife warning subtitle=True",
+        "loaded friendly shot blocked=True",
+        "gun system warning=True",
+        "Pihu friendly shot also blocked=True",
+        "Pihu knife reaction=True",
+        "cover consumes round without enemy damage=True",
+        "empty rifle still gives companion warning=True",
+        "reload still loads exactly one=True",
+        "rifle enemy defeated=True",
+        "巡警 1  rifle settled low=0.035 high=0.1747006=True",
+        "enemy knife damage remains 60=True",
+        "knife enemy defeated=True",
+        "three police defeated=True",
+        "巡警 1  rifle settled low=0.035 high=0.1747006=True",
+        "巡警 2  rifle settled low=0.035 high=0.1747006=True",
+        "巡警 3  rifle settled low=0.035 high=0.1747005=True",
+        "camera faces onward=True",
+        "Bawan gathered ahead=True",
+        "guide waits when player stays behind=True",
+        "escort completes with both companions=True"
+    ],
+    "errors": [],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting",
+        "Combat:Cleared",
+        "Combat:Complete"
+    ]
+}

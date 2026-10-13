@@ -1,0 +1,32 @@
+using UnityEngine;
+
+[DefaultExecutionOrder(4450)]
+public sealed class Chapter3CompanionReaction : MonoBehaviour
+{
+    public Chapter3Combat combat;
+    public Chapter2Actor actor;
+    public Vector3 AimPoint=>transform.position+Vector3.up*1.05f;
+    public int KnifeReactions {get;private set;}
+    float hitAt=-10,until;
+    public void ResetReaction(){hitAt=-10;until=0;KnifeReactions=0;if(actor)actor.speaking=false;}
+    public void KnifeHit()
+    {
+        if(Time.time<hitAt+.8f)return;
+        hitAt=Time.time;until=Time.time+3.8f;KnifeReactions++;
+        actor.Face(combat.player.transform.position);actor.speaking=true;
+        const string line="嘿，為什麼要攻擊我？你的敵人是日本警察！";
+        actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(line,3.8f,null);
+        actor.GetComponent<Chapter3CompanionGesture>()?.AdjustStrap(1.2f);
+        combat.CompanionWarning(actor.DisplayName,line,3.8f);
+    }
+    void LateUpdate()
+    {
+        if(until<=0)return;
+        if(!combat.Fighting||Time.time>=until){until=0;actor.speaking=false;return;}
+        actor.Face(combat.player.transform.position);
+        float t=(Time.time-hitAt)/.65f;
+        if(t<1&&actor.Rig&&actor.Rig.Hips)
+            actor.Rig.Hips.rotation=Quaternion.AngleAxis(-Mathf.Sin(t*Mathf.PI)*17,actor.transform.right)*actor.Rig.Hips.rotation;
+    }
+    void OnDisable(){if(actor)actor.speaking=false;until=0;}
+}

@@ -1,0 +1,19 @@
+{
+    "mode": "test-escort-rear",
+    "completed": true,
+    "elapsed": 26.880157470703126,
+    "checks": [
+        "camera faces forward at test-escort-rear=True",
+        "leader is ahead at rear checkpoint=True",
+        "both companions finish escort=True",
+        "still one scene=True"
+    ],
+    "errors": [],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting",
+        "Combat:Cleared",
+        "Combat:Complete"
+    ]
+}

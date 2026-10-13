@@ -1,0 +1,30 @@
+[
+  {
+    "mode": "test-combat",
+    "completed": true,
+    "checks": 22,
+    "errors": 0,
+    "seconds": 44.92
+  },
+  {
+    "mode": "test-escort-ahead",
+    "completed": true,
+    "checks": 3,
+    "errors": 0,
+    "seconds": 20.14
+  },
+  {
+    "mode": "test-escort-rear",
+    "completed": true,
+    "checks": 4,
+    "errors": 0,
+    "seconds": 38.62
+  },
+  {
+    "mode": "test-station",
+    "completed": true,
+    "checks": 5,
+    "errors": 0,
+    "seconds": 70.15
+  }
+]

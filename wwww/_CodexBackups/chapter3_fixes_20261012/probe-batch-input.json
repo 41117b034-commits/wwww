@@ -1,0 +1,23 @@
+{
+    "mode": "test-combat",
+    "completed": false,
+    "elapsed": 11.030694961547852,
+    "checks": [
+        "F7 enters fighting=True",
+        "knife companion reacts=True",
+        "knife warning subtitle=True",
+        "loaded friendly shot blocked=True",
+        "gun system warning=True",
+        "Pihu friendly shot also blocked=True",
+        "Pihu knife reaction=True",
+        "cover consumes round without enemy damage=False"
+    ],
+    "errors": [
+        "System.Exception: cover consumes round without enemy damage\r\n  at Chapter3FixesProbe.Check (System.String name, System.Boolean success) [0x0002b] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:231 \r\n  at Chapter3FixesProbe.Combat (Chapter3Flow f) [0x0047a] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:167 \r\n  at Chapter3FixesProbe.PlayTick () [0x003ef] in D:\\CodexValidation\\chapter3_fixes_20261012\\Assets\\Editor\\Chapter3FixesProbe.cs:85 "
+    ],
+    "stages": [
+        "Village:Opening",
+        "Combat:Intro",
+        "Combat:Fighting"
+    ]
+}

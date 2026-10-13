@@ -15,6 +15,9 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public float attackInterval=4.5f;
     float nextAttack,raisedAt,hitAt=-20;
     AudioSource reportAudio;
+    Vector3 fallGrip,fallenWeaponPosition;
+    Quaternion fallRotation,fallenWeaponRotation;
+    Renderer[] weaponRenderers;
     void Start()
     {
         nextAttack=Time.time+2;Health=100;
@@ -51,13 +54,39 @@ public sealed class Chapter3Enemy : MonoBehaviour
         Health=Mathf.Max(0,Health-damage);hitAt=Time.time;Telegraphing=false;nextAttack=Time.time+2.2f;
         if(Defeated)
         {
-            if(rifle){rifle.aim=0;rifle.lowered=1;rifle.enabled=false;}
+            if(rifle)
+            {
+                rifle.aim=0;rifle.lowered=1;rifle.enabled=false;
+                if(rifle.muzzleFlash)rifle.muzzleFlash.SetActive(false);
+                if(rifle.weapon&&actor.Rig&&actor.Rig.Hips)
+                {
+                    var hips=actor.Rig.Hips;
+                    fallGrip=Quaternion.Inverse(hips.rotation)*(rifle.weapon.position-hips.position);
+                    fallRotation=Quaternion.Inverse(hips.rotation)*rifle.weapon.rotation;
+                    Vector3 direction=Vector3.ProjectOnPlane(transform.position-from,Vector3.up).normalized;
+                    if(direction.sqrMagnitude<.01f)direction=transform.forward;
+                    fallenWeaponPosition=transform.position+direction*.55f+Vector3.Cross(Vector3.up,direction)*.48f;
+                    fallenWeaponRotation=Quaternion.LookRotation(direction,Vector3.up)*Quaternion.Euler(0,0,88);
+                    weaponRenderers=rifle.weapon.GetComponentsInChildren<Renderer>();
+                }
+            }
             foreach(var c in GetComponentsInChildren<Collider>())c.enabled=false;
             actor.BeginFall(from);combat.EnemyDefeated();
         }
     }
     void LateUpdate()
     {
+        if(Defeated&&rifle&&rifle.weapon&&actor.Rig&&weaponRenderers!=null)
+        {
+            // Follow the falling skeleton, then settle the released rifle next to
+            // the body. Disabling the aiming script alone leaves it in mid-air.
+            var hips=actor.Rig.Hips;float settle=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.2f,1,actor.FallProgress));
+            rifle.weapon.SetPositionAndRotation(Vector3.Lerp(hips.position+hips.rotation*fallGrip,fallenWeaponPosition,settle),
+                Quaternion.Slerp(hips.rotation*fallRotation,fallenWeaponRotation,settle));
+            float low=float.PositiveInfinity;
+            foreach(var renderer in weaponRenderers)if(renderer.enabled&&renderer.gameObject.activeInHierarchy)low=Mathf.Min(low,renderer.bounds.min.y);
+            if(!float.IsInfinity(low))rifle.weapon.position+=Vector3.up*(settle>=1?.035f-low:Mathf.Max(0,.035f-low));
+        }
         if(!Defeated&&actor.Rig&&actor.Rig.Hips)
         {
             float t=(Time.time-hitAt)/.4f;
