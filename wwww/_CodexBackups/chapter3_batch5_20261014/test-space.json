@@ -1,0 +1,17 @@
+{
+    "mode": "test-space",
+    "completed": true,
+    "elapsed": 14.848766326904297,
+    "checks": [
+        "main chapter flow exists=True",
+        "Space enters calm sports day=True",
+        "Space in school does not restart area=True",
+        "Space in active LLM input does not jump=True",
+        "F8 still reaches calm school=True",
+        "combat transition clears old weapon service=True",
+        "single scene camera listener=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": []
+}

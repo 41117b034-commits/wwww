@@ -22,7 +22,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     public float lineSeconds=4;
     public Stage CurrentStage {get;private set;}
     public Chapter3SchoolBattle SchoolEncounter {get;set;}
-    public bool Fighting=>SchoolEncounter?SchoolEncounter.Fighting:CurrentStage==Stage.Fighting;
+    public bool Fighting=>SchoolEncounter?SchoolEncounter.CombatActive:CurrentStage==Stage.Fighting;
     public int Health {get;private set;}=100;
     public int Retries {get;private set;}
     public int DefeatedCount {get;private set;}

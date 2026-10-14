@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-14",
+  "reports": 5,
+  "checks": 187.0,
+  "allReportsPassed": true,
+  "runtimeHashesMatch": true,
+  "protectedHashesMatch": true,
+  "probeRemoved": true,
+  "cleanupCompiled": true,
+  "editorAudit": [
+    "scene=Assets/Scenes/第三章.unity",
+    "dirty=False",
+    "playing=False",
+    "compileFailed=False",
+    "missingScripts=0",
+    "missingMeshes=0",
+    "missingSkinnedMeshes=0"
+  ],
+  "nativeGameKeyboardVerified": false,
+  "vrVerified": false,
+  "standaloneBuildVerified": false
+}

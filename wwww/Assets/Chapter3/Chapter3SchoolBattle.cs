@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// Batch 4 is deterministic authored gameplay. No LLM, chapter completion, or
-// Pihu life/death result is written here; batch 5 starts after this rendezvous.
+// School missions hand off to the forest rescue after the physical rendezvous.
 public sealed class Chapter3SchoolBattle : MonoBehaviour
 {
     public enum Stage { Inactive, AwaitingTado, Observing, Choice, Outbreak, Fighting, Down, Regroup, Complete }
@@ -12,6 +11,8 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     public Stage CurrentStage {get;private set;}
     public Mission Selected {get;private set;}
     public bool Fighting=>CurrentStage==Stage.Fighting;
+    public bool CombatActive=>Fighting||(Rescue&&Rescue.CombatActive);
+    public Chapter3Rescue Rescue {get;private set;}
     public bool OwnsFlow=>CurrentStage!=Stage.Inactive&&CurrentStage!=Stage.AwaitingTado;
     public bool Complete=>CurrentStage==Stage.Complete;
     public int Step {get;private set;}
@@ -47,6 +48,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     static readonly Vector3[] eastSquad={P(8,-8),P(25,-4),P(27.5f,7),P(27.5f,14),P(27.5f,24),P(27.5f,30),P(29,37),P(32,43),P(32,53),P(27.5f,54),P(27.5f,60),P(25,68),P(12,74),P(1.6f,78)};
     public void Begin(Chapter3SchoolController owner)
     {
+        if(Rescue)Rescue.Suspend();
         school=owner;combat=school.flow.combat;player=school.player;ui=school.ui;
         ambient=school.GetComponentInChildren<Chapter3SchoolAmbient>(true);
         StopAllCoroutines();ClearEnemies();Selected=Mission.None;CurrentStage=Stage.AwaitingTado;Step=Retries=0;
@@ -248,6 +250,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     public void Damage(int amount,Vector3 source)
     {
+        if(Rescue&&Rescue.Active){Rescue.Damage(amount,source);return;}
         if(!Fighting||amount<=0)return;Health=Mathf.Max(0,Health-amount);hurtAt=Time.time;WorkProgress=0;
         if(Health==0)Fail("你受傷倒下了","回到分隊出發前重試。\n任務選擇保留，同伴的劇情結果不變。");
     }
@@ -259,6 +262,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     public bool Retry()
     {
+        if(Rescue&&Rescue.Active)return Rescue.Retry();
         if(CurrentStage!=Stage.Down)return false;
         StopAllCoroutines();Retries++;ResetMission();return true;
     }
@@ -286,9 +290,9 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         yield return Say(school.bawan,"西邊的路通了。比胡，你們都到了？",3.8f,true);
         yield return Say(school.pihu,"到了，達多也在。剛才多虧有人看著我們。",4.2f,true);
         yield return Say(school.tado,"先離開學校。沿後面那條林路走，我在前面接應。",4.2f,true);
-        CurrentStage=Stage.Complete;ui.objective.text="兩隊已在校後匯合";ui.Say("",null);ui.hint.text="";
-        Menu.ShowResult("兩隊匯合",(Selected==Mission.Bawan?"你和巴萬打通了西側通道。":"你掩護比胡與達多穿越了東側火線。")+"\n\n本段試玩到此。下一段將沿林路繼續前進。",false);
-        Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+        CurrentStage=Stage.Complete;ClearEnemies();Menu.Hide();
+        if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
+        Rescue.Begin(school,this);
     }
     void MoveOtherSquad()
     {
@@ -329,7 +333,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     int DefeatedCount(){int count=0;foreach(var e in Enemies)if(e.Defeated)count++;return count;}
     public void Notice(string speaker,string line,float seconds)
-    {if(!Fighting)return;noticeUntil=Time.time+seconds;ui.Say(speaker,line);}
+    {if(Rescue&&Rescue.Active){Rescue.Notice(speaker,line,seconds);return;}if(!Fighting)return;noticeUntil=Time.time+seconds;ui.Say(speaker,line);}
     IEnumerator Say(Chapter2Actor actor,string line,float seconds,bool focus)
     {
         if(focus)player.FocusOn(actor.transform.position+Vector3.up*1.25f);
@@ -343,6 +347,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();}
     public void Suspend()
     {
+        if(Rescue)Rescue.Suspend();
         StopAllCoroutines();CurrentStage=Stage.Inactive;ClearEnemies();
         if(combat&&combat.SchoolEncounter==this)combat.SchoolEncounter=null;
         if(Menu)Menu.Hide();if(scenery)scenery.gameObject.SetActive(false);
@@ -351,6 +356,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     void OnDestroy(){if(Menu)Destroy(Menu.gameObject);}
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
+        if(Rescue&&Rescue.Active)return Rescue.Constrain(current,desired);
         // Keep the beginning on the school approach so the sport viewing and
         // mission choice occur before combat; rear forest belongs to batch 5.
         if(CurrentStage==Stage.AwaitingTado)desired.z=Mathf.Min(desired.z,-1);

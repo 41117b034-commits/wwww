@@ -15,7 +15,8 @@ public sealed class Chapter3Weapons : MonoBehaviour
     public bool Loaded { get; private set; } = true;
     public bool Reloading { get; private set; }
     public bool Aiming { get; private set; }
-    public bool Ready => combat && combat.Fighting && !Reloading && Time.time>=busyUntil;
+    public bool Ready => combat && combat.Fighting && !Reloading && Time.time>=busyUntil &&
+        !(combat.SchoolEncounter&&combat.SchoolEncounter.Rescue&&combat.SchoolEncounter.Rescue.Supporting);
     public int Reserve { get; private set; } = 8;
     public int Shots { get; private set; }
     public int Slashes { get; private set; }

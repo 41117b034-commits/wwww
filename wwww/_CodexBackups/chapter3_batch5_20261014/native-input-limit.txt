@@ -1,0 +1,5 @@
+2026-10-14 Windows Computer Use check:
+Unity Ctrl+P entered and exited Play Mode, confirmed by visible toolbar.
+Game view was clicked; injected F7 did not cause a transition (before and after focus).
+Injected Space likewise did not provide a confirmed transition; initial opening reached chat before observation.
+Do not count this as native game keyboard acceptance. The five successful reports use Unity Input System events, UI callbacks, weapon APIs and CharacterController.
