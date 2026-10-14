@@ -1,0 +1,34 @@
+{
+    "mode": "test-gate",
+    "completed": true,
+    "elapsed": 47.727317810058597,
+    "checks": [
+        "near gate 巴萬·拿威 no repeated direction flips=True",
+        "near gate 巴萬·拿威 stationary at end=True",
+        "near gate 比胡·帖木 no repeated direction flips=True",
+        "near gate 比胡·帖木 stationary at end=True",
+        "near gate 達多·莫那 no repeated direction flips=True",
+        "near gate 達多·莫那 stationary at end=True",
+        "observing 巴萬·拿威 no repeated direction flips=True",
+        "observing 巴萬·拿威 stationary at end=True",
+        "observing 比胡·帖木 no repeated direction flips=True",
+        "observing 比胡·帖木 stationary at end=True",
+        "observing 達多·莫那 no repeated direction flips=True",
+        "observing 達多·莫那 stationary at end=True",
+        "observing started=True",
+        "school reaches mission choice=True",
+        "reentry gate 巴萬·拿威 no repeated direction flips=True",
+        "reentry gate 巴萬·拿威 stationary at end=True",
+        "reentry gate 比胡·帖木 no repeated direction flips=True",
+        "reentry gate 比胡·帖木 stationary at end=True",
+        "reentry gate 達多·莫那 no repeated direction flips=True",
+        "reentry gate 達多·莫那 stationary at end=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "巴萬·拿威 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig",
+        "比胡·帖木 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig",
+        "達多·莫那 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig"
+    ]
+}

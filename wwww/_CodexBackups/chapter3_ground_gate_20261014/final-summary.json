@@ -1,0 +1,41 @@
+{
+  "Reports": [
+    {
+      "Report": "test-final-knife.json",
+      "Completed": true,
+      "Checks": 32,
+      "Errors": 0,
+      "Warnings": 0,
+      "AllTrue": true
+    },
+    {
+      "Report": "test-final-rifle.json",
+      "Completed": true,
+      "Checks": 32,
+      "Errors": 0,
+      "Warnings": 0,
+      "AllTrue": true
+    },
+    {
+      "Report": "test-surface.json",
+      "Completed": true,
+      "Checks": 5,
+      "Errors": 0,
+      "Warnings": 0,
+      "AllTrue": true
+    },
+    {
+      "Report": "test-gate.json",
+      "Completed": true,
+      "Checks": 20,
+      "Errors": 0,
+      "Warnings": 0,
+      "AllTrue": true
+    }
+  ],
+  "TotalChecks": 89.0,
+  "TestedFilesUnchanged": true,
+  "ProtectedFilesUnchanged": true,
+  "ProbeArchived": true,
+  "CleanupReloadSuccess": true
+}

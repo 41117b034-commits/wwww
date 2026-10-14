@@ -1,0 +1,10 @@
+waypoint (0.00, 0.00, -1.50) clear=True blockers=
+waypoint (5.50, 0.00, -3.00) clear=True blockers=
+waypoint (8.50, 0.00, -1.00) clear=True blockers=
+waypoint (8.50, 0.00, 3.00) clear=True blockers=
+waypoint (13.00, 0.00, 3.00) clear=True blockers=
+waypoint (14.00, 0.00, 0.00) clear=True blockers=
+waypoint (15.00, 0.00, -8.00) clear=True blockers=
+waypoint (22.00, 0.00, -4.00) clear=True blockers=
+waypoint (30.00, 0.00, 4.00) clear=True blockers=
+waypoint (32.00, 0.00, 12.00) clear=True blockers=

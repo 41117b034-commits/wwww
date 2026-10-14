@@ -46,7 +46,20 @@ public static class Chapter3GroundGateAuthoring
         surface.GetComponent<MeshFilter>().sharedMesh=mesh;surface.GetComponent<MeshRenderer>().sharedMaterial=slabs[0].GetComponent<Renderer>().sharedMaterial;
         foreach(var stone in flow.stationRegion.GetComponentsInChildren<Transform>(true).Where(t=>t.name=="庭院石緣"))
         {var collider=stone.GetComponent<BoxCollider>();if(!collider)collider=stone.gameObject.AddComponent<BoxCollider>();collider.enabled=true;collider.isTrigger=false;}
+        // These decorative stones previously had no physics and intruded into
+        // the leader's destination and Pihu's side of the same escort route.
+        // Keep the solid stones on the verge rather than making actors pass through them.
+        MoveStone(flow,new Vector3(13.868722f,.17f,3.2f),14.6f);
+        MoveStone(flow,new Vector3(12.984826f,.17f,-.5f),12f);
+        MoveStone(flow,new Vector3(13.741431f,.17f,-4.2f),12.2f);
         EditorSceneManager.MarkSceneDirty(flow.gameObject.scene);EditorSceneManager.SaveScene(flow.gameObject.scene);AssetDatabase.SaveAssets();
+    }
+    static void MoveStone(Chapter3Flow flow,Vector3 original,float x)
+    {
+        var moved=new Vector3(x,original.y,original.z);
+        var stone=flow.stationRegion.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="庭院石緣"&&
+            (Vector3.Distance(t.position,original)<.025f||Vector3.Distance(t.position,moved)<.025f));
+        stone.position=moved;
     }
     // Subtract an already-covered convex rectangle into disjoint convex pieces.
     static void Subtract(List<Vector2> subject,List<Vector2> clip,List<List<Vector2>> output)

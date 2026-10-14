@@ -1,20 +1,20 @@
 {
     "mode": "test-surface",
     "completed": true,
-    "elapsed": 5.53570556640625,
+    "elapsed": 8.74864387512207,
     "checks": [
         "overlapping box renderers disabled=True",
         "single surface covers original union exactly without overlap=True",
         "all border stones have solid colliders=True",
-        "player collides with stone (13.87, 0.17, 3.20)=True",
-        "player collides with stone (12.98, 0.17, -0.50)=True"
+        "player collides with stone (14.60, 0.17, 3.20)=True",
+        "player collides with stone (13.30, 0.17, 6.90)=True"
     ],
     "errors": [],
     "warnings": [],
     "replies": [
         "surface samples=23265 triangles=154",
         "stones=23 controller step=0.3",
-        "stone=(13.87, 0.17, 3.20) travel=2.474999 peak=0.38",
-        "stone=(12.98, 0.17, -0.50) travel=2.475012 peak=0.38"
+        "stone=(14.60, 0.17, 3.20) travel=2.474999 peak=0.38",
+        "stone=(13.30, 0.17, 6.90) travel=2.474998 peak=0.38"
     ]
 }

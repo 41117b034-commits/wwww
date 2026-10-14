@@ -1,7 +1,7 @@
 {
     "mode": "test-gate",
     "completed": true,
-    "elapsed": 47.727317810058597,
+    "elapsed": 53.41252899169922,
     "checks": [
         "near gate 巴萬·拿威 no repeated direction flips=True",
         "near gate 巴萬·拿威 stationary at end=True",
