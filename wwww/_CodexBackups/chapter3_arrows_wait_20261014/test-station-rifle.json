@@ -1,0 +1,21 @@
+{
+    "mode": "test-station-rifle",
+    "completed": true,
+    "elapsed": 27.994667053222658,
+    "checks": [
+        "main chapter scene loaded=True",
+        "first opening reply accepted=True",
+        "second opening reply accepted=True",
+        "station escort visible count matches arrow objects=True",
+        "station escort uses three-piece yellow arrows without collision=True",
+        "station escort arrows face along route and entirely stop before target=True",
+        "station escort arrows clear for weapon choice=True",
+        "selected weapon receives pickup arrow=True",
+        "pickup arrow has shaft and two wings without dark border=True",
+        "collecting chosen weapon hides arrow=True",
+        "no station arrows leak into school=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": []
+}

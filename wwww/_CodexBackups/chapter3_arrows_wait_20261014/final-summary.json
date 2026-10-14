@@ -1,0 +1,12 @@
+{
+  "reports": 4,
+  "checks": 81.0,
+  "allReportsPassed": true,
+  "protectedHashesMatch": true,
+  "runtimeHashesMatch": true,
+  "probeRemoved": true,
+  "cleanupCompiled": true,
+  "nativeGameKeyboardVerified": false,
+  "vrVerified": false,
+  "standaloneBuildVerified": false
+}

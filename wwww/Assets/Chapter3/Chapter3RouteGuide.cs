@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Ground-space dashes and companion positions share the authored escort polyline.
+// Chapter 1-style arrows and companion positions share the authored escort polyline.
 public sealed class Chapter3RouteGuide : MonoBehaviour
 {
     readonly List<Vector3> points=new List<Vector3>();
@@ -9,22 +9,22 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
     readonly List<GameObject> dashes=new List<GameObject>();
     readonly List<float> markDistances=new List<float>();
     Transform follower,leader;
-    Material material;
     public float Length => distances.Count==0?0:distances[distances.Count-1];
     public int VisibleMarks {get;private set;}
     public void Show(Vector3 start,Vector3[] route,Transform player,Transform guide)
     {
         Hide();follower=player;leader=guide;points.Clear();distances.Clear();start.y=0;points.Add(start);distances.Add(0);
-        foreach(var point in route)if(Vector3.Distance(points[points.Count-1],point)>.01f)
-        {distances.Add(Length+Vector3.Distance(points[points.Count-1],point));points.Add(point);}
-        if(!material)
-        {material=new Material(Shader.Find("Universal Render Pipeline/Unlit"));material.name="黃色帶路標線";material.SetColor("_BaseColor",new Color(1,.76f,.12f,1));}
-        for(float distance=.7f;distance<Length;distance+=1.5f)
+        foreach(var waypoint in route)
         {
-            var mark=GameObject.CreatePrimitive(PrimitiveType.Quad);mark.name="黃色地面小標線";mark.transform.SetParent(transform,false);
-            Destroy(mark.GetComponent<Collider>());mark.transform.position=Sample(distance,out var direction)+Vector3.up*.035f;
-            mark.transform.rotation=Quaternion.LookRotation(Vector3.down,direction);mark.transform.localScale=new Vector3(.14f,.48f,1);
-            var renderer=mark.GetComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
+            var point=waypoint;point.y=0;
+            if(Vector3.Distance(points[points.Count-1],point)>.01f)
+            {distances.Add(Length+Vector3.Distance(points[points.Count-1],point));points.Add(point);}
+        }
+        for(float distance=Chapter3YellowArrow.StartDistance;distance<Length;distance+=Chapter3YellowArrow.Spacing)
+        {
+            var mark=Chapter3YellowArrow.Create(transform,"黃色地面帶路箭頭",dashes.Count);
+            mark.transform.position=Sample(distance,out var direction)+Vector3.up*Chapter3YellowArrow.Height;
+            mark.transform.rotation=Quaternion.LookRotation(direction,Vector3.up);
             dashes.Add(mark);markDistances.Add(distance);
         }
         UpdateVisible();
@@ -36,7 +36,10 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         VisibleMarks=0;
         for(int i=0;i<dashes.Count;i++)
         {
-            bool visible=markDistances[i]-.24f>=start&&markDistances[i]+.24f<=end;
+            // Include both wings and the largest pulse, not just the origin,
+            // so the full arrow stays between player and guide at every frame.
+            bool visible=markDistances[i]-Chapter3YellowArrow.RearExtent>=start&&
+                markDistances[i]+Chapter3YellowArrow.ForwardExtent<=end;
             dashes[i].SetActive(visible);if(visible)VisibleMarks++;
         }
     }
@@ -75,5 +78,4 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         return result;
     }
     public void Hide(){foreach(var mark in dashes)if(mark){mark.SetActive(false);Destroy(mark);}dashes.Clear();markDistances.Clear();VisibleMarks=0;follower=leader=null;}
-    void OnDestroy(){if(material)Destroy(material);}
 }

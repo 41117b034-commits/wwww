@@ -1,0 +1,27 @@
+{
+    "mode": "test-school",
+    "completed": true,
+    "elapsed": 17.14754867553711,
+    "checks": [
+        "main chapter scene loaded=True",
+        "school guide spans entry to Tado=True",
+        "school entrance visible count matches arrow objects=True",
+        "school entrance uses three-piece yellow arrows without collision=True",
+        "school entrance arrows face along route and entirely stop before target=True",
+        "passing arrows shortens visible guide=True",
+        "school halfway visible count matches arrow objects=True",
+        "school halfway uses three-piece yellow arrows without collision=True",
+        "school halfway arrows face along route and entirely stop before target=True",
+        "guide hides when close to Tado=True",
+        "guide hidden during sport observation=True",
+        "F8 restores calm entry and full guide=True",
+        "school replay reuses one guide component=True",
+        "school replay visible count matches arrow objects=True",
+        "school replay uses three-piece yellow arrows without collision=True",
+        "school replay arrows face along route and entirely stop before target=True",
+        "leaving school removes its guide=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": []
+}

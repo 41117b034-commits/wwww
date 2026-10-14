@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// A crisp, outlined yellow marker stays legible in sunlight and points back on screen.
+// Chapter 1's shaft/two-wing arrow projected into UI, including offscreen guidance.
 public sealed class Chapter3PickupArrow : MaskableGraphic
 {
     public Transform Target {get;private set;}
@@ -14,10 +14,10 @@ public sealed class Chapter3PickupArrow : MaskableGraphic
             var go=new GameObject("黃色武器指引箭頭",typeof(RectTransform),typeof(CanvasRenderer));
             go.transform.SetParent(ui.canvas.transform,false);
             arrow=go.AddComponent<Chapter3PickupArrow>();arrow.presentation=ui;
-            arrow.rectTransform.sizeDelta=new Vector2(42,58);arrow.raycastTarget=false;
+            arrow.rectTransform.sizeDelta=new Vector2(48,64);arrow.raycastTarget=false;
             go.transform.SetSiblingIndex(ui.fade.transform.GetSiblingIndex());
         }
-        arrow.Target=target;arrow.gameObject.SetActive(true);
+        arrow.Target=target;arrow.color=Chapter3YellowArrow.Color;arrow.gameObject.SetActive(true);
     }
     public static void Hide(Chapter3Presentation ui)
     {var a=ui.GetComponentInChildren<Chapter3PickupArrow>(true);if(a){a.Target=null;a.gameObject.SetActive(false);}}
@@ -38,20 +38,13 @@ public sealed class Chapter3PickupArrow : MaskableGraphic
         }
         else
         {
-            rectTransform.anchoredPosition=point+Vector2.up*(38+Mathf.Sin(Time.unscaledTime*4)*5);
+            rectTransform.anchoredPosition=point+Vector2.up*38;
             rectTransform.localRotation=Quaternion.identity;
         }
+        rectTransform.localScale=Vector3.one*Chapter3YellowArrow.PulseScale(Time.unscaledTime);
     }
     protected override void OnPopulateMesh(VertexHelper vh)
     {
-        vh.Clear();Shape(vh,1.12f,new Color32(31,24,6,255));Shape(vh,.86f,new Color32(255,220,25,255));
-    }
-    static void Shape(VertexHelper vh,float scale,Color32 tint)
-    {
-        int start=vh.currentVertCount;
-        Vector2[] points={new Vector2(-7,27),new Vector2(7,27),new Vector2(7,0),new Vector2(19,0),new Vector2(0,-25),new Vector2(-19,0),new Vector2(-7,0)};
-        foreach(var p in points)vh.AddVert(p*scale,tint,Vector2.zero);
-        vh.AddTriangle(start,start+1,start+2);vh.AddTriangle(start,start+2,start+6);
-        vh.AddTriangle(start+3,start+4,start+5);
+        Chapter3YellowArrow.PopulateUi(vh,48);
     }
 }

@@ -36,6 +36,8 @@ public sealed class Chapter3Combat : MonoBehaviour
     float warningUntil;
     float hurtAt=-10;
     bool clearedRoutine;
+    bool escortFacingActive;
+    Vector3 leaderFacing,rearFacing;
     public void Begin()
     {
         SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
@@ -60,7 +62,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     void ResetCheckpoint()
     {
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
-        warningUntil=0;EscortWaiting=false;leaderMotor.Reset();rearMotor.Reset();
+        warningUntil=0;EscortWaiting=false;escortFacingActive=false;leaderMotor.Reset();rearMotor.Reset();
         bawan.transform.position=new Vector3(-5.1f,0,-5);pihu.transform.position=new Vector3(5.2f,0,-6);
         localCompanions=new[]{bawan.GetComponent<Chapter3CompanionReaction>(),pihu.GetComponent<Chapter3CompanionReaction>()};
         foreach(var companion in Companions)if(companion)companion.ResetReaction();
@@ -83,7 +85,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     public void Suspend()
     {
-        SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;
+        SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;EscortWaiting=false;escortFacingActive=false;
         if(weapons)weapons.Suspend();if(hud)hud.SetActive(false);if(downPanel)downPanel.SetActive(false);if(hurtOverlay)hurtOverlay.color=Color.clear;
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;
     }
@@ -110,6 +112,26 @@ public sealed class Chapter3Combat : MonoBehaviour
             if(DefeatedCount==enemyTemplates.Length&&!clearedRoutine){clearedRoutine=true;StartCoroutine(ClearEncounter());}
         }
         hurtOverlay.color=new Color(.6f,.025f,.01f,Mathf.Clamp01(1-(Time.time-hurtAt)/.7f)*.32f);
+    }
+    void LateUpdate()
+    {
+        if(!escortFacingActive||CurrentStage!=Stage.Cleared||SchoolEncounter||!player)return;
+        // Actor.Update (order 4200) faces the preceding movement delta. Apply
+        // escort attention after all Updates, including that final stopping step,
+        // and before the shared rig's LateUpdate builds the visible limb pose.
+        FaceEscortCompanion(bawan,ref leaderFacing);
+        FaceEscortCompanion(pihu,ref rearFacing);
+    }
+    void FaceEscortCompanion(Chapter2Actor actor,ref Vector3 currentFacing)
+    {
+        if(!actor)return;
+        Vector3 target=EscortWaiting?player.transform.position-actor.transform.position:actor.facing;
+        target=Vector3.ProjectOnPlane(target,Vector3.up);
+        if(target.sqrMagnitude<.001f)return;
+        if(currentFacing.sqrMagnitude<.001f)currentFacing=actor.Rig?actor.Rig.Forward:target.normalized;
+        currentFacing=Vector3.RotateTowards(currentFacing.normalized,target.normalized,140*Mathf.Deg2Rad*Time.deltaTime,0);
+        actor.Face(actor.transform.position+currentFacing);
+        if(EscortWaiting&&actor.Rig)actor.Rig.walking=false;
     }
     public void Damage(int amount,Vector3 source)
     {
@@ -154,18 +176,25 @@ public sealed class Chapter3Combat : MonoBehaviour
         while(Flat(bawan.transform.position,rally)>.18f||Flat(pihu.transform.position,rear)>.18f)
         {leaderMotor.Move(bawan,rally,3.2f);rearMotor.Move(pihu,rear,3.4f);yield return null;}
         bawan.Face(exitPoint.position);pihu.Face(exitPoint.position);
+        leaderFacing=bawan.facing.normalized;rearFacing=pihu.facing.normalized;escortFacingActive=true;
+        if(bawan.Rig)bawan.Rig.smoothLocomotion=true;if(pihu.Rig)pihu.Rig.smoothLocomotion=true;
         player.canMove=player.canLook=true;ui.objective.text="跟隨巴萬向前走，前往學校";combatText.text="巡警已退下，巴萬在前方帶路。";
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         while(Flat(player.transform.position,exitPoint.position)>2.5f||Flat(bawan.transform.position,exitPoint.position)>.35f||Flat(pihu.transform.position,exitPoint.position)>2.3f)
         {
-            EscortWaiting=Flat(player.transform.position,bawan.transform.position)>5.5f;
-            ui.hint.text=EscortWaiting?"巴萬在前方等你，走近後繼續。":"跟上巴萬 · WASD 移動 · 按住滑鼠右鍵環視";
-            if(!EscortWaiting)leaderMotor.Move(bawan,exitPoint.position,1.85f);
-            else bawan.Face(player.transform.position);
-            rearMotor.Move(pihu,bawan.transform.position+new Vector3(1.2f,0,-1.7f),2.3f);
+            float gap=Flat(player.transform.position,bawan.transform.position);
+            // Separate stop/restart distances prevent repeated turns while the
+            // player hovers near the waiting boundary. Both companions pause.
+            EscortWaiting=gap>(EscortWaiting?4.6f:5.5f);
+            ui.hint.text=EscortWaiting?"巴萬與比胡在前方等你，走近後繼續。":"跟上巴萬 · WASD 移動 · 按住滑鼠右鍵環視";
+            if(!EscortWaiting)
+            {
+                leaderMotor.Move(bawan,exitPoint.position,1.85f);
+                rearMotor.Move(pihu,bawan.transform.position+new Vector3(1.2f,0,-1.7f),2.3f);
+            }
             yield return null;
         }
-        EscortWaiting=false;
+        EscortWaiting=false;escortFacingActive=false;
         player.canMove=player.canLook=false;
         for(float t=0;t<1.4f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.4f);yield return null;}
         ui.fade.color=Color.black;hud.SetActive(false);ui.Say("",null);ui.hint.text="";CurrentStage=Stage.Complete;

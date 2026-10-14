@@ -19,6 +19,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     public bool MetTado { get; private set; }
     public bool[] Visited { get; private set; }
     public Chapter3SchoolBattle Battle {get;private set;}
+    public Chapter3RouteGuide ArrivalGuide {get;private set;}
     readonly Chapter3PathMotor[] motors = {new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly List<Vector3> trail = new List<Vector3>();
     readonly int[] trailIndex = new int[2];
@@ -31,6 +32,8 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     public void Begin()
     {
         StopAllCoroutines();Exploring=false;MetTado=false;Area="校門前";lineUntil=0;
+        if(!ArrivalGuide)ArrivalGuide=gameObject.AddComponent<Chapter3RouteGuide>();
+        ArrivalGuide.Hide();
         Visited=new bool[landmarks.Length];trail.Clear();trail.Add(spawn);
         nextTrail=0;
         for(int i=0;i<2;i++){motors[i].Reset();trailIndex[i]=0;following[i]=false;}
@@ -59,11 +62,13 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     {
         for(float t=0;t<1.3f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,1-t/1.3f);yield return null;}
         ui.fade.color=Color.clear;Exploring=true;player.canMove=player.canLook=true;
+        ArrivalGuide.Show(spawn,new[]{tado.transform.position},player.transform,tado.transform);
         Speak(bawan,"學校就在前面，達多在校門旁等我們。",4.2f);
     }
     public void Suspend()
     {
         StopAllCoroutines();Exploring=false;
+        if(ArrivalGuide)ArrivalGuide.Hide();
         if(Battle)Battle.Suspend();
         if(lightingSet){RenderSettings.fogDensity=previousFogDensity;RenderSettings.sun=previousSun;lightingSet=false;}
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;if(tado)tado.speaking=false;
@@ -72,7 +77,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     {
         if(!Exploring)return;
         ui.ConfigureVR(player.IsVR);
-        if(Battle&&Battle.OwnsFlow)return;
+        if(Battle&&Battle.OwnsFlow){if(ArrivalGuide&&ArrivalGuide.VisibleMarks>0)ArrivalGuide.Hide();return;}
         if(lineUntil>0&&(Time.time>lineUntil||(Time.time>lineBegan+.25f&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)))
         {lineUntil=0;ui.Say("",null);bawan.speaking=pihu.speaking=tado.speaking=false;}
         var position=player.transform.position;
@@ -89,10 +94,11 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         Area=nearest<0?"校門前":landmarks[nearest].name;
         ui.objective.text="到校門旁與達多會合";
         bool nearTado=Flat(position,tado.transform.position)<3;
-        ui.hint.text=nearTado?"E 與達多交談  ·  WASD 移動  ·  按住右鍵環視":"走向校門左側的達多 · WASD 移動 · 按住右鍵環視";
+        ui.hint.text=nearTado?"E 與達多交談  ·  WASD 移動  ·  按住右鍵環視":"沿黃色箭頭走向校門左側的達多 · WASD 移動 · 按住右鍵環視";
         if(nearTado&&player.ActionPressed&&lineUntil<=0)
         {
-            MetTado=true;lineUntil=0;bawan.speaking=pihu.speaking=tado.speaking=false;Battle.MeetTado();
+            if(Battle.MeetTado())
+            {MetTado=true;lineUntil=0;bawan.speaking=pihu.speaking=tado.speaking=false;ArrivalGuide.Hide();}
         }
     }
     void Follow(Chapter2Actor actor,int index,float gap)
