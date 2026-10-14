@@ -22,6 +22,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     readonly Chapter3PathMotor[] motors = {new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly List<Vector3> trail = new List<Vector3>();
     readonly int[] trailIndex = new int[2];
+    readonly bool[] following = new bool[2];
     float lineUntil, lineBegan, nextTrail;
     float previousFogDensity;
     Light previousSun;
@@ -31,7 +32,8 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     {
         StopAllCoroutines();Exploring=false;MetTado=false;Area="校門前";lineUntil=0;
         Visited=new bool[landmarks.Length];trail.Clear();trail.Add(spawn);
-        for(int i=0;i<2;i++){motors[i].Reset();trailIndex[i]=0;}
+        nextTrail=0;
+        for(int i=0;i<2;i++){motors[i].Reset();trailIndex[i]=0;following[i]=false;}
         bawan.transform.position=spawn+new Vector3(-1.4f,-spawn.y,-1.7f);
         pihu.transform.position=spawn+new Vector3(1.4f,-spawn.y,-2.8f);
         bawan.facing=pihu.facing=Vector3.forward;bawan.speaking=pihu.speaking=tado.speaking=false;
@@ -96,7 +98,13 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     void Follow(Chapter2Actor actor,int index,float gap)
     {
         Vector3 current=actor.transform.position,position=player.transform.position;
-        if(Flat(current,position)<gap){if(!actor.speaking)actor.Face(position);return;}
+        if(actor.Rig!=null)actor.Rig.smoothLocomotion=true;
+        float distance=Flat(current,position);
+        // A small restart margin keeps idle companions from taking tiny steps
+        // whenever the player or grounded pose moves across the stop radius.
+        if(distance<=gap||(!following[index]&&distance<gap+.45f))
+        {following[index]=false;if(!actor.speaking)actor.Face(position);return;}
+        following[index]=true;
         // Follow the player's walked path around corners instead of cutting
         // through the building when the player changes sides of the school.
         int end=trail.Count-1;
@@ -106,7 +114,10 @@ public sealed class Chapter3SchoolController : MonoBehaviour
             if(Chapter3PathMotor.Clear(current,trail[i])){trailIndex[index]=i;break;}
         Vector3 target=trail[trailIndex[index]];
         if(Flat(current,target)<.5f&&trailIndex[index]<end)target=trail[++trailIndex[index]];
-        if(Flat(current,target)<.2f&&Chapter3PathMotor.Clear(current,position))
+        // Once the last breadcrumb is reached, keep approaching the same
+        // stop radius. Switching back to that breadcrumb on the next frame
+        // made companions reverse direction repeatedly beside the gate.
+        if(trailIndex[index]==end&&Chapter3PathMotor.Clear(current,position))
             target=Vector3.MoveTowards(position,current,gap-.1f);
         motors[index].Move(actor,target,3.35f);
     }

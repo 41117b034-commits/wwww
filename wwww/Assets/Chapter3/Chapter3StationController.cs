@@ -223,7 +223,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     IEnumerator Escort(Vector3[] route)
     {
         attendingPlayer=false;bawanMotor.Reset();pihuMotor.Reset();
-        RouteGuide.Show(bawan.transform.position,route);
+        RouteGuide.Show(bawan.transform.position,route,player.transform,bawan.transform);
         // Pihu waits for the leader to pass his existing position instead of
         // reversing to a newly rotated formation slot at every corner.
         float pihuStart=RouteGuide.Project(pihu.transform.position,6),leaderProgress=0;

@@ -13,7 +13,7 @@ public sealed class Chapter3ConversationHistory : MonoBehaviour
         history=ui.chat.AddComponent<Chapter3ConversationHistory>();
         var viewport=new GameObject("可捲動問答紀錄",typeof(RectTransform),typeof(Image),typeof(RectMask2D));
         var rect=(RectTransform)viewport.transform;rect.SetParent(ui.chat.transform,false);
-        rect.anchorMin=new Vector2(.035f,.37f);rect.anchorMax=new Vector2(.945f,.81f);rect.offsetMin=rect.offsetMax=Vector2.zero;
+        rect.anchorMin=new Vector2(.035f,.37f);rect.anchorMax=new Vector2(.965f,.81f);rect.offsetMin=rect.offsetMax=Vector2.zero;
         viewport.GetComponent<Image>().color=new Color(.01f,.025f,.02f,.35f);
         history.Scroll=viewport.AddComponent<ScrollRect>();history.Scroll.viewport=rect;
         history.Scroll.horizontal=false;history.Scroll.movementType=ScrollRect.MovementType.Clamped;history.Scroll.scrollSensitivity=32;
@@ -24,15 +24,7 @@ public sealed class Chapter3ConversationHistory : MonoBehaviour
         ui.response.alignment=TextAnchor.UpperLeft;ui.response.verticalOverflow=VerticalWrapMode.Overflow;
         content.gameObject.AddComponent<ContentSizeFitter>().verticalFit=ContentSizeFitter.FitMode.PreferredSize;
         history.Scroll.content=content;
-        var bar=new GameObject("問答捲軸",typeof(RectTransform),typeof(Image),typeof(Scrollbar));
-        var barRect=(RectTransform)bar.transform;barRect.SetParent(ui.chat.transform,false);
-        barRect.anchorMin=new Vector2(.95f,.37f);barRect.anchorMax=new Vector2(.965f,.81f);barRect.offsetMin=barRect.offsetMax=Vector2.zero;
-        bar.GetComponent<Image>().color=new Color(.18f,.22f,.18f,1);
-        var handle=new GameObject("拖曳",typeof(RectTransform),typeof(Image));var handleRect=(RectTransform)handle.transform;
-        handleRect.SetParent(barRect,false);handleRect.anchorMin=Vector2.zero;handleRect.anchorMax=Vector2.one;handleRect.offsetMin=handleRect.offsetMax=Vector2.zero;
-        handle.GetComponent<Image>().color=new Color(.74f,.65f,.4f,1);
-        var scrollbar=bar.GetComponent<Scrollbar>();scrollbar.handleRect=handleRect;scrollbar.targetGraphic=handle.GetComponent<Image>();scrollbar.direction=Scrollbar.Direction.BottomToTop;
-        history.Scroll.verticalScrollbar=scrollbar;
+        // The viewport still accepts wheel and drag events without a visible bar.
         return history;
     }
     public void Begin(string speaker,string line){transcript.text="";Append(speaker,line);}

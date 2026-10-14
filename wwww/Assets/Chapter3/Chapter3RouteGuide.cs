@@ -7,12 +7,14 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
     readonly List<Vector3> points=new List<Vector3>();
     readonly List<float> distances=new List<float>();
     readonly List<GameObject> dashes=new List<GameObject>();
+    readonly List<float> markDistances=new List<float>();
+    Transform follower,leader;
     Material material;
     public float Length => distances.Count==0?0:distances[distances.Count-1];
     public int VisibleMarks {get;private set;}
-    public void Show(Vector3 start,Vector3[] route)
+    public void Show(Vector3 start,Vector3[] route,Transform player,Transform guide)
     {
-        Hide();points.Clear();distances.Clear();start.y=0;points.Add(start);distances.Add(0);
+        Hide();follower=player;leader=guide;points.Clear();distances.Clear();start.y=0;points.Add(start);distances.Add(0);
         foreach(var point in route)if(Vector3.Distance(points[points.Count-1],point)>.01f)
         {distances.Add(Length+Vector3.Distance(points[points.Count-1],point));points.Add(point);}
         if(!material)
@@ -23,9 +25,20 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
             Destroy(mark.GetComponent<Collider>());mark.transform.position=Sample(distance,out var direction)+Vector3.up*.035f;
             mark.transform.rotation=Quaternion.LookRotation(Vector3.down,direction);mark.transform.localScale=new Vector3(.14f,.48f,1);
             var renderer=mark.GetComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=false;
-            dashes.Add(mark);
+            dashes.Add(mark);markDistances.Add(distance);
         }
-        VisibleMarks=dashes.Count;
+        UpdateVisible();
+    }
+    void LateUpdate(){if(dashes.Count>0)UpdateVisible();}
+    void UpdateVisible()
+    {
+        float start=Project(follower.position)+.3f,end=Project(leader.position)-.7f;
+        VisibleMarks=0;
+        for(int i=0;i<dashes.Count;i++)
+        {
+            bool visible=markDistances[i]-.24f>=start&&markDistances[i]+.24f<=end;
+            dashes[i].SetActive(visible);if(visible)VisibleMarks++;
+        }
     }
     public Vector3 Sample(float distance,out Vector3 direction)
     {
@@ -61,6 +74,6 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         }
         return result;
     }
-    public void Hide(){foreach(var mark in dashes)if(mark){mark.SetActive(false);Destroy(mark);}dashes.Clear();VisibleMarks=0;}
+    public void Hide(){foreach(var mark in dashes)if(mark){mark.SetActive(false);Destroy(mark);}dashes.Clear();markDistances.Clear();VisibleMarks=0;follower=leader=null;}
     void OnDestroy(){if(material)Destroy(material);}
 }

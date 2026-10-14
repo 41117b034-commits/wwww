@@ -1,0 +1,15 @@
+{
+    "mode": "test-diagnose-gate",
+    "completed": true,
+    "elapsed": 25.23486328125,
+    "checks": [
+        "observing started=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "replies": [
+        "巴萬·拿威 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig",
+        "比胡·帖木 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig",
+        "達多·莫那 components=Chapter2Actor,Chapter2SpeechFace,Chapter3CompanionReaction,Chapter1IncidentRig"
+    ]
+}
