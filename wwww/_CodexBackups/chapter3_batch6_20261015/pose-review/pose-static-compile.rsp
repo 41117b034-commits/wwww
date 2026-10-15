@@ -1,0 +1,10 @@
+/nologo
+/target:library
+/nostdlib+
+/out:_CodexBackups/chapter3_batch6_20261015/pose-review/Chapter3InjuryPose-static-check.dll
+/reference:Library/ScriptAssemblies/Assembly-CSharp.dll
+/reference:"C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\NetStandard\ref\2.1.0\netstandard.dll"
+/reference:"C:/Program Files/Unity/Hub/Editor/6000.0.58f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll"
+/reference:"C:/Program Files/Unity/Hub/Editor/6000.0.58f1/Editor/Data/Managed/UnityEngine/UnityEngine.AnimationModule.dll"
+_CodexBackups/chapter3_batch6_20261015/pose-review/Chapter3InjuryPose.cs
+_CodexBackups/chapter3_batch6_20261015/Chapter1WeddingRigBones-static-copy.cs

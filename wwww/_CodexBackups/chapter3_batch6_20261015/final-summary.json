@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-15",
+  "batch": 6,
+  "scene": "Assets/Scenes/第三章.unity",
+  "reports": [
+    {
+      "report": "test-bawan-leave-knife.json",
+      "completed": true,
+      "checks": 99,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-bawan-rescue-rifle.json",
+      "completed": true,
+      "checks": 115,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-cancel.json",
+      "completed": true,
+      "checks": 9,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-facts.json",
+      "completed": true,
+      "checks": 18,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-live-llm.json",
+      "completed": true,
+      "checks": 11,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-pihu-leave-rifle.json",
+      "completed": true,
+      "checks": 126,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-pihu-rescue-knife.json",
+      "completed": true,
+      "checks": 128,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-pose.json",
+      "completed": true,
+      "checks": 7,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    },
+    {
+      "report": "test-store.json",
+      "completed": true,
+      "checks": 52,
+      "errors": 0,
+      "warnings": 0,
+      "originalSaveRestored": true
+    }
+  ],
+  "representativeChecks": 565.0,
+  "allReportsCompleted": true,
+  "allPlayerSaveRestored": true,
+  "protectedFilesUnchanged": true,
+  "runtimeHashesMatch": true,
+  "probeRemoved": true,
+  "cleanupCompileSucceeded": true,
+  "audit": [
+    "scene=Assets/Scenes/第三章.unity",
+    "dirty=False",
+    "playing=False",
+    "compileFailed=False",
+    "missingScripts=0",
+    "missingMeshes=0",
+    "missingSkinnedMeshes=0"
+  ],
+  "versionBoundary": "Initial four full routes passed. Actor grounding and service preparation changes retested on Bawan rescue rifle and Pihu leave rifle. Final supine pose retested with isolated pose and full Pihu leave rifle. Other reports retain their stated source version; see Documentation/Chapter3-ending.md.",
+  "liveModel": "Two generated replies 10.99s and 11.87s after service preparation. Earlier cold-start attempts timed out at 15s and used authored fallback.",
+  "unverified": [
+    "native gameplay keyboard",
+    "full human playthrough",
+    "VR headset",
+    "standalone build",
+    "full station and mountain opening regression",
+    "actual Chapter 4 flow",
+    "save I/O failure injection",
+    "end-card reload regression"
+  ],
+  "commitOrPush": false
+}

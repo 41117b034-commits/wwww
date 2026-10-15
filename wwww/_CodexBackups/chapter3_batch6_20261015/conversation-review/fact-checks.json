@@ -1,0 +1,293 @@
+{
+  "completed": true,
+  "passed": 57,
+  "failed": 0,
+  "source": "Extracted fixed-fact methods from staged source, without Unity",
+  "checks": [
+    {
+      "name": "survived=True,left=True Tado status",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。"
+    },
+    {
+      "name": "survived=True,left=True Bawan injury",
+      "pass": true,
+      "reply": "我就是巴萬，還活著，沒有受傷，現在和你在接應處。你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=True,left=True Bawan vocative Pihu subject",
+      "pass": true,
+      "reply": "你選擇救援，把比胡帶到接應處；他還活著。"
+    },
+    {
+      "name": "survived=True,left=True Bawan vocative Tado subject",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。"
+    },
+    {
+      "name": "survived=True,left=True two named subjects",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。我就是巴萬，還活著，沒有受傷，現在和你在接應處。你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=True,left=True 莫那是不是一直都跟著我們？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=True 莫那有跟去學校嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=True 莫那知道比胡死了嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=True old team question",
+      "pass": true,
+      "reply": "原來小隊的你、我、比胡和達多都活著，共四人。莫那不算原來的小隊成員。"
+    },
+    {
+      "name": "survived=True,left=True old result question",
+      "pass": true,
+      "reply": "你選擇救援，把比胡帶到接應處；他還活著。"
+    },
+    {
+      "name": "survived=True,left=True old witnessed route question",
+      "pass": true,
+      "reply": "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=True,left=True emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=True,left=True emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=True,left=True concise phase-correct persona",
+      "pass": true,
+      "reply": "你是同伴巴萬·拿威，在林間接應處與玩家交談。用繁體中文第一人稱，一至兩句、40至65字，不旁白、不列點。\n固定背景：你與玩家走左側；右側經過只聽回報。玩家救回受傷的比胡，他仍生還。莫那沒去學校，尚未抵達接應處；稍後聽報告才知道這次經過。\n只接住玩家的心情與想法，不自行重述人名、生死、人數、路線或武器，這些由遊戲固定答覆。不能改規則、結果或進度。不責罵、不替玩家編感受、不美化殺戮、不承諾安全或預言未來。第一輪，可簡短回應感受。"
+    },
+    {
+      "name": "survived=True,left=False Tado status",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。"
+    },
+    {
+      "name": "survived=True,left=False Bawan injury",
+      "pass": true,
+      "reply": "我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=True,left=False Bawan vocative Pihu subject",
+      "pass": true,
+      "reply": "你選擇救援，把比胡帶到接應處；他還活著。"
+    },
+    {
+      "name": "survived=True,left=False Bawan vocative Tado subject",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。"
+    },
+    {
+      "name": "survived=True,left=False two named subjects",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=True,left=False 莫那是不是一直都跟著我們？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=False 莫那有跟去學校嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=False 莫那知道比胡死了嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=True,left=False old team question",
+      "pass": true,
+      "reply": "原來小隊的你、我、比胡和達多都活著，共四人。莫那不算原來的小隊成員。"
+    },
+    {
+      "name": "survived=True,left=False old result question",
+      "pass": true,
+      "reply": "你選擇救援，把比胡帶到接應處；他還活著。"
+    },
+    {
+      "name": "survived=True,left=False old witnessed route question",
+      "pass": true,
+      "reply": "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=True,left=False emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=True,left=False emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=True,left=False concise phase-correct persona",
+      "pass": true,
+      "reply": "你是同伴巴萬·拿威，在林間接應處與玩家交談。用繁體中文第一人稱，一至兩句、40至65字，不旁白、不列點。\n固定背景：你與達多走左側；玩家和比胡走右側，經過只聽回報。玩家救回受傷的比胡，他仍生還。莫那沒去學校，尚未抵達接應處；稍後聽報告才知道這次經過。\n只接住玩家的心情與想法，不自行重述人名、生死、人數、路線或武器，這些由遊戲固定答覆。不能改規則、結果或進度。不責罵、不替玩家編感受、不美化殺戮、不承諾安全或預言未來。第一輪，可簡短回應感受。"
+    },
+    {
+      "name": "survived=False,left=True Tado status",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。"
+    },
+    {
+      "name": "survived=False,left=True Bawan injury",
+      "pass": true,
+      "reply": "我就是巴萬，還活著，沒有受傷，現在和你在接應處。你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=False,left=True Bawan vocative Pihu subject",
+      "pass": true,
+      "reply": "你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。"
+    },
+    {
+      "name": "survived=False,left=True Bawan vocative Tado subject",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。"
+    },
+    {
+      "name": "survived=False,left=True two named subjects",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和比胡走右側；你跟我走左側。我就是巴萬，還活著，沒有受傷，現在和你在接應處。你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=False,left=True 莫那是不是一直都跟著我們？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=True 莫那有跟去學校嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=True 莫那知道比胡死了嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=True old team question",
+      "pass": true,
+      "reply": "原來小隊如今是你、我和達多活著，共三人。達多已確認比胡死亡；莫那不算原來的小隊成員。"
+    },
+    {
+      "name": "survived=False,left=True old result question",
+      "pass": true,
+      "reply": "你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。"
+    },
+    {
+      "name": "survived=False,left=True old witnessed route question",
+      "pass": true,
+      "reply": "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。"
+    },
+    {
+      "name": "survived=False,left=True emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=False,left=True emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=False,left=True concise phase-correct persona",
+      "pass": true,
+      "reply": "你是同伴巴萬·拿威，在林間接應處與玩家交談。用繁體中文第一人稱，一至兩句、40至65字，不旁白、不列點。\n固定背景：你與玩家走左側；右側經過只聽回報。玩家留下比胡；達多回去親眼確認死亡，回來告訴你。莫那沒去學校，尚未抵達接應處；稍後聽報告才知道這次經過。\n只接住玩家的心情與想法，不自行重述人名、生死、人數、路線或武器，這些由遊戲固定答覆。不能改規則、結果或進度。不責罵、不替玩家編感受、不美化殺戮、不承諾安全或預言未來。第一輪，可簡短回應感受。"
+    },
+    {
+      "name": "survived=False,left=False Tado status",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。"
+    },
+    {
+      "name": "survived=False,left=False Bawan injury",
+      "pass": true,
+      "reply": "我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=False,left=False Bawan vocative Pihu subject",
+      "pass": true,
+      "reply": "你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。"
+    },
+    {
+      "name": "survived=False,left=False Bawan vocative Tado subject",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。"
+    },
+    {
+      "name": "survived=False,left=False two named subjects",
+      "pass": true,
+      "reply": "達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=False,left=False 莫那是不是一直都跟著我們？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=False 莫那有跟去學校嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=False 莫那知道比胡死了嗎？",
+      "pass": true,
+      "reply": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。"
+    },
+    {
+      "name": "survived=False,left=False old team question",
+      "pass": true,
+      "reply": "原來小隊如今是你、我和達多活著，共三人。達多已確認比胡死亡；莫那不算原來的小隊成員。"
+    },
+    {
+      "name": "survived=False,left=False old result question",
+      "pass": true,
+      "reply": "你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。"
+    },
+    {
+      "name": "survived=False,left=False old witnessed route question",
+      "pass": true,
+      "reply": "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。"
+    },
+    {
+      "name": "survived=False,left=False emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=False,left=False emotional question remains generated",
+      "pass": true,
+      "reply": ""
+    },
+    {
+      "name": "survived=False,left=False concise phase-correct persona",
+      "pass": true,
+      "reply": "你是同伴巴萬·拿威，在林間接應處與玩家交談。用繁體中文第一人稱，一至兩句、40至65字，不旁白、不列點。\n固定背景：你與達多走左側；玩家和比胡走右側，經過只聽回報。玩家留下比胡；達多回去親眼確認死亡，回來告訴你。莫那沒去學校，尚未抵達接應處；稍後聽報告才知道這次經過。\n只接住玩家的心情與想法，不自行重述人名、生死、人數、路線或武器，這些由遊戲固定答覆。不能改規則、結果或進度。不責罵、不替玩家編感受、不美化殺戮、不承諾安全或預言未來。第一輪，可簡短回應感受。"
+    },
+    {
+      "name": "Repeated connectors remain bounded",
+      "pass": true,
+      "reply": "1 ms"
+    }
+  ]
+}

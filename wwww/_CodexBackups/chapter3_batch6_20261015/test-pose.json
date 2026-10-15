@@ -1,0 +1,20 @@
+{
+    "mode": "test-pose",
+    "completed": true,
+    "elapsed": 8.60038948059082,
+    "checks": [
+        "main chapter scene loaded=True",
+        "pose bones prepared=True",
+        "settled body is still without breathing=True",
+        "settled death suppresses speech=True",
+        "pose reset clears all three layers=True",
+        "pose-only test preserves save=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Isolated pose rendering; not a mission or ending-flow run.",
+        "head=(-3.08, 0.11, 91.28) hips=(-3.04, 0.11, 91.82) ground=0 height=1.47947"
+    ]
+}

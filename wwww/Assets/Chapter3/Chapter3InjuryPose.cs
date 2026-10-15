@@ -1,18 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// A local performance layer for the fifth-batch injury. The shared rig restores
-// its normal pose each frame; this layer then bends the existing bones only.
+// A local performance layer for the injury and forest ending. The shared rig
+// restores its normal pose each frame; this layer bends existing bones only.
 [DefaultExecutionOrder(4600)]
 public sealed class Chapter3InjuryPose : MonoBehaviour
 {
     public float InjuryWeight { get; private set; }
     public float SupportWeight { get; private set; }
+    public float DeathWeight { get; private set; }
     public bool BonesReady => prepared;
     public Vector3 SupportHandPosition => prepared ? hands[supportArm].position : transform.position;
 
     Chapter2Actor actor;
     Chapter1IncidentRig rig;
+    Chapter2SpeechFace speechFace;
+    MaterialPropertyBlock faceBlock;
     Transform bodyRoot, spine, supportPlayer;
     Camera supportView;
     readonly Transform[] thighs = new Transform[2], knees = new Transform[2], feet = new Transform[2];
@@ -22,17 +25,25 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
     Transform[] posedBones;
     Vector3[] beforePositions;
     Quaternion[] beforeRotations;
+    Transform[] deathBones;
+    Vector3[] deathPositions, deathTargetPositions, beforeDeathPositions;
+    Quaternion[] deathRotations, deathTargetRotations, beforeDeathRotations;
+    Vector3 deathForward, deathStartHipLocal, deathTargetHipLocal;
     Vector3 previousPosition;
     float limpPhase, motionWeight, rightSupportBlend;
     int supportArm;
-    bool prepared, poseApplied;
+    bool prepared, poseApplied, deathCaptured, deathApplied;
 
     public void Configure(Chapter2Actor source)
     {
         ResetPose();
         actor = source;
         rig = null;
+        speechFace = source ? source.GetComponent<Chapter2SpeechFace>() : null;
         prepared = false;
+        deathBones = null;
+        deathPositions = deathTargetPositions = beforeDeathPositions = null;
+        deathRotations = deathTargetRotations = beforeDeathRotations = null;
         previousPosition = source ? source.transform.position : transform.position;
     }
 
@@ -60,10 +71,28 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         SupportWeight = next;
     }
 
+    // The ending owns timing, camera, actor-root placement and collision. Do not
+    // combine this with Actor.BeginFall: that rotates only Pelvis on this avatar
+    // and bakes every body mesh, fighting the Hip/Waist injury performance.
+    public void SetDying(float weight)
+    {
+        if (float.IsNaN(weight)) return;
+        DeathWeight = Mathf.Clamp01(weight);
+        if (DeathWeight <= 0f)
+        {
+            RestoreLastPose();
+            deathCaptured = false;
+            deathStartHipLocal = deathTargetHipLocal = Vector3.zero;
+        }
+        else if (actor) actor.speaking = false;
+    }
+
     public void ResetPose()
     {
         RestoreLastPose();
-        InjuryWeight = SupportWeight = 0f;
+        InjuryWeight = SupportWeight = DeathWeight = 0f;
+        deathCaptured = false;
+        deathStartHipLocal = deathTargetHipLocal = Vector3.zero;
         supportPlayer = null;
         supportView = null;
         limpPhase = motionWeight = rightSupportBlend = 0f;
@@ -71,16 +100,36 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         previousPosition = actor ? actor.transform.position : transform.position;
     }
 
+    void Update()
+    {
+        // This runs after Actor.Update and before the speech-face LateUpdate.
+        // Keep lips and talking gestures quiet without disabling shared scripts
+        // or changing fallen/seated state needed by a later F8 or checkpoint.
+        if (DeathWeight <= 0f || !actor) return;
+        actor.speaking = false;
+        if (actor.Rig) actor.Rig.speakingWeight = 0f;
+    }
+
     void LateUpdate()
     {
         if (!Prepare()) return;
         Vector3 movement = Vector3.ProjectOnPlane(actor.transform.position - previousPosition, Vector3.up);
         previousPosition = actor.transform.position;
-        if (InjuryWeight <= 0f) { poseApplied = false; return; }
+        if (InjuryWeight <= 0f && DeathWeight <= 0f) { poseApplied = false; return; }
+        if (DeathWeight > 0f)
+        {
+            CaptureDeathRestore();
+            if (deathCaptured)
+            {
+                CapturePose();
+                ApplyDeathPose();
+                return;
+            }
+        }
 
         float height = rig.Height;
-        float injury = InjuryWeight;
-        float supported = SupportWeight;
+        float injury = DeathWeight > 0f ? 1f : InjuryWeight;
+        float supported = DeathWeight > 0f ? 0f : SupportWeight;
         float seated = 1f - supported;
         Vector3 forward = rig.Forward;
         Vector3 right = Vector3.Cross(Vector3.up, forward);
@@ -168,7 +217,209 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         }
         if (rig.Head)
             rig.Head.rotation = Quaternion.AngleAxis(Mathf.Lerp(14f, 8f, supported) * injury, right) * rig.Head.rotation;
+        if (DeathWeight > 0f)
+        {
+            // Capture a wounded seated pose once, then make the entire collapse
+            // depend only on DeathWeight. Breath, gait and late gestures cannot
+            // make the body move again after the ending reaches weight one.
+            for (int i = 0; i < deathBones.Length; i++)
+            {
+                deathPositions[i] = deathBones[i].localPosition;
+                deathRotations[i] = deathBones[i].localRotation;
+            }
+            // Read facing in the ground plane; the final pose must not inherit
+            // a tilted actor/model forward as its roll axis.
+            Vector3 horizontal = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
+            if (horizontal.sqrMagnitude < .01f)
+                horizontal = Vector3.ProjectOnPlane(actor.transform.forward, Vector3.up).normalized;
+            if (horizontal.sqrMagnitude < .01f) horizontal = Vector3.forward;
+            deathForward = actor.transform.InverseTransformDirection(horizontal);
+            BuildDeathTarget();
+            deathCaptured = true;
+            ApplyDeathPose();
+        }
     }
+
+    void CaptureDeathRestore()
+    {
+        if (deathBones == null)
+        {
+            // Only lightweight transform data; no cloned or baked meshes.
+            deathBones = bodyRoot.GetComponentsInChildren<Transform>(true);
+            deathPositions = new Vector3[deathBones.Length];
+            deathRotations = new Quaternion[deathBones.Length];
+            deathTargetPositions = new Vector3[deathBones.Length];
+            deathTargetRotations = new Quaternion[deathBones.Length];
+            beforeDeathPositions = new Vector3[deathBones.Length];
+            beforeDeathRotations = new Quaternion[deathBones.Length];
+        }
+        for (int i = 0; i < deathBones.Length; i++)
+        {
+            beforeDeathPositions[i] = deathBones[i].localPosition;
+            beforeDeathRotations[i] = deathBones[i].localRotation;
+        }
+        deathApplied = true;
+    }
+
+    void BuildDeathTarget()
+    {
+        Vector3 seatedHip = rig.Hips.position;
+        deathStartHipLocal = actor.transform.InverseTransformPoint(seatedHip);
+        // Start the final pose from this frame's shared-rig pose BEFORE injury,
+        // not from the deep crouch. Rolling the crouch keeps its knees/feet up.
+        for (int i = 0; i < deathBones.Length; i++)
+            deathBones[i].SetLocalPositionAndRotation(beforeDeathPositions[i], beforeDeathRotations[i]);
+
+        float height = rig.Height;
+        Vector3 forward = Vector3.ProjectOnPlane(actor.transform.TransformDirection(deathForward), Vector3.up).normalized;
+        Vector3 right = Vector3.Cross(Vector3.up, forward);
+        Vector3 headward = (-forward - right * .12f).normalized;
+        Vector3 feetward = -headward;
+        Vector3 across = Vector3.Cross(Vector3.up, feetward).normalized;
+        Vector3 bodyUp = ((arms[0].position + arms[1].position) * .5f - rig.Hips.position).normalized;
+        if (bodyUp.sqrMagnitude < .01f) bodyUp = Vector3.up;
+        Vector3 bodyForward = Vector3.ProjectOnPlane(forward, bodyUp).normalized;
+        if (bodyForward.sqrMagnitude < .01f) bodyForward = forward;
+        Vector3 pivot = rig.Hips.position;
+        // Lay the measured torso axis horizontally with the chest facing up.
+        // Using the shared Hip ancestor carries both Pelvis and Waist, even on
+        // the imported avatar whose bone local axes differ from Unity's axes.
+        Quaternion lay = Quaternion.LookRotation(Vector3.up, headward)
+            * Quaternion.Inverse(Quaternion.LookRotation(bodyForward, bodyUp));
+        bodyRoot.position = pivot + lay * (bodyRoot.position - pivot);
+        bodyRoot.rotation = lay * bodyRoot.rotation;
+
+        Vector3 finalHip = seatedHip + headward * (height * .12f);
+        finalHip.y = actor.GroundHeight + height * .075f;
+        bodyRoot.position += finalHip - rig.Hips.position;
+
+        // A side-lying shoulder span can prop the entire pelvis in mid-air.
+        // Here the pelvis, chest and head each have a low support height; no
+        // single lower shoulder is allowed to choose the whole body's height.
+        if (spine && spine != bodyRoot && !rig.Hips.IsChildOf(spine)
+            && arms[0].IsChildOf(spine) && arms[1].IsChildOf(spine))
+        {
+            float shoulderY = (arms[0].position.y + arms[1].position.y) * .5f;
+            spine.position += Vector3.up * (actor.GroundHeight + height * .085f - shoulderY);
+        }
+        rig.Head.rotation = Quaternion.AngleAxis(12f, headward) * rig.Head.rotation;
+        Vector3 restingHead = rig.Head.position;
+        restingHead.y = actor.GroundHeight + height * .075f;
+        rig.Head.position = restingHead;
+
+        for (int i = 0; i < 2; i++)
+        {
+            Vector3 side = across * (i == 0 ? -1f : 1f);
+            float legLength = Vector3.Distance(thighs[i].position, knees[i].position)
+                + Vector3.Distance(knees[i].position, feet[i].position);
+            Vector3 ankle = thighs[i].position + feetward * (legLength * (i == 0 ? .96f : .93f))
+                + side * (height * (i == 0 ? .035f : .055f));
+            ankle.y = actor.GroundHeight + height * .03f;
+            Quaternion footRotation = feet[i].rotation;
+            // Slightly unequal relaxed legs, with knee bends out along the
+            // ground instead of lifted towards the sky.
+            Chapter1IncidentRig.Solve(thighs[i], knees[i], feet[i], ankle, side + Vector3.up * .12f);
+            feet[i].rotation = Quaternion.AngleAxis(i == 0 ? -16f : 18f, feetward) * footRotation;
+
+            float armLength = Vector3.Distance(arms[i].position, elbows[i].position)
+                + Vector3.Distance(elbows[i].position, hands[i].position);
+            Vector3 wrist = arms[i].position + feetward * (armLength * (i == 0 ? .72f : .66f))
+                + side * (armLength * (i == 0 ? .46f : .52f));
+            wrist.y = actor.GroundHeight + height * .03f;
+            RelaxHand(i, wrist, side + headward * .12f + Vector3.up * .05f);
+        }
+
+        deathTargetHipLocal = actor.transform.InverseTransformPoint(rig.Hips.position);
+        for (int i = 0; i < deathBones.Length; i++)
+        {
+            deathTargetPositions[i] = deathBones[i].localPosition;
+            deathTargetRotations[i] = deathBones[i].localRotation;
+        }
+    }
+
+    void ApplyDeathPose()
+    {
+        float weight = Mathf.SmoothStep(0f, 1f, DeathWeight);
+        for (int i = 0; i < deathBones.Length; i++)
+            deathBones[i].SetLocalPositionAndRotation(
+                Vector3.Lerp(deathPositions[i], deathTargetPositions[i], weight),
+                Quaternion.Slerp(deathRotations[i], deathTargetRotations[i], weight));
+
+        // Blending ancestor rotations can swing the Pelvis up in an arc even
+        // though both endpoint poses are low. Keep its center on the straight
+        // seated-to-lying path before applying local ground-contact guards.
+        Vector3 hipTarget = actor.transform.TransformPoint(
+            Vector3.Lerp(deathStartHipLocal, deathTargetHipLocal, weight));
+        bodyRoot.position += hipTarget - rig.Hips.position;
+
+        float height = rig.Height;
+        Vector3 forward = Vector3.ProjectOnPlane(actor.transform.TransformDirection(deathForward), Vector3.up).normalized;
+        float lift = Mathf.Max(0f, actor.GroundHeight + .012f - TorsoLowest(height));
+        bodyRoot.position += Vector3.up * lift;
+        // During the transition, correct distal contact locally. The settled
+        // target already has relaxed limbs; these guards mainly prevent a foot
+        // or palm from sweeping below the floor during quaternion blending.
+        for (int i = 0; i < 2; i++)
+        {
+            Vector3 side = Vector3.Cross(Vector3.up, forward) * (i == 0 ? -1f : 1f);
+            float footFloor = actor.GroundHeight + height * .025f;
+            if (feet[i].position.y < footFloor)
+            {
+                Vector3 ankle = feet[i].position; ankle.y = footFloor;
+                Quaternion footRotation = feet[i].rotation;
+                Chapter1IncidentRig.Solve(thighs[i], knees[i], feet[i], ankle, side + Vector3.up * .12f);
+                feet[i].rotation = footRotation;
+            }
+            float handFloor = actor.GroundHeight + height * .025f;
+            if (hands[i].position.y < handFloor)
+            {
+                Vector3 wrist = hands[i].position; wrist.y = handFloor;
+                RelaxHand(i, wrist, side + Vector3.up * .05f);
+            }
+        }
+        RefreshFaceCut();
+    }
+
+    float TorsoLowest(float height)
+    {
+        float lowest = Mathf.Min(rig.Hips.position.y - height * .065f,
+            rig.Head.position.y - height * .065f);
+        for (int i = 0; i < 2; i++)
+            lowest = Mathf.Min(lowest, arms[i].position.y - height * .045f);
+        return lowest;
+    }
+
+    void RelaxHand(int side, Vector3 target, Vector3 bend)
+    {
+        Vector3 forearm = hands[side].position - elbows[side].position;
+        Quaternion wrist = hands[side].rotation;
+        float reach = (Vector3.Distance(arms[side].position, elbows[side].position)
+            + Vector3.Distance(elbows[side].position, hands[side].position)) * .97f;
+        target = arms[side].position + Vector3.ClampMagnitude(target - arms[side].position, reach);
+        Chapter1IncidentRig.Solve(arms[side], elbows[side], hands[side], target, bend);
+        hands[side].rotation = Quaternion.FromToRotation(forearm, hands[side].position - elbows[side].position) * wrist;
+    }
+
+    void RefreshFaceCut()
+    {
+        if (!speechFace || speechFace.surfaces == null) return;
+        if (faceBlock == null) faceBlock = new MaterialPropertyBlock();
+        // SpeechFace runs before this bone layer. Move its existing face mask
+        // with the final resting head instead of leaving a standing-head cut.
+        foreach (var surface in speechFace.surfaces)
+        {
+            if (surface == null || !surface.head || !surface.body) continue;
+            surface.body.GetPropertyBlock(faceBlock);
+            faceBlock.SetVector("_StoryCutOrigin", surface.head.TransformPoint(surface.origin));
+            faceBlock.SetVector("_StoryCutRight", InverseAxis(surface.head.TransformVector(surface.right)));
+            faceBlock.SetVector("_StoryCutUp", InverseAxis(surface.head.TransformVector(surface.up)));
+            faceBlock.SetVector("_StoryCutForward", InverseAxis(surface.head.TransformVector(surface.forward)));
+            faceBlock.SetFloat("_StoryCutEnabled", 1f);
+            surface.body.SetPropertyBlock(faceBlock);
+        }
+    }
+
+    static Vector3 InverseAxis(Vector3 axis) => axis / Mathf.Max(.00001f, axis.sqrMagnitude);
 
     bool Prepare()
     {
@@ -176,6 +427,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         if (!actor) actor = GetComponent<Chapter2Actor>();
         if (!actor || !actor.Rig || !actor.Rig.animator || !actor.Rig.Hips || !actor.Rig.Head) return false;
         rig = actor.Rig;
+        speechFace = actor.GetComponent<Chapter2SpeechFace>();
         var animator = rig.animator;
         spine = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.Spine, "Spine", "Spine1", "Waist");
         thighs[0] = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftUpperLeg, "L_Thigh", "LeftUpLeg");
@@ -228,10 +480,18 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
 
     void RestoreLastPose()
     {
-        if (!poseApplied || posedBones == null) return;
-        for (int i = 0; i < posedBones.Length; i++)
-            if (posedBones[i]) posedBones[i].SetLocalPositionAndRotation(beforePositions[i], beforeRotations[i]);
+        bool restoreFace = deathApplied;
+        if (deathApplied && deathBones != null)
+        {
+            for (int i = 0; i < deathBones.Length; i++)
+                if (deathBones[i]) deathBones[i].SetLocalPositionAndRotation(beforeDeathPositions[i], beforeDeathRotations[i]);
+            deathApplied = false;
+        }
+        if (poseApplied && posedBones != null)
+            for (int i = 0; i < posedBones.Length; i++)
+                if (posedBones[i]) posedBones[i].SetLocalPositionAndRotation(beforePositions[i], beforeRotations[i]);
         poseApplied = false;
+        if (restoreFace) RefreshFaceCut();
     }
 
     void OnDisable() { ResetPose(); }

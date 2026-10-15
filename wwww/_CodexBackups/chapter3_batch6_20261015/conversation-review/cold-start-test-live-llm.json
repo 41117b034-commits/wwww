@@ -1,0 +1,28 @@
+{
+    "mode": "test-live-llm",
+    "completed": false,
+    "elapsed": 33.551231384277347,
+    "checks": [
+        "main chapter scene loaded=True",
+        "isolated conversation starts before any ending=True",
+        "standalone conversation activates safe input UI=True",
+        "nonfixed emotional prompt accepted=True",
+        "second nonfixed emotional prompt accepted=True",
+        "live test completes two nonfixed replies=True",
+        "live requests restore frame budget and preserve result=True",
+        "live transcript waits for button=True",
+        "live conversation button invokes callback exactly once=True",
+        "at least one real model response passes grounding filter=False",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [
+        "System.Exception: at least one real model response passes grounding filter\r\n  at Chapter3Batch6Probe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch6Probe.cs:726 \r\n  at Chapter3Batch6Probe+<ConversationOnly>d__45.MoveNext () [0x00804] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch6Probe.cs:375 \r\n  at Chapter3Batch6Probe+<Guard>d__37.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch6Probe.cs:64 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Isolated ending-conversation component test with a canonical pending record. School mission, rescue, roll call and Mona sequence are not replayed in this mode.",
+        "Conversation is independently attached to school.gameObject. F8 cancellation exercises school-region OnDisable, not an interrupted full Chapter3Ending sequence.",
+        "live turn one: turns=1 generated=0 fallback=1 grounded=0 seconds=15.09 error=timeout reply=我聽見你害怕，先在這裡緩一口氣。右側的經過，我是匯合後聽你們說的。達多回去確認，比胡已經死了。",
+        "live turn two: turns=2 generated=0 fallback=2 grounded=0 seconds=15.06 error=對方暫時無法回覆，請稍後再試。 reply=我聽見你的想法了。眼前的經過已經清點清楚；等你讀完，我們一起聽莫那說話。"
+    ]
+}

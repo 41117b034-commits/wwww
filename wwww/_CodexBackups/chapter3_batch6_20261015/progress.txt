@@ -1,0 +1,3 @@
+test-pihu-leave-rifle approach Tado without interaction key
+state AwaitingTado step 0 checkpoint 0 revealing False arrived False blocked False gate 0 hp 100 B (-2.73, 0.05, -10.66) P (-1.97, 0.03, -12.41) T (-4.70, 0.02, -5.00)
+ending Inactive death 0 saved False

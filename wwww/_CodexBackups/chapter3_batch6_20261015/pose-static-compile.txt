@@ -1,0 +1,1 @@
+Standalone pose compile passed against existing Assembly-CSharp, Unity refs, and unchanged internal resolver source.

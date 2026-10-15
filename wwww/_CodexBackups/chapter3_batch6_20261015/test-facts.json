@@ -1,0 +1,38 @@
+{
+    "mode": "test-facts",
+    "completed": true,
+    "elapsed": 3.707548141479492,
+    "checks": [
+        "main chapter scene loaded=True",
+        "fact accepted 達多還活著嗎？Rescue=True",
+        "role and timing grounded 達多還活著嗎？Rescue=True",
+        "fact accepted 巴萬受傷了嗎？Rescue=True",
+        "role and timing grounded 巴萬受傷了嗎？Rescue=True",
+        "fact accepted 莫那知道比胡的情況嗎？Rescue=True",
+        "role and timing grounded 莫那知道比胡的情況嗎？Rescue=True",
+        "fact accepted 巴萬，你知道比胡的結果嗎？Rescue=True",
+        "role and timing grounded 巴萬，你知道比胡的結果嗎？Rescue=True",
+        "fact accepted 達多還活著嗎？Leave=True",
+        "role and timing grounded 達多還活著嗎？Leave=True",
+        "fact accepted 巴萬受傷了嗎？Leave=True",
+        "role and timing grounded 巴萬受傷了嗎？Leave=True",
+        "fact accepted 莫那知道比胡的情況嗎？Leave=True",
+        "role and timing grounded 莫那知道比胡的情況嗎？Leave=True",
+        "fact accepted 巴萬，你知道比胡的結果嗎？Leave=True",
+        "role and timing grounded 巴萬，你知道比胡的結果嗎？Leave=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Isolated fixed-fact response cases using canonical records; not model generation or full flow.",
+        "達多還活著嗎？ Rescue => 達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。",
+        "巴萬受傷了嗎？ Rescue => 我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。",
+        "莫那知道比胡的情況嗎？ Rescue => 莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。",
+        "巴萬，你知道比胡的結果嗎？ Rescue => 你選擇救援，把比胡帶到接應處；他還活著。",
+        "達多還活著嗎？ Leave => 達多還活著，沒有受傷，現在和我們在接應處。學校分隊時，他和我走左側；你和比胡走右側。",
+        "巴萬受傷了嗎？ Leave => 我就是巴萬，還活著，沒有受傷，現在和你在接應處。你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。",
+        "莫那知道比胡的情況嗎？ Leave => 莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。",
+        "巴萬，你知道比胡的結果嗎？ Leave => 你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。"
+    ]
+}

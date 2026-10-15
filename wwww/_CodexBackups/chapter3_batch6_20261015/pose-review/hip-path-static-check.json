@@ -1,0 +1,8 @@
+{
+  "candidateCompileExit": 0,
+  "assetsUnchanged": true,
+  "assetsSha256": "38B6A98365D84F7DCEE52446413C0AFE4FBA8253822C9DEAC6444D55E55C56E9",
+  "candidateSha256": "824CE2E5A503D91248D9029398A8F12F45B4949A6B3C974FFA03418474B5EE4B",
+  "unityRun": false,
+  "scope": "Actor-local pelvis endpoints, smooth linear pelvis path before torso guard and distal IK; removed lowest-foot settling"
+}

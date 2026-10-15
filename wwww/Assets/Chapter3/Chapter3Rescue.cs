@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-// Authored fifth-batch branch. Choice is retained on retry; no chapter result
-// is persisted until the sixth-batch ending has actually been implemented.
+// Authored rescue branch. Choice is retained on retry; the ending commits the
+// chapter result only after the outcome, roll call, conversation and Mona's close.
 public sealed class Chapter3Rescue : MonoBehaviour
 {
     public enum Stage { Inactive, Advancing, Injury, Choice, AwaitingLift, Supporting, Leaving, Handoff, Down, Complete }
@@ -24,6 +24,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public Button ChoiceRescue {get;private set;}
     public Button ChoiceLeave {get;private set;}
     public Chapter3InjuryPose Pose {get;private set;}
+    public Chapter3Ending Ending {get;private set;}
     Chapter3SchoolController school;
     Chapter3SchoolBattle battle;
     Chapter3Player player;
@@ -233,9 +234,10 @@ public sealed class Chapter3Rescue : MonoBehaviour
             yield return Say(school.tado,"你們到了……比胡呢？",3.5f);
             yield return Say(school.bawan,"他還留在後面的林路上。",3.5f);
         }
-        CurrentStage=Stage.Complete;ui.objective.text=Delivered?"已把比胡交給達多接應":"已抵達林間接應處";
-        battle.Menu.ShowResult(Delivered?"比胡已送抵接應處":"抵達接應處",(Delivered?"你扶著比胡走過林路，達多已接手照看。":"你選擇留下比胡，與巴萬抵達接應處。")+"\n\n本段試玩到此。",false);
-        Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+        CurrentStage=Stage.Complete;ClearGuard();
+        if(!Ending)Ending=gameObject.GetComponent<Chapter3Ending>();
+        if(!Ending)Ending=gameObject.AddComponent<Chapter3Ending>();
+        Ending.Begin(school,this);
     }
     void UpdateHud()
     {
@@ -326,6 +328,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     public void Suspend()
     {
+        if(Ending)Ending.Suspend();
         StopAllCoroutines();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
         if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);if(shot)shot.Stop();
         if(school){school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;}
