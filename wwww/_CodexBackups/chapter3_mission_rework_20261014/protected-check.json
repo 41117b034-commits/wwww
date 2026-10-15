@@ -1,0 +1,44 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第一章新版警察.unity",
+    "Before": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+    "After": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第二章.unity",
+    "Before": "759594548C8E4F298BFB732D3D7AAC6382F1E13C139629896C097C0C0533B9F7",
+    "After": "759594548C8E4F298BFB732D3D7AAC6382F1E13C139629896C097C0C0533B9F7",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第三章.unity",
+    "Before": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+    "After": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\ProjectSettings\\EditorBuildSettings.asset",
+    "Before": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+    "After": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Rescue.cs",
+    "Before": "01B3F686293E963DC894573385C5B5003F5252B52239B459A7E9FF30CC21AFFB",
+    "After": "01B3F686293E963DC894573385C5B5003F5252B52239B459A7E9FF30CC21AFFB",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs",
+    "Before": "C309E17A4E6A2BC575F365BB07E5CFB43D825F06202BBFB0F5A67BFAE49E497D",
+    "After": "C309E17A4E6A2BC575F365BB07E5CFB43D825F06202BBFB0F5A67BFAE49E497D",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs",
+    "Before": "DE03E0C8DFBB8C6B13F8FF0AAE77ADB3C93E3DC37534734A36A73A2F49CC5B17",
+    "After": "DE03E0C8DFBB8C6B13F8FF0AAE77ADB3C93E3DC37534734A36A73A2F49CC5B17",
+    "Unchanged": true
+  }
+]

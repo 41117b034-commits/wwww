@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 // School missions hand off to the forest rescue after the physical rendezvous.
-public sealed class Chapter3SchoolBattle : MonoBehaviour
+public sealed partial class Chapter3SchoolBattle : MonoBehaviour
 {
     public enum Stage { Inactive, AwaitingTado, Observing, Choice, Outbreak, Fighting, Down, Regroup, Complete }
     public enum Mission { None, Bawan, Pihu }
@@ -16,6 +16,10 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     public bool OwnsFlow=>CurrentStage!=Stage.Inactive&&CurrentStage!=Stage.AwaitingTado;
     public bool Complete=>CurrentStage==Stage.Complete;
     public int Step {get;private set;}
+    public int CheckpointStep {get;private set;}
+    public bool ThreatRevealing {get;private set;}
+    public bool CrossingArrived {get;private set;}
+    public bool CompletionBlockedByThreat=>Fighting&&Selected==Mission.Pihu&&CrossingArrived&&!CurrentThreatCleared;
     public int Health {get;private set;}=100;
     public int EscortPressure {get;private set;}
     public int Retries {get;private set;}
@@ -33,6 +37,17 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     Chapter3Player player;
     Chapter3Presentation ui;
     Chapter3SchoolAmbient ambient;
+    Chapter3SchoolCompanionPose pihuPose,tadoPose;
+    readonly Chapter3PathMotor threatMotor=new Chapter3PathMotor();
+    Transform[] threatCovers;
+    Vector3[] threatPositions;
+    bool[] threatIntroduced=new bool[2];
+    Vector3 checkpointBawan,checkpointPihu,checkpointTado,checkpointPlayer;
+    int checkpointOtherIndex,checkpointOtherEscortIndex;
+    int observedEnemyShots;
+    bool dangerWasVisible;
+    float dangerPoseUntil,nextCoverCall;
+    bool CurrentThreatCleared=>Step<Enemies.Count&&Enemies[Step]&&Enemies[Step].Defeated;
     Transform scenery, enemiesRoot;
     Chapter3PathMotor guideMotor=new Chapter3PathMotor(),escortMotor=new Chapter3PathMotor(),otherMotor=new Chapter3PathMotor();
     int guideIndex,escortIndex,otherIndex,otherEscortIndex;
@@ -51,7 +66,8 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         if(Rescue)Rescue.Suspend();
         school=owner;combat=school.flow.combat;player=school.player;ui=school.ui;
         ambient=school.GetComponentInChildren<Chapter3SchoolAmbient>(true);
-        StopAllCoroutines();ClearEnemies();Selected=Mission.None;CurrentStage=Stage.AwaitingTado;Step=Retries=0;
+        StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();ClearEnemies();Selected=Mission.None;CurrentStage=Stage.AwaitingTado;Step=Retries=CheckpointStep=0;
+        ThreatRevealing=CrossingArrived=false;
         Health=100;EscortPressure=0;WorkProgress=0;AtCrossing=Advancing=Returning=false;noticeUntil=0;
         if(!Menu)
         {
@@ -60,7 +76,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
             Menu.retry.onClick.AddListener(()=>Retry());Menu.replay.onClick.AddListener(()=>school.flow.EnterSchool());
         }
         Menu.Hide();
-        if(!scenery)BuildProps();scenery.gameObject.SetActive(false);
+        if(!scenery)BuildProps();ResetBreakthrough(0);scenery.gameObject.SetActive(false);
         if(ambient)ambient.ResetCalm();
         Companions=new Chapter3CompanionReaction[3];
         var actors=new[]{school.bawan,school.pihu,school.tado};
@@ -69,6 +85,8 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
             var reaction=actors[i].GetComponent<Chapter3CompanionReaction>();if(!reaction)reaction=actors[i].gameObject.AddComponent<Chapter3CompanionReaction>();
             reaction.combat=combat;reaction.actor=actors[i];reaction.ResetReaction();Companions[i]=reaction;
         }
+        pihuPose=school.pihu.GetComponent<Chapter3SchoolCompanionPose>();if(!pihuPose)pihuPose=school.pihu.gameObject.AddComponent<Chapter3SchoolCompanionPose>();
+        tadoPose=school.tado.GetComponent<Chapter3SchoolCompanionPose>();if(!tadoPose)tadoPose=school.tado.gameObject.AddComponent<Chapter3SchoolCompanionPose>();
         if(!distantShots){distantShots=gameObject.AddComponent<AudioSource>();distantShots.playOnAwake=false;distantShots.spatialBlend=0;distantShots.volume=.35f;}
     }
     public bool MeetTado()
@@ -94,7 +112,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     public bool Choose(Mission mission)
     {
         if(CurrentStage!=Stage.Choice||mission==Mission.None)return false;
-        Selected=mission;Menu.Hide();CurrentStage=Stage.Outbreak;StartCoroutine(Outbreak());return true;
+        Selected=mission;CheckpointStep=0;Menu.Hide();CurrentStage=Stage.Outbreak;StartCoroutine(Outbreak());return true;
     }
     IEnumerator Outbreak()
     {
@@ -107,36 +125,50 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     void ResetMission()
     {
-        ClearEnemies();guideMotor.Reset();escortMotor.Reset();otherMotor.Reset();Step=guideIndex=escortIndex=otherIndex=0;
+        ClearEnemies();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();escortMotor.Reset();otherMotor.Reset();threatMotor.Reset();
+        Step=CheckpointStep;guideIndex=escortIndex=0;otherIndex=otherEscortIndex=0;
         Health=100;EscortPressure=0;WorkProgress=0;AtCrossing=Advancing=Returning=false;hurtAt=-10;noticeUntil=0;
-        scenery.gameObject.SetActive(true);foreach(var gate in Barricades){gate.gameObject.SetActive(Selected==Mission.Bawan);gate.localRotation=Quaternion.identity;foreach(var c in gate.GetComponentsInChildren<Collider>())c.enabled=true;}
-        school.bawan.transform.position=P(-3,-8);school.pihu.transform.position=P(1,-8);school.tado.transform.position=P(2,-9.5f);
+        ThreatRevealing=CrossingArrived=dangerWasVisible=false;dangerPoseUntil=nextCoverCall=0;observedEnemyShots=0;
+        threatIntroduced=new bool[2];scenery.gameObject.SetActive(true);ResetBreakthrough(CheckpointStep);
+        school.bawan.transform.position=Step==0?P(-3,-8):checkpointBawan;
+        school.pihu.transform.position=Step==0?P(1,-8):checkpointPihu;
+        school.tado.transform.position=Step==0?P(2,-9.5f):checkpointTado;
         foreach(var c in Companions)c.ResetReaction();
-        activeRoute=Selected==Mission.Bawan?west[0]:new[]{P(8,-8),P(25,-4),P(30,7)};
-        otherRoute=Selected==Mission.Bawan?eastSquad:school.breakthroughRoute;otherIndex=otherEscortIndex=Selected==Mission.Bawan?0:1;
+        activeRoute=Selected==Mission.Bawan?west[Step]:Step==0?new[]{P(8,-8),P(25,-4),P(30,7)}:east[Step];
+        otherRoute=Selected==Mission.Bawan?eastSquad:school.breakthroughRoute;
+        otherIndex=Step==0?(Selected==Mission.Bawan?0:1):checkpointOtherIndex;
+        otherEscortIndex=Step==0?otherIndex:checkpointOtherEscortIndex;
+        if(Selected==Mission.Pihu&&Step>0){AtCrossing=true;safePihu=checkpointPihu;safeTado=checkpointTado;}
         // The other squad takes its own side of the same school, without teleporting.
         combat.SchoolEncounter=this;combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         player.chapter=null;player.station=null;player.combat=null;player.school=school;player.speed=2.8f;
-        player.Warp(new Vector3(-2,.06f,-6),new Vector3(Selected==Mission.Bawan?-23:25,1.2f,-4));
-        var positions=Selected==Mission.Bawan?new[]{P(-25.7f,22),P(-28,53)}:new[]{P(29,33),P(30,61)};
+        player.Warp(Step==0?new Vector3(-2,.06f,-6):checkpointPlayer,
+            Step==0?new Vector3(Selected==Mission.Bawan?-23:25,1.2f,-4):Selected==Mission.Bawan?new Vector3(-27,1.2f,43):new Vector3(29,1.2f,37));
+        var positions=Selected==Mission.Bawan?new[]{P(-25.7f,22),P(-28,53)}:new[]{P(29,33),P(34.5f,59)};
         // A knife-only player must reach each guard without crossing a locked
         // barricade or the current cover checkpoint. Keep rifle positions intact.
         bool knifeOnly=school.flow.CarriedWeapon==Chapter3Weapons.Weapon.Knife;
         if(knifeOnly)
-            positions=Selected==Mission.Bawan?new[]{P(-25.7f,14.4f),P(-28,44.4f)}:new[]{P(29,27.8f),P(30,58.5f)};
+            positions=Selected==Mission.Bawan?new[]{P(-25.7f,14.4f),P(-28,44.4f)}:new[]{P(29,27.8f),P(34.5f,52)};
+        threatPositions=positions;
         for(int i=0;i<positions.Length;i++)
         {
+            if(i<CheckpointStep){Enemies.Add(null);continue;}
             var go=Instantiate(combat.enemyTemplates[i%combat.enemyTemplates.Length],enemiesRoot);go.name="校側警察 · "+(i+1);
             go.transform.position=positions[i];var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=combat;enemy.advances=false;enemy.attackInterval=4.5f;enemy.escortTarget=null;
             // Close-quarters staging leaves time to approach with a knife.
             // Damage, telegraph and fire cadence remain the same.
             enemy.engagementRange=knifeOnly?12:32;
-            Enemies.Add(enemy);go.SetActive(true);
+            Enemies.Add(enemy);go.SetActive(Selected==Mission.Bawan&&i==Step);
         }
+        for(int i=0;i<threatCovers.Length;i++)
+        {threatCovers[i].gameObject.SetActive(Selected==Mission.Pihu);threatCovers[i].position=positions[i]+new Vector3(2,0,-.85f);}
         CurrentStage=Stage.Fighting;Menu.Hide();ui.Say("",null);ui.fade.color=Color.clear;
         combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;combat.weapons.ResetEquipment();
         player.canMove=player.canLook=true;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
         MoveAmmo();
+        if(Selected==Mission.Pihu&&Step>0)RevealCurrentThreat();
+        if(Step>0)Notice(Selected==Mission.Bawan?school.bawan.DisplayName:school.pihu.DisplayName,"從這裡繼續，前一段已經通過了。",3);
     }
     void Update()
     {
@@ -164,99 +196,15 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         else if(!string.IsNullOrEmpty(w.Feedback))combat.combatText.text+="\n"+w.Feedback;
         combat.hurtOverlay.color=new Color(.6f,.025f,.01f,Mathf.Clamp01(1-(Time.time-hurtAt)/.7f)*.32f);
     }
-    void UpdateBreakthrough()
-    {
-        MoveRoute(school.bawan,guideMotor,activeRoute,ref guideIndex,true,Vector3.left*1.15f);
-        ui.objective.text="跟巴萬突破 · 路障 "+(Step+1)+" / 2";
-        bool near=Flat(player.transform.position,Barricades[Step].position)<3.4f;
-        bool guard=Enemies[Step]&&!Enemies[Step].Defeated;
-        bool held=Keyboard.current?.eKey.isPressed==true;
-        WorkBarricade(held,Time.deltaTime);
-        if(!Fighting)return;
-        ui.hint.text=near?(guard?"先清除路障後的守衛":"按住 E 拆開橫木 · 放開會中止"):"跟上巴萬 · "+combat.weapons.Controls;
-        combat.combatText.text=near&&!guard?"拆除路障  "+Mathf.FloorToInt(WorkProgress/1.8f*100)+"%":"打通西側通道\n守衛 "+DefeatedCount()+" / 2  ·  路障 "+Step+" / 2";
-    }
-    public bool WorkBarricade(bool held,float delta)
-    {
-        if(!Fighting||Selected!=Mission.Bawan||Step>=2)return false;
-        if(!held||delta<=0||Flat(player.transform.position,Barricades[Step].position)>3.4f||!Enemies[Step].Defeated||combat.weapons.Reloading)
-        {WorkProgress=0;return false;}
-        WorkProgress+=delta;
-        if(WorkProgress<1.8f)return false;
-        var gate=Barricades[Step];foreach(var c in gate.GetComponentsInChildren<Collider>())c.enabled=false;
-        StartCoroutine(LowerGate(gate));WorkProgress=0;Step++;
-        if(Step==2){StartRegroup();return true;}
-        activeRoute=west[Step];guideIndex=0;guideMotor.Reset();MoveAmmo();Notice(school.bawan.DisplayName,"路開了，下一道在校舍後面。",3);return true;
-    }
-    IEnumerator LowerGate(Transform gate)
-    {
-        for(float t=0;t<.7f;t+=Time.deltaTime){gate.localRotation=Quaternion.Euler(Mathf.SmoothStep(0,86,t/.7f),0,0);yield return null;}
-        gate.gameObject.SetActive(false);
-    }
-    void UpdateCover()
-    {
-        if(!AtCrossing)
-        {
-            MoveRoute(school.pihu,guideMotor,activeRoute,ref guideIndex,true);
-            MoveRoute(school.tado,escortMotor,activeRoute,ref escortIndex,true,new Vector3(-.85f,0,-.9f));
-            if(guideIndex>=activeRoute.Length&&escortIndex>=activeRoute.Length)
-            {
-                AtCrossing=true;safePihu=school.pihu.transform.position;safeTado=school.tado.transform.position;
-                guideIndex=escortIndex=0;activeRoute=east[Step];Notice(school.pihu.DisplayName,"我們在掩體後。看清前方，安全了就叫我們走！",4);
-            }
-        }
-        else
-        {
-            if(player.ActionPressed&&Flat(player.transform.position,Ammo.position)>=2)CommandEscort();
-            if(Returning)
-            {
-                guideMotor.Move(school.pihu,safePihu,3.8f);escortMotor.Move(school.tado,safeTado,3.8f);
-                if(Flat(school.pihu.transform.position,safePihu)<.2f&&Flat(school.tado.transform.position,safeTado)<.2f)Returning=false;
-            }
-            else if(Advancing)
-            {
-                MoveRoute(school.pihu,guideMotor,activeRoute,ref guideIndex,false);
-                MoveRoute(school.tado,escortMotor,activeRoute,ref escortIndex,false,new Vector3(-.85f,0,-.9f));
-                if(guideIndex>=activeRoute.Length&&escortIndex>=activeRoute.Length)
-                {
-                    Step++;Advancing=false;EscortPressure=0;
-                    if(Step==2){StartRegroup();return;}
-                    safePihu=school.pihu.transform.position;safeTado=school.tado.transform.position;
-                    guideIndex=escortIndex=0;activeRoute=east[Step];MoveAmmo();Notice(school.pihu.DisplayName,"到這裡了。前面還有一段，你繼續看著！",3.5f);
-                }
-            }
-        }
-        foreach(var e in Enemies)e.escortTarget=AtCrossing&&(Advancing||Returning)?school.tado.transform:null;
-        ui.objective.text="跟比胡掩護 · 穿越 "+(Step+1)+" / 2";
-        string order=!AtCrossing?"先跟比胡到東側掩體":Returning?"隊伍撤回掩體中":Advancing?"隊伍正在穿越 · E 撤回掩體":"隊伍待命 · E 下令前進";
-        bool danger=Enemies.Exists(e=>e&&!e.Defeated&&e.Telegraphing);
-        combat.combatText.text=order+"\n隊伍受壓 "+EscortPressure+" / 3"+(danger?"  ·  警察正在瞄準！":"");
-        ui.hint.text="E 指揮前進／撤回 · "+combat.weapons.Controls;
-    }
-    public bool CommandEscort()
-    {
-        if(!Fighting||Selected!=Mission.Pihu||!AtCrossing||Returning)return false;
-        if(Flat(player.transform.position,school.pihu.transform.position)>18)
-        {Notice(school.pihu.DisplayName,"離得太遠了，回到能照應我們的位置！",2.5f);return false;}
-        if(Advancing){Advancing=false;Returning=true;guideIndex=escortIndex=0;guideMotor.Reset();escortMotor.Reset();}
-        else{Advancing=true;Notice(school.pihu.DisplayName,"走！達多，跟上！",2);}
-        return true;
-    }
-    public void EscortHit()
-    {
-        if(!Fighting||Selected!=Mission.Pihu||(!Advancing&&!Returning))return;
-        EscortPressure++;Notice(school.pihu.DisplayName,"火力太強！掩護我們，先撤回去！",2.5f);
-        if(EscortPressure>=3)Fail("隊伍被火力壓制","比胡與達多退回掩體重整。\n清除或壓制守衛，再下令穿越。\n重試會保留「跟比胡掩護」。");
-    }
     public void Damage(int amount,Vector3 source)
     {
         if(Rescue&&Rescue.Active){Rescue.Damage(amount,source);return;}
         if(!Fighting||amount<=0)return;Health=Mathf.Max(0,Health-amount);hurtAt=Time.time;WorkProgress=0;
-        if(Health==0)Fail("你受傷倒下了","回到分隊出發前重試。\n任務選擇保留，同伴的劇情結果不變。");
+        if(Health==0)Fail("你受傷倒下了",CheckpointStep>0?"從第二段安全位置重試。\n第一段已完成，任務與武器選擇保留。":"從目前任務起點重試。\n任務與武器選擇保留。");
     }
     void Fail(string title,string body)
     {
-        CurrentStage=Stage.Down;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);
+        CurrentStage=Stage.Down;Advancing=Returning=false;ThreatRevealing=false;StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();combat.weapons.Suspend();combat.hud.SetActive(false);
         player.canMove=player.canLook=false;player.view.fieldOfView=60;combat.hurtOverlay.color=Color.clear;ui.Say("",null);ui.hint.text="R 重試目前任務";
         Menu.ShowResult(title,body,true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
@@ -268,8 +216,11 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     void StartRegroup()
     {
+        // Never freeze an unresolved guard into an idle bystander at handoff.
+        if(Step<2||Enemies.Exists(e=>e&&!e.Defeated))return;
+        StopBreakthrough();ClearSchoolPoses();
         CurrentStage=Stage.Regroup;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
-        foreach(var e in Enemies)e.escortTarget=null;
+        foreach(var e in Enemies)if(e)e.escortTarget=null;
         player.view.fieldOfView=60;player.speed=2.8f;ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         activeRoute=Selected==Mission.Bawan?westExit:eastExit;guideIndex=escortIndex=0;guideMotor.Reset();escortMotor.Reset();
@@ -331,7 +282,26 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         motor.Move(actor,target,waitForPlayer?(playerAhead&&toPlayer.magnitude>5?3.1f:2.1f):2.9f);
         if(Flat(actor.transform.position,target)<.23f)index++;
     }
-    int DefeatedCount(){int count=0;foreach(var e in Enemies)if(e.Defeated)count++;return count;}
+    void CompleteMissionStep()
+    {
+        if(!Fighting||Step>=2||!CurrentThreatCleared)return;
+        if(Selected==Mission.Pihu&&!CrossingArrived)return;
+        Step++;CheckpointStep=Step;
+        if(Step==2){StartRegroup();return;}
+        checkpointBawan=school.bawan.transform.position;checkpointPihu=school.pihu.transform.position;checkpointTado=school.tado.transform.position;
+        checkpointPlayer=Selected==Mission.Bawan?new Vector3(-27,.06f,19):new Vector3(27.5f,.06f,22.5f);
+        checkpointOtherIndex=otherIndex;checkpointOtherEscortIndex=otherEscortIndex;
+        guideIndex=escortIndex=0;guideMotor.Reset();escortMotor.Reset();EscortPressure=0;MoveAmmo();
+        if(Selected==Mission.Bawan)
+        {activeRoute=west[Step];Enemies[Step].gameObject.SetActive(true);}
+        else
+        {
+            safePihu=checkpointPihu;safeTado=checkpointTado;activeRoute=east[Step];Advancing=Returning=CrossingArrived=false;
+            pihuPose.ReportSafe();tadoPose.ReportSafe();RevealCurrentThreat();
+        }
+    }
+    void ClearSchoolPoses(){if(pihuPose)pihuPose.Clear();if(tadoPose)tadoPose.Clear();}
+    int DefeatedCount(){int count=0;for(int i=0;i<Enemies.Count;i++)if(i<CheckpointStep||(Enemies[i]&&Enemies[i].Defeated))count++;return count;}
     public void Notice(string speaker,string line,float seconds)
     {if(Rescue&&Rescue.Active){Rescue.Notice(speaker,line,seconds);return;}if(!Fighting)return;noticeUntil=Time.time+seconds;ui.Say(speaker,line);}
     IEnumerator Say(Chapter2Actor actor,string line,float seconds,bool focus)
@@ -348,7 +318,7 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     public void Suspend()
     {
         if(Rescue)Rescue.Suspend();
-        StopAllCoroutines();CurrentStage=Stage.Inactive;ClearEnemies();
+        StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();ThreatRevealing=CrossingArrived=false;CurrentStage=Stage.Inactive;ClearEnemies();
         if(combat&&combat.SchoolEncounter==this)combat.SchoolEncounter=null;
         if(Menu)Menu.Hide();if(scenery)scenery.gameObject.SetActive(false);
         if(distantShots)distantShots.Stop();if(ambient)ambient.ResetCalm();
@@ -374,14 +344,9 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
         // Materials are already included by the serialized school; no runtime
         // Shader.Find dependency or copied high-poly mesh assets.
         if(!metal)metal=wood;
-        Barricades=new Transform[2];
-        for(int i=0;i<2;i++)
-        {
-            var gate=new GameObject(i==0?"西側第一道橫木路障":"西側校後橫木路障").transform;gate.SetParent(scenery,false);gate.position=P(-27,i==0?16:46);Barricades[i]=gate;
-            foreach(float x in new[]{-3.2f,3.2f})Box(gate,new Vector3(x,.8f,0),new Vector3(.20f,1.6f,.22f),wood,"路障木柱");
-            foreach(float y in new[]{.50f,1.12f})Box(gate,new Vector3(0,y,0),new Vector3(6.7f,.24f,.22f),wood,"可拆橫木");
-            Box(gate,new Vector3(0,.8f,-.14f),new Vector3(.18f,.92f,.11f),metal,"橫木插銷");
-        }
+        BuildBreakthroughProps(wood,metal);
+        threatCovers=new Transform[2];
+        for(int i=0;i<2;i++)threatCovers[i]=Crate(scenery,Vector3.zero,new Vector3(1.4f,1.8f,.65f),wood,metal,"警察出場掩體"+(i+1));
         foreach(float z in new[]{10,26,56})Crate(scenery,new Vector3(30.5f,0,z),new Vector3(3.5f,1.7f,1.1f),wood,metal,"東側厚木掩體");
         Crate(scenery,new Vector3(-29,0,5),new Vector3(1.7f,1.5f,1.2f),wood,metal,"西側入口掩體");
         Crate(scenery,new Vector3(-24.6f,0,34),new Vector3(1.7f,1.5f,1.2f),wood,metal,"西側中段掩體");
@@ -403,3 +368,4 @@ public sealed class Chapter3SchoolBattle : MonoBehaviour
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
 }
+

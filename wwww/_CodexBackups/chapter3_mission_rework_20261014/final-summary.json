@@ -1,0 +1,60 @@
+{
+  "Finished": "2026-10-15T01:46:56.7025917+08:00",
+  "Reports": [
+    {
+      "Mode": "test-bawan-knife",
+      "Completed": true,
+      "Checks": 34,
+      "FalseChecks": 0,
+      "Errors": 0,
+      "Warnings": 0,
+      "Elapsed": 147.93350219726562
+    },
+    {
+      "Mode": "test-bawan-rifle",
+      "Completed": true,
+      "Checks": 36,
+      "FalseChecks": 0,
+      "Errors": 0,
+      "Warnings": 0,
+      "Elapsed": 148.96751403808594
+    },
+    {
+      "Mode": "test-pihu-knife",
+      "Completed": true,
+      "Checks": 54,
+      "FalseChecks": 0,
+      "Errors": 0,
+      "Warnings": 0,
+      "Elapsed": 184.8634033203125
+    },
+    {
+      "Mode": "test-pihu-rifle",
+      "Completed": true,
+      "Checks": 54,
+      "FalseChecks": 0,
+      "Errors": 0,
+      "Warnings": 0,
+      "Elapsed": 183.29403686523438
+    }
+  ],
+  "PassedChecks": 178.0,
+  "AllReportsPassed": true,
+  "ProtectedFilesUnchanged": true,
+  "RuntimeMatchesTested": true,
+  "Audit": [
+    "scene=Assets/Scenes/第三章.unity",
+    "dirty=False",
+    "playing=False",
+    "compileFailed=False",
+    "missingScripts=0",
+    "missingMeshes=0",
+    "missingSkinnedMeshes=0"
+  ],
+  "ProbeRemoved": true,
+  "ProbeMetaRemoved": true,
+  "CleanupCompileSucceeded": true,
+  "CleanupReloadSucceeded": true,
+  "CleanupCompileErrors": false,
+  "Validation": "Unity Editor Input System/UI/weapon APIs and real CharacterController; controlled failure/hold-fire injections documented; not native keyboard, VR, standalone, live LLM, full mountain or rescue branch replay"
+}

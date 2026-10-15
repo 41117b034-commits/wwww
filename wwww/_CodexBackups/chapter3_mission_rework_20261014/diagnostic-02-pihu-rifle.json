@@ -1,0 +1,38 @@
+{
+    "mode": "test-pihu-rifle",
+    "completed": false,
+    "elapsed": 74.40577697753906,
+    "checks": [
+        "main chapter scene loaded=True",
+        "sports day remains calm before mission=True",
+        "Tado interaction begins observation=True",
+        "outbreak follows chosen mission=True",
+        "fresh mission begins before first checkpoint=True",
+        "exclusive inventory follows selected weapon=True",
+        "both authored guards present=True",
+        "second guard remains inactive before first checkpoint=True",
+        "inactive second guard rejects premature damage=True",
+        "first guard reaches authored combat position=True",
+        "first guard reveal cannot unlock future guard=True",
+        "E orders first crossing=True",
+        "forward command and companion acknowledgment are visible=True",
+        "second E recalls advancing pair=True",
+        "recall keeps first stage and checkpoint uncompleted=True",
+        "rifle attack accepted=True",
+        "real rifle shot defeats guard=True",
+        "defeated guard alone does not advance first stage=True",
+        "safe crossing accepts new command=True",
+        "first safe crossing saves checkpoint one=True",
+        "safe crossing visibly reports success=False"
+    ],
+    "errors": [
+        "System.Exception: safe crossing visibly reports success\r\n  at Chapter3MissionReworkProbe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3MissionReworkProbe.cs:271 \r\n  at Chapter3MissionReworkProbe+<PihuMission>d__17.MoveNext () [0x008ec] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3MissionReworkProbe.cs:168 \r\n  at Chapter3MissionReworkProbe+<Guard>d__12.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3MissionReworkProbe.cs:49 "
+    ],
+    "warnings": [],
+    "observations": [
+        "first guard reveal observed=False safe window=2.51",
+        "safe report time=72.22933 dangerUntil=0 enemy shots=0 telegraph=False attack=False",
+        "比胡·帖木 safe=0 under=False enabled=True active=True began=71.896 until=74.296",
+        "達多·莫那 · 校門集合 safe=0 under=False enabled=True active=True began=71.896 until=74.296"
+    ]
+}

@@ -7,6 +7,11 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public Chapter2Actor actor;
     public Chapter2Rifle rifle;
     public bool advances;
+    // Mission staging may move a guard before allowing it to aim. Existing
+    // mountain and rescue encounters keep their original enabled default.
+    public bool AttackEnabled=true;
+    public bool HoldingFire=>!Defeated&&Time.time<holdFireUntil;
+    public float SafeWindowSeconds=>!Defeated&&AttackEnabled&&!Telegraphing?Mathf.Max(0,Mathf.Max(holdFireUntil,nextAttack)-Time.time):0;
     // School cover mission targets the moving escort. Null preserves the
     // original mountain encounter's player-only targeting.
     public Transform escortTarget;
@@ -17,7 +22,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public Vector3 AimPoint=>transform.position+Vector3.up*1.05f;
     public float attackInterval=4.5f;
     public float engagementRange=32;
-    float nextAttack,raisedAt,hitAt=-20;
+    float nextAttack,raisedAt,hitAt=-20,holdFireUntil;
     bool attackGranted;
     AudioSource reportAudio;
     Vector3 fallGrip,fallenWeaponPosition;
@@ -31,6 +36,14 @@ public sealed class Chapter3Enemy : MonoBehaviour
     }
     void Update()
     {
+        if(!AttackEnabled){CancelAim();attackGranted=false;return;}
+        if(HoldingFire)
+        {
+            CancelAim();
+            // The staged pause already supplies the reaction window. Preserve
+            // attack eligibility so release does not add a second entry delay.
+            attackGranted=combat&&combat.Fighting&&combat.CanAttack(this);return;
+        }
         if(!combat||!combat.Fighting||Defeated)return;
         if(!combat.CanAttack(this))
         {attackGranted=false;Telegraphing=false;if(rifle){rifle.aim=0;rifle.lowered=.8f;}return;}
@@ -62,9 +75,19 @@ public sealed class Chapter3Enemy : MonoBehaviour
             Telegraphing=false;nextAttack=Time.time+(knife?Mathf.Max(6.5f,attackInterval):attackInterval);
         }
     }
+    public void HoldFire(float seconds)
+    {
+        if(Defeated||seconds<=0||float.IsNaN(seconds))return;
+        holdFireUntil=Mathf.Max(holdFireUntil,Time.time+seconds);
+        nextAttack=Mathf.Max(nextAttack,holdFireUntil);
+        CancelAim();
+    }
+    void CancelAim()
+    {Telegraphing=false;raisedAt=0;if(rifle){rifle.aim=0;rifle.lowered=.8f;}}
+    void OnDisable(){holdFireUntil=0;attackGranted=false;CancelAim();}
     public void Hit(int damage,Vector3 from)
     {
-        if(!combat||!combat.Fighting||Defeated)return;
+        if(!isActiveAndEnabled||!combat||!combat.Fighting||Defeated)return;
         Health=Mathf.Max(0,Health-damage);hitAt=Time.time;Telegraphing=false;nextAttack=Time.time+2.2f;
         if(Defeated)
         {
