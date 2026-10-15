@@ -2,11 +2,19 @@
 
 更新日期：2026-10-15。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
-最新第三章運動會任務改版（2026-10-15）：依文字討論後的確認，左線第一處由巴萬舉槍製造短暫停火空檔、玩家擊倒守衛後長按 E 拆橫木；第二處改成靠近短按 E 請巴萬推開側門，玩家守通道，遇到瞄準／槍聲或工作位置被擋時暫停並保留進度。右線兩段警察分別出場，加入前進手勢、同伴回應、避火蹲姿與抵達回報；警察依實際射線選擇暴露的同伴。每段都必須當段警察倒下且比胡、達多抵達，不能只擊倒第一名就直接匯合；匯合另檢查沒有存活守衛，避免戰鬥關閉後留下站立警察。兩線第一段完成後保存第二段檢查點，重試保留任務與單一武器，完成後仍接原第五批。空白鍵、第一章樣式黃箭頭及雙人等候回頭保留；未擴增第六批。詳見 `Documentation/Chapter3-missions.md`。
+最新第三章自動對話與分隊（2026-10-15）：取消達多交談前的運動會環視與固定等待，沿黃色箭頭靠近達多 3 公尺內立即開始分工對話，不必按 E，停留身旁不會重複觸發。玩家選左線跟巴萬時，達多跟比胡走右線；玩家選右線跟比胡時，達多跟巴萬走左線。達多以獨立路徑控制實際走另一側，轉彎時維持約 1.3 公尺跟隨間距並避免超前領隊路點。分工、出發及校後匯合台詞均按新隊伍調整；右線 E 前進／撤回、受壓反應與兩段抵達判定只處理比胡，不再等另一側的達多。仍需每段警察倒下且比胡抵達才能前進，最終三人實際匯合才接第五批。保留單一第三章場景、空白鍵進運動會、黃箭頭、原左線合作任務及第二段重試。詳見 `Documentation/Chapter3-missions.md`。
 
-本輪原專案 Editor 最終四組均 completed=true、errors=[]、warnings=[]，共 178 項：巴萬步槍36、巴萬獵刀34、比胡步槍54、比胡獵刀54。含實際刀／槍命中、右線真實敵方射擊與同伴受壓、分段重試、活守衛擋完成、匯合接第五批與 F8 清理；已檢視引擎畫面。測試使用 Input System 事件、UI callback、武器入口及 CharacterController；死亡／部分壓力注入，另用受控停火隔離完成條件。沒有本輪原生遊戲鍵盤、真人全程、VR、建置、真實 LLM、完整山路交戰或第五批救援兩分支重測，詳見任務文件。證據目錄 `_CodexBackups/chapter3_mission_rework_20261014/` 沿用開始日名稱，實際修改／測試跨到 2026-10-15。`diagnostic-*`、`before-hint-*`、`before-target-*` 為診斷或中間版本，不列入最終 178 項。
+本輪原專案 Editor 最終四組均 completed=true、errors=[]、warnings=[]，共 240 項：巴萬步槍50、巴萬獵刀48、比胡步槍72、比胡獵刀70。四組均實際接近達多、不按 E 即開始台詞；無環視等待、不重複觸發，F8 重進可再次自動交談。達多全程走玩家未選側，與另一隊領隊最短水平距離分別為 1.413／1.333／1.569／1.369m，除檢查點還原外沒有異常位置跳躍；右線指令及真實射擊受壓只作用於比胡。兩線第二段重試、活守衛擋完成及三人匯合接第五批均通過，已檢視引擎渲染。測試由 Input System／UI callback、武器入口和 CharacterController 驅動，部分傷害／壓力及停火條件受控；沒有真人全程鍵鼠、原生 Game 鍵盤注入、VR、建置、真實 LLM、完整山路短交戰或第五批救援兩分支回歸。詳見任務文件的驗證邊界。
 
-本輪任務改版已收尾：正式第三章停止 Play，dirty=false、compileFailed=false、missingScripts／missingMeshes／missingSkinnedMeshes 均 0。第一、第二、第三章場景、Build Settings、Rescue、Flow、SchoolController 保護雜湊一致；七個變更 runtime 與最終四組驗證版一致。臨時 probe 及 meta 已移出 Assets 封存，移除後 Editor 組件重新編譯與 domain reload 成功；詳見本輪 `audit.txt`、`runtime-final-check.json`、`cleanup-editor.log` 及 `final-summary.json`。沒有 commit／push。
+本輪證據在 `_CodexBackups/chapter3_tado_split_20261015/`，根目錄四份 test-* 報告為最終版本。`before-spacing/` 是間距修正前版本，功能雖通過但視覺發現達多追上比胡穿模，不能代替最終回歸；最終已補跟隨間距並完整重跑。部分首次守衛在玩家到達觀察點前已出場，報告如實記錄，檢查數可能隨實際觀察條件不同。
+
+本輪收尾：正式第三章停止 Play，dirty=false、compileFailed=false、missingScripts／missingMeshes／missingSkinnedMeshes 均 0。第一、第二、第三章場景、Build Settings、Flow、Rescue、Breakthrough、Enemy 保護雜湊一致；四個變更 runtime 與四組最終驗證版一致。probe 與 meta 已移出 Assets，移除後 Editor 組件編譯與 domain reload 成功；見本輪 `audit.txt`、兩份 final-check.json、`cleanup-editor.log` 及 `final-summary.json`。沒有 commit／push。
+
+前次第三章運動會任務改版（2026-10-15，早於上方自動對話與分隊）：依文字討論後的確認，左線第一處由巴萬舉槍製造短暫停火空檔、玩家擊倒守衛後長按 E 拆橫木；第二處改成靠近短按 E 請巴萬推開側門，玩家守通道，遇到瞄準／槍聲或工作位置被擋時暫停並保留進度。右線兩段警察分別出場，加入前進手勢、同伴回應、避火蹲姿與抵達回報；當時警察依實際射線選擇暴露的同伴，每段都必須當段警察倒下且比胡、達多抵達，此兩人共同穿越規則已由上方重新分隊取代。不能只擊倒第一名就直接匯合；匯合另檢查沒有存活守衛，避免戰鬥關閉後留下站立警察。兩線第一段完成後保存第二段檢查點，重試保留任務與單一武器，完成後仍接原第五批。空白鍵、第一章樣式黃箭頭及雙人等候回頭保留；未擴增第六批。詳見 `Documentation/Chapter3-missions.md`。
+
+前次任務改版的原專案 Editor 四組均 completed=true、errors=[]、warnings=[]，共 178 項：巴萬步槍36、巴萬獵刀34、比胡步槍54、比胡獵刀54。含實際刀／槍命中、右線真實敵方射擊與同伴受壓、分段重試、活守衛擋完成、匯合接第五批與 F8 清理；已檢視引擎畫面。測試使用 Input System 事件、UI callback、武器入口及 CharacterController；死亡／部分壓力注入，另用受控停火隔離完成條件。沒有本輪原生遊戲鍵盤、真人全程、VR、建置、真實 LLM、完整山路交戰或第五批救援兩分支重測，詳見任務文件。證據目錄 `_CodexBackups/chapter3_mission_rework_20261014/` 沿用開始日名稱，實際修改／測試跨到 2026-10-15。`diagnostic-*`、`before-hint-*`、`before-target-*` 為診斷或中間版本，不列入最終 178 項。
+
+前次任務改版當時收尾：正式第三章停止 Play，dirty=false、compileFailed=false、missingScripts／missingMeshes／missingSkinnedMeshes 均 0。第一、第二、第三章場景、Build Settings、Rescue、Flow、SchoolController 保護雜湊一致；七個變更 runtime 與最終四組驗證版一致。臨時 probe 及 meta 已移出 Assets 封存，移除後 Editor 組件重新編譯與 domain reload 成功；詳見本輪 `audit.txt`、`runtime-final-check.json`、`cleanup-editor.log` 及 `final-summary.json`。沒有 commit／push。
 
 最新第三章等候與箭頭修正（2026-10-14，兩張截圖）：山路短交戰後，玩家落後超過 5.5m 時，巴萬與比胡都停下、持續平滑回頭看玩家；走近 4.6m 才繼續，避免距離邊界反覆轉身。地面帶路與武器領取箭頭統一第一章的箭桿／雙翼黃色樣式，地面保留原發光與脈動；整支箭頭限制在玩家與帶路者之間。學校入口到校門左側達多新增相同地面箭頭，接近收起、交談／跳段清理，重進恢復。原空白鍵進運動會與第五批流程保留；下一批仍為第六批。詳見 `Documentation/Chapter3-arrows-wait.md`。
 

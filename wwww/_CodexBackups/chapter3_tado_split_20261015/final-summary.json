@@ -1,0 +1,61 @@
+{
+  "Date": "2026-10-15",
+  "Reports": [
+    {
+      "Mode": "test-bawan-rifle",
+      "Completed": true,
+      "Checks": 50,
+      "AllChecksPassed": true,
+      "Errors": 0,
+      "Warnings": 0,
+      "MinimumGap": "Tado minimum other-leader horizontal gap=1.413m during Fighting/Regroup; retry restoration excluded"
+    },
+    {
+      "Mode": "test-bawan-knife",
+      "Completed": true,
+      "Checks": 48,
+      "AllChecksPassed": true,
+      "Errors": 0,
+      "Warnings": 0,
+      "MinimumGap": "Tado minimum other-leader horizontal gap=1.333m during Fighting/Regroup; retry restoration excluded"
+    },
+    {
+      "Mode": "test-pihu-rifle",
+      "Completed": true,
+      "Checks": 72,
+      "AllChecksPassed": true,
+      "Errors": 0,
+      "Warnings": 0,
+      "MinimumGap": "Tado minimum other-leader horizontal gap=1.569m during Fighting/Regroup; retry restoration excluded"
+    },
+    {
+      "Mode": "test-pihu-knife",
+      "Completed": true,
+      "Checks": 70,
+      "AllChecksPassed": true,
+      "Errors": 0,
+      "Warnings": 0,
+      "MinimumGap": "Tado minimum other-leader horizontal gap=1.369m during Fighting/Regroup; retry restoration excluded"
+    }
+  ],
+  "TotalChecks": 240.0,
+  "AllReportsPassed": true,
+  "ProtectedFilesUnchanged": true,
+  "RuntimeMatchesTested": true,
+  "EditorAudit": [
+    "scene=Assets/Scenes/第三章.unity",
+    "dirty=False",
+    "playing=False",
+    "compileFailed=False",
+    "missingScripts=0",
+    "missingMeshes=0",
+    "missingSkinnedMeshes=0"
+  ],
+  "ProbeRemoved": true,
+  "CleanupCompileSuccess": true,
+  "CleanupDomainReloadSuccess": true,
+  "CleanupCompileErrors": false,
+  "NativeGameplayKeyboardTested": false,
+  "HeadsetTested": false,
+  "StandaloneBuildTested": false
+}

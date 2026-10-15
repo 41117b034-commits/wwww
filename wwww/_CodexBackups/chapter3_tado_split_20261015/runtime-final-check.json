@@ -1,0 +1,26 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs",
+    "Expected": "9BDDD5628528ECBC3A3A2AD8A968696D1597FFE89843EFBDACAE5311192E6D3F",
+    "Actual": "9BDDD5628528ECBC3A3A2AD8A968696D1597FFE89843EFBDACAE5311192E6D3F",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.cs",
+    "Expected": "48EB59F43E66373425B9E9D3F964C40F28BE8CD7A7BFC11BC3690314FB98B041",
+    "Actual": "48EB59F43E66373425B9E9D3F964C40F28BE8CD7A7BFC11BC3690314FB98B041",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Cover.cs",
+    "Expected": "252D739AC805E8A81C00DC5EC5AA031F130FECEC4157944DFB084A6D5BFCAD12",
+    "Actual": "252D739AC805E8A81C00DC5EC5AA031F130FECEC4157944DFB084A6D5BFCAD12",
+    "Unchanged": true
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3MissionUI.cs",
+    "Expected": "20B1B09115F2FDAF1144195BC5C0D87B66BDA523A265A94C794BFC48C8E2D83F",
+    "Actual": "20B1B09115F2FDAF1144195BC5C0D87B66BDA523A265A94C794BFC48C8E2D83F",
+    "Unchanged": true
+  }
+]

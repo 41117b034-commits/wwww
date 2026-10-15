@@ -94,11 +94,13 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         Area=nearest<0?"校門前":landmarks[nearest].name;
         ui.objective.text="到校門旁與達多會合";
         bool nearTado=Flat(position,tado.transform.position)<3;
-        ui.hint.text=nearTado?"E 與達多交談  ·  WASD 移動  ·  按住右鍵環視":"沿黃色箭頭走向校門左側的達多 · WASD 移動 · 按住右鍵環視";
-        if(nearTado&&player.ActionPressed&&lineUntil<=0)
+        ui.hint.text="沿黃色箭頭靠近達多，自動開始對話 · WASD 移動";
+        if(nearTado&&!MetTado)
         {
+            // Clear the arrival speaker before MeetTado starts its first line.
+            lineUntil=0;bawan.speaking=pihu.speaking=tado.speaking=false;
             if(Battle.MeetTado())
-            {MetTado=true;lineUntil=0;bawan.speaking=pihu.speaking=tado.speaking=false;ArrivalGuide.Hide();}
+            {MetTado=true;ArrivalGuide.Hide();}
         }
     }
     void Follow(Chapter2Actor actor,int index,float gap)

@@ -19,7 +19,7 @@ public sealed class Chapter3MissionUI : MonoBehaviour
         ui.bawan=Button(choice,"1  跟巴萬突破",font,new Vector2(.04f,.42f),new Vector2(.48f,.63f));
         ui.pihu=Button(choice,"2  跟比胡掩護",font,new Vector2(.52f,.42f),new Vector2(.96f,.63f));
         Label(choice,"先拆橫木，再掩護巴萬開側門。\n看準同伴製造的空檔，合作突破。",font,25,new Vector2(.055f,.09f),new Vector2(.475f,.39f));
-        Label(choice,"分段清除威脅，指揮兩人穿越。\nE 下令前進／撤回，逐段到掩體。",font,25,new Vector2(.535f,.09f),new Vector2(.955f,.39f));
+        Label(choice,"分段清除威脅，掩護比胡穿越。\nE 下令前進／撤回，逐段到掩體。",font,25,new Vector2(.535f,.09f),new Vector2(.955f,.39f));
         var end=Panel(root.transform,"任務結果",new Vector2(.2f,.25f),new Vector2(.8f,.75f));ui.result=end.gameObject;
         ui.resultTitle=Label(end,"",font,34,new Vector2(.06f,.75f),new Vector2(.94f,.95f));
         ui.resultBody=Label(end,"",font,27,new Vector2(.06f,.30f),new Vector2(.94f,.72f));
