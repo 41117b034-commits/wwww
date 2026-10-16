@@ -16809,7 +16809,7 @@ MonoBehaviour:
   - id: C2_009
     role: 2
     chinese: "\u547D\u4EE4\u5B8C\u6210\u4E86\u3002\u53EF\u662F\uFF0C\u6211\u5011\u8A72\u600E\u9EBC\u9762\u5C0D\u7956\u9748\uFF1F"
-    clip: {fileID: 8300000, guid: cea37d0583e4b4a488cc4d6596df19ba, type: 3}
+    clip: {fileID: 8300000, guid: 7d518dcc3ea534f4f9c86fd72770aa21, type: 3}
     volumeDb: 0
   - id: C2_010
     role: 2
@@ -17049,7 +17049,7 @@ MonoBehaviour:
   - id: C2_057
     role: 0
     chinese: "\u69CD\u8072\u904E\u5F8C\uFF0C\u4E00\u540D\u963B\u64CB\u8B66\u5BDF\u7684\u65CF\u4EBA\u5012\u4E0B\u3002\u540C\u4F34\u6025\u5FD9\u4E0A\u524D\u67E5\u770B\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: cf0e261208f47ce41b8b506ccf05fb74, type: 3}
     volumeDb: 0
   - id: C2_058
     role: 2
