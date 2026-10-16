@@ -105,19 +105,30 @@ public static class Chapter3ResultStore
 
     public static bool SaveCompleted(Record record)
     {
+        return SaveCompleted(record,PlayerPrefs.Save);
+    }
+
+    // Keep the commit boundary separate so a failed flush cannot become a later
+    // accidental save when another chapter flushes the shared preferences.
+    internal static bool SaveCompleted(Record record,Action persist)
+    {
         // Invalid attempts do not touch the previous result. Build also deep-copies
         // every actor, so saving cannot mutate the pending record held by the caller.
-        if(!IsValid(record))return false;
+        if(!IsValid(record)||persist==null)return false;
         var saved=Build(record.mission,record.decision,record.weapon);
         saved.completed=true;
+        bool hadPrevious=PlayerPrefs.HasKey(SaveKey);
+        string previous=PlayerPrefs.GetString(SaveKey,"");
         try
         {
             PlayerPrefs.SetString(SaveKey,JsonUtility.ToJson(saved));
-            PlayerPrefs.Save();
+            persist();
             return true;
         }
-        catch(PlayerPrefsException){return false;}
-        catch(ArgumentException){return false;}
+        catch(PlayerPrefsException){ }
+        catch(ArgumentException){ }
+        if(hadPrevious)PlayerPrefs.SetString(SaveKey,previous);else PlayerPrefs.DeleteKey(SaveKey);
+        return false;
     }
 
     public static Record Load()

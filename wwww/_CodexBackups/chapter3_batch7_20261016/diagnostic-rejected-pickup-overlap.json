@@ -1,0 +1,36 @@
+{
+    "mode": "test-bawan-rescue-rifle",
+    "completed": false,
+    "elapsed": 26.5527400970459,
+    "checks": [
+        "main chapter scene loaded=True",
+        "prelude flow references present=True",
+        "prelude starts at station with no weapon=True",
+        "prelude pickup and choice blocked before briefing=True",
+        "prelude blank opening input rejected=True",
+        "prelude opening records submitted question=True",
+        "prelude opening duplicate rejected=True",
+        "prelude first answer remains in opening=True",
+        "prelude typing keeps earlier exchange=True",
+        "prelude opening completes exactly two exchanges=True",
+        "prelude both opening exchanges retained=True",
+        "prelude weapon choice pauses movement=True",
+        "prelude single weapon choice committed=True",
+        "prelude pickup arrow targets chosen weapon=True",
+        "prelude unchosen pickup rejected=True",
+        "prelude E pickup immediately opens readiness=True",
+        "prelude exactly chosen weapon acquired=True",
+        "prelude chosen model hidden and other retained=True",
+        "prelude readiness cannot acquire second weapon=True",
+        "prelude readiness input instruction has no pickup warning overlap=False",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [
+        "System.Exception: prelude readiness input instruction has no pickup warning overlap\r\n  at Chapter3Batch7Probe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Probe.cs:757 \r\n  at Chapter3Batch7Prelude.Verify (System.Action`2[T1,T2] check, System.String name, System.Boolean passed) [0x00000] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Prelude.cs:209 \r\n  at Chapter3Batch7Prelude+<Run>d__0.MoveNext () [0x00b77] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Prelude.cs:76 \r\n  at Chapter3Batch7Probe+<Guard>d__41.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Probe.cs:76 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "Full school mission and rescue route driven by CharacterController, Input System events and UI/public weapon callbacks; controlled damage/pressure and HoldFire isolate retry/completion gates. Not native keyboard, human, VR or standalone-build evidence."
+    ]
+}

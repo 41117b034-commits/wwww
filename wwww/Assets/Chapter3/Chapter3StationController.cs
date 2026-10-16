@@ -97,7 +97,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     {
         if(attendingPlayer||CompanionsWaiting){FacePlayer(bawan);FacePlayer(pihu);}
         // Escort coroutines also write the hint; apply this warning after them.
-        if(HasWeapon&&CurrentStage!=Stage.Refused&&CurrentStage!=Stage.Ended)
+        if(HasWeapon&&CurrentStage!=Stage.Readiness&&CurrentStage!=Stage.Refused&&CurrentStage!=Stage.Ended&&(!ui.chat||!ui.chat.activeInHierarchy))
         {
             var other=HasKnife?rifleFocus:knifeFocus;
             if(Flat(player.transform.position,other.position)<=2)ui.hint.text="只能持有一種武器，你已經拿了"+WeaponName+"。";
@@ -150,7 +150,11 @@ public sealed class Chapter3StationController : MonoBehaviour
     public bool TakeKnife()=>TakeWeapon(Chapter3Weapons.Weapon.Knife);
     bool TakeWeapon(Chapter3Weapons.Weapon weapon)
     {
-        if(HasWeapon){ui.hint.text="只能持有一種武器，你已經拿了"+WeaponName+"。";return false;}
+        if(HasWeapon)
+        {
+            if(!ui.chat||!ui.chat.activeInHierarchy)ui.hint.text="只能持有一種武器，你已經拿了"+WeaponName+"。";
+            return false;
+        }
         var target=weapon==Chapter3Weapons.Weapon.Knife?knifeFocus:rifleFocus;
         if(CurrentStage!=Stage.Equipment||ChosenWeapon!=weapon||equipmentBusy||Flat(player.transform.position,target.position)>2)return false;
         HasKnife=weapon==Chapter3Weapons.Weapon.Knife;HasRifle=weapon==Chapter3Weapons.Weapon.Rifle;equipmentBusy=true;
@@ -200,8 +204,8 @@ public sealed class Chapter3StationController : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying=false;
 #else
         // A standalone player has no Play Mode; retain a legible, non-progressing ending.
-        var labels=ui.ending.GetComponentsInChildren<Text>(true);int i=0;
-        foreach(var label in labels)if(!label.GetComponentInParent<Button>())label.text=i++==0?"此次行動結束":"你尚未準備好出發。\n莫那讓你留下，回家休息。";
+        var labels=ui.ending.GetComponentsInChildren<Text>(true);int labelIndex=0;
+        foreach(var label in labels)if(!label.GetComponentInParent<Button>())label.text=labelIndex++==0?"此次行動結束":"你尚未準備好出發。\n莫那讓你留下，回家休息。";
         ui.ending.SetActive(true);
 #endif
     }

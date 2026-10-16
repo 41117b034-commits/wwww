@@ -36,6 +36,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         // One component owns these listeners for its lifetime. Other regions guard their own input.
         if(!bound){ui.send.onClick.AddListener(Send);ui.input.onSubmit.AddListener(SubmitFromInput);bound=true;}
         history.Clear();Active=true;LastDecision=Decision.Unclear;UsedFallback=false;
+        LastReplyError=null;LastReplySeconds=0;
         ui.Say("",null);ui.chat.SetActive(true);ui.depart.gameObject.SetActive(false);
         ui.input.gameObject.SetActive(true);ui.send.gameObject.SetActive(true);
         ui.input.interactable=ui.send.interactable=true;ui.input.text="";
@@ -75,13 +76,17 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         yield return null;
         float started=Time.realtimeSinceStartup;
         int request=++version;bool received=false;string answer=null,error=null;
-        dialogue.StartCoroutine(dialogue.AskWithPersona(Persona,history,text,(a,e)=>{if(request!=version)return;answer=a;error=e;received=true;},Mathf.CeilToInt(replyTimeout),160,.35f));
-        float until=Time.realtimeSinceStartup+replyTimeout;
+        float timeout=float.IsNaN(replyTimeout)||float.IsInfinity(replyTimeout)?15:Mathf.Clamp(replyTimeout,.01f,60);
+        // Transport may return a rejected tag or text. Only the final displayed
+        // response belongs in the next question's context.
+        var requestHistory=new List<Chapter2LocalDialogue.Message>(history);
+        dialogue.StartCoroutine(dialogue.AskWithPersona(Persona,requestHistory,text,(a,e)=>{if(request!=version||!Active)return;answer=a;error=e;received=true;},Mathf.CeilToInt(timeout),160,.35f));
+        float until=Time.realtimeSinceStartup+timeout;
         while(!received&&Time.realtimeSinceStartup<until)yield return null;
         if(!received){version++;dialogue.CancelRequest();error="timeout";}
         Decision decision=Decision.Unclear;string spoken=null;
         UsedFallback=!string.IsNullOrEmpty(error)||!TryParse(answer,out decision,out spoken);
-        LastReplySeconds=Time.realtimeSinceStartup-started;LastReplyError=error;
+        LastReplySeconds=Time.realtimeSinceStartup-started;LastReplyError=UsedFallback&&string.IsNullOrEmpty(error)?"invalid_reply":error;
         frameBudget.End();
         if(UsedFallback){decision=Decision.Unclear;spoken=null;}
         // Exact everyday replies are authoritative even when a model adds a conflicting tag.
@@ -94,6 +99,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
             if(known!=null)spoken=known+"你準備好現在出發了嗎？";
         }
         if(string.IsNullOrWhiteSpace(spoken))spoken=decision==Decision.Ready?"好，我聽清楚了。我們彼此照應。":decision==Decision.NotReady?"我聽見了。你現在還沒準備好。":"你是準備好現在出發，還是還沒準備好？告訴我你的決定。";
+        Remember("user",text);Remember("assistant",spoken);
         LastDecision=decision;LastReply=spoken;Chapter3ConversationHistory.Get(ui).Append(station.bawan.DisplayName,spoken);
         ui.status.text=UsedFallback?"連線暫時無法回應，已使用預寫回應。":decision==Decision.Unclear?"請說明你現在是否準備好出發。":"";
         Speak(spoken,Mathf.Clamp(spoken.Length*.09f,2.5f,5));
@@ -102,6 +108,11 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         yield return new WaitForSecondsRealtime(Mathf.Clamp(spoken.Length*.09f,2.5f,5));
         WaitingForReply=false;Active=false;ui.input.DeactivateInputField();ui.chat.SetActive(false);station.bawan.speaking=false;
         var callback=complete;complete=null;callback?.Invoke(decision);
+    }
+    void Remember(string role,string text)
+    {
+        history.Add(new Chapter2LocalDialogue.Message(role,text));
+        while(history.Count>6)history.RemoveAt(0);
     }
     public static Decision ExplicitDecision(string value)
     {

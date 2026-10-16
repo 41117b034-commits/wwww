@@ -1,0 +1,17 @@
+{
+    "mode": "test-audio",
+    "completed": false,
+    "elapsed": 7.470768928527832,
+    "checks": [
+        "school ambience has an active loop source=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [
+        "System.Exception: Timed out: short combat entry\r\n  at Chapter3Batch7AudioChecks+<Wait>d__6.MoveNext () [0x0007f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7AudioChecks.cs:148 \r\n  at Chapter3Batch7Probe+<Guard>d__41.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Probe.cs:77 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "school ambience isolated listener output: peak=0.00710074, rms=0.00149822, frames=11, samples=22528, DSP seconds=1.003"
+    ]
+}

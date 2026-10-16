@@ -1,0 +1,33 @@
+{
+    "mode": "test-entry-preview-support",
+    "completed": true,
+    "elapsed": 134.0041046142578,
+    "checks": [
+        "second chapter is the real loaded scene=True",
+        "uses-default-automatic-transition=True",
+        "cannot-enter-third-chapter-before-ending=True",
+        "selected-requested-council-branch=True",
+        "original-council-reaches-complete=True",
+        "fade-is-black-before-completion=True",
+        "no-result-overwrite-before-completion=True",
+        "automatic-scene-load-exactly-once=True",
+        "old-chapter-unloaded=True",
+        "clock-reset-for-third-chapter=True",
+        "third-chapter-starts-at-station=True",
+        "fresh-third-chapter-has-no-equipment=True",
+        "preview-preserves-second-chapter-result=True",
+        "entry-preserves-previous-third-chapter-result=True",
+        "chapter entry has one camera=True",
+        "chapter entry has one audio listener=True",
+        "chapter entry has one EventSystem=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [
+        "Can not play a disabled audio source"
+    ],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "Council driven through its actual coroutine and UI choices; daytime completion precondition injected for formal saves, P path retained for preview. Council clock accelerated 3x; no whole Chapter 2 or headset claim."
+    ]
+}

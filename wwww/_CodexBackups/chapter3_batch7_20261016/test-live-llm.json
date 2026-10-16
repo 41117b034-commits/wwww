@@ -1,0 +1,28 @@
+{
+    "mode": "test-live-llm",
+    "completed": true,
+    "elapsed": 32.771629333496097,
+    "checks": [
+        "main chapter scene loaded=True",
+        "isolated conversation starts before any ending=True",
+        "standalone conversation activates safe input UI=True",
+        "nonfixed emotional prompt accepted=True",
+        "second nonfixed emotional prompt accepted=True",
+        "live test completes two nonfixed replies=True",
+        "live requests restore frame budget and preserve result=True",
+        "live transcript waits for button=True",
+        "live conversation button invokes callback exactly once=True",
+        "at least one real model response passes grounding filter=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "Isolated ending-conversation component test with a canonical pending record. School mission, rescue, roll call and Mona sequence are not replayed in this mode.",
+        "Conversation is independently attached to school.gameObject. F8 cancellation exercises school-region OnDisable, not an interrupted full Chapter3Ending sequence.",
+        "Service preparation before input: 3.83s; normal ending starts preparation during outcome/roll call.",
+        "live turn one: turns=1 generated=1 fallback=0 grounded=0 seconds=11.09 error=none reply=我明白你的感受，保持冷靜是現在最重要的。我們需要專注於接下來的行動。",
+        "live turn two: turns=2 generated=1 fallback=1 grounded=0 seconds=15.02 error=對方暫時無法回覆，請稍後再試。 reply=我聽見你的想法了。眼前的經過已經清點清楚；等你讀完，我們一起聽莫那說話。"
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "mode": "test-lifecycle",
+    "completed": true,
+    "elapsed": 15.300532341003418,
+    "checks": [
+        "VR presentation uses existing head-relative canvas=True",
+        "leaving VR restores desktop canvas parent and mode=True",
+        "leaving VR restores desktop canvas geometry=True",
+        "desktop canvas retains equal scale after layout=True",
+        "presentation mode roundtrip has one camera=True",
+        "presentation mode roundtrip has one audio listener=True",
+        "presentation mode roundtrip has one EventSystem=True",
+        "save failure injection path exists=True",
+        "failed flush restores absent key=True",
+        "failed flush restores existing result=True",
+        "save failure checks restore user result=True",
+        "region switch Combat activates only its region=True",
+        "region Combat has one camera=True",
+        "region Combat has one audio listener=True",
+        "region Combat has one EventSystem=True",
+        "region switch School activates only its region=True",
+        "region School has one camera=True",
+        "region School has one audio listener=True",
+        "region School has one EventSystem=True",
+        "region switch Station activates only its region=True",
+        "region Station has one camera=True",
+        "region Station has one audio listener=True",
+        "region Station has one EventSystem=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "ConfigureVR toggled directly without an XR headset. Save failure injected at the persistence delegate; no OS disk failure induced. Desktop and XR input parity is not established."
+    ]
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "file": "test-audio.json",
+    "completed": true,
+    "checks": 11,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 9.75
+  },
+  {
+    "file": "test-bawan-leave-knife.json",
+    "completed": true,
+    "checks": 145,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 395.9
+  },
+  {
+    "file": "test-bawan-rescue-rifle.json",
+    "completed": true,
+    "checks": 159,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 392.37
+  },
+  {
+    "file": "test-cancel.json",
+    "completed": true,
+    "checks": 9,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 20.25
+  },
+  {
+    "file": "test-dialogue.json",
+    "completed": true,
+    "checks": 35,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 6.93
+  },
+  {
+    "file": "test-ending-lifecycle.json",
+    "completed": true,
+    "checks": 63,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 8.89
+  },
+  {
+    "file": "test-entry-preview-support.json",
+    "completed": true,
+    "checks": 18,
+    "errors": 0,
+    "warnings": 1,
+    "seconds": 134.0
+  },
+  {
+    "file": "test-entry-refuse.json",
+    "completed": true,
+    "checks": 20,
+    "errors": 0,
+    "warnings": 1,
+    "seconds": 125.7
+  },
+  {
+    "file": "test-entry-save.json",
+    "completed": true,
+    "checks": 9,
+    "errors": 0,
+    "warnings": 1,
+    "seconds": 5.24
+  },
+  {
+    "file": "test-entry-support.json",
+    "completed": true,
+    "checks": 20,
+    "errors": 0,
+    "warnings": 1,
+    "seconds": 131.21
+  },
+  {
+    "file": "test-lifecycle.json",
+    "completed": true,
+    "checks": 24,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 8.06
+  },
+  {
+    "file": "test-live-llm.json",
+    "completed": true,
+    "checks": 11,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 32.77
+  },
+  {
+    "file": "test-pihu-leave-rifle.json",
+    "completed": true,
+    "checks": 181,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 436.94
+  },
+  {
+    "file": "test-pihu-rescue-knife.json",
+    "completed": true,
+    "checks": 178,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 446.26
+  },
+  {
+    "file": "test-store.json",
+    "completed": true,
+    "checks": 52,
+    "errors": 0,
+    "warnings": 0,
+    "seconds": 0.12
+  }
+]

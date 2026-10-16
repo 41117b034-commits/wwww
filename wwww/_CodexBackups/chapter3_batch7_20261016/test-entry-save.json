@@ -1,0 +1,24 @@
+{
+    "mode": "test-entry-save",
+    "completed": true,
+    "elapsed": 5.240163803100586,
+    "checks": [
+        "second chapter is the real loaded scene=True",
+        "second chapter save failure injection exists=True",
+        "second chapter failed flush restores absent key=True",
+        "failed second chapter save stays with visible retry=True",
+        "second chapter failed flush restores existing key=True",
+        "failed second chapter save stays with visible retry=True",
+        "retry commits valid second chapter result=True",
+        "second chapter retry retains prior third chapter result=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [
+        "Can not play a disabled audio source"
+    ],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "Save failure and completed-stage prerequisites injected. Public retry button, normal persistence and actual scene loading executed; not an operating-system disk failure."
+    ]
+}

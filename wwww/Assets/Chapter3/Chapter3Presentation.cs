@@ -10,18 +10,44 @@ public sealed class Chapter3Presentation : MonoBehaviour
     public Button send, depart, replay, menu;
     public Image fade;
     bool vr;
+    Transform desktopParent;
+    int desktopSiblingIndex;
+    RenderMode desktopRenderMode;
+    Vector2 desktopAnchorMin, desktopAnchorMax, desktopPivot, desktopSizeDelta;
+    Vector3 desktopAnchoredPosition, desktopScale;
+    Quaternion desktopRotation;
     void Awake(){if(progress)progress.gameObject.SetActive(false);}
     public void ConfigureVR(bool enabled)
     {
-        if (vr == enabled) return;
-        vr = enabled;
-        canvas.renderMode = enabled ? RenderMode.WorldSpace : RenderMode.ScreenSpaceCamera;
+        if (vr == enabled || !canvas || (enabled && !canvas.worldCamera)) return;
+        var r = (RectTransform)canvas.transform;
         if (enabled)
         {
-            var r = (RectTransform)canvas.transform;
+            // Capture before switching render mode: Unity can resize/reposition
+            // a root Canvas as soon as its render mode changes.
+            desktopParent = r.parent; desktopSiblingIndex = r.GetSiblingIndex();
+            desktopRenderMode = canvas.renderMode;
+            desktopAnchorMin = r.anchorMin; desktopAnchorMax = r.anchorMax;
+            desktopPivot = r.pivot; desktopSizeDelta = r.sizeDelta;
+            desktopAnchoredPosition = r.anchoredPosition3D;
+            desktopRotation = r.localRotation; desktopScale = r.localScale;
+            canvas.renderMode = RenderMode.WorldSpace;
             r.SetParent(canvas.worldCamera.transform, false); r.sizeDelta = new Vector2(1600,900);
             r.localPosition = new Vector3(0,0,2.7f); r.localRotation = Quaternion.identity; r.localScale = Vector3.one * .0023f;
         }
+        else
+        {
+            // Detach from the headset and restore the original desktop layout.
+            // Anchored position preserves the layout if its parent was resized
+            // while VR was active; the screen-space Canvas then fits its camera.
+            r.SetParent(desktopParent, false); r.SetSiblingIndex(desktopSiblingIndex);
+            r.anchorMin = desktopAnchorMin; r.anchorMax = desktopAnchorMax;
+            r.pivot = desktopPivot; r.sizeDelta = desktopSizeDelta;
+            r.anchoredPosition3D = desktopAnchoredPosition;
+            r.localRotation = desktopRotation; r.localScale = desktopScale;
+            canvas.renderMode = desktopRenderMode;
+        }
+        vr = enabled;
     }
     public void Say(string name, string line)
     {

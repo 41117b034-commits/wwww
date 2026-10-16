@@ -1,0 +1,31 @@
+{
+    "mode": "test-ending-lifecycle",
+    "completed": false,
+    "elapsed": 3.5107927322387697,
+    "checks": [
+        "ending lifecycle flow references=True",
+        "ending lifecycle fresh non-refused run=True",
+        "ending lifecycle borrowed Mona to school fixture borrowed=True",
+        "ending lifecycle borrowed Mona to school original parent=True",
+        "ending lifecycle borrowed Mona to school original local position=True",
+        "ending lifecycle borrowed Mona to school original local rotation=True",
+        "ending lifecycle borrowed Mona to school original local scale=True",
+        "ending lifecycle borrowed Mona to school original active state=True",
+        "ending lifecycle borrowed Mona to school ending inactive and no retained outcome=True",
+        "ending lifecycle borrowed Mona to school borrowed ownership released=True",
+        "ending lifecycle borrowed Mona to school fresh exploration controls=True",
+        "ending lifecycle borrowed Mona to school fresh school camera and spawn=True",
+        "ending lifecycle borrowed Mona to school owned coroutine cancelled=True",
+        "ending lifecycle borrowed Mona to station fixture borrowed=True",
+        "ending lifecycle borrowed Mona to station original parent=True",
+        "ending lifecycle borrowed Mona to station original local position=False",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [
+        "System.Exception: ending lifecycle borrowed Mona to station original local position\r\n  at Chapter3Batch7Probe.Check (System.String name, System.Boolean passed) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Probe.cs:758 \r\n  at Chapter3Batch7EndingLifecycle.Verify (System.Action`2[T1,T2] check, System.String label, System.Boolean ok) [0x00000] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7EndingLifecycle.cs:181 \r\n  at Chapter3Batch7EndingLifecycle.CheckMona (System.Action`2[T1,T2] check, System.String label, Chapter3Batch7EndingLifecycle+MonaSnapshot original) [0x0002e] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7EndingLifecycle.cs:154 \r\n  at Chapter3Batch7EndingLifecycle+<Run>d__3.MoveNext () [0x004c1] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7EndingLifecycle.cs:75 \r\n  at Chapter3Batch7Probe+<Guard>d__41.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3Batch7Probe.cs:76 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence."
+    ]
+}

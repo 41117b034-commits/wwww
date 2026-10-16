@@ -252,7 +252,16 @@ public sealed class Chapter3Ending : MonoBehaviour
         if(school)school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;
         if(ui){ui.chat.SetActive(false);ui.ending.SetActive(false);ui.fade.color=Color.clear;}
     }
-    void OnDisable(){Suspend();}
-    void OnDestroy(){ReturnMona();}
+    void OnDisable()
+    {
+        // Flow calls Suspend before deactivating a region, while returning Mona
+        // and restoring the camera is still safe. Replay/menu unloads the scene
+        // directly: OnDisable then runs inside hierarchy teardown, where moving
+        // Mona out of the deactivating School parent is forbidden. Cancel only;
+        // the scene owns and destroys both regions and their actors together.
+        // Keep the borrowed state if this was only a temporary disable, so the
+        // next explicit Suspend/Begin can restore it outside the callback.
+        StopAllCoroutines();if(Conversation)Conversation.Cancel();
+    }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;
 }

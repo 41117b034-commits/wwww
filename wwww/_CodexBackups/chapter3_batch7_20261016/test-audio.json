@@ -1,0 +1,29 @@
+{
+    "mode": "test-audio",
+    "completed": true,
+    "elapsed": 9.747398376464844,
+    "checks": [
+        "school ambience has an active loop source=True",
+        "audio fixture enters the real combat region and initializes its checkpoint=True",
+        "rifle action has its actual runtime audio source=True",
+        "real player rifle Attack emits one shot=True",
+        "real knife Attack executes during output sampling=True",
+        "cooperation owns its runtime covering audio source=True",
+        "ordinary cooperation Update emitted a covering shot=True",
+        "school ambience reaches isolated listener output=True",
+        "player rifle cue reaches isolated listener output=True",
+        "Bawan cooperation cue reaches isolated listener output=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "school ambience isolated listener output: peak=0.00710074, rms=0.00144324, frames=11, samples=22528, DSP seconds=1.024",
+        "Audio-only combat setup: normal EnterCombat checkpoint initialization, followed by its existing StartFighting method; introductory fade/dialogue bypassed. This mode does not validate the combat intro timing.",
+        "player rifle isolated listener output: peak=0.0569527, rms=0.00738386, frames=8, samples=16384, DSP seconds=1.323",
+        "knife action isolated listener output: peak=0, rms=0, frames=6, samples=12288, DSP seconds=0.853. Current Slash/knife impact and reload have no dedicated audio trigger; this is not a knife-sound pass.",
+        "Bawan covering shot isolated listener output: peak=0.205265, rms=0.00984441, frames=30, samples=61440, DSP seconds=2.581",
+        "Audio boundary: isolated AudioListener buffers from Editor Play Mode, public weapon triggers, injected mission/route prerequisites and enemy HoldFire. No native audio-device recording, human listening, spatial-mix balance, headset, full soundtrack or dedicated knife/reload sound claim."
+    ]
+}

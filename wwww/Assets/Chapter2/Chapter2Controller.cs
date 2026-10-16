@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
 public sealed partial class Chapter2Controller : MonoBehaviour
@@ -31,7 +30,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     [Header("Replace this clip with the final opening film")]
     public VideoClip openingFilm;
     [Min(1)] public float videoPrepareTimeout = 12;
-    public bool stopEditorAfterEnding = true;
+    // Kept for older editor probes; completed chapters now continue into Chapter 3.
+    [HideInInspector] public bool stopEditorAfterEnding = true;
     public bool saveResult = true;
     [Header("Interaction")]
     [Min(.1f)] public float treeArrivalDistance = 1.5f;
@@ -84,7 +84,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         forestEscort.Initialize(this);
         Chapter2CastNames.Apply(this);
         ui.buttonA.onClick.AddListener(SelectA); ui.buttonB.onClick.AddListener(SelectB);
-        ui.continueButton.onClick.AddListener(ReturnToMenu);
+        ui.continueButton.onClick.AddListener(ContinueToChapter3);
         player.canMove = false; player.canLook = false;
         dayGroup.SetActive(true); nightGroup.SetActive(false); fallenStump.SetActive(false); axe.SetActive(false);
         ambience.clip = forestAudio; ambience.loop = true; ambience.Play();
@@ -118,7 +118,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
             ui.SetMeter(RhythmPhase, ValidCuts);
             if (player.ActionPressed) TryChop();
         }
-        if (CurrentStage == Stage.Complete && player.ActionPressed) ReturnToMenu();
+        if (CurrentStage == Stage.Complete && player.ActionPressed) ContinueToChapter3();
     }
     public void SelectA() { Choose(0); }
     public void SelectB() { Choose(1); }
@@ -247,16 +247,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         }
         else yield return new WaitForSeconds(.8f);
         SetStage(Stage.Complete);
-        // A preview has no completed daytime route and must not overwrite a real result.
-        if (saveResult && !meetingShortcutUsed)
-        {
-            var result = new Chapter2Result { treeChoice = TreeDecision == 0 ? "protect" : "fell", meetingChoice = MeetingDecision == 0 ? "support" : "refuse", woodIntegrity = Integrity, validCuts = ValidCuts, failedCuts = FailedCuts, casualties = TreeDecision == 0 ? 1 : 0, completed = true };
-            PlayerPrefs.SetString("WusheEvent.Chapter2.Result", JsonUtility.ToJson(result)); PlayerPrefs.Save();
-        }
-        ui.continueButton.gameObject.SetActive(true); player.canLook = false;
-#if UNITY_EDITOR
-        if (stopEditorAfterEnding) UnityEditor.EditorApplication.isPlaying = false;
-#endif
+        FinishChapterAndContinue();
     }
     IEnumerator Intro()
     {
@@ -472,18 +463,14 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         for (float t = 0; t < 1; t += Time.unscaledDeltaTime / Mathf.Max(.01f, seconds)) { ui.fade.color = new Color(0, 0, 0, Mathf.Lerp(from, target, t)); yield return null; }
         ui.fade.color = new Color(0, 0, 0, target);
     }
-    void ReturnToMenu()
-    {
-        const string menu = "選擇章節ˊ";
-        if (Application.CanStreamedLevelBeLoaded(menu)) SceneManager.LoadScene(menu);
-    }
     void OnDisable()
     {
+        if (exploration) exploration.CancelExploration();
         if (chapterAudio) chapterAudio.StopAllAudio();
         if (flow != null) StopCoroutine(flow);
         if (video) { video.errorReceived -= VideoError; video.loopPointReached -= VideoEnd; video.Stop(); }
         if (videoTexture) { videoTexture.Release(); Destroy(videoTexture); }
-        if (ui) { ui.buttonA.onClick.RemoveListener(SelectA); ui.buttonB.onClick.RemoveListener(SelectB); ui.continueButton.onClick.RemoveListener(ReturnToMenu); }
+        if (ui) { ui.buttonA.onClick.RemoveListener(SelectA); ui.buttonB.onClick.RemoveListener(SelectB); ui.continueButton.onClick.RemoveListener(ContinueToChapter3); }
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
     }
     [Serializable]

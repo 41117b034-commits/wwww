@@ -1,0 +1,23 @@
+{
+    "result": "preflight",
+    "outputPath": "",
+    "backend": "Mono2x",
+    "scenes": [
+        "Assets/Scenes/點選介面.unity",
+        "Assets/Scenes/選擇章節ˊ.unity",
+        "Assets/Scenes/設定內容.unity",
+        "Assets/Scenes/字幕選單.unity",
+        "Assets/Scenes/第一章點選介面.unity",
+        "Assets/Scenes/第一章新版 1_找回備份.unity",
+        "Assets/Scenes/第一章新版警察.unity",
+        "Assets/Scenes/第二章.unity",
+        "Assets/Scenes/第三章.unity"
+    ],
+    "dependencyBytes": 3024862828,
+    "freeBytes": 20927467520,
+    "seconds": 0.0,
+    "size": 0,
+    "errors": 0,
+    "warnings": 0,
+    "messages": []
+}

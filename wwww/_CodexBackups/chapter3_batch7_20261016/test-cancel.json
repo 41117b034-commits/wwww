@@ -1,0 +1,23 @@
+{
+    "mode": "test-cancel",
+    "completed": true,
+    "elapsed": 20.246959686279298,
+    "checks": [
+        "main chapter scene loaded=True",
+        "isolated conversation starts before any ending=True",
+        "standalone conversation activates safe input UI=True",
+        "nonfixed emotional prompt accepted=True",
+        "cancel test has a pending nonfixed request=True",
+        "F8 cancels pending request and restores controls and frame budget=True",
+        "late reply cannot revive cancelled UI or advance ending=True",
+        "cancelled conversation never saves=True",
+        "final cleanup restores original player result=True"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Input System uses a temporary cloned settings object with background input enabled for driver events. Original project settings restored; not native keyboard evidence.",
+        "Isolated ending-conversation component test with a canonical pending record. School mission, rescue, roll call and Mona sequence are not replayed in this mode.",
+        "Conversation is independently attached to school.gameObject. F8 cancellation exercises school-region OnDisable, not an interrupted full Chapter3Ending sequence."
+    ]
+}

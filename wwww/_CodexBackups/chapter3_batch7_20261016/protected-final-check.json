@@ -1,0 +1,32 @@
+[
+  {
+    "path": "Assets/Scenes/第一章新版警察.unity",
+    "sha256": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+    "matches": true
+  },
+  {
+    "path": "Assets/Scenes/第二章.unity",
+    "sha256": "8E7CEFA8B165F6D22A66B61BD479612AABA61C06212124D171C7FEEC7D6B2B74",
+    "matches": true
+  },
+  {
+    "path": "Assets/Scenes/第三章.unity",
+    "sha256": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+    "matches": true
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+    "matches": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Flow.cs",
+    "sha256": "C309E17A4E6A2BC575F365BB07E5CFB43D825F06202BBFB0F5A67BFAE49E497D",
+    "matches": true
+  },
+  {
+    "path": "Assets/Editor/Chapter2GameViewScaleGuard.cs",
+    "sha256": "A35E635A1667C70A755613AAD299444FB50093D3CEA9106C4F77E1AD089AE723",
+    "matches": true
+  }
+]

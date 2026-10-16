@@ -28,14 +28,15 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
     public void PrepareService()
     {
         if(!dialogue)dialogue=gameObject.AddComponent<Chapter2LocalDialogue>();
-        dialogue.StartCoroutine(dialogue.Prepare());
+        if(!dialogue.Ready)dialogue.StartCoroutine(dialogue.Prepare());
     }
     public void Begin(Chapter3StationController owner,Action done)
     {
-        Cancel();station=owner;ui=owner.ui;complete=done;
+        ResetConversation(true);station=owner;ui=owner.ui;complete=done;
         if(!dialogue)dialogue=gameObject.AddComponent<Chapter2LocalDialogue>();
         if(!bound){ui.send.onClick.AddListener(Send);ui.input.onSubmit.AddListener(SubmitFromInput);bound=true;}
         CompletedTurns=GeneratedReplies=FallbackReplies=0;history.Clear();Active=true;
+        LastReplyError=null;LastReplySeconds=0;
         ui.Say("",null);ui.chat.SetActive(true);ui.depart.gameObject.SetActive(false);
         ui.input.gameObject.SetActive(true);ui.send.gameObject.SetActive(true);
         ui.input.interactable=ui.send.interactable=true;ui.input.text="";ui.progress.gameObject.SetActive(false);
@@ -74,8 +75,10 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         yield return null;
         float started=Time.realtimeSinceStartup;
         int request=++version;bool received=false;string answer=null,error=null;
-        dialogue.StartCoroutine(dialogue.AskWithPersona(Persona(),history,text,(a,e)=>{if(request!=version)return;answer=a;error=e;received=true;},Mathf.CeilToInt(replyTimeout),160,.35f));
-        float until=Time.realtimeSinceStartup+replyTimeout;
+        float timeout=float.IsNaN(replyTimeout)||float.IsInfinity(replyTimeout)?15:Mathf.Clamp(replyTimeout,.01f,60);
+        var requestHistory=new List<Chapter2LocalDialogue.Message>(history);
+        dialogue.StartCoroutine(dialogue.AskWithPersona(Persona(),requestHistory,text,(a,e)=>{if(request!=version||!Active)return;answer=a;error=e;received=true;},Mathf.CeilToInt(timeout),160,.35f));
+        float until=Time.realtimeSinceStartup+timeout;
         while(!received&&Time.realtimeSinceStartup<until)yield return null;
         if(!received){version++;dialogue.CancelRequest();error="timeout";}
         bool fallback=!string.IsNullOrEmpty(error)||string.IsNullOrWhiteSpace(answer);
@@ -84,9 +87,10 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         if(fallback)
         {
             answer=Chapter3DialogueGrounding.OpeningReply(text);
-            history.Add(new Chapter2LocalDialogue.Message("user",text));history.Add(new Chapter2LocalDialogue.Message("assistant",answer));FallbackReplies++;
+            FallbackReplies++;
         }
         else GeneratedReplies++;
+        Remember("user",text);Remember("assistant",answer);
         CompletedTurns++;WaitingForReply=false;
         Chapter3ConversationHistory.Get(ui).Append(station.bawan.DisplayName,answer);ui.status.text=fallback?"連線暫時無法回應，已接續預寫對話。":"聽完巴萬的話，再告訴他你的想法。";
         Speak(answer);
@@ -106,9 +110,18 @@ public sealed class Chapter3OpeningConversation : MonoBehaviour
         StartCoroutine(StopSpeaking(current,seconds));
     }
     IEnumerator StopSpeaking(int current,float seconds){yield return new WaitForSeconds(seconds);if(current==speechVersion&&station)station.bawan.speaking=false;}
-    public void Cancel()
+    void Remember(string role,string text)
     {
-        version++;speechVersion++;StopAllCoroutines();if(dialogue)dialogue.CancelRequest();
+        history.Add(new Chapter2LocalDialogue.Message(role,text));
+        while(history.Count>6)history.RemoveAt(0);
+    }
+    public void Cancel(){ResetConversation(false);}
+    void ResetConversation(bool preservePreparation)
+    {
+        version++;speechVersion++;StopAllCoroutines();
+        // Begin may follow the establishing shot while the local model is still
+        // loading. Keep that preparation alive, but always cancel an old answer.
+        if(dialogue&&(!preservePreparation||dialogue.Busy))dialogue.CancelRequest();
         frameBudget.End();
         Active=WaitingForReply=false;complete=null;composing=false;compositionFrame=-10;
         if(station&&station.bawan)station.bawan.speaking=false;

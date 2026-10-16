@@ -1,0 +1,42 @@
+[
+  {
+    "path": "Assets/Chapter2/Chapter2Controller.cs",
+    "sha256": "F253966305897412D6D075B6E4001083601AC32B391F405CB15DAE145BB545AA"
+  },
+  {
+    "path": "Assets/Chapter2/Chapter2Controller.Transition.cs",
+    "sha256": "42DA7EB182022ED2F2AC144262ADE40DB38EF387766ABA5B0B9C1300C42A6413"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3OpeningConversation.cs",
+    "sha256": "6FC811CE84318AFB586B7F0624CAB9D8A8271E8FD0C78330C5C9C7A5DB4480D9"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3ReadinessConversation.cs",
+    "sha256": "F2FA6836C8A17D14AAC16ABC472F80AAD30186D8593DBA70AA16A1A4EA90CE21"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3EndingConversation.cs",
+    "sha256": "39F440FD077FFE6C704142C03B16E14D9544BE5E1560C0704C7A446CAFA3879E"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Presentation.cs",
+    "sha256": "76B69D0E5527B8482D700ED2E1535ECF4FA2EFEF3F254EF7FDFBE0DBC37C259E"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3ResultStore.cs",
+    "sha256": "CDCAAAFBC91806EAD307B04047555C1CA01AEE48DFB53A9DB1A96FA900EE2A63"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Ending.cs",
+    "sha256": "7860C45052B6E63004E0228F1BAD0CFDDD095FBB5A9AF4B0CFD0E90416A3C529"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3StationController.cs",
+    "sha256": "AF12695339FDB14257A0D4C3408FF77CA6E47958EB0D89D122B62B7720AD8BAC"
+  },
+  {
+    "path": "Assets/TextMesh Pro/Examples & Extras/Scripts/TMP_TextInfoDebugTool.cs",
+    "sha256": "9D9B2190134F442421E5E90CBEDE019D551100312F32CC0F51F75EC7AEDF7C1B"
+  }
+]

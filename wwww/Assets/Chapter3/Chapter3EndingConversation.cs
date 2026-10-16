@@ -48,7 +48,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
 
     public void Begin(Chapter3SchoolController owner,Chapter3ResultStore.Record ending,Action done)
     {
-        Cancel();
+        ResetConversation(true);
         if(!owner||!owner.ui||!owner.player||!owner.bawan||!Chapter3ResultStore.IsValid(ending))
         {LastReplyError="invalid_result";return;}
         school=owner;ui=owner.ui;complete=done;
@@ -254,9 +254,14 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
     }
     IEnumerator StopSpeaking(int speech,float seconds)
     {yield return new WaitForSecondsRealtime(seconds);if(speech==speechVersion&&school&&school.bawan)school.bawan.speaking=false;}
-    public void Cancel()
+    public void Cancel(){ResetConversation(false);}
+    void ResetConversation(bool preservePreparation)
     {
-        version++;speechVersion++;StopAllCoroutines();if(dialogue)dialogue.CancelRequest();frameBudget.End();
+        version++;speechVersion++;StopAllCoroutines();
+        // Opening the panel must not abort the preparation started during the
+        // outcome/roll call. A previous answer still gets cancelled immediately.
+        if(dialogue&&(!preservePreparation||dialogue.Busy))dialogue.CancelRequest();
+        frameBudget.End();
         Active=WaitingForReply=false;complete=null;history.Clear();
         if(school&&school.bawan)school.bawan.speaking=false;
         if(keyboard!=null)keyboard.onIMECompositionChange-=Composition;keyboard=null;composing=false;compositionFrame=-10;
