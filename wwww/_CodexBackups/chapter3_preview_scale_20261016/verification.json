@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-16",
+  "cause": "Maximized Unity Game View uniformly zoomed to 3.3x, cropping the render",
+  "beforeScale": [
+    3.3068275,
+    3.3068273
+  ],
+  "afterMaximizedScale": [
+    0.7775463,
+    0.7775463
+  ],
+  "normalLayoutScale": [
+    0.4539062,
+    0.4539062
+  ],
+  "checks": [
+    "Observed original live 3.3x crop",
+    "Restored live zoom using Unity UI",
+    "Normal and maximized previews visually checked",
+    "Original-project Play Mode opening and Bawan chat inspected in both layouts",
+    "Stopped Play and returned to maximized preview at 0.78x"
+  ],
+  "sceneSha256": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+  "limits": [
+    "No full chapter regression",
+    "No VR headset test",
+    "No standalone build"
+  ],
+  "runtimeEdited": false,
+  "sceneEdited": false,
+  "commitPush": false
+}
