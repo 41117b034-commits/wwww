@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public sealed class Chapter3MissionUI : MonoBehaviour
 {
     public GameObject choice, result;
-    public Button bawan, pihu, retry, replay;
+    public Button tado, bawan, pihu, retry, replay;
     public Text resultTitle, resultBody;
     public static Chapter3MissionUI Build(Chapter3Presentation presentation)
     {
@@ -13,13 +13,16 @@ public sealed class Chapter3MissionUI : MonoBehaviour
         root.transform.SetParent(presentation.canvas.transform,false);
         var rect=(RectTransform)root.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
         var ui=root.AddComponent<Chapter3MissionUI>();var font=presentation.subtitle.font;
-        var choice=Panel(root.transform,"分工",new Vector2(.12f,.23f),new Vector2(.88f,.77f));ui.choice=choice.gameObject;
-        Label(choice,"選擇你要承擔的任務",font,34,new Vector2(.045f,.80f),new Vector2(.955f,.96f));
-        Label(choice,"兩隊分頭行動，在校後空地匯合。",font,24,new Vector2(.045f,.68f),new Vector2(.955f,.79f));
-        ui.bawan=Button(choice,"1  跟巴萬突破",font,new Vector2(.04f,.42f),new Vector2(.48f,.63f));
-        ui.pihu=Button(choice,"2  跟比胡掩護",font,new Vector2(.52f,.42f),new Vector2(.96f,.63f));
-        Label(choice,"先拆橫木，再掩護巴萬開側門。\n看準同伴製造的空檔，合作突破。",font,25,new Vector2(.055f,.09f),new Vector2(.475f,.39f));
-        Label(choice,"分段清除威脅，掩護比胡穿越。\nE 下令前進／撤回，逐段到掩體。",font,25,new Vector2(.535f,.09f),new Vector2(.955f,.39f));
+        var choice=Panel(root.transform,"分工",new Vector2(.08f,.20f),new Vector2(.92f,.80f));ui.choice=choice.gameObject;
+        Label(choice,"選擇你要承擔的任務",font,34,new Vector2(.04f,.83f),new Vector2(.96f,.97f));
+        Label(choice,"三隊同時行動。跟上一名領隊，最後在校後匯合。",font,24,new Vector2(.04f,.72f),new Vector2(.96f,.83f));
+        ui.tado=Button(choice,"1  跟達多攻入學校",font,new Vector2(.035f,.48f),new Vector2(.335f,.69f));
+        ui.bawan=Button(choice,"2  跟巴萬突破",font,new Vector2(.35f,.48f),new Vector2(.65f,.69f));
+        ui.pihu=Button(choice,"3  跟比胡掩護",font,new Vector2(.665f,.48f),new Vector2(.965f,.69f));
+        Label(choice,"進入運動會場、跟隊推進。\n召回落後族人，一起撤出。",font,25,new Vector2(.045f,.16f),new Vector2(.325f,.45f));
+        Label(choice,"拆除橫木、掩護巴萬開門。\n合作打通學校側後通道。",font,25,new Vector2(.36f,.16f),new Vector2(.64f,.45f));
+        Label(choice,"處理威脅，掩護比胡穿越。\nE 下令前進／撤回。",font,25,new Vector2(.675f,.16f),new Vector2(.955f,.45f));
+        Label(choice,"沿用你攜帶的獵刀或步槍。",font,22,new Vector2(.04f,.035f),new Vector2(.96f,.13f));
         var end=Panel(root.transform,"任務結果",new Vector2(.2f,.25f),new Vector2(.8f,.75f));ui.result=end.gameObject;
         ui.resultTitle=Label(end,"",font,34,new Vector2(.06f,.75f),new Vector2(.94f,.95f));
         ui.resultBody=Label(end,"",font,27,new Vector2(.06f,.30f),new Vector2(.94f,.72f));

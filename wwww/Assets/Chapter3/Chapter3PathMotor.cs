@@ -28,6 +28,11 @@ public sealed class Chapter3PathMotor
     static bool Obstacle(Collider collider)
     {
         if(collider is CharacterController||collider.GetComponentInParent<Chapter2Actor>())return false;
+        // The recalled ally follows behind Tado with an explicit separation
+        // rule. Treating that moving companion as a wall traps both at the
+        // first shared waypoint. Other crowd members remain path obstacles.
+        var crowd=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
+        if(crowd&&crowd.IsRouteCompanion)return false;
         return collider.bounds.max.y>.28f;
     }
     public static bool Clear(Vector3 from,Vector3 to)

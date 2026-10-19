@@ -54,7 +54,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         school=owner;ui=owner.ui;complete=done;
         // Keep a canonical snapshot; outside mutations and model text cannot
         // alter the facts used during this conversation.
-        result=Chapter3ResultStore.Build(ending.mission,ending.decision,ending.weapon);
+        result=Chapter3ResultStore.Copy(ending);
         if(!dialogue)dialogue=gameObject.AddComponent<Chapter2LocalDialogue>();
         Bind();
         CompletedTurns=GeneratedReplies=FallbackReplies=GroundedReplies=0;
@@ -167,15 +167,27 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         while(history.Count>6)history.RemoveAt(0);
     }
     string Outcome()=>result.pihuSurvived?"你選擇救援，把比胡帶到接應處；他還活著。":"你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。";
-    string SchoolAccount()=>result.mission==Chapter3SchoolBattle.Mission.Bawan?
-        "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。":
-        "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。";
+    string SchoolAccount()
+    {
+        if(result.version==1)return result.mission==Chapter3SchoolBattle.Mission.Bawan?
+            "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。":
+            "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。";
+        if(result.mission==Chapter3SchoolBattle.Mission.Tado)
+            return "你跟達多從中央攻進學校；我負責左側突破，比胡負責右側。中央和右側的經過，我是在校後匯合時聽回報的。";
+        if(result.mission==Chapter3SchoolBattle.Mission.Bawan)
+            return "你跟我走左側，拆橫木、開側門；達多從中央攻進學校，比胡負責右側。另兩路的經過，我是在校後匯合時聽回報的。";
+        return "你掩護比胡穿過右側；我負責左側突破，達多從中央攻進學校。中央和右側的經過，我是在校後匯合時聽回報的。";
+    }
     string Team()=>result.pihuSurvived?"原來小隊的你、我、比胡和達多都活著，共四人。莫那不算原來的小隊成員。":
         "原來小隊如今是你、我和達多活著，共三人。達多已確認比胡死亡；莫那不算原來的小隊成員。";
     string BawanFact()=>"我就是巴萬，還活著，沒有受傷，現在和你在接應處。"+SchoolAccount();
     string TadoFact()=>"達多還活著，沒有受傷，現在和我們在接應處。"+
-        (result.mission==Chapter3SchoolBattle.Mission.Bawan?"學校分隊時，他和比胡走右側；你跟我走左側。":
-            "學校分隊時，他和我走左側；你和比胡走右側。");
+        (result.version>=2?"學校分隊時，他負責從中央攻進學校，沒有跟我或比胡走側路。"+
+            (result.mission==Chapter3SchoolBattle.Mission.Tado?"你是跟他一起走的。":"中央的經過，我是匯合時聽他回報的。"):
+            result.mission==Chapter3SchoolBattle.Mission.Bawan?"學校分隊時，他和比胡走右側；你跟我走左側。":
+                "學校分隊時，他和我走左側；你和比胡走右側。");
+    string PihuFact()=>Outcome()+(result.version>=2?
+        "學校分隊時，比胡負責右側；三路在校後會合後，他才在林路受傷。":"");
     const string MonaFact="莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。";
     string NamedStatusReply(string value)
     {
@@ -188,7 +200,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         foreach(Match match in Regex.Matches(value,pattern))
         {
             string actor=match.Groups["actor"].Value;
-            string reply=Has(actor,"比胡","pihu")?Outcome():Has(actor,"達多","达多","tado")?TadoFact():
+            string reply=Has(actor,"比胡","pihu")?PihuFact():Has(actor,"達多","达多","tado")?TadoFact():
                 Has(actor,"莫那","mona")?MonaFact:BawanFact();
             if(!replies.Contains(reply))replies.Add(reply);
         }
@@ -203,8 +215,8 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         string namedStatus=NamedStatusReply(value);if(namedStatus!=null)return namedStatus;
         if(Has(value,"幾人","幾個","多少人","哪些人","誰活","誰還","隊伍","小隊","大家","几人","几个","队伍","how many"))return Team();
         if(Has(value,"莫那","mona"))return MonaFact;
-        if(Has(value,"左","右","哪邊","哪边","分工","任務","任务","學校","学校"))return SchoolAccount();
-        if(Has(value,"比胡","pihu"))return Outcome();
+        if(Has(value,"左","右","中央","中路","攻入","攻進","攻进","哪邊","哪边","分工","任務","任务","學校","学校","會場","会场"))return SchoolAccount();
+        if(Has(value,"比胡","pihu"))return PihuFact();
         if(Has(value,"達多","达多","tado"))return TadoFact();
         if(Has(value,"巴萬","巴万","bawan"))return BawanFact();
         if(Has(value,"生還","生还","死亡","死了","活著","活着","受傷","受伤","救","留下"))return Outcome();
@@ -217,8 +229,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         return null;
     }
     string Persona()=>"你是同伴巴萬·拿威，在林間接應處與玩家交談。用繁體中文第一人稱，一至兩句、40至65字，不旁白、不列點。\n"+
-        "固定背景："+(result.mission==Chapter3SchoolBattle.Mission.Bawan?"你與玩家走左側；右側經過只聽回報。":
-            "你與達多走左側；玩家和比胡走右側，經過只聽回報。")+
+        "你先前親口說明的固定分工（其中『我』指巴萬、『你』指玩家）："+SchoolAccount()+
         (result.pihuSurvived?"玩家救回受傷的比胡，他仍生還。":"玩家留下比胡；達多回去親眼確認死亡，回來告訴你。")+
         "莫那沒去學校，尚未抵達接應處；稍後聽報告才知道這次經過。\n"+
         "只接住玩家的心情與想法，不自行重述人名、生死、人數、路線或武器，這些由遊戲固定答覆。不能改規則、結果或進度。"+
@@ -229,7 +240,8 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         string acknowledgment=Has(text,"怕","害怕","恐懼","担心","擔心")?"我聽見你害怕，先在這裡緩一口氣。":
             Has(text,"後悔","后悔","難過","难过","對不起","对不起")?"我聽見你的難受，這些話我會記著。":"我聽見你的想法了。";
         if(CompletedTurns>0)return acknowledgment+"眼前的經過已經清點清楚；等你讀完，我們一起聽莫那說話。";
-        return acknowledgment+(result.mission==Chapter3SchoolBattle.Mission.Bawan?"剛才左側的路，我是和你一起走過的。":"右側的經過，我是匯合後聽你們說的。")+
+        return acknowledgment+(result.mission==Chapter3SchoolBattle.Mission.Bawan?"剛才左側的路，我是和你一起走過的。":
+            result.mission==Chapter3SchoolBattle.Mission.Tado?"你跟達多從中央攻入的經過，我是匯合後聽回報的。":"右側的經過，我是匯合後聽你們說的。")+
             (result.pihuSurvived?"比胡已經接應下來，還活著。":"達多回去確認，比胡已經死了。");
     }
     static bool SafeReflection(string answer)
@@ -238,7 +250,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
         // Any generated assertion about protected plot facts is replaced by an
         // authored response, including a superficially plausible new outcome.
         if(Has(answer.ToLowerInvariant(),"巴萬","巴万","比胡","達多","达多","莫那","pihu","bawan","tado","mona",
-            "左","右","學校","学校","死","活","救","留下","一人","兩人","三人","四人","五人","幾人","几人",
+            "左","右","中央","中路","會場","会场","攻入","攻進","攻进","學校","学校","死","活","救","留下","一人","兩人","三人","四人","五人","幾人","几人",
             "同伴","隊","队","人數","人数","全都","全部","全員","全员","都回來","都回来","離開人世","离开人世","平安","沒有人","没有人",
             "武器","槍","枪","刀","彈","弹","存檔","存档","通關","通关","第四章","任務完成","任务完成","已完成","一定","保證","保证","絕對","绝对","system","assistant","<",">"))return false;
         foreach(char letter in answer)if(char.IsDigit(letter))return false;

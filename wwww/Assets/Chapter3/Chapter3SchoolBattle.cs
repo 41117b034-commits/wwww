@@ -7,7 +7,8 @@ using UnityEngine.InputSystem;
 public sealed partial class Chapter3SchoolBattle : MonoBehaviour
 {
     public enum Stage { Inactive, AwaitingTado, Observing, Choice, Outbreak, Fighting, Down, Regroup, Complete }
-    public enum Mission { None, Bawan, Pihu }
+    // Keep the original saved values; the third route is appended, not inserted.
+    public enum Mission { None=0, Bawan=1, Pihu=2, Tado=3 }
     public Stage CurrentStage {get;private set;}
     public Mission Selected {get;private set;}
     public bool Fighting=>CurrentStage==Stage.Fighting;
@@ -66,13 +67,13 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(Rescue)Rescue.Suspend();
         school=owner;combat=school.flow.combat;player=school.player;ui=school.ui;
         ambient=school.GetComponentInChildren<Chapter3SchoolAmbient>(true);
-        StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();ClearEnemies();Selected=Mission.None;CurrentStage=Stage.AwaitingTado;Step=Retries=CheckpointStep=0;
+        StopAllCoroutines();StopAssault();StopBreakthrough();ClearSchoolPoses();ClearEnemies();Selected=Mission.None;CurrentStage=Stage.AwaitingTado;Step=Retries=CheckpointStep=0;
         ThreatRevealing=CrossingArrived=false;
         Health=100;EscortPressure=0;WorkProgress=0;AtCrossing=Advancing=Returning=false;noticeUntil=0;
         if(!Menu)
         {
             Menu=Chapter3MissionUI.Build(ui);
-            Menu.bawan.onClick.AddListener(()=>Choose(Mission.Bawan));Menu.pihu.onClick.AddListener(()=>Choose(Mission.Pihu));
+            Menu.tado.onClick.AddListener(()=>Choose(Mission.Tado));Menu.bawan.onClick.AddListener(()=>Choose(Mission.Bawan));Menu.pihu.onClick.AddListener(()=>Choose(Mission.Pihu));
             Menu.retry.onClick.AddListener(()=>Retry());Menu.replay.onClick.AddListener(()=>school.flow.EnterSchool());
         }
         Menu.Hide();
@@ -97,40 +98,45 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="空白鍵略過當句台詞";
         // Proximity starts the conversation immediately, without a viewing task.
-        yield return Say(school.tado,"巴萬走左側，比胡走右側。你選一邊跟上，我去另一邊支援。",6.5f,true);
-        yield return Say(school.bawan,"左邊要拆橫木、開側門；右邊要掩護比胡穿越。最後在校後集合。",5,true);
-        CurrentStage=Stage.Choice;ui.Say("",null);ui.hint.text="點選任務，或按數字 1／2";ui.objective.text="決定分工";
+        yield return Say(school.tado,"我帶人進運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",6.5f,true);
+        yield return Say(school.bawan,"跟緊各自的領隊，別落單。最後在校後空地集合。",4.2f,true);
+        CurrentStage=Stage.Choice;ui.Say("",null);ui.hint.text="點選任務，或按數字 1／2／3";ui.objective.text="決定分工";
         Menu.choice.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public bool Choose(Mission mission)
     {
-        if(CurrentStage!=Stage.Choice||mission==Mission.None)return false;
+        if(CurrentStage!=Stage.Choice||(mission!=Mission.Tado&&mission!=Mission.Bawan&&mission!=Mission.Pihu))return false;
         Selected=mission;CheckpointStep=0;Menu.Hide();CurrentStage=Stage.Outbreak;StartCoroutine(Outbreak());return true;
     }
     IEnumerator Outbreak()
     {
-        ui.hint.text="";ui.objective.text="槍聲響起";player.canMove=false;player.FocusOn(new Vector3(-4,1.3f,25));
+        ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(-2,1.2f,22));
         if(ambient)ambient.Panic();
         for(int i=0;i<3;i++){if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f-i*.10f);yield return new WaitForSeconds(.65f);}
-        yield return Say(school.tado,Selected==Mission.Bawan?"你跟巴萬走左邊，我和比胡走右邊。校後會合！":"你跟比胡走右邊，我去左邊支援巴萬。校後會合！",4.5f,true);
-        yield return Say(Selected==Mission.Bawan?school.bawan:school.pihu,Selected==Mission.Bawan?"跟我來，把擋路的橫木拆掉！":"你看住前面的警察。我聽你的信號前進，必要時叫我撤回！",4.5f,false);
+        // Keep the camera on the actual school event, not only on the speaker.
+        ui.Say("", "會場遭到襲擊，日本平民也遭到殺害。人群在槍聲與呼喊中四散。");
+        yield return new WaitForSeconds(4.5f);ui.Say("",null);
+        yield return Say(school.tado,"各隊照分工走！我進會場，巴萬走左邊，比胡走右邊。校後會合！",4.5f,false);
+        var leader=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
+        yield return Say(leader,Selected==Mission.Tado?"跟緊我，從校門進去！看住前面的警察，別讓同伴落單。":Selected==Mission.Bawan?"跟我來，把擋路的橫木拆掉！":"你看住前面的警察。我聽你的信號前進，必要時叫我撤回！",4.5f,false);
         ResetMission();
     }
     void ResetMission()
     {
-        ClearEnemies();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
+        if(Selected==Mission.Tado){ResetAssaultMission();return;}
+        StopAssault();ClearEnemies();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
         Step=CheckpointStep;guideIndex=0;otherIndex=otherEscortIndex=0;
         Health=100;EscortPressure=0;WorkProgress=0;AtCrossing=Advancing=Returning=false;hurtAt=-10;noticeUntil=0;
         ThreatRevealing=CrossingArrived=dangerWasVisible=false;dangerPoseUntil=nextCoverCall=0;observedEnemyShots=0;
         threatIntroduced=new bool[2];scenery.gameObject.SetActive(true);ResetBreakthrough(CheckpointStep);
         school.bawan.transform.position=Step==0?P(-3,-8):checkpointBawan;
         school.pihu.transform.position=Step==0?P(1,-8):checkpointPihu;
-        school.tado.transform.position=Step==0?P(Selected==Mission.Bawan?2:-4,-9.5f):checkpointTado;
+        school.tado.transform.position=Step==0?P(0,-5):checkpointTado;
         foreach(var c in Companions)c.ResetReaction();
         activeRoute=Selected==Mission.Bawan?west[Step]:Step==0?new[]{P(8,-8),P(25,-4),P(30,7)}:east[Step];
         otherRoute=Selected==Mission.Bawan?eastSquad:school.breakthroughRoute;
         otherIndex=Step==0?(Selected==Mission.Bawan?0:1):checkpointOtherIndex;
-        otherEscortIndex=Step==0?otherIndex:checkpointOtherEscortIndex;
+        otherEscortIndex=Step==0?0:checkpointOtherEscortIndex;
         if(Selected==Mission.Pihu&&Step>0){AtCrossing=true;safePihu=checkpointPihu;}
         // The other squad takes its own side of the same school, without teleporting.
         combat.SchoolEncounter=this;combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
@@ -168,14 +174,15 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(!school||CurrentStage==Stage.Inactive)return;
         if(CurrentStage==Stage.Choice)
         {
-            if(Keyboard.current?.digit1Key.wasPressedThisFrame==true)Choose(Mission.Bawan);
-            else if(Keyboard.current?.digit2Key.wasPressedThisFrame==true)Choose(Mission.Pihu);
+            if(Keyboard.current?.digit1Key.wasPressedThisFrame==true)Choose(Mission.Tado);
+            else if(Keyboard.current?.digit2Key.wasPressedThisFrame==true)Choose(Mission.Bawan);
+            else if(Keyboard.current?.digit3Key.wasPressedThisFrame==true)Choose(Mission.Pihu);
         }
         if(CurrentStage==Stage.Down){if(Keyboard.current?.rKey.wasPressedThisFrame==true)Retry();return;}
         if(!Fighting)return;
         if(noticeUntil>0&&Time.time>=noticeUntil){noticeUntil=0;ui.Say("",null);}
         combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
-        if(Selected==Mission.Bawan)UpdateBreakthrough();else UpdateCover();
+        if(Selected==Mission.Tado)UpdateAssault();else if(Selected==Mission.Bawan)UpdateBreakthrough();else UpdateCover();
         if(!Fighting)return;
         MoveOtherSquad();
         bool supply=combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2;
@@ -193,7 +200,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         if(Rescue&&Rescue.Active){Rescue.Damage(amount,source);return;}
         if(!Fighting||amount<=0)return;Health=Mathf.Max(0,Health-amount);hurtAt=Time.time;WorkProgress=0;
-        if(Health==0)Fail("你受傷倒下了",CheckpointStep>0?"從第二段安全位置重試。\n第一段已完成，任務與武器選擇保留。":"從目前任務起點重試。\n任務與武器選擇保留。");
+        if(Health==0)Fail("你受傷倒下了",CheckpointStep>0?"從第 "+(CheckpointStep+1)+" 段安全位置重試。\n已完成段落、任務與武器選擇保留。":"從目前任務起點重試。\n任務與武器選擇保留。");
     }
     void Fail(string title,string body)
     {
@@ -210,29 +217,29 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void StartRegroup()
     {
         // Never freeze an unresolved guard into an idle bystander at handoff.
-        if(Step<2||Enemies.Exists(e=>e&&!e.Defeated))return;
+        if(Step<(Selected==Mission.Tado?3:2)||Enemies.Exists(e=>e&&!e.Defeated))return;
         StopBreakthrough();ClearSchoolPoses();
         CurrentStage=Stage.Regroup;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
         foreach(var e in Enemies)if(e)e.escortTarget=null;
         player.view.fieldOfView=60;player.speed=2.8f;ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
-        activeRoute=Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();
+        activeRoute=Selected==Mission.Tado?new[]{P(0,76)}:Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();
         StartCoroutine(Regroup());
     }
     IEnumerator Regroup()
     {
-        ui.objective.text="到校後空地，與另一隊匯合";
-        var guide=Selected==Mission.Bawan?school.bawan:school.pihu;
-        while(guideIndex<activeRoute.Length||otherIndex<otherRoute.Length||otherEscortIndex<otherRoute.Length||Flat(player.transform.position,P(0,78))>4||Flat(school.tado.transform.position,P(0,78))>4)
+        ui.objective.text="到校後空地，與另外兩隊匯合";
+        var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
+        while(guideIndex<activeRoute.Length||!OtherSquadsArrived||Flat(player.transform.position,P(0,78))>4||Flat(school.tado.transform.position,P(0,78))>4)
         {
             MoveRoute(guide,guideMotor,activeRoute,ref guideIndex,true,Selected==Mission.Bawan?Vector3.left*1.15f:Vector3.zero);
             MoveOtherSquad();ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"跟隨同伴到校後空地 · WASD 移動 · 按住右鍵環視";
             yield return null;
         }
         player.canMove=false;
-        yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了。比胡、達多，你們右邊還好嗎？":"我和達多把左邊打通了。比胡，你們右邊還好嗎？",4.2f,true);
-        yield return Say(school.pihu,Selected==Mission.Bawan?"我和達多都到了，右邊的路也通了。":"到了！剛才他替我看住警察，我才能穿過右邊。",4.2f,true);
-        yield return Say(school.tado,"先離開學校。沿後面那條林路走，我在前面接應。",4.2f,true);
+        yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,true);
+        yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,true);
+        yield return Say(school.tado,Selected==Mission.Tado?"我們這隊撤出會場了，落後的族人也跟上了。先離開學校，沿林路走！":"我帶的人已從會場撤出。先離開學校，沿後面那條林路走！",4.5f,true);
         CurrentStage=Stage.Complete;ClearEnemies();Menu.Hide();
         if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
         Rescue.Begin(school,this);
@@ -241,15 +248,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         var other=Selected==Mission.Bawan?school.pihu:school.bawan;
         MoveRoute(other,otherMotor,otherRoute,ref otherIndex,false);
-        // Tado always supports the unselected side with an independent motor;
-        // the player's cover orders and checkpoint transitions cannot move him.
-        if(otherEscortIndex>otherIndex)return;
-        // The offset route can be shorter around a corner. Spend only the gap
-        // beyond the formation spacing, so even a long frame cannot catch up
-        // through the leader. The leader keeps moving if Tado needs to wait.
-        float distance=Flat(school.tado.transform.position,other.transform.position);
-        float maxSpeed=Mathf.Max(0,distance-1.3f)/Mathf.Max(Time.deltaTime,.0001f);
-        MoveRoute(school.tado,tadoMotor,otherRoute,ref otherEscortIndex,false,new Vector3(-.85f,0,-1.4f),maxSpeed);
+        // Leaders now keep their own assignment regardless of the chosen route.
+        if(Selected==Mission.Tado)
+            MoveRoute(school.pihu,tadoMotor,eastSquad,ref otherEscortIndex,false);
+        else
+            MoveRoute(school.tado,tadoMotor,assaultBackgroundRoute,ref otherEscortIndex,false);
     }
     void MoveRoute(Chapter2Actor actor,Chapter3PathMotor motor,Vector3[] route,ref int index,bool waitForPlayer,Vector3 offset=default,float maxSpeed=float.PositiveInfinity)
     {
@@ -316,7 +319,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     public void Suspend()
     {
         if(Rescue)Rescue.Suspend();
-        StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();ThreatRevealing=CrossingArrived=false;CurrentStage=Stage.Inactive;ClearEnemies();
+        StopAllCoroutines();StopAssault();StopBreakthrough();ClearSchoolPoses();ThreatRevealing=CrossingArrived=false;CurrentStage=Stage.Inactive;ClearEnemies();
         if(combat&&combat.SchoolEncounter==this)combat.SchoolEncounter=null;
         if(Menu)Menu.Hide();if(scenery)scenery.gameObject.SetActive(false);
         if(distantShots)distantShots.Stop();if(ambient)ambient.ResetCalm();
@@ -328,7 +331,8 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // Keep the approach before the mission briefing and choice;
         // the rear forest belongs to batch 5.
         if(CurrentStage==Stage.AwaitingTado)desired.z=Mathf.Min(desired.z,-1);
-        if(Fighting&&Step<2)desired.z=Mathf.Min(desired.z,Selected==Mission.Bawan?(Step==0?23:55):(Step==0?29:60));
+        if(Fighting&&Selected==Mission.Tado)desired=ConstrainAssault(current,desired);
+        else if(Fighting&&Step<2)desired.z=Mathf.Min(desired.z,Selected==Mission.Bawan?(Step==0?23:55):(Step==0?29:60));
         if(CurrentStage!=Stage.Inactive)desired.z=Mathf.Min(desired.z,84);
         return desired;
     }
