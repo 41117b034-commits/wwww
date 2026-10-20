@@ -1,0 +1,194 @@
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+AssetDatabase: script compilation time: 0.001801s
+Refreshing native plugins compatible for Editor in 22.69 ms, found 9 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=00b8ad001f0d6af46ae9037dbd82b461): Total: 0.913 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=446 ms
+		Asset DB Callback time: managed=154 ms, native=310 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=2 ms, other=0 ms
+		Project Asset Count: scripts=2016, non-scripts=3719
+		Asset File Changes: new=0, changed=0, moved=0, deleted=3
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 1.302ms
+	Scan: 129.300ms
+	OnSourceAssetsModified: 4.995ms
+	CategorizeAssetsWithTransientArtifact: 0.099ms
+	ProcessAssetsWithTransientArtifactChanges: 2.574ms
+	UnregisterDeletedAssets: 0.211ms
+	CategorizeAssets: 179.571ms
+	ImportOutOfDateAssets: 2.901ms (-1.109ms without children)
+		CompileScripts: 1.850ms
+		ReloadNativeAssets: 0.853ms
+		UnloadImportedAssets: 0.108ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.723ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.476ms
+	PostProcessAllAssets: 422.690ms
+	Hotreload: 36.855ms
+	GatherAllCurrentPrimaryArtifactRevisions: 4.075ms
+	UnloadStreamsBegin: 0.062ms
+	PersistCurrentRevisions: 0.221ms
+	UnloadStreamsEnd: 0.001ms
+	Untracked: 128.482ms
+
+[Licensing::Client] Successfully resolved entitlement details
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 0.2276ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/jimmy/畢專_霧社事件/wwww/wwww
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Current configuration matches the requested one, skipping
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc - - 200 - application/grpc 1.0312ms
+ExitCode: 4 Duration: 1s510ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+[ 953/1246  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (1.46 seconds), 2 items updated, 952 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\Tools\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/jimmy/畢專_霧社事件/wwww/wwww
+ExitCode: 0 Duration: 3s774ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/jimmy/畢專_霧社事件/wwww/wwww
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Current configuration matches the requested one, skipping
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc - - 200 - application/grpc 1.1950ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 129 defines and 343 references
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      running Unity.Jobs.CodeGen.JobsILPostProcessor
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc - - 200 - application/grpc 29.6261ms
+ExitCode: 0 Duration: 28s
+Finished compiling graph: 1250 nodes, 23297 flattened edges (18671 ToBuild, 206 ToUse), maximum node priority 1361
+[ 647/1246  0s] WriteText Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.rsp
+[ 953/1246  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[BUSY       6s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[BUSY      16s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[1242/1246 25s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[1243/1246  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 129 defines and 343 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1244/1246  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1245/1246  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (28.88 seconds), 6 items updated, 1246 evaluated
+Reloading assemblies after finishing script compilation.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+Total cache size 267887892
+Total cache size after purge 267887892, took 00:00:00.3061858
+Symbol file LoadedFromMemory is not a mono symbol file
+- Loaded All Assemblies, in  2.947 seconds
+Refreshing native plugins compatible for Editor in 12.91 ms, found 9 plugins.
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  4.013 seconds
+Domain Reload Profiling: 6965ms
+	BeginReloadAssembly (2194ms)
+		ExecutionOrderSort (2ms)
+		DisableScriptedObjects (146ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (3ms)
+		CreateAndSetChildDomain (720ms)
+	RebuildCommonClasses (47ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (41ms)
+	LoadAllAssembliesAndSetupDomain (659ms)
+		LoadAssemblies (545ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (268ms)
+			TypeCache.Refresh (16ms)
+				TypeCache.ScanAssembly (1ms)
+			BuildScriptInfoCaches (227ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (4014ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2192ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (18ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (624ms)
+			ProcessInitializeOnLoadAttributes (1328ms)
+			ProcessInitializeOnLoadMethodAttributes (212ms)
+			AfterProcessingInitializeOnLoad (4ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (1ms)
+		AwakeInstancesAfterBackupRestoration (909ms)
+Asset Pipeline Refresh (id=e34b90bdebe74a241bedbccd969e28d9): Total: 7.354 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=4276 ms
+		Asset DB Callback time: managed=105 ms, native=0 ms
+		Scripting: domain reloads=1, domain reload time=2970 ms, compile time=2 ms, other=0 ms
+		Project Asset Count: scripts=2016, non-scripts=3719
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 2.151ms
+	ApplyChangesToAssetFolders: 0.696ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.003ms
+	CategorizeAssetsWithTransientArtifact: 0.008ms
+	ProcessAssetsWithTransientArtifactChanges: 6.192ms
+	CategorizeAssets: 140.126ms
+	ImportOutOfDateAssets: 4038.685ms (4029.837ms without children)
+		CompileScripts: 1.720ms
+		CollectScriptTypesHashes: 2.877ms
+		ReloadNativeAssets: 1.691ms
+		UnloadImportedAssets: 0.230ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.603ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 0.726ms
+	PostProcessAllAssets: 105.223ms
+	GatherAllCurrentPrimaryArtifactRevisions: 4.129ms
+	UnloadStreamsBegin: 0.141ms
+	PersistCurrentRevisions: 0.303ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 9.043ms
+	Untracked: 3056.538ms
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Client] Successfully resolved entitlement details
+

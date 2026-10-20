@@ -1,0 +1,18 @@
+{
+    "mode": "native-input",
+    "started": "2026-10-20T15:58:03.5803644Z",
+    "completed": true,
+    "elapsed": 146.34146118164063,
+    "checks": [
+        "first opening answer accepted",
+        "second opening answer accepted",
+        "Mona welcome shown during actual briefing",
+        "rifle selection accepted"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Editor driver verification; targeted setup/pose/input fixtures are explicitly reported. No VR or standalone claim.",
+        "Pickup-only positioning fixture: Warp beside selected table, then real E through Chapter3Player/Station Update."
+    ]
+}

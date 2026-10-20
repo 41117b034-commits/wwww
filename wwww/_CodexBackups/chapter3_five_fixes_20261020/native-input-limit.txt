@@ -1,0 +1,1 @@
+Windows Computer Use successfully targeted/clicked Unity Game view. Native e and F6 press_key attempts did not change Equipment stage. Therefore actual Windows Zhuyin composition could not be exercised with this input tool. Do not claim native E/IME validation. test-input.json verifies Input System held-E/release and InputField event boundaries only.

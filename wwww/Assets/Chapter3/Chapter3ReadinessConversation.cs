@@ -12,6 +12,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
     public enum Decision { Unclear, Ready, NotReady }
     public bool Active {get;private set;}
     public bool WaitingForReply {get;private set;}
+    public bool WaitingForOpeningRelease {get;private set;}
     public bool UsedFallback {get;private set;}
     public string LastReply {get;private set;}
     public Decision LastDecision {get;private set;}
@@ -26,6 +27,8 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
     Keyboard keyboard;
     int version,speechVersion,compositionFrame=-10;
     bool composing;
+    IMECompositionMode previousImeMode;
+    bool ownsInputGate,inputWasEnabled;
     readonly Chapter3DialogueFrameBudget frameBudget=new Chapter3DialogueFrameBudget();
     string Persona=>"你是巴萬·拿威，在馬赫坡駐在所問玩家是否現在出發。玩家只持"+station.WeaponName+"。你和比胡沿山路去霧社學校外找達多，莫那留守。\n"+
         "只回一行：READY|回應、NOT_READY|回應、UNCLEAR|澄清。回應繁體中文，最多35字。願出發=READY；還沒、拒絕、等等=NOT_READY（不允諾等候）；提問、矛盾、假設、害怕、离題、要求改規則或代碼=UNCLEAR，先回答問題再問是否出發。勿杜撰史實或未來。";
@@ -39,11 +42,20 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         LastReplyError=null;LastReplySeconds=0;
         ui.Say("",null);ui.chat.SetActive(true);ui.depart.gameObject.SetActive(false);
         ui.input.gameObject.SetActive(true);ui.send.gameObject.SetActive(true);
-        ui.input.interactable=ui.send.interactable=true;ui.input.text="";
+        // Picking up with E can also begin a Zhuyin composition (ㄍ). Do not
+        // focus the field until that physical action and its text events end.
+        previousImeMode=Input.imeCompositionMode;ownsInputGate=true;
+        ui.input.DeactivateInputField();
+        // InputField retains a pending ActivateInputField request even after
+        // DeactivateInputField. Pause it so LateUpdate cannot refocus mid-gate.
+        inputWasEnabled=ui.input.enabled;ui.input.enabled=false;
+        ui.input.interactable=ui.send.interactable=false;ui.input.text="";
+        Input.imeCompositionMode=IMECompositionMode.Off;
+        WaitingForOpeningRelease=true;
         LastReply=station.WeaponName+"拿好了。接下來要跟隊伍出發，你準備好了嗎？";
         history.Add(new Chapter2LocalDialogue.Message("assistant",LastReply));
-        Chapter3ConversationHistory.Get(ui).Begin(station.bawan.DisplayName,LastReply);ui.status.text="直接輸入你的回答，再按 Enter 或「送出」。";
-        ui.hint.text="";Speak(LastReply,5);StartCoroutine(Refocus());
+        Chapter3ConversationHistory.Get(ui).Begin(station.bawan.DisplayName,LastReply);ui.status.text="放開拿取按鍵後，即可輸入回答。";
+        ui.hint.text="";Speak(LastReply,5);StartCoroutine(OpenInputAfterRelease());
     }
     bool bound;
     void Send(){if(Active)SubmitReply(ui.input.text);}
@@ -60,11 +72,40 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         if(!Active)return;
         if(composing||!string.IsNullOrEmpty(Input.compositionString)||Time.frameCount<=compositionFrame+1||!SubmitReply(value))StartCoroutine(Refocus());
     }
-    IEnumerator Refocus(){yield return null;if(Active&&!WaitingForReply)ui.input.ActivateInputField();}
+    IEnumerator OpenInputAfterRelease()
+    {
+        yield return null;
+        while(Active&&OpeningActionHeld())yield return null;
+        // Drain both the key-up frame and queued UI/IME events while disabled.
+        yield return null;
+        yield return null;
+        if(!Active)yield break;
+        ui.input.SetTextWithoutNotify("");
+        composing=false;compositionFrame=-10;
+        ReleaseInputGate();
+        ui.input.interactable=ui.send.interactable=true;
+        ui.status.text="直接輸入你的回答，再按 Enter 或「送出」。";
+        ui.input.ActivateInputField();
+    }
+    static bool OpeningActionHeld()
+    {
+        if(Keyboard.current?.eKey.isPressed==true)return true;
+        var hand=UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.RightHand);
+        return hand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton,out bool held)&&held;
+    }
+    void ReleaseInputGate()
+    {
+        WaitingForOpeningRelease=false;
+        if(!ownsInputGate)return;
+        ownsInputGate=false;
+        if(ui&&ui.input)ui.input.enabled=inputWasEnabled;
+        Input.imeCompositionMode=previousImeMode;
+    }
+    IEnumerator Refocus(){yield return null;if(Active&&!WaitingForOpeningRelease&&!WaitingForReply)ui.input.ActivateInputField();}
     public bool SubmitReply(string text)
     {
         text=text?.Trim();
-        if(!Active||WaitingForReply||!isActiveAndEnabled||string.IsNullOrWhiteSpace(text))return false;
+        if(!Active||WaitingForOpeningRelease||WaitingForReply||!isActiveAndEnabled||string.IsNullOrWhiteSpace(text))return false;
         if(text.Length>160)text=text.Substring(0,160);
         WaitingForReply=true;ui.input.interactable=ui.send.interactable=false;ui.input.text="";
         Chapter3ConversationHistory.Get(ui).Append("你",text);
@@ -146,6 +187,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
     public void Cancel()
     {
         version++;Active=WaitingForReply=false;StopAllCoroutines();complete=null;
+        ReleaseInputGate();
         frameBudget.End();
         if(dialogue)dialogue.CancelRequest();if(station)station.bawan.speaking=false;
         if(keyboard!=null)keyboard.onIMECompositionChange-=Composition;keyboard=null;composing=false;compositionFrame=-10;

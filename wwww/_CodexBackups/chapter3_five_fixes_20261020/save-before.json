@@ -1,0 +1,14 @@
+{
+    "values": [
+        {
+            "key": "WusheEvent.Chapter2.Result",
+            "value": "{\"treeChoice\":\"protect\",\"meetingChoice\":\"refuse\",\"woodIntegrity\":100.0,\"validCuts\":0,\"failedCuts\":0,\"casualties\":1,\"completed\":true}",
+            "existed": true
+        },
+        {
+            "key": "WusheEvent.Chapter3.Result",
+            "value": "{\"version\":1,\"completed\":true,\"mission\":1,\"decision\":2,\"weapon\":0,\"pihuSurvived\":false,\"squadSurvivors\":3,\"actors\":[{\"actorId\":\"bawan\",\"schoolSide\":\"west\",\"originalSquad\":true,\"alive\":true,\"westSchool\":1,\"eastSchool\":2,\"injury\":1,\"outcome\":2},{\"actorId\":\"pihu\",\"schoolSide\":\"east\",\"originalSquad\":true,\"alive\":false,\"westSchool\":2,\"eastSchool\":1,\"injury\":1,\"outcome\":0},{\"actorId\":\"tado\",\"schoolSide\":\"east\",\"originalSquad\":true,\"alive\":true,\"westSchool\":2,\"eastSchool\":1,\"injury\":1,\"outcome\":1},{\"actorId\":\"mona\",\"schoolSide\":\"none\",\"originalSquad\":false,\"alive\":true,\"westSchool\":2,\"eastSchool\":2,\"injury\":2,\"outcome\":2}]}",
+            "existed": true
+        }
+    ]
+}

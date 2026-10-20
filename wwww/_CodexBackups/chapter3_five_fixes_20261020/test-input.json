@@ -1,0 +1,33 @@
+{
+    "mode": "test-input",
+    "started": "2026-10-20T15:51:28.8757031Z",
+    "completed": true,
+    "elapsed": 97.53633117675781,
+    "checks": [
+        "first opening answer accepted",
+        "second opening answer accepted",
+        "Mona welcome shown during actual briefing",
+        "rifle selection accepted",
+        "holding E blocks field focus",
+        "holding E cannot submit",
+        "new readiness field is empty",
+        "deliberate later E text is preserved",
+        "Chinese answer string retained (not a native IME test)",
+        "ready answer accepted after release",
+        "ready result advances departure",
+        "right formation companion is Pihu",
+        "station rear companion has sustained walking samples",
+        "station rear companion does not flip heading while walking",
+        "station both companion rigs blend walk and idle",
+        "second begin owns release gate",
+        "pending old activation cannot refocus during gate",
+        "cancellation restores field and IME gate"
+    ],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Editor driver verification; targeted setup/pose/input fixtures are explicitly reported. No VR or standalone claim.",
+        "Pickup-only positioning fixture: Warp beside selected table, then real E through Chapter3Player/Station Update.",
+        "Station rear samples=497 headingReversals=0 walkingStateChanges=5 remainingRegion=Station"
+    ]
+}

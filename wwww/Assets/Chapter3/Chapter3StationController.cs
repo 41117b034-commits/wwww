@@ -131,6 +131,8 @@ public sealed class Chapter3StationController : MonoBehaviour
         while(Flat(bawan.transform.position,left)>.1f||Flat(pihu.transform.position,right)>.1f)
         {MoveActor(bawan,left,1.75f);MoveActor(pihu,right,2.05f);yield return null;}
         yield return Say(bawan,"莫那，我們到了。",lineSeconds);
+        // Authored character dialogue, not a quotation from a historical record.
+        yield return Say(mona,"你來了。歡迎你加入我們，一起反抗日本警察的壓迫。這條路不好走，記住，要和同伴彼此照應。",lineSeconds+4);
         yield return Say(mona,"我們已經攻下這裡，打倒了駐在所的日本警察。",lineSeconds+1);
         yield return Say(mona,"接下來到霧社，跟達多會合。先選一把襯手的武器，刀或槍，只帶一種。",lineSeconds+2);
         CurrentStage=Stage.WeaponChoice;player.canMove=player.canLook=false;ui.objective.text="選一把襯手的武器";
@@ -227,6 +229,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     IEnumerator Escort(Vector3[] route)
     {
         attendingPlayer=false;bawanMotor.Reset();pihuMotor.Reset();
+        bawan.Rig.smoothLocomotion=pihu.Rig.smoothLocomotion=true;
         RouteGuide.Show(bawan.transform.position,route,player.transform,bawan.transform);
         // Pihu waits for the leader to pass his existing position instead of
         // reversing to a newly rotated formation slot at every corner.
@@ -246,10 +249,11 @@ public sealed class Chapter3StationController : MonoBehaviour
                     if(rearProgress>=pihuStart)
                     {
                         Vector3 target=RouteGuide.SampleBeside(rearProgress,.9f);
-                        if(Flat(pihu.transform.position,target)>.12f)MoveActor(pihu,target,2.05f);
-                        else FacePlayer(pihu);
+                        // This target moves every frame. A normal arrival
+                        // deadzone repeatedly toggled walking and turned him
+                        // back toward the player between tiny forward steps.
+                        pihuMotor.Move(pihu,target,2.05f,.005f);
                     }
-                    else FacePlayer(pihu);
                 }
                 else {FacePlayer(bawan);FacePlayer(pihu);}
                 yield return null;

@@ -170,23 +170,23 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
             {
                 // Remove whole central spans while retaining the two end
                 // posts. Physics and combined visible geometry open together.
-                if(Mathf.Abs(c.transform.position.x)>=4.5f)continue;
+                if(Mathf.Abs(c.transform.position.x)>=4.5f||!(c is BoxCollider box))continue;
                 entranceColliders[c]=c.enabled;
                 // Inactive collider.bounds is empty; authoring uses boxes.
-                if(c is BoxCollider box)
-                {
-                    var bounds=new Bounds(box.transform.TransformPoint(box.center),Vector3.zero);
-                    for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2)
-                        bounds.Encapsulate(box.transform.TransformPoint(box.center+Vector3.Scale(box.size,new Vector3(x,y,z))*.5f));
-                    bounds.Expand(.025f);boxes.Add(bounds);
-                }
+                var bounds=new Bounds(box.transform.TransformPoint(box.center),Vector3.zero);
+                for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)for(int z=-1;z<=1;z+=2)
+                    bounds.Encapsulate(box.transform.TransformPoint(box.center+Vector3.Scale(box.size,new Vector3(x,y,z))*.5f));
+                bounds.Expand(.025f);boxes.Add(bounds);
             }
         }
         if(boxes.Count==0)return;
+        var opened=new bool[boxes.Count];
         foreach(var filter in flow.schoolRegion.GetComponentsInChildren<MeshFilter>(true))
         {
             var mesh=filter.sharedMesh;
-            if(!mesh||!mesh.isReadable||!filter.name.StartsWith("School geometry "))continue;
+            // Saved/serialized school geometry uses Combined_* names. The
+            // original authoring name only exists before that saved polish.
+            if(!mesh||!mesh.isReadable||(!filter.name.StartsWith("School geometry ")&&!filter.name.StartsWith("Combined_")))continue;
             var vertices=mesh.vertices;var triangles=mesh.triangles;var kept=new List<int>();bool changed=false;
             for(int i=0;i<triangles.Length;i+=3)
             {
@@ -194,12 +194,22 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
                 var a=filter.transform.TransformPoint(vertices[triangles[i]]);
                 var b=filter.transform.TransformPoint(vertices[triangles[i+1]]);
                 var c=filter.transform.TransformPoint(vertices[triangles[i+2]]);
-                foreach(var bounds in boxes)if(bounds.Contains(a)&&bounds.Contains(b)&&bounds.Contains(c)){remove=true;break;}
+                for(int j=0;j<boxes.Count;j++)
+                    if(boxes[j].Contains(a)&&boxes[j].Contains(b)&&boxes[j].Contains(c))
+                    {remove=true;opened[j]=true;}
                 if(remove)changed=true;else kept.AddRange(new[]{triangles[i],triangles[i+1],triangles[i+2]});
             }
             if(!changed)continue;
             var copy=Instantiate(mesh);copy.name=mesh.name+" · 林路入口";copy.triangles=kept.ToArray();copy.RecalculateBounds();
             owned.Add(copy);entranceMeshes.Add((filter,mesh,copy));
+        }
+        // Never switch off a visible fence's collision if any central piece
+        // could not be removed from the readable runtime geometry.
+        if(System.Array.Exists(opened,removed=>!removed))
+        {
+            foreach(var entry in entranceMeshes){owned.Remove(entry.open);Destroy(entry.open);}
+            entranceMeshes.Clear();entranceColliders.Clear();
+            Debug.LogWarning("[Chapter3] School entrance geometry could not be opened completely; fence collisions retained.");
         }
     }
     void MeshObject(string name,Vector3[] vertices,int[] triangles,Material material,bool solid)

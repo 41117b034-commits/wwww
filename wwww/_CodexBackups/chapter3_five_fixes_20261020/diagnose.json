@@ -1,0 +1,13 @@
+{
+    "mode": "diagnose",
+    "started": "2026-10-20T15:44:25.8152901Z",
+    "completed": true,
+    "elapsed": 10.618318557739258,
+    "checks": [],
+    "errors": [],
+    "warnings": [],
+    "observations": [
+        "Editor driver verification; targeted setup/pose/input fixtures are explicitly reported. No VR or standalone claim.",
+        "Approach fixture: 第三章 · 單一場景流程與快速跳段"
+    ]
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "path": "Assets/Chapter3/Chapter3ApproachEnvironment.cs",
+    "hash": "D244F18B3E821117FD6AEE4EA2167DDB30E6A58F08E1F7CE66560B438FA310A0"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Enemy.cs",
+    "hash": "2071FAED5C80B1563FFB0C9216635DB9C9645652D711597912081087765D6A80"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3EnemyHitZone.cs",
+    "hash": "DBDBFC35D11A811195F41D1617078B38E71AD4C0DE04FB2A1AF8E482E9C1D726"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3EnemyWoundPose.cs",
+    "hash": "4837FB16C786EDC48681D51D3D400D520478A3AC57A89A68C935EB58DD467E31"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3PathMotor.cs",
+    "hash": "3F3A0014634A02233CFBD6B13D2FA8D69946444F28F5A9B93BA49CE3035C3388"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3ReadinessConversation.cs",
+    "hash": "AD7548A61F76D009D7029C0EF1E0854FBD93BF4C471194B1E8532F4705FEF9B9"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3StationController.cs",
+    "hash": "821393FF940A9C44E36107684E9E0FBABF329206C6BA97BBD8548692D9350B56"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Weapons.cs",
+    "hash": "E41138AE3365A423B386598C2CC2CA484EA45357566B52B12CCD22FB743AEF17"
+  }
+]

@@ -19,7 +19,9 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public bool Defeated=>Health<=0;
     public bool Telegraphing { get; private set; }
     public int Shots { get; private set; }
-    public Vector3 AimPoint=>transform.position+Vector3.up*1.05f;
+    public bool LegWounded { get; private set; }
+    public Vector3 AimPoint=>actor&&actor.Rig&&actor.Rig.Hips&&actor.Rig.Head?
+        Vector3.Lerp(actor.Rig.Hips.position,actor.Rig.Head.position,.4f):transform.position+Vector3.up*1.05f;
     public float attackInterval=4.5f;
     public float engagementRange=32;
     float nextAttack,raisedAt,hitAt=-20,holdFireUntil;
@@ -31,6 +33,8 @@ public sealed class Chapter3Enemy : MonoBehaviour
     void Start()
     {
         nextAttack=Time.time+2;Health=100;
+        Chapter3EnemyHitZone.Install(this);
+        if(!GetComponent<Chapter3EnemyWoundPose>())gameObject.AddComponent<Chapter3EnemyWoundPose>();
         reportAudio=gameObject.AddComponent<AudioSource>();reportAudio.playOnAwake=false;reportAudio.spatialBlend=.85f;reportAudio.maxDistance=45;reportAudio.volume=.45f;
         if(rifle){rifle.target=null;rifle.aimTarget=combat.playerTarget;rifle.aim=0;rifle.lowered=.8f;}
     }
@@ -54,11 +58,11 @@ public sealed class Chapter3Enemy : MonoBehaviour
         if(rifle){rifle.aimTarget=escortTarget?null:combat.playerTarget;rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;}
         float distance=Vector3.Distance(AimPoint,target);
         bool visible=distance<engagementRange&&combat.ClearLine(AimPoint,target,this);
-        if(advances&&distance>2.6f&&distance<22&&!Telegraphing)
+        if(advances&&!LegWounded&&distance>2.6f&&distance<22&&!Telegraphing)
         {
             Vector3 direction=Vector3.ProjectOnPlane(combat.player.transform.position-transform.position,Vector3.up).normalized;
             // Short advance along the open lane, never walk through the player's cover.
-            if(!Physics.SphereCast(transform.position+Vector3.up*.7f,.3f,direction,out _,.7f,~0,QueryTriggerInteraction.Ignore))
+            if(!AdvanceBlocked(direction))
                 transform.position+=direction*Time.deltaTime*.95f;
         }
         if(!visible){Telegraphing=false;if(rifle)rifle.aim=0;return;}
@@ -75,6 +79,14 @@ public sealed class Chapter3Enemy : MonoBehaviour
             Telegraphing=false;nextAttack=Time.time+(knife?Mathf.Max(6.5f,attackInterval):attackInterval);
         }
     }
+    bool AdvanceBlocked(Vector3 direction)
+    {
+        // Split bone hit zones can lie ahead of the actor root during a step.
+        // They are part of this officer, never an obstacle to its own advance.
+        foreach(var hit in Physics.SphereCastAll(transform.position+Vector3.up*.7f,.3f,direction,.7f,~0,QueryTriggerInteraction.Ignore))
+            if(!hit.collider.transform.IsChildOf(transform))return true;
+        return false;
+    }
     public void HoldFire(float seconds)
     {
         if(Defeated||seconds<=0||float.IsNaN(seconds))return;
@@ -85,6 +97,17 @@ public sealed class Chapter3Enemy : MonoBehaviour
     void CancelAim()
     {Telegraphing=false;raisedAt=0;if(rifle){rifle.aim=0;rifle.lowered=.8f;}}
     void OnDisable(){holdFireUntil=0;attackGranted=false;CancelAim();}
+    public void HitByRifle(Chapter3EnemyHitZone zone,Vector3 from)
+    {
+        if(!zone||zone.Enemy!=this||!isActiveAndEnabled||!combat||!combat.Fighting||Defeated)return;
+        bool leg=zone.Region==Chapter3EnemyHitZone.BodyRegion.Leg;
+        Hit(leg?50:100,from);
+        if(leg&&!Defeated)
+        {
+            LegWounded=true;
+            HoldFire(1.6f);
+        }
+    }
     public void Hit(int damage,Vector3 from)
     {
         if(!isActiveAndEnabled||!combat||!combat.Fighting||Defeated)return;
@@ -124,7 +147,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
             foreach(var renderer in weaponRenderers)if(renderer.enabled&&renderer.gameObject.activeInHierarchy)low=Mathf.Min(low,renderer.bounds.min.y);
             if(!float.IsInfinity(low))rifle.weapon.position+=Vector3.up*(settle>=1?.035f-low:Mathf.Max(0,.035f-low));
         }
-        if(!Defeated&&actor.Rig&&actor.Rig.Hips)
+        if(!Defeated&&!LegWounded&&actor.Rig&&actor.Rig.Hips)
         {
             float t=(Time.time-hitAt)/.4f;
             if(t>=0&&t<1)actor.Rig.Hips.rotation=Quaternion.AngleAxis(Mathf.Sin(t*Mathf.PI)*15,transform.right)*actor.Rig.Hips.rotation;

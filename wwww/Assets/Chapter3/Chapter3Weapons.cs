@@ -68,6 +68,9 @@ public sealed class Chapter3Weapons : MonoBehaviour
         if(!Ready){NoticeNotReady();return false;}
         if(Selected==Weapon.Knife){Slashes++;swingAt=Time.time;busyUntil=Time.time+.68f;StartCoroutine(Slash());return true;}
         var camera=combat.player.view;
+        // Bone-following hit zones and moved cover must be in the same physics
+        // pose as the most recently rendered frame, even between fixed steps.
+        Physics.SyncTransforms();
         bool traced=combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit);
         if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
         {
@@ -83,7 +86,14 @@ public sealed class Chapter3Weapons : MonoBehaviour
         if(traced)
         {
             var enemy=hit.collider.GetComponentInParent<Chapter3Enemy>();
-            if(enemy){enemy.Hit(100,camera.transform.position);Notice("命中");}else Notice("擊中掩體");
+            if(enemy)
+            {
+                var zone=hit.collider.GetComponent<Chapter3EnemyHitZone>();
+                if(zone)enemy.HitByRifle(zone,camera.transform.position);
+                else enemy.Hit(100,camera.transform.position);
+                Notice(enemy.Defeated?"命中，警察倒下":"命中腿部，警察受傷蹲低");
+            }
+            else Notice("擊中掩體");
         }
         return true;
     }

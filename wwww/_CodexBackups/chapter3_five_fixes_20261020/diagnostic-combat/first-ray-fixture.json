@@ -1,0 +1,35 @@
+{
+    "mode": "test-combat",
+    "started": "2026-10-20T15:57:01.4928476Z",
+    "completed": false,
+    "elapsed": 14.705107688903809,
+    "checks": [
+        "mountain Head 12 skeleton hit zones",
+        "mountain Head old root capsule disabled",
+        "mountain Head target zone exists",
+        "mountain Head first shot exact bone zone visible through production ray",
+        "mountain Head first shot weapon accepted shot",
+        "mountain Head first shot exactly one round fired",
+        "mountain Head health after first shot",
+        "mountain Head first-shot defeated state",
+        "mountain Torso 12 skeleton hit zones",
+        "mountain Torso old root capsule disabled",
+        "mountain Torso target zone exists",
+        "mountain Torso first shot exact bone zone visible through production ray",
+        "mountain Torso first shot weapon accepted shot",
+        "mountain Torso first shot exactly one round fired",
+        "mountain Torso health after first shot",
+        "mountain Torso first-shot defeated state",
+        "mountain Left upper arm 12 skeleton hit zones",
+        "mountain Left upper arm old root capsule disabled",
+        "mountain Left upper arm target zone exists"
+    ],
+    "errors": [
+        "System.Exception: FAILED: mountain Left upper arm first shot exact bone zone visible through production ray\r\n  at Chapter3FiveFixProbe.Check (System.String label, System.Boolean passed) [0x00029] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveFixProbe.cs:183 \r\n  at Chapter3FiveFixProbe+<AimAndFireZone>d__2.MoveNext () [0x0012b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveFixProbe.Combat.cs:165 \r\n  at Chapter3FiveFixProbe+<Guard>d__20.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveFixProbe.cs:106 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Editor driver verification; targeted setup/pose/input fixtures are explicitly reported. No VR or standalone claim.",
+        "Combat fixture: enemy templates cloned into a clear near-player lane; live guards held inactive, Combat.Update disabled during ray/region checks; every damage assertion calls Weapons.Attack."
+    ]
+}

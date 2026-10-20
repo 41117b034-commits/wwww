@@ -44,14 +44,17 @@ public sealed class Chapter3PathMotor
         budgetFrame=Time.frameCount;nodesThisFrame=shortcutChecksThisFrame=0;
     }
 
-    public void Move(Chapter2Actor actor,Vector3 target,float speed)
+    public void Move(Chapter2Actor actor,Vector3 target,float speed,float stoppingDistance=.08f)
     {
         using var sample=MoveMarker.Auto();
         if(!actor||!actor.gameObject.activeInHierarchy){Reset();return;}
         if(boundActor!=actor){Reset();boundActor=actor;}
         PrepareFrameBudget();
-        target.y=0;Vector3 start=actor.transform.position;start.y=0;
-        if((target-start).sqrMagnitude<.0064f)
+        target.y=0;Vector3 start=actor.transform.position;float groundedY=start.y;start.y=0;
+        // Moving formation slots need a smaller tolerance than fixed goals;
+        // otherwise a rear companion alternates idle and walk every few frames.
+        stoppingDistance=Mathf.Max(.001f,stoppingDistance);
+        if((target-start).sqrMagnitude<stoppingDistance*stoppingDistance)
         {path.Clear();CancelSearch();goal=target;nextPlan=0;return;}
 
         // Explicit retargeting/repositioning cannot publish an old search.
@@ -94,8 +97,11 @@ public sealed class Chapter3PathMotor
         // Search observations may span several frames. Always validate the
         // actual current-position step again; never trust stale search physics.
         if(!Clear(start,step)){path.Clear();return;}
-        actor.transform.position=step;actor.GroundHeight=0;
-        if((step-start).sqrMagnitude>.000001f)actor.Face(step+(step-start).normalized);
+        // Search stays on the flat grid, but an escort coroutine can run after
+        // Actor.Update has grounded the rig. Keep that root-height correction.
+        Vector3 direction=step-start;
+        step.y=groundedY;actor.transform.position=step;actor.GroundHeight=0;
+        if(direction.sqrMagnitude>.000001f)actor.Face(step+direction.normalized);
     }
 
     bool RetargetPathEnd(Vector3 start,Vector3 target)

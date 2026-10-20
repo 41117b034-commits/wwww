@@ -1,0 +1,148 @@
+{
+  "completedUtc": "2026-10-20T16:21:45.2668198Z",
+  "scope": "User screenshots 1-5 implemented; school history discussed only",
+  "reports": [
+    {
+      "file": "test-input.json",
+      "completed": true,
+      "passedChecks": 18,
+      "errors": [],
+      "warnings": [],
+      "startedUtc": "2026-10-20T15:51:28.8757031Z",
+      "elapsedSeconds": 97.53633117675781
+    },
+    {
+      "file": "test-movement.json",
+      "completed": true,
+      "passedChecks": 84,
+      "errors": [],
+      "warnings": [],
+      "startedUtc": "2026-10-20T15:56:06.2977234Z",
+      "elapsedSeconds": 12.844298362731934
+    },
+    {
+      "file": "test-combat.json",
+      "completed": true,
+      "passedChecks": 193,
+      "errors": [],
+      "warnings": [],
+      "startedUtc": "2026-10-20T16:01:55.9970289Z",
+      "elapsedSeconds": 87.33267974853516
+    }
+  ],
+  "totalPassedChecks": 295.0,
+  "finalSceneAudit": {
+    "scene": "Assets/Scenes/第三章.unity",
+    "dirty": false,
+    "playing": false,
+    "compileFailed": false,
+    "missingScripts": 0
+  },
+  "runtimeHashes": [
+    {
+      "path": "Assets/Chapter3/Chapter3ApproachEnvironment.cs",
+      "expected": "D244F18B3E821117FD6AEE4EA2167DDB30E6A58F08E1F7CE66560B438FA310A0",
+      "actual": "D244F18B3E821117FD6AEE4EA2167DDB30E6A58F08E1F7CE66560B438FA310A0",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Enemy.cs",
+      "expected": "2071FAED5C80B1563FFB0C9216635DB9C9645652D711597912081087765D6A80",
+      "actual": "2071FAED5C80B1563FFB0C9216635DB9C9645652D711597912081087765D6A80",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3EnemyHitZone.cs",
+      "expected": "DBDBFC35D11A811195F41D1617078B38E71AD4C0DE04FB2A1AF8E482E9C1D726",
+      "actual": "DBDBFC35D11A811195F41D1617078B38E71AD4C0DE04FB2A1AF8E482E9C1D726",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3EnemyWoundPose.cs",
+      "expected": "4837FB16C786EDC48681D51D3D400D520478A3AC57A89A68C935EB58DD467E31",
+      "actual": "4837FB16C786EDC48681D51D3D400D520478A3AC57A89A68C935EB58DD467E31",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3PathMotor.cs",
+      "expected": "3F3A0014634A02233CFBD6B13D2FA8D69946444F28F5A9B93BA49CE3035C3388",
+      "actual": "3F3A0014634A02233CFBD6B13D2FA8D69946444F28F5A9B93BA49CE3035C3388",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3ReadinessConversation.cs",
+      "expected": "AD7548A61F76D009D7029C0EF1E0854FBD93BF4C471194B1E8532F4705FEF9B9",
+      "actual": "AD7548A61F76D009D7029C0EF1E0854FBD93BF4C471194B1E8532F4705FEF9B9",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3StationController.cs",
+      "expected": "821393FF940A9C44E36107684E9E0FBABF329206C6BA97BBD8548692D9350B56",
+      "actual": "821393FF940A9C44E36107684E9E0FBABF329206C6BA97BBD8548692D9350B56",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Weapons.cs",
+      "expected": "E41138AE3365A423B386598C2CC2CA484EA45357566B52B12CCD22FB743AEF17",
+      "actual": "E41138AE3365A423B386598C2CC2CA484EA45357566B52B12CCD22FB743AEF17",
+      "same": true
+    }
+  ],
+  "protectedHashes": [
+    {
+      "path": "Assets/Scenes/第一章新版警察.unity",
+      "expected": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+      "actual": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2",
+      "same": true
+    },
+    {
+      "path": "Assets/Scenes/第二章.unity",
+      "expected": "DFB46549F69E4F3ACA91BF1582E1BDE3CEABCEC950C96F0C1CBCE4C78145A513",
+      "actual": "DFB46549F69E4F3ACA91BF1582E1BDE3CEABCEC950C96F0C1CBCE4C78145A513",
+      "same": true
+    },
+    {
+      "path": "Assets/Scenes/第三章.unity",
+      "expected": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+      "actual": "A99A0E61C9B0B621ED09345C59C3FC361A3206F54D437F9C692B67FF7D257254",
+      "same": true
+    },
+    {
+      "path": "ProjectSettings/EditorBuildSettings.asset",
+      "expected": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+      "actual": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E",
+      "same": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Presentation.cs",
+      "expected": "76B69D0E5527B8482D700ED2E1535ECF4FA2EFEF3F254EF7FDFBE0DBC37C259E",
+      "actual": "76B69D0E5527B8482D700ED2E1535ECF4FA2EFEF3F254EF7FDFBE0DBC37C259E",
+      "same": true
+    },
+    {
+      "path": "UserSettings/Layouts/default-6000.dwlt",
+      "expected": "22B8C1209D91F668E22F2414CA4AB778D26ED5AD32842A71425E75729EE980F1",
+      "actual": "22B8C1209D91F668E22F2414CA4AB778D26ED5AD32842A71425E75729EE980F1",
+      "same": true
+    }
+  ],
+  "temporaryToolsArchived": "verification-tools/installed-final",
+  "cleanupAssemblyReloadSuccessful": true,
+  "cleanupNewCompilerErrors": [],
+  "cleanupLog": "cleanup-editor-log.txt",
+  "playerPrefs": "RestoreSave called after each test and before leaving Play; original Chapter2 and Chapter3 values restored",
+  "excludedReports": [
+    "diagnostic-reload/*",
+    "diagnostic-combat/*",
+    "diagnose.json",
+    "native-input.json"
+  ],
+  "limits": [
+    "Input System and InputField event driver passed; Windows native E and F6 did not reach Game, so native Zhuyin composition remains unverified.",
+    "Movement test uses actor and camera positioning fixtures; station escort was observed for 35 seconds, not a full route replay.",
+    "Combat test uses production weapons Attack/Trace against actual police-template clone with positioning and hold-fire fixtures; it is not an end-to-end manual playthrough.",
+    "No headset VR, new standalone build, or live LLM acceptance."
+  ],
+  "published": false,
+  "committed": false
+}
