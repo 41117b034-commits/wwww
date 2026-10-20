@@ -1,40 +1,122 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Profiling;
 
-// Flat, authored Chapter 3 routes. Sweeps protect each step; a small local grid
-// routes around rails and cover instead of cutting through them at corners.
+// Same flat authored-route grid and collision rules; search progresses only
+// when its owner calls Move. No coroutine, worker, or global actor registry.
 public sealed class Chapter3PathMotor
 {
+    static readonly ProfilerMarker MoveMarker=new ProfilerMarker("Chapter3.PathMotor.Move");
+    static readonly ProfilerMarker PlanMarker=new ProfilerMarker("Chapter3.PathMotor.Plan");
     const float Cell=.5f, Radius=.36f;
+    const int MaxSearchNodes=6000, NodesPerFrame=32, ShortcutChecksPerFrame=32;
+    const float RetargetDistanceSquared=.64f;
     readonly List<Vector3> path=new List<Vector3>();
-    Vector3 goal;
+    readonly List<Vector2Int> open=new List<Vector2Int>();
+    readonly HashSet<Vector2Int> closed=new HashSet<Vector2Int>();
+    readonly Dictionary<Vector2Int,float> cost=new Dictionary<Vector2Int,float>();
+    readonly Dictionary<Vector2Int,Vector2Int> parent=new Dictionary<Vector2Int,Vector2Int>();
+    Vector3 goal,searchStart,searchTarget,origin;
+    Vector2Int first,last;
+    Chapter2Actor boundActor;
+    int width,height,iterations;
+    bool searching;
     float nextPlan;
-    public void Reset(){path.Clear();nextPlan=0;}
+    // Reset cancels navigation, but never grants another work quota in the
+    // same frame. Multiple Move calls or repeated Reset cannot bypass the cap.
+    int budgetFrame=-1,nodesThisFrame,shortcutChecksThisFrame;
+
+    public void Reset()
+    {
+        path.Clear();CancelSearch();goal=Vector3.zero;nextPlan=0;boundActor=null;
+    }
+
+    void CancelSearch()
+    {
+        searching=false;open.Clear();closed.Clear();cost.Clear();parent.Clear();
+        searchStart=searchTarget=origin=Vector3.zero;first=last=default;
+        width=height=iterations=0;
+    }
+
+    void PrepareFrameBudget()
+    {
+        if(budgetFrame==Time.frameCount)return;
+        budgetFrame=Time.frameCount;nodesThisFrame=shortcutChecksThisFrame=0;
+    }
+
     public void Move(Chapter2Actor actor,Vector3 target,float speed)
     {
+        using var sample=MoveMarker.Auto();
+        if(!actor||!actor.gameObject.activeInHierarchy){Reset();return;}
+        if(boundActor!=actor){Reset();boundActor=actor;}
+        PrepareFrameBudget();
         target.y=0;Vector3 start=actor.transform.position;start.y=0;
-        if((target-start).sqrMagnitude<.0064f)return;
-        if(Clear(start,target)){path.Clear();path.Add(target);goal=target;}
-        else if(Time.time>=nextPlan&&(path.Count==0||(target-goal).sqrMagnitude>.64f))
-        {Plan(start,target);goal=target;nextPlan=Time.time+.4f;}
+        if((target-start).sqrMagnitude<.0064f)
+        {path.Clear();CancelSearch();goal=target;nextPlan=0;return;}
+
+        // Explicit retargeting/repositioning cannot publish an old search.
+        // Small moving-target adjustments retain the original search snapshot.
+        if(searching&&((target-searchTarget).sqrMagnitude>RetargetDistanceSquared||
+            (start-searchStart).sqrMagnitude>RetargetDistanceSquared))
+        {CancelSearch();path.Clear();nextPlan=0;}
+        if(!searching&&path.Count>0&&((target-goal).sqrMagnitude>RetargetDistanceSquared||
+            (path.Count==1&&(path[0]-start).sqrMagnitude<.04f)))
+        {path.Clear();nextPlan=0;}
+
+        if(Clear(start,target))
+        {
+            // A door/crowd move can make the direct route clear while searching.
+            CancelSearch();path.Clear();path.Add(target);goal=target;
+        }
+        else if(searching||(path.Count==0&&Time.time>=nextPlan))
+        {
+            bool found=Plan(start,target);
+            if(searching||path.Count==0)return;
+            if(found&&!RetargetPathEnd(start,target))
+            {
+                // A tiny target drift is accepted only if its new final edge is
+                // clear now. Otherwise retry from the latest target next frame.
+                path.Clear();nextPlan=0;return;
+            }
+        }
+
         while(path.Count>1&&(path[0]-start).sqrMagnitude<.04f)path.RemoveAt(0);
         if(path.Count==0)return;
-        for(int i=path.Count-1;i>0;i--)if(Clear(start,path[i])){path.RemoveRange(0,i);break;}
+        // A long reconstructed path must not move the original search spike
+        // into an unbounded visibility scan. The retained path remains valid;
+        // fewer shortcuts may be taken, but authored waypoints are unchanged.
+        for(int i=path.Count-1;i>0&&shortcutChecksThisFrame<ShortcutChecksPerFrame;i--)
+        {
+            shortcutChecksThisFrame++;
+            if(Clear(start,path[i])){path.RemoveRange(0,i);break;}
+        }
         Vector3 step=Vector3.MoveTowards(start,path[0],speed*Time.deltaTime);
+        // Search observations may span several frames. Always validate the
+        // actual current-position step again; never trust stale search physics.
         if(!Clear(start,step)){path.Clear();return;}
         actor.transform.position=step;actor.GroundHeight=0;
         if((step-start).sqrMagnitude>.000001f)actor.Face(step+(step-start).normalized);
     }
+
+    bool RetargetPathEnd(Vector3 start,Vector3 target)
+    {
+        if((target-goal).sqrMagnitude<.000001f)return true;
+        if((target-goal).sqrMagnitude>RetargetDistanceSquared)return false;
+        Vector3 from=path.Count>1?path[path.Count-2]:start;
+        if(!Clear(from,target))return false;
+        path[path.Count-1]=target;goal=target;return true;
+    }
+
     static bool Obstacle(Collider collider)
     {
         if(collider is CharacterController||collider.GetComponentInParent<Chapter2Actor>())return false;
-        // The recalled ally follows behind Tado with an explicit separation
-        // rule. Treating that moving companion as a wall traps both at the
-        // first shared waypoint. Other crowd members remain path obstacles.
+        // Preserve the explicit recalled-companion exception. Other crowd
+        // members still participate in every real-time collision query.
         var crowd=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
         if(crowd&&crowd.IsRouteCompanion)return false;
         return collider.bounds.max.y>.28f;
     }
+
     public static bool Clear(Vector3 from,Vector3 to)
     {
         from.y=to.y=0;Vector3 delta=to-from;
@@ -45,28 +127,44 @@ public sealed class Chapter3PathMotor
             if(Obstacle(h.collider))return false;
         return true;
     }
-    void Plan(Vector3 start,Vector3 target)
+
+    Vector2Int Grid(Vector3 position)=>new Vector2Int(
+        Mathf.RoundToInt((position.x-origin.x)/Cell),Mathf.RoundToInt((position.z-origin.z)/Cell));
+    Vector3 World(Vector2Int position)=>origin+new Vector3(position.x*Cell,0,position.y*Cell);
+
+    void BeginSearch(Vector3 start,Vector3 target)
     {
-        path.Clear();
-        Vector3 origin=new Vector3(Mathf.Floor(Mathf.Min(start.x,target.x)-4),0,Mathf.Floor(Mathf.Min(start.z,target.z)-4));
-        int width=Mathf.CeilToInt((Mathf.Max(start.x,target.x)+4-origin.x)/Cell)+1;
-        int height=Mathf.CeilToInt((Mathf.Max(start.z,target.z)+4-origin.z)/Cell)+1;
-        Vector2Int Grid(Vector3 p)=>new Vector2Int(Mathf.RoundToInt((p.x-origin.x)/Cell),Mathf.RoundToInt((p.z-origin.z)/Cell));
-        Vector3 World(Vector2Int p)=>origin+new Vector3(p.x*Cell,0,p.y*Cell);
-        var first=Grid(start);var last=Grid(target);
-        var open=new List<Vector2Int>{first};var closed=new HashSet<Vector2Int>();
-        var cost=new Dictionary<Vector2Int,float>{{first,0}};var parent=new Dictionary<Vector2Int,Vector2Int>();
-        for(int iteration=0;open.Count>0&&iteration<6000;iteration++)
+        path.Clear();CancelSearch();searchStart=start;searchTarget=target;
+        origin=new Vector3(Mathf.Floor(Mathf.Min(start.x,target.x)-4),0,Mathf.Floor(Mathf.Min(start.z,target.z)-4));
+        width=Mathf.CeilToInt((Mathf.Max(start.x,target.x)+4-origin.x)/Cell)+1;
+        height=Mathf.CeilToInt((Mathf.Max(start.z,target.z)+4-origin.z)/Cell)+1;
+        first=Grid(start);last=Grid(target);open.Add(first);cost[first]=0;searching=true;
+    }
+
+    // True means a complete candidate path was produced in this call. False
+    // covers both pending and exhausted; only exhaustion starts the retry delay.
+    bool Plan(Vector3 start,Vector3 target)
+    {
+        using var sample=PlanMarker.Auto();
+        if(nodesThisFrame>=NodesPerFrame)return false;
+        if(!searching)BeginSearch(start,target);
+        while(open.Count>0&&iterations<MaxSearchNodes&&nodesThisFrame<NodesPerFrame)
         {
+            iterations++;nodesThisFrame++;
+            // Preserve original selection order and tie handling. A heap or
+            // different heuristic is deliberately outside this change.
             int best=0;float score=float.MaxValue;
-            for(int i=0;i<open.Count;i++){float f=cost[open[i]]+Vector2Int.Distance(open[i],last);if(f<score){score=f;best=i;}}
+            for(int i=0;i<open.Count;i++)
+            {float f=cost[open[i]]+Vector2Int.Distance(open[i],last);if(f<score){score=f;best=i;}}
             var node=open[best];open.RemoveAt(best);closed.Add(node);
-            Vector3 here=node==first?start:World(node);
-            if(Vector3.Distance(here,target)<.8f&&Clear(here,target))
+            Vector3 here=node==first?searchStart:World(node);
+            if(Vector3.Distance(here,searchTarget)<.8f&&Clear(here,searchTarget))
             {
-                path.Add(target);
-                while(node!=first){path.Insert(0,World(node));node=parent[node];}
-                return;
+                // Same point order as repeated Insert(0), with linear work.
+                path.Add(searchTarget);
+                while(node!=first){path.Add(World(node));node=parent[node];}
+                path.Reverse();goal=searchTarget;CancelSearch();nextPlan=Time.time+.4f;
+                return true;
             }
             for(int x=-1;x<=1;x++)for(int z=-1;z<=1;z++)
             {
@@ -79,6 +177,10 @@ public sealed class Chapter3PathMotor
                 cost[n]=value;parent[n]=node;if(!open.Contains(n))open.Add(n);
             }
         }
+        if(open.Count==0||iterations>=MaxSearchNodes)
+        {CancelSearch();nextPlan=Time.time+.4f;}
+        // A pending search keeps its frontier and total iteration count.
         // No safe route: wait, never teleport through an obstacle.
+        return false;
     }
 }

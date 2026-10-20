@@ -187,6 +187,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         nativeRig=nativeRoot.gameObject.AddComponent<Chapter1IncidentRig>();
         nativeRig.Initialize(animator,false);nativeRig.smoothLocomotion=true;
         nativeRig.batonVisible=false;nativeRig.Face(transform.forward);nativeRig.Ground(0);
+        Chapter3HandPose.Attach(nativeRig);
         nativeUpperArm=FindNativeBone(animator,HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
         nativeElbow=FindNativeBone(animator,HumanBodyBones.RightLowerArm,"R_Forearm","RightForeArm");
         nativePrevious=transform.position;

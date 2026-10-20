@@ -6,6 +6,7 @@ public sealed class Chapter3BawanCooperationPose : MonoBehaviour
 {
     public float CoverWeight { get; private set; }
     public float PushWeight { get; private set; }
+    public Transform HandWeapon => rifle;
     Chapter2Actor actor;
     Transform rifle, threat, leftContact, rightContact, spine;
     readonly Transform[] arms = new Transform[2], elbows = new Transform[2], hands = new Transform[2];

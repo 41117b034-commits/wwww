@@ -15,6 +15,9 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public Vector3 Forward => transform.TransformDirection(localForward).normalized;
     public Transform LeftHand => leftHand;
     public Transform RightHand => rightHand;
+    // Read-only bridge for chapter-specific palm calibration. The shared
+    // first/second-chapter animation and its cached pose remain unchanged.
+    public Quaternion PalmFrame(bool left) => left ? leftPalmBasis : rightPalmBasis;
     public Transform Head => head;
     public Transform Hips => hips;
     Transform hips, head, leftThigh, rightThigh, leftCalf, rightCalf, leftFoot, rightFoot;

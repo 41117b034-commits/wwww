@@ -52,7 +52,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
         if(k?.rKey.wasPressedThisFrame==true)Reload();
         if(m?.leftButton.wasPressedThisFrame==true)
         {
-            if(!captured){Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;return;}
+            if(!captured){Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;}
             Attack();
         }
     }
@@ -65,19 +65,20 @@ public sealed class Chapter3Weapons : MonoBehaviour
     }
     public bool Attack()
     {
-        if(!Ready)return false;
+        if(!Ready){NoticeNotReady();return false;}
         if(Selected==Weapon.Knife){Slashes++;swingAt=Time.time;busyUntil=Time.time+.68f;StartCoroutine(Slash());return true;}
         var camera=combat.player.view;
         bool traced=combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit);
         if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
         {
             hit.collider.GetComponentInParent<Chapter3CompanionReaction>().WarnAgainstAttack();
-            busyUntil=Time.time+.4f;return false;
+            Notice("前方是同伴，請移開準星。");busyUntil=Time.time+.4f;return false;
         }
         if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
         {Notice("不要向運動會的人群開槍，沿任務路線前進。",3);busyUntil=Time.time+.4f;return false;}
         if(!Loaded){Notice(Reserve>0?"空膛，按 R 裝入一發。":"彈藥用盡，到身後木箱按 E 補給。");busyUntil=Time.time+.25f;return false;}
         Loaded=false;Shots++;firedAt=Time.time;busyUntil=Time.time+.48f;
+        Notice("已射出一發，按 R 裝填。");
         if(audioSource&&shotClip)audioSource.PlayOneShot(shotClip,.65f);
         if(traced)
         {
@@ -113,9 +114,18 @@ public sealed class Chapter3Weapons : MonoBehaviour
         if(friend){friend.KnifeHit();}
         else if(victim){victim.Hit(60,view.position);Notice("獵刀命中");}else Notice("沒有擊中，靠近再揮刀。");
     }
+    void NoticeNotReady()
+    {
+        if(!combat||!combat.Fighting)return;
+        if(combat.SchoolEncounter&&combat.SchoolEncounter.Rescue&&combat.SchoolEncounter.Rescue.Supporting)
+            Notice("正在扶行，放下比胡後才能使用武器。");
+        else if(Reloading)Notice("正在裝填，完成後再按左鍵射擊。");
+        else Notice(Selected==Weapon.Rifle?"槍械復位中，稍後再操作。":"正在揮刀，稍後再操作。",1);
+    }
     public bool Reload()
     {
-        if(!Ready||Selected!=Weapon.Rifle||Loaded||Reserve<=0)return false;
+        if(!Ready){NoticeNotReady();return false;}
+        if(Selected!=Weapon.Rifle||Loaded||Reserve<=0)return false;
         Reloading=true;Aiming=false;StartCoroutine(LoadOne());return true;
     }
     IEnumerator LoadOne()

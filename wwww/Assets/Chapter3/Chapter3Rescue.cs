@@ -244,6 +244,11 @@ public sealed class Chapter3Rescue : MonoBehaviour
         combat.healthText.text="生命值  "+Health+" / 100";
         var w=combat.weapons;combat.ammoText.text=Supporting?"正在扶行 · 武器收起":w.Selected==Chapter3Weapons.Weapon.Knife?"獵刀":"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve;
         combat.combatText.text=Supporting?"比胡靠著你移動\n前往接應棚 · E 可放下":CurrentStage==Stage.AwaitingLift?"扶起比胡  "+Mathf.RoundToInt(LiftProgress*100)+"%":"沿林路前進，跟同伴保持距離";
+        if(!Supporting)
+        {
+            if(w.Reloading)combat.combatText.text+="\n單發裝填  "+Mathf.CeilToInt(w.ReloadProgress*100)+"%";
+            else if(!string.IsNullOrEmpty(w.Feedback))combat.combatText.text+="\n"+w.Feedback;
+        }
         foreach(var e in battle.Enemies)if(e&&!e.Defeated&&e.Telegraphing)combat.combatText.text+="\n警察正在瞄準！";
         combat.crosshair.text=Supporting?"":w.Aiming?"·":"+";
         combat.hurtOverlay.color=new Color(.6f,.025f,.01f,Mathf.Clamp01(1-(Time.time-hurtAt)/.7f)*.32f);
