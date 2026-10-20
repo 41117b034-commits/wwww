@@ -28,18 +28,47 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     float previousFogDensity;
     Light previousSun;
     bool lightingSet;
+    bool approachPrepared;
+    public bool ApproachPrepared=>approachPrepared;
 
     public void Begin()
+    {
+        BeginCore(false,Vector3.zero,Vector3.zero,Vector3.forward,Vector3.forward);
+    }
+    public void BeginFromApproach(Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
+    {
+        BeginCore(true,leader,rear,leaderFacing,rearFacing);
+    }
+    // Warm up the school behind the wooded bend. No camera, UI, movement,
+    // fade, mission trigger or global lighting changes occur here.
+    public void PrepareApproach()
+    {
+        StopAllCoroutines();Exploring=false;MetTado=false;
+        if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
+        if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
+        Battle.Begin(this);approachPrepared=true;
+    }
+    void BeginCore(bool walking,Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
     {
         StopAllCoroutines();Exploring=false;MetTado=false;Area="校門前";lineUntil=0;
         if(!ArrivalGuide)ArrivalGuide=gameObject.AddComponent<Chapter3RouteGuide>();
         ArrivalGuide.Hide();
-        Visited=new bool[landmarks.Length];trail.Clear();trail.Add(spawn);
+        Visited=new bool[landmarks.Length];trail.Clear();trail.Add(walking?rear:spawn);
+        if(walking){trail.Add(leader);trail.Add(player.transform.position);}
         nextTrail=0;
         for(int i=0;i<2;i++){motors[i].Reset();trailIndex[i]=0;following[i]=false;}
-        bawan.transform.position=spawn+new Vector3(-1.4f,-spawn.y,-1.7f);
-        pihu.transform.position=spawn+new Vector3(1.4f,-spawn.y,-2.8f);
-        bawan.facing=pihu.facing=Vector3.forward;bawan.speaking=pihu.speaking=tado.speaking=false;
+        bawan.transform.position=walking?leader:spawn+new Vector3(-1.4f,-spawn.y,-1.7f);
+        pihu.transform.position=walking?rear:spawn+new Vector3(1.4f,-spawn.y,-2.8f);
+        bawan.GroundHeight=pihu.GroundHeight=0;
+        bawan.facing=walking?leaderFacing:Vector3.forward;pihu.facing=walking?rearFacing:Vector3.forward;
+        if(walking)
+        {
+            // The school rigs are already awake behind the bend. Apply the
+            // carried heading now, before their first visible rendered frame.
+            bawan.Face(bawan.transform.position+leaderFacing);
+            pihu.Face(pihu.transform.position+rearFacing);
+        }
+        bawan.speaking=pihu.speaking=tado.speaking=false;
         tado.transform.position=new Vector3(-4.7f,0,-5);
         player.chapter=null;player.station=null;player.combat=null;player.school=this;
         // Solid companions keep the camera out of their heads. Mission walking
@@ -48,15 +77,23 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         foreach(var actor in new[]{bawan,pihu,tado})
             foreach(var collider in actor.GetComponentsInChildren<Collider>())
                 Physics.IgnoreCollision(body,collider,false);
-        player.Warp(spawn,new Vector3(0,2,28));player.speed=2.8f;player.canMove=player.canLook=false;
+        if(!walking)player.Warp(spawn,new Vector3(0,2,28));
+        player.speed=2.8f;player.canMove=player.canLook=walking;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
         ui.objective.text="霧社公學校 · 運動會";
         previousFogDensity=RenderSettings.fogDensity;previousSun=RenderSettings.sun;lightingSet=true;
         RenderSettings.fogDensity=.0065f;if(sun)RenderSettings.sun=sun;
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
-        Battle.Begin(this);
-        StartCoroutine(Arrival());
+        if(!walking||!approachPrepared)Battle.Begin(this);
+        approachPrepared=false;
+        if(walking)
+        {
+            ui.fade.color=Color.clear;Exploring=true;
+            ArrivalGuide.Show(player.transform.position,new[]{tado.transform.position},player.transform,tado.transform);
+            Speak(bawan,"到了。達多就在校門旁，我們過去。",4.2f);
+        }
+        else StartCoroutine(Arrival());
     }
     IEnumerator Arrival()
     {
@@ -68,6 +105,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     public void Suspend()
     {
         StopAllCoroutines();Exploring=false;
+        approachPrepared=false;
         if(ArrivalGuide)ArrivalGuide.Hide();
         if(Battle)Battle.Suspend();
         if(lightingSet){RenderSettings.fogDensity=previousFogDensity;RenderSettings.sun=previousSun;lightingSet=false;}

@@ -38,6 +38,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     bool clearedRoutine;
     bool escortFacingActive;
     Vector3 leaderFacing,rearFacing;
+    public Vector3 WorldPoint(Vector3 point)=>point+transform.position;
     public void Begin()
     {
         SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
@@ -56,14 +57,15 @@ public sealed class Chapter3Combat : MonoBehaviour
     {
         CurrentStage=Stage.Fighting;ui.Say("",null);ui.hint.text="";ui.objective.text="突破前方巡警，與同伴繼續前進";
         player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
-        player.FocusOn(new Vector3(0,1.3f,10));
+        player.FocusOn(WorldPoint(new Vector3(0,1.3f,10)));
         Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
     }
     void ResetCheckpoint()
     {
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
         warningUntil=0;EscortWaiting=false;escortFacingActive=false;leaderMotor.Reset();rearMotor.Reset();
-        bawan.transform.position=new Vector3(-5.1f,0,-5);pihu.transform.position=new Vector3(5.2f,0,-6);
+        bawan.transform.position=WorldPoint(new Vector3(-5.1f,0,-5));pihu.transform.position=WorldPoint(new Vector3(5.2f,0,-6));
+        bawan.GroundHeight=pihu.GroundHeight=0;
         localCompanions=new[]{bawan.GetComponent<Chapter3CompanionReaction>(),pihu.GetComponent<Chapter3CompanionReaction>()};
         foreach(var companion in Companions)if(companion)companion.ResetReaction();
         foreach(var enemy in Enemies)if(enemy){enemy.gameObject.SetActive(false);Destroy(enemy.gameObject);}Enemies.Clear();
@@ -73,7 +75,7 @@ public sealed class Chapter3Combat : MonoBehaviour
             var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=this;Enemies.Add(enemy);
         }
         player.chapter=null;player.station=null;player.combat=this;player.speed=2.8f;
-        player.Warp(spawn,new Vector3(0,1.55f,8));player.view.fieldOfView=60;
+        player.Warp(WorldPoint(spawn),WorldPoint(new Vector3(0,1.55f,8)));player.view.fieldOfView=60;
         weapons.ResetEquipment();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.fade.color=Color.clear;
         hud.SetActive(true);downPanel.SetActive(false);hurtOverlay.color=Color.clear;
         retry.onClick.RemoveAllListeners();retry.onClick.AddListener(()=>Retry());
@@ -160,6 +162,14 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     IEnumerator ClearEncounter()
     {
+        if(flow&&flow.Approach)
+        {
+            CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();
+            hud.SetActive(false);player.speed=2.8f;player.view.fieldOfView=60;
+            player.canMove=player.canLook=true;
+            flow.Approach.BeginWalk();
+            yield break;
+        }
         CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=2.8f;player.view.fieldOfView=60;
         hud.SetActive(false);
         yield return new WaitForSeconds(2);
@@ -234,6 +244,8 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
-        desired.x=Mathf.Clamp(desired.x,-7,7);desired.z=Mathf.Clamp(desired.z,-12,30);return desired;
+        if(flow&&flow.Approach&&flow.Approach.Active)return flow.Approach.Constrain(current,desired);
+        Vector3 local=desired-transform.position;
+        local.x=Mathf.Clamp(local.x,-7,7);local.z=Mathf.Clamp(local.z,-12,30);return local+transform.position;
     }
 }

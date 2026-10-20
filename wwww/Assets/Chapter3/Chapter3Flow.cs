@@ -22,6 +22,7 @@ public sealed class Chapter3Flow : MonoBehaviour
     public void ClearEquipment() { CarriedWeapon=null; }
     public string Region { get; private set; } = "Village";
     public int Transitions { get; private set; }
+    public Chapter3SchoolApproach Approach { get; private set; }
     static Chapter3Flow activeFlow;
     int schoolEnteredFrame=-1;
     Text shortcutLegend;
@@ -35,6 +36,11 @@ public sealed class Chapter3Flow : MonoBehaviour
         if(startAtStation){Region="Station";stationStarted=true;}
         if(schoolRegion)schoolRegion.SetActive(false);
         if(school)school.flow=this;
+        if(school&&schoolRegion)
+        {
+            Approach=gameObject.AddComponent<Chapter3SchoolApproach>();
+            Approach.Initialize(this);
+        }
     }
     void Start()
     {
@@ -77,6 +83,7 @@ public sealed class Chapter3Flow : MonoBehaviour
     }
     void LeaveCurrent()
     {
+        if(Approach)Approach.Suspend();
         Chapter3PickupArrow.Hide(ui);
         if(village)village.Suspend();station.Suspend();combat.Suspend();
         if(school)school.Suspend();
@@ -97,8 +104,22 @@ public sealed class Chapter3Flow : MonoBehaviour
     public void EnterCombat()
     {
         if(station.RefusalCommitted)return;
-        LeaveCurrent();Region="Combat";Transitions++;combatRegion.SetActive(true);combat.Begin();
+        LeaveCurrent();Region="Combat";Transitions++;combatRegion.SetActive(true);
+        if(Approach)Approach.Prepare();
+        combat.Begin();
         UpdateShortcutLegend();
+    }
+    public void CompleteSchoolApproach()
+    {
+        if(!Approach||!Approach.Active||Region!="Combat")return;
+        // The camera, player and both walking actors stay at their current
+        // positions. The existing school cast takes over in the same poses.
+        Vector3 leader=combat.bawan.transform.position,rear=combat.pihu.transform.position;
+        Vector3 leaderFacing=combat.bawan.facing,rearFacing=combat.pihu.facing;
+        schoolEnteredFrame=Time.frameCount;Region="School";Transitions++;
+        combat.Suspend();combatRegion.SetActive(false);
+        school.BeginFromApproach(leader,rear,leaderFacing,rearFacing);
+        Approach.Finish();UpdateShortcutLegend();
     }
     public void EnterSchool()
     {

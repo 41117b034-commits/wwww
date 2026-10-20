@@ -63,7 +63,11 @@ public sealed class Chapter3Player : MonoBehaviour
         else if (combat) next = combat.Constrain(transform.position, next);
         else if (school) next = school.Constrain(transform.position, next);
         motor.Move(next - transform.position);
-        if (transform.position.y < -3) Warp(school?school.spawn:combat?combat.spawn:new Vector3(0,.1f,0),school?school.spawn+Vector3.forward*12:Vector3.forward*3);
+        if (transform.position.y < -3)
+        {
+            Vector3 safe=school?school.spawn:combat?combat.WorldPoint(combat.spawn):new Vector3(0,.1f,0);
+            Warp(safe,safe+Vector3.forward*12);
+        }
     }
     public void Warp(Vector3 position, Vector3 lookAt)
     {

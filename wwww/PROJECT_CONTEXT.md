@@ -2,6 +2,16 @@
 
 更新日期：2026-10-20。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
+最新第三章連續入校（2026-10-20）：使用者已批准「短交戰結束 → 同伴招呼帶路 → 林間轉彎與局部緩坡 → 先聽見運動會 → 看見操場 → 自己走到校門」。已實作於同一第三章：清除三名巡警後不黑幕、不傳送玩家、不鎖移動與視角；巴萬帶路、比胡沿實際走過的路跟隊，玩家落後會等候。新增約 1.8m 局部高差的連續碰撞林路、彎道遮擋、校門來路木柵實際開口及提前漸入的運動會音效；緩坡、彎道與距離壓縮是關卡安排，不標成已考證史實。走到校門保留玩家位置與同伴當下位置／朝向，接回靠近達多與三選一分工。F6／F7／F8 及空白鍵原有跳段保留。
+
+新增 Chapter3SchoolApproach／Chapter3ApproachEnvironment／Chapter3ApproachAudio，調整 Flow、Combat、Player 與 SchoolController 的區域座標及自然交接。地形／入口網格均為執行時副本，未改正式場景、人物比例、HandPose、Weapons、Presentation、Build Settings 或 Game 預覽比例。單一音源由林路延續至校門，達多交談開始後淡出；音量在 z=-82 至 -64 漸入，來源輸出已量測，未做真人聆聽。遠處可局部看見校舍，操場正面視野在後段展開；SchoolRevealed 旗標不能當任何校舍首次可見的精確證據。
+
+本輪三份最終 Editor Play Mode 報告共 236 項通過：步槍 66、獵刀 66、中途 F6／F7／F8 與 R 重試 104，均 completed=true、errors=[]、warnings=[]，PlayerPrefs 已還原。刀／槍均實際攻擊三名巡警、步行全路、接近達多與選擇中央攻入至交戰開始；逐幀黑幕最大值 0、沒有操作鎖定或位移跳躍，首次交接玩家位置不變，兩同伴實際 Transform 朝向差皆 0°。測試使用 Input System／武器 API／CharacterController；F7、Carry、敵人停火與重試傷害為明示 fixture，沒有宣稱真人全程鍵鼠或 VR。早期缺頭圖確認是工具在 LateUpdate 前渲染造成，正式 EOF 截圖頭頸完整，未因此修改模型或 shader。後衛繞掩體的檢查改以限定時間內沿路追上判定，未改正式跟隊邏輯。
+
+本輪說明見 Documentation/Chapter3-walk-to-school.md；修改前備份、失敗診斷、最終報告及收尾狀態在 _CodexBackups/chapter3_walk_to_school_20261020，以 final-summary.json 與三份最終報告為準。舊第七批 Wushe.exe 不含本次變更，本輪沒有重新建置、commit 或 push。下方手部／射擊紀錄的「第 3 點僅討論」已被本輪批准與實作取代。
+
+本輪入校收尾：第三章已停止 Play，dirty=false、compileFailed=false、missingScripts=0；臨時 Editor 工具及 meta 已移出 Assets，移除後重新編譯與 assembly reload 成功，未見新增 C# 編譯錯誤。七份正式 runtime 與測試版雜湊一致，三章場景、HandPose、Weapons、Presentation、Build Settings 與 default layout 保護雜湊不變，Game 預覽維持 0.78x。
+
 最新第三章手部與射擊修正（2026-10-19～20）：依使用者三點需求，本輪只實作 1 手部／2 射擊回應，第 3 點短交戰後步行進校、不黑幕僅做史實與動線討論，未改轉場或地形。第三章原生模型網格執行時不可讀，原 Rig 掌軸落入 fallback 造成手腕折轉；新增 Chapter3HandPose，使用既有 authoring 對 7 種原網格匯出的掌軸修正族人、領隊、警察及跑道學童，涵蓋推門、持槍、受傷、扶行與倒臥。未改人物比例；共用 Rig 僅增加 PalmFrame 唯讀查詢，第一／二章動作不變。第一人稱 ViewArm 未改；補等待完整更新幀後，左右前臂延伸及掌部保留檢查通過，避免把首次啟用幀截圖誤認為持續缺陷。
 
 射擊修正：游標未鎖定的首次戰鬥點擊現在同次擊發，裝填／冷卻／扶行拒絕與成功擊發都有回饋，不排隊補射。保留單一武器、2.6 秒單發裝填及同伴／群眾保護。尋路改每個 motor 每幀 32 節點、保留原路點與即時碰撞；背景群眾 12m 外用 6 份離線簡化 mesh、9m 內恢復原 mesh，三位領隊與召回族人保持原細節。新增資產在 Assets/Chapter3/Resources/Chapter3，未修改來源模型、場景、材質或全域品質。原約 5 FPS 的 Editor 學校取樣改善至約 7–10 FPS，仍未達流暢，不能全歸咎電腦或宣稱延遲消除；輸入到射擊同觀察幀，合法守衛樣本約 93ms。後續效能工作仍需主要人物／植被／材質與 Standalone 實測。
