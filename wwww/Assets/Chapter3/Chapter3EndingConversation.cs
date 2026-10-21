@@ -173,16 +173,16 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
             "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。":
             "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。";
         if(result.mission==Chapter3SchoolBattle.Mission.Tado)
-            return "你跟達多從中央攻進學校；我負責左側突破，比胡負責右側。中央和右側的經過，我是在校後匯合時聽回報的。";
+            return "你跟達多從中央進入會場；我打通左側通路，比胡照應右側。中央和右側的經過，我是在校後匯合時聽回報的。";
         if(result.mission==Chapter3SchoolBattle.Mission.Bawan)
-            return "你跟我走左側，拆橫木、開側門；達多從中央攻進學校，比胡負責右側。另兩路的經過，我是在校後匯合時聽回報的。";
-        return "你掩護比胡穿過右側；我負責左側突破，達多從中央攻進學校。中央和右側的經過，我是在校後匯合時聽回報的。";
+            return "你跟我走左側，移開門閂、協力開門；達多從中央進入會場，比胡照應右側。另兩路的經過，我是在校後匯合時聽回報的。";
+        return "你照應比胡穿過右側；我打通左側通路，達多從中央進入會場。中央和右側的經過，我是在校後匯合時聽回報的。";
     }
     string Team()=>result.pihuSurvived?"原來小隊的你、我、比胡和達多都活著，共四人。莫那不算原來的小隊成員。":
         "原來小隊如今是你、我和達多活著，共三人。達多已確認比胡死亡；莫那不算原來的小隊成員。";
     string BawanFact()=>"我就是巴萬，還活著，沒有受傷，現在和你在接應處。"+SchoolAccount();
     string TadoFact()=>"達多還活著，沒有受傷，現在和我們在接應處。"+
-        (result.version>=2?"學校分隊時，他負責從中央攻進學校，沒有跟我或比胡走側路。"+
+        (result.version>=2?"學校分隊時，他從中央進入會場，沒有跟我或比胡走側路。"+
             (result.mission==Chapter3SchoolBattle.Mission.Tado?"你是跟他一起走的。":"中央的經過，我是匯合時聽他回報的。"):
             result.mission==Chapter3SchoolBattle.Mission.Bawan?"學校分隊時，他和比胡走右側；你跟我走左側。":
                 "學校分隊時，他和我走左側；你和比胡走右側。");
@@ -241,7 +241,7 @@ public sealed class Chapter3EndingConversation : MonoBehaviour
             Has(text,"後悔","后悔","難過","难过","對不起","对不起")?"我聽見你的難受，這些話我會記著。":"我聽見你的想法了。";
         if(CompletedTurns>0)return acknowledgment+"眼前的經過已經清點清楚；等你讀完，我們一起聽莫那說話。";
         return acknowledgment+(result.mission==Chapter3SchoolBattle.Mission.Bawan?"剛才左側的路，我是和你一起走過的。":
-            result.mission==Chapter3SchoolBattle.Mission.Tado?"你跟達多從中央攻入的經過，我是匯合後聽回報的。":"右側的經過，我是匯合後聽你們說的。")+
+            result.mission==Chapter3SchoolBattle.Mission.Tado?"你跟達多進入會場的經過，我是匯合後聽回報的。":"右側的經過，我是匯合後聽你們說的。")+
             (result.pihuSurvived?"比胡已經接應下來，還活著。":"達多回去確認，比胡已經死了。");
     }
     static bool SafeReflection(string answer)

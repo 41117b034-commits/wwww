@@ -26,17 +26,25 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public float engagementRange=32;
     float nextAttack,raisedAt,hitAt=-20,holdFireUntil;
     bool attackGranted;
+    bool started,restorePending;
+    Vector3 restoredFallSource;
     AudioSource reportAudio;
     Vector3 fallGrip,fallenWeaponPosition;
     Quaternion fallRotation,fallenWeaponRotation;
     Renderer[] weaponRenderers;
     void Start()
     {
-        nextAttack=Time.time+2;Health=100;
+        started=true;nextAttack=Time.time+2;if(!restorePending)Health=100;
         Chapter3EnemyHitZone.Install(this);
         if(!GetComponent<Chapter3EnemyWoundPose>())gameObject.AddComponent<Chapter3EnemyWoundPose>();
         reportAudio=gameObject.AddComponent<AudioSource>();reportAudio.playOnAwake=false;reportAudio.spatialBlend=.85f;reportAudio.maxDistance=45;reportAudio.volume=.45f;
         if(rifle){rifle.target=null;rifle.aimTarget=combat.playerTarget;rifle.aim=0;rifle.lowered=.8f;}
+        if(restorePending)
+        {
+            restorePending=false;
+            if(Defeated)BeginDefeat(restoredFallSource);
+            else if(LegWounded)HoldFire(1.6f);
+        }
     }
     void Update()
     {
@@ -94,6 +102,15 @@ public sealed class Chapter3Enemy : MonoBehaviour
         nextAttack=Mathf.Max(nextAttack,holdFireUntil);
         CancelAim();
     }
+    // Checkpoint restoration is only accepted on a fresh instance, before its
+    // rig/weapon Start methods run. It never awards a kill or emits hit feedback.
+    public bool RestoreEncounterState(int health,bool legWounded,Vector3 fallSource)
+    {
+        if(started||restorePending)return false;
+        Health=Mathf.Clamp(health,0,100);LegWounded=legWounded;
+        restoredFallSource=fallSource;restorePending=true;
+        return true;
+    }
     void CancelAim()
     {Telegraphing=false;raisedAt=0;if(rifle){rifle.aim=0;rifle.lowered=.8f;}}
     void OnDisable(){holdFireUntil=0;attackGranted=false;CancelAim();}
@@ -114,25 +131,29 @@ public sealed class Chapter3Enemy : MonoBehaviour
         Health=Mathf.Max(0,Health-damage);hitAt=Time.time;Telegraphing=false;nextAttack=Time.time+2.2f;
         if(Defeated)
         {
-            if(rifle)
-            {
-                rifle.aim=0;rifle.lowered=1;rifle.enabled=false;
-                if(rifle.muzzleFlash)rifle.muzzleFlash.SetActive(false);
-                if(rifle.weapon&&actor.Rig&&actor.Rig.Hips)
-                {
-                    var hips=actor.Rig.Hips;
-                    fallGrip=Quaternion.Inverse(hips.rotation)*(rifle.weapon.position-hips.position);
-                    fallRotation=Quaternion.Inverse(hips.rotation)*rifle.weapon.rotation;
-                    Vector3 direction=Vector3.ProjectOnPlane(transform.position-from,Vector3.up).normalized;
-                    if(direction.sqrMagnitude<.01f)direction=transform.forward;
-                    fallenWeaponPosition=transform.position+direction*.55f+Vector3.Cross(Vector3.up,direction)*.48f;
-                    fallenWeaponRotation=Quaternion.LookRotation(direction,Vector3.up)*Quaternion.Euler(0,0,88);
-                    weaponRenderers=rifle.weapon.GetComponentsInChildren<Renderer>();
-                }
-            }
-            foreach(var c in GetComponentsInChildren<Collider>())c.enabled=false;
-            actor.BeginFall(from);combat.EnemyDefeated();
+            BeginDefeat(from);combat.EnemyDefeated();
         }
+    }
+    void BeginDefeat(Vector3 from)
+    {
+        if(rifle)
+        {
+            rifle.aim=0;rifle.lowered=1;rifle.enabled=false;
+            if(rifle.muzzleFlash)rifle.muzzleFlash.SetActive(false);
+            if(rifle.weapon&&actor.Rig&&actor.Rig.Hips)
+            {
+                var hips=actor.Rig.Hips;
+                fallGrip=Quaternion.Inverse(hips.rotation)*(rifle.weapon.position-hips.position);
+                fallRotation=Quaternion.Inverse(hips.rotation)*rifle.weapon.rotation;
+                Vector3 direction=Vector3.ProjectOnPlane(transform.position-from,Vector3.up).normalized;
+                if(direction.sqrMagnitude<.01f)direction=transform.forward;
+                fallenWeaponPosition=transform.position+direction*.55f+Vector3.Cross(Vector3.up,direction)*.48f;
+                fallenWeaponRotation=Quaternion.LookRotation(direction,Vector3.up)*Quaternion.Euler(0,0,88);
+                weaponRenderers=rifle.weapon.GetComponentsInChildren<Renderer>();
+            }
+        }
+        foreach(var c in GetComponentsInChildren<Collider>())c.enabled=false;
+        actor.BeginFall(from);
     }
     void LateUpdate()
     {

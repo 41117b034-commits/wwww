@@ -8,8 +8,7 @@ public sealed partial class Chapter3SchoolBattle
     {
         if(Step>=Enemies.Count||!Enemies[Step]||threatIntroduced[Step])return;
         int step=Step;var enemy=Enemies[step];threatIntroduced[step]=true;
-        enemy.transform.position=threatPositions[step]+Vector3.right*2;
-        enemy.AttackEnabled=false;enemy.gameObject.SetActive(true);ThreatRevealing=true;
+        enemy.AttackEnabled=false;ThreatRevealing=true;
         threatMotor.Reset();observedEnemyShots=0;dangerWasVisible=false;dangerPoseUntil=0;
         StartCoroutine(RevealThreat(enemy,step));
     }
@@ -21,16 +20,16 @@ public sealed partial class Chapter3SchoolBattle
             yield return new WaitForSeconds(2.5f);
         }
         if(!Fighting||Step!=step)yield break;
-        Notice("警察","那邊有人！",2.4f);
-        while(Fighting&&Step==step&&enemy&&!enemy.Defeated&&Flat(enemy.transform.position,threatPositions[step])>.12f)
-        {threatMotor.Move(enemy.actor,threatPositions[step],1.7f);yield return null;}
+        Notice(school.pihu.DisplayName,"前面的警察正往通路移動，先看清楚再走。",2.8f);
+        while(Fighting&&Step==step&&enemy&&!enemy.Defeated&&!OfficerSettled(step))
+            yield return null;
         if(!Fighting||Step!=step)yield break;
         ThreatRevealing=false;
         if(enemy&&!enemy.Defeated)
         {
             enemy.AttackEnabled=true;
             enemy.HoldFire(school.flow.CarriedWeapon==Chapter3Weapons.Weapon.Knife?5:3.5f);
-            Notice(school.pihu.DisplayName,"警察出來了！先看清他的動作，等你的信號。",3.5f);
+            Notice(school.pihu.DisplayName,"他停下來了！先看清他的動作，我等你的信號。",3.5f);
         }
     }
     void UpdateCover()
@@ -71,9 +70,9 @@ public sealed partial class Chapter3SchoolBattle
             e.escortTarget=AtCrossing&&(Advancing||Returning)?school.pihu.transform:null;
         }
         UpdateCoverReactions();
-        ui.objective.text="跟比胡掩護 · 第 "+(Step+1)+" / 2 段";
-        string order=!AtCrossing?"先跟比胡到東側掩體":ThreatRevealing?"警察正在出現 · 留意前方":Returning?"比胡正在撤回":Advancing?"比胡正在穿越 · E 撤回":
-            CrossingArrived?"比胡已抵達 · 清除這一段警察":"比胡在掩體後等待信號 · E 前進";
+        ui.objective.text=Step==0?"照應比胡，穿過東側通路":"跟比胡接近校後，準備撤出";
+        string order=!AtCrossing?"先跟比胡到東側器材後":ThreatRevealing?"警察正在移動 · 留意前方":Returning?"比胡正在撤回":Advancing?"比胡正在穿越 · E 撤回":
+            CrossingArrived?"比胡已抵達 · 留意通路上的警察":"比胡在器材後等待信號 · E 前進";
         var guard=Step<Enemies.Count?Enemies[Step]:null;
         string window=guard&&guard.gameObject.activeInHierarchy&&!guard.Defeated&&!ThreatRevealing?
             guard.Telegraphing?"警察正在抬槍！":guard.SafeWindowSeconds>.4f?"警察暫時停火 · 留意再次抬槍":"警察準備瞄準":"";

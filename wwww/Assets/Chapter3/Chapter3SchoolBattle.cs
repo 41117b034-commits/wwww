@@ -33,6 +33,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     public Chapter3CompanionReaction[] Companions {get;private set;}
     public Transform[] Barricades {get;private set;}
     public Transform Ammo {get;private set;}
+    TextMesh ammoLabel;
     Chapter3SchoolController school;
     Chapter3Combat combat;
     Chapter3Player player;
@@ -77,7 +78,10 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             Menu.retry.onClick.AddListener(()=>Retry());Menu.replay.onClick.AddListener(()=>school.flow.EnterSchool());
         }
         Menu.Hide();
-        if(!scenery)BuildProps();ResetBreakthrough(0);scenery.gameObject.SetActive(false);
+        if(!scenery)BuildProps();ResetBreakthrough(0);scenery.gameObject.SetActive(true);
+        if(ammoLabel)ammoLabel.gameObject.SetActive(false);
+        BuildAssaultProps();assaultProps.gameObject.SetActive(true);
+        PrepareCalmOfficers();
         if(ambient)ambient.ResetCalm();
         Companions=new Chapter3CompanionReaction[3];
         var actors=new[]{school.bawan,school.pihu,school.tado};
@@ -112,26 +116,30 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(-2,1.2f,22));
         if(ambient)ambient.Panic();
+        BeginOfficerResponse();
         for(int i=0;i<3;i++){if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f-i*.10f);yield return new WaitForSeconds(.65f);}
         // Keep the camera on the actual school event, not only on the speaker.
         ui.Say("", "會場遭到襲擊，日本平民也遭到殺害。人群在槍聲與呼喊中四散。");
         yield return new WaitForSeconds(4.5f);ui.Say("",null);
         yield return Say(school.tado,"各隊照分工走！我進會場，巴萬走左邊，比胡走右邊。校後會合！",4.5f,false);
         var leader=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
-        yield return Say(leader,Selected==Mission.Tado?"跟緊我，從校門進去！看住前面的警察，別讓同伴落單。":Selected==Mission.Bawan?"跟我來，把擋路的橫木拆掉！":"你看住前面的警察。我聽你的信號前進，必要時叫我撤回！",4.5f,false);
-        ResetMission();
+        yield return Say(leader,Selected==Mission.Tado?"跟緊我，從校門進去！別讓同伴落單，留意會場裡的動靜。":Selected==Mission.Bawan?"跟我來，打開側邊通路，讓同伴能從那邊撤出！":"跟我走右側。我聽你的信號前進，必要時叫我撤回！",4.5f,false);
+        ResetMission(true);
     }
-    void ResetMission()
+    void ResetMission(bool preserveArrival=false)
     {
-        if(Selected==Mission.Tado){ResetAssaultMission();return;}
-        StopAssault();ClearEnemies();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
+        if(Selected==Mission.Tado){ResetAssaultMission(preserveArrival);return;}
+        StopAssault();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
         Step=CheckpointStep;guideIndex=0;otherIndex=otherEscortIndex=0;
         Health=100;EscortPressure=0;WorkProgress=0;AtCrossing=Advancing=Returning=false;hurtAt=-10;noticeUntil=0;
         ThreatRevealing=CrossingArrived=dangerWasVisible=false;dangerPoseUntil=nextCoverCall=0;observedEnemyShots=0;
         threatIntroduced=new bool[2];scenery.gameObject.SetActive(true);ResetBreakthrough(CheckpointStep);
-        school.bawan.transform.position=Step==0?P(-3,-8):checkpointBawan;
-        school.pihu.transform.position=Step==0?P(1,-8):checkpointPihu;
-        school.tado.transform.position=Step==0?P(0,-5):checkpointTado;
+        if(!preserveArrival)
+        {
+            school.bawan.transform.position=Step==0?P(-3,-8):checkpointBawan;
+            school.pihu.transform.position=Step==0?P(1,-8):checkpointPihu;
+            school.tado.transform.position=Step==0?P(0,-5):checkpointTado;
+        }
         foreach(var c in Companions)c.ResetReaction();
         activeRoute=Selected==Mission.Bawan?west[Step]:Step==0?new[]{P(8,-8),P(25,-4),P(30,7)}:east[Step];
         otherRoute=Selected==Mission.Bawan?eastSquad:school.breakthroughRoute;
@@ -141,28 +149,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // The other squad takes its own side of the same school, without teleporting.
         combat.SchoolEncounter=this;combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         player.chapter=null;player.station=null;player.combat=null;player.school=school;player.speed=2.8f;
-        player.Warp(Step==0?new Vector3(-2,.06f,-6):checkpointPlayer,
+        if(!preserveArrival)player.Warp(Step==0?new Vector3(-2,.06f,-6):checkpointPlayer,
             Step==0?new Vector3(Selected==Mission.Bawan?-23:25,1.2f,-4):Selected==Mission.Bawan?new Vector3(-27,1.2f,43):new Vector3(29,1.2f,37));
-        var positions=Selected==Mission.Bawan?new[]{P(-25.7f,22),P(-28,53)}:new[]{P(29,33),P(34.5f,59)};
-        // A knife-only player must reach each guard without crossing a locked
-        // barricade or the current cover checkpoint. Keep rifle positions intact.
-        bool knifeOnly=school.flow.CarriedWeapon==Chapter3Weapons.Weapon.Knife;
-        if(knifeOnly)
-            positions=Selected==Mission.Bawan?new[]{P(-25.7f,14.4f),P(-28,44.4f)}:new[]{P(29,27.8f),P(34.5f,52)};
-        threatPositions=positions;
-        for(int i=0;i<positions.Length;i++)
-        {
-            if(i<CheckpointStep){Enemies.Add(null);continue;}
-            var go=Instantiate(combat.enemyTemplates[i%combat.enemyTemplates.Length],enemiesRoot);go.name="校側警察 · "+(i+1);
-            go.transform.position=positions[i];var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=combat;enemy.advances=false;enemy.attackInterval=4.5f;enemy.escortTarget=null;
-            // Close-quarters staging leaves time to approach with a knife.
-            // Damage, telegraph and fire cadence remain the same.
-            enemy.engagementRange=knifeOnly?12:32;
-            Enemies.Add(enemy);go.SetActive(Selected==Mission.Bawan&&i==Step);
-        }
-        for(int i=0;i<threatCovers.Length;i++)
-        {threatCovers[i].gameObject.SetActive(Selected==Mission.Pihu);threatCovers[i].position=positions[i]+new Vector3(2,0,-.85f);}
+        if(!preserveArrival)ResetOfficersForCheckpoint();
         CurrentStage=Stage.Fighting;Menu.Hide();ui.Say("",null);ui.fade.color=Color.clear;
+        if(ammoLabel)ammoLabel.gameObject.SetActive(true);
         combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;combat.weapons.ResetEquipment();
         player.canMove=player.canLook=true;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
         MoveAmmo();
@@ -172,6 +163,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void Update()
     {
         if(!school||CurrentStage==Stage.Inactive)return;
+        UpdateOfficerResponse();
         if(CurrentStage==Stage.Choice)
         {
             if(Keyboard.current?.digit1Key.wasPressedThisFrame==true)Choose(Mission.Tado);
@@ -247,7 +239,8 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void MoveOtherSquad()
     {
         var other=Selected==Mission.Bawan?school.pihu:school.bawan;
-        MoveRoute(other,otherMotor,otherRoute,ref otherIndex,false);
+        if(Selected==Mission.Bawan||UpdateBackgroundWestPassages())
+            MoveRoute(other,otherMotor,otherRoute,ref otherIndex,false);
         // Leaders now keep their own assignment regardless of the chosen route.
         if(Selected==Mission.Tado)
             MoveRoute(school.pihu,tadoMotor,eastSquad,ref otherEscortIndex,false);
@@ -287,14 +280,14 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         if(!Fighting||Step>=2||!CurrentThreatCleared)return;
         if(Selected==Mission.Pihu&&!CrossingArrived)return;
-        Step++;CheckpointStep=Step;
+        Step++;CheckpointStep=Step;SaveOfficerCheckpoint();
         if(Step==2){StartRegroup();return;}
         checkpointBawan=school.bawan.transform.position;checkpointPihu=school.pihu.transform.position;checkpointTado=school.tado.transform.position;
         checkpointPlayer=Selected==Mission.Bawan?new Vector3(-27,.06f,19):new Vector3(27.5f,.06f,22.5f);
         checkpointOtherIndex=otherIndex;checkpointOtherEscortIndex=otherEscortIndex;
         guideIndex=0;guideMotor.Reset();EscortPressure=0;MoveAmmo();
         if(Selected==Mission.Bawan)
-        {activeRoute=west[Step];Enemies[Step].gameObject.SetActive(true);}
+        {activeRoute=west[Step];}
         else
         {
             safePihu=checkpointPihu;activeRoute=east[Step];Advancing=Returning=CrossingArrived=false;
@@ -315,7 +308,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void MoveAmmo()
     {Ammo.position=Selected==Mission.Bawan?P(-29,Step==0?9:38):P(Step==0?33:32,Step==0?4:21);}
     void ClearEnemies()
-    {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();}
+    {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();ClearOfficerStaging();}
     public void Suspend()
     {
         if(Rescue)Rescue.Suspend();
@@ -338,7 +331,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     void BuildProps()
     {
-        scenery=new GameObject("學校交戰 · 路障與掩體").transform;scenery.SetParent(school.transform,false);
+        scenery=new GameObject("運動會 · 側門與活動用品").transform;scenery.SetParent(school.transform,false);
         enemiesRoot=new GameObject("學校交戰 · 巡警").transform;enemiesRoot.SetParent(school.transform,false);
         Material wood=null,metal=null;
         foreach(var renderer in school.GetComponentsInChildren<Renderer>(true))foreach(var mat in renderer.sharedMaterials)
@@ -348,14 +341,26 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(!metal)metal=wood;
         BuildBreakthroughProps(wood,metal);
         threatCovers=new Transform[2];
-        for(int i=0;i<2;i++)threatCovers[i]=Crate(scenery,Vector3.zero,new Vector3(1.4f,1.8f,.65f),wood,metal,"警察出場掩體"+(i+1));
-        foreach(float z in new[]{10,26,56})Crate(scenery,new Vector3(30.5f,0,z),new Vector3(3.5f,1.7f,1.1f),wood,metal,"東側厚木掩體");
-        Crate(scenery,new Vector3(-29,0,5),new Vector3(1.7f,1.5f,1.2f),wood,metal,"西側入口掩體");
-        Crate(scenery,new Vector3(-24.6f,0,34),new Vector3(1.7f,1.5f,1.2f),wood,metal,"西側中段掩體");
+        for(int i=0;i<2;i++)threatCovers[i]=EventSupplies(scenery,P(i==0?31:36.5f,i==0?32:58),wood,metal,"倉房旁運動會器材");
+        foreach(float z in new[]{10,26,56})EventSupplies(scenery,new Vector3(30.5f,0,z),wood,metal,"東側活動用品");
+        EventSupplies(scenery,new Vector3(-29,0,5),wood,metal,"校門旁活動用品");
+        EventSupplies(scenery,new Vector3(-24.6f,0,34),wood,metal,"校舍旁器材箱");
         Ammo=Crate(scenery,P(-29,9),new Vector3(.8f,.65f,.65f),wood,metal,"備用彈藥箱");
-        var label=new GameObject("彈藥箱標示",typeof(TextMesh)).GetComponent<TextMesh>();label.transform.SetParent(Ammo,false);label.transform.localPosition=new Vector3(0,.94f,0);
+        var label=new GameObject("彈藥箱標示",typeof(TextMesh)).GetComponent<TextMesh>();ammoLabel=label;label.transform.SetParent(Ammo,false);label.transform.localPosition=new Vector3(0,.94f,0);
         label.text="彈藥";label.font=ui.subtitle.font;label.fontSize=64;label.characterSize=.085f;label.anchor=TextAnchor.MiddleCenter;label.color=new Color(1,.84f,.25f);
         label.GetComponent<Renderer>().sharedMaterial=label.font.material;
+    }
+    static Transform EventSupplies(Transform parent,Vector3 position,Material wood,Material iron,string name)
+    {
+        var root=new GameObject(name).transform;root.SetParent(parent,false);root.localPosition=position;
+        // Unequal storage boxes and a low work table read as school supplies.
+        // Their solid wooden volumes still provide local, readable cover.
+        Crate(root,new Vector3(-.55f,0,0),new Vector3(1.1f,.85f,.95f),wood,iron,"收存器材的木箱");
+        Crate(root,new Vector3(-.55f,.85f,.03f),new Vector3(.88f,.55f,.8f),wood,iron,"疊放的小器材箱");
+        Box(root,new Vector3(.65f,.76f,0),new Vector3(1.25f,.10f,.8f),wood,"活動桌面");
+        foreach(float x in new[]{.15f,1.15f})foreach(float z in new[]{-.28f,.28f})
+            Box(root,new Vector3(x,.35f,z),new Vector3(.09f,.7f,.09f),wood,"活動桌腳");
+        return root;
     }
     static Transform Crate(Transform parent,Vector3 position,Vector3 size,Material wood,Material iron,string name)
     {

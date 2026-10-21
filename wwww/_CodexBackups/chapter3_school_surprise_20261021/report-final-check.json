@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "test-tado-rescue-rifle",
+    "completed": true,
+    "checks": 557,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 231.5139923095703,
+    "modified": "2026-10-21T03:09:24.9078292+08:00",
+    "reportHash": "8A8721427A5B1D5DE9012EF30FE6043F21363A9EAB3E90AA8C4C058529C77AEE"
+  },
+  {
+    "mode": "test-tado-leave-knife",
+    "completed": true,
+    "checks": 551,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 244.74533081054688,
+    "modified": "2026-10-21T03:13:50.8435059+08:00",
+    "reportHash": "B23617EAB16F17D6CFA436DA06209312A918814C3241FC1EBC3691B91705B65A"
+  },
+  {
+    "mode": "test-legacy-bawan",
+    "completed": true,
+    "checks": 513,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 112.1643295288086,
+    "modified": "2026-10-21T02:25:14.4131773+08:00",
+    "reportHash": "7BAB75DB94FC40457C5496C498F7FE442AF524A8DD1489CC982296A620835DAB"
+  },
+  {
+    "mode": "test-legacy-bawan-knife",
+    "completed": true,
+    "checks": 502,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 109.92121887207031,
+    "modified": "2026-10-21T02:40:41.6525764+08:00",
+    "reportHash": "A2BB2DA6020BFAD19C657F3D87485E49F5389C8B50E77DEB6B86BA3ED90B475B"
+  },
+  {
+    "mode": "test-legacy-pihu",
+    "completed": true,
+    "checks": 506,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 139.20237731933594,
+    "modified": "2026-10-21T02:27:53.6474304+08:00",
+    "reportHash": "F445AE929A9B599E8F9B5EB8C3413E59079FAA94866ED184F0563D37D4B94F8E"
+  },
+  {
+    "mode": "test-legacy-pihu-rifle",
+    "completed": true,
+    "checks": 511,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 140.28262329101562,
+    "modified": "2026-10-21T02:43:20.7401034+08:00",
+    "reportHash": "D08C618221873552327B3408B03CEC5F29A115D13F9B371CEBAFB3F883DD2B2B"
+  },
+  {
+    "mode": "test-checkpoint-wounded",
+    "completed": true,
+    "checks": 533,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 69.29715728759766,
+    "modified": "2026-10-21T02:44:55.2875954+08:00",
+    "reportHash": "7A95CE4130E5ED54F9DE2EC1F5BC2B6533119EEB6C54887D615535E28EE98D2D"
+  },
+  {
+    "mode": "test-checkpoint-defeated",
+    "completed": true,
+    "checks": 530,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 70.36656188964844,
+    "modified": "2026-10-21T02:46:26.2559980+08:00",
+    "reportHash": "95A57F04BA7EBA539E3DB35F7E7363AE019B8C26C2A2A4879251768CA26621ED"
+  }
+]

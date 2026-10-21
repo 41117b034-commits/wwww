@@ -31,21 +31,23 @@ public sealed partial class Chapter3SchoolBattle
     int stragglerIndex;
     float nextAssaultCall;
 
-    void ResetAssaultMission()
+    void ResetAssaultMission(bool preserveArrival=false)
     {
-        StopAssault(); ClearEnemies(); ClearSchoolPoses(); StopBreakthrough();
+        StopAssault(); ClearSchoolPoses(); StopBreakthrough();
         guideMotor.Reset(); tadoMotor.Reset(); otherMotor.Reset(); threatMotor.Reset();
         Step = CheckpointStep; guideIndex = 0;
         Health = 100; EscortPressure = 0; WorkProgress = 0; hurtAt = -10; noticeUntil = 0;
         AtCrossing = Advancing = Returning = ThreatRevealing = CrossingArrived = false;
         StragglerCalled = false; stragglerIndex = 0; nextAssaultCall = 0;
-        scenery.gameObject.SetActive(true); ResetBreakthrough(0);
-        foreach (var cover in threatCovers) cover.gameObject.SetActive(false);
+        scenery.gameObject.SetActive(true); ResetBreakthrough(CheckpointStep);
         BuildAssaultProps(); assaultProps.gameObject.SetActive(true);
 
-        school.bawan.transform.position = Step == 0 ? P(-3,-8) : checkpointBawan;
-        school.pihu.transform.position = Step == 0 ? P(3,-8) : checkpointPihu;
-        school.tado.transform.position = Step == 0 ? P(0,-5) : checkpointTado;
+        if(!preserveArrival)
+        {
+            school.bawan.transform.position = Step == 0 ? P(-3,-8) : checkpointBawan;
+            school.pihu.transform.position = Step == 0 ? P(3,-8) : checkpointPihu;
+            school.tado.transform.position = Step == 0 ? P(0,-5) : checkpointTado;
+        }
         foreach (var companion in Companions) companion.ResetReaction();
         activeRoute = Step < 2 ? assaultApproach[Step] : assaultWithdrawal;
         otherRoute = school.breakthroughRoute;
@@ -54,23 +56,14 @@ public sealed partial class Chapter3SchoolBattle
 
         combat.SchoolEncounter = this;
         player.chapter = null; player.station = null; player.combat = null; player.school = school; player.speed = 2.8f;
-        player.Warp(Step == 0 ? new Vector3(-2,.06f,-6) : checkpointPlayer,
+        if(!preserveArrival)player.Warp(Step == 0 ? new Vector3(-2,.06f,-6) : checkpointPlayer,
             Step == 0 ? new Vector3(0,1.2f,12) : Step == 1 ? new Vector3(4,1.2f,32) : new Vector3(12,1.2f,32));
         combat.playerTarget.position = player.view.transform.position - Vector3.up * .38f;
 
-        bool knife = school.flow.CarriedWeapon == Chapter3Weapons.Weapon.Knife;
-        var positions = new[] { P(-1,knife ? 18.5f : 21), P(5,knife ? 33 : 36) };
-        for (int i = 0; i < positions.Length; i++)
-        {
-            if (i < CheckpointStep) { Enemies.Add(null); continue; }
-            var go = Instantiate(combat.enemyTemplates[i % combat.enemyTemplates.Length], enemiesRoot);
-            go.name = "會場通道警察 · " + (i + 1); go.transform.position = positions[i];
-            var enemy = go.GetComponent<Chapter3Enemy>();
-            enemy.combat = combat; enemy.advances = false; enemy.AttackEnabled = true;
-            enemy.escortTarget = null; enemy.attackInterval = 5.2f; enemy.engagementRange = knife ? 12 : 28;
-            Enemies.Add(enemy); go.SetActive(i == Step);
-        }
+        if(!preserveArrival)ResetOfficersForCheckpoint();
+        foreach(var officer in Enemies)if(officer)officer.attackInterval=5.2f;
         CurrentStage = Stage.Fighting; Menu.Hide(); ui.Say("",null); ui.fade.color = Color.clear;
+        if(ammoLabel)ammoLabel.gameObject.SetActive(true);
         combat.hud.SetActive(true); combat.downPanel.SetActive(false); combat.hurtOverlay.color = Color.clear;
         combat.weapons.ResetEquipment(); player.canMove = player.canLook = true;
         Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false;
@@ -81,8 +74,8 @@ public sealed partial class Chapter3SchoolBattle
     void BuildAssaultProps()
     {
         if (assaultProps) return;
-        assaultProps = new GameObject("攻入學校 · 會場掩蔽物").transform;
-        assaultProps.SetParent(school.transform,false);
+        assaultProps = new GameObject("運動會 · 會場用品").transform;
+        assaultProps.SetParent(scenery,false);
         Material wood = null, metal = null;
         foreach (var renderer in scenery.GetComponentsInChildren<Renderer>(true))
             foreach (var material in renderer.sharedMaterials)
@@ -91,8 +84,8 @@ public sealed partial class Chapter3SchoolBattle
                 if (material && material.name == "Weathered iron") metal = material;
             }
         if (!metal) metal = wood;
-        Crate(assaultProps,P(-7,10),new Vector3(2.6f,1.45f,1.1f),wood,metal,"會場入口厚木箱");
-        Crate(assaultProps,P(1,24),new Vector3(2.6f,1.45f,1.1f),wood,metal,"會場內厚木箱");
+        EventSupplies(assaultProps,P(-7,10),wood,metal,"會場入口器材與桌子");
+        EventSupplies(assaultProps,P(1,24),wood,metal,"運動場邊活動用品");
     }
 
     void PrepareAssaultStage()
@@ -120,14 +113,14 @@ public sealed partial class Chapter3SchoolBattle
             var guard = Step < Enemies.Count ? Enemies[Step] : null;
             bool clear = guard && guard.Defeated;
             bool gathered = guideIndex >= activeRoute.Length && Flat(player.transform.position,AssaultObjective) < 4;
-            ui.objective.text = Step == 0 ? "跟達多攻入學校 · 1 / 3 進入會場" : "跟達多攻入學校 · 2 / 3 穿過會場";
-            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "利用木箱掩蔽，處理阻路警察 · " + combat.weapons.Controls;
+            ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : "照應同伴，穿過運動場";
+            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "留意警察的動作，借器材箱掩蔽 · " + combat.weapons.Controls;
             combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : "看住通道警察 · 不要離開隊伍";
             if (gathered && clear) AdvanceAssaultStage();
             return;
         }
 
-        ui.objective.text = "跟達多攻入學校 · 3 / 3 收攏同伴，撤到校後";
+        ui.objective.text = "收攏同伴，一起撤到校後";
         if (!StragglerCalled)
         {
             school.tado.Face(StragglerPosition);
@@ -188,13 +181,13 @@ public sealed partial class Chapter3SchoolBattle
     void AdvanceAssaultStage()
     {
         Step++; CheckpointStep = Step;
+        SaveOfficerCheckpoint();
         checkpointBawan = school.bawan.transform.position; checkpointPihu = school.pihu.transform.position;
         checkpointTado = school.tado.transform.position;
         checkpointPlayer = Step == 1 ? new Vector3(-5,.06f,14) : new Vector3(8,.06f,32);
         checkpointOtherIndex = otherIndex; checkpointOtherEscortIndex = otherEscortIndex;
         guideIndex = 0; guideMotor.Reset();
         activeRoute = Step < 2 ? assaultApproach[Step] : assaultWithdrawal;
-        if (Step < Enemies.Count && Enemies[Step]) Enemies[Step].gameObject.SetActive(true);
         PrepareAssaultStage();
         Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : "準備撤出！先把落後的族人叫過來。",4);
     }
@@ -210,7 +203,6 @@ public sealed partial class Chapter3SchoolBattle
     void StopAssault()
     {
         if (AssaultGuide) AssaultGuide.Hide();
-        if (assaultProps) assaultProps.gameObject.SetActive(false);
         if (ambient) ambient.HideStraggler();
         StragglerCalled = false; stragglerIndex = 0;
     }

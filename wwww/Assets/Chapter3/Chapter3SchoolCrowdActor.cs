@@ -58,11 +58,12 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     Vector3 nativePrevious;
     Transform boneRoot;
     Bounds body;
-    float height,phase,walkWeight,lastMovement=-100,fall,strike;
+    float height,phase,walkWeight,lastMovement=-100,fall,strike,startle;
     bool initialized,animated,afraid,waiting,finalFallPoseReady;
     public bool IsRouteCompanion {get;set;}
     public bool IsFallen=>fall>=.999f;
     public bool Posing=>animated;
+    public float StartleWeight=>startle;
     public bool HasPoseGeometry=>parts.Count>0||nativeSkins.Count>0;
     public bool UsingOriginalSkin=>nativeRig;
     public Transform RightHand=>nativeRig?nativeRig.RightHand:bones[8];
@@ -316,21 +317,22 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(nativeRig){nativeRig.enabled=value;nativeRig.walking=false;nativeRig.strike=false;nativePrevious=transform.position;}
     }
     public void SetAfraid(bool value){afraid=value;}
+    public void SetStartled(float weight){startle=Mathf.Clamp01(weight);}
     public void SetWaiting(bool value){waiting=value;}
     public void SetFall(float progress){fall=Mathf.Clamp01(progress);if(fall<1)finalFallPoseReady=false;}
     public void SetStrike(float progress){strike=Mathf.Clamp01(progress);}
     public void ResetPose()
     {
-        phase=walkWeight=fall=strike=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
+        phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
         foreach(var saved in capsules)if(saved.collider)
         {saved.collider.center=saved.center;saved.collider.height=saved.height;saved.collider.radius=saved.radius;saved.collider.direction=saved.direction;}
     }
-    public void Face(Vector3 point)
+    public void Face(Vector3 point,float degreesPerSecond=360)
     {
         Vector3 delta=point-transform.position;delta.y=0;
-        if(delta.sqrMagnitude>.0001f)transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(delta),360*Time.deltaTime);
+        if(delta.sqrMagnitude>.0001f)transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(delta),degreesPerSecond*Time.deltaTime);
     }
-    public bool MoveTowards(Vector3 target,float speed)
+    public bool MoveTowards(Vector3 target,float speed,bool faceTravel=true)
     {
         target.y=transform.position.y;Vector3 delta=target-transform.position;
         if(delta.sqrMagnitude<.04f)return true;
@@ -344,9 +346,9 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
                 direction=Quaternion.Euler(0,angle,0)*delta.normalized;next=transform.position+direction*distance;
                 if(Clear(next)){found=true;break;}
             }
-            if(!found){Face(target);return false;}
+            if(!found){if(faceTravel)Face(target);return false;}
         }
-        transform.position=next;Face(next+direction);lastMovement=Time.time;
+        transform.position=next;if(faceTravel)Face(next+direction);lastMovement=Time.time;
         phase+=distance/Mathf.Max(.4f,height*Mathf.Abs(transform.lossyScale.y)*.80f)*Mathf.PI*2;
         return (target-next).sqrMagnitude<.04f;
     }
@@ -378,15 +380,18 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(!animated)return;
         if(nativeRig)
         {
+            if(startle>0&&nativeRig.Head)
+                nativeRig.Head.rotation=Quaternion.AngleAxis(-8*startle,Vector3.Cross(Vector3.up,nativeRig.Forward))*nativeRig.Head.rotation;
             // IK rotates the real upper arm/forearm; the original skin weights
             // keep the tunic and feet attached to their correct bone chains.
-            if((waiting||afraid)&&strike<=0&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand&&nativeRig.Head)
+            if((waiting||afraid||startle>0)&&strike<=0&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand&&nativeRig.Head)
             {
                 Vector3 right=Vector3.Cross(Vector3.up,nativeRig.Forward);
                 Vector3 target=nativeRig.Head.position+right*nativeRig.Height*.18f+nativeRig.Forward*nativeRig.Height*.10f-Vector3.up*nativeRig.Height*.08f;
                 Transform hand=nativeRig.RightHand;Vector3 before=hand.position-nativeElbow.position;Quaternion wrist=hand.rotation;
                 float reach=(Vector3.Distance(nativeUpperArm.position,nativeElbow.position)+Vector3.Distance(nativeElbow.position,hand.position))*.94f;
                 target=nativeUpperArm.position+Vector3.ClampMagnitude(target-nativeUpperArm.position,reach);
+                if(!waiting&&!afraid)target=Vector3.Lerp(hand.position,target,startle);
                 Chapter1IncidentRig.Solve(nativeUpperArm,nativeElbow,hand,target,right+nativeRig.Forward*.2f);
                 hand.rotation=Quaternion.FromToRotation(before,hand.position-nativeElbow.position)*wrist;
             }
@@ -404,15 +409,16 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         walkWeight=Mathf.MoveTowards(walkWeight,Time.time-lastMovement<.08f&&fall<=0?1:0,Time.deltaTime*7);
         float stride=Mathf.Sin(phase)*walkWeight;
         bones[0].localPosition+=Vector3.up*(Mathf.Abs(Mathf.Sin(phase))*height*.012f*walkWeight);
-        bones[1].localRotation=Quaternion.Euler(9*walkWeight+(afraid?8:0),0,0);
+        bones[1].localRotation=Quaternion.Euler(9*walkWeight+(afraid?8:0)-6*startle,0,0);
+        bones[2].localRotation=Quaternion.Euler(-8*startle,0,0);
         for(int side=0;side<2;side++)
         {
             int arm=3+side*3,leg=9+side*3;float sign=side==0?-1:1,step=stride*sign;
             bones[leg].localRotation=Quaternion.Euler(step*30,0,0);
             bones[leg+1].localRotation=Quaternion.Euler(-Mathf.Max(0,-step)*48,0,0);
             bones[leg+2].localRotation=Quaternion.Euler(-step*12,0,0);
-            bones[arm].localRotation=Quaternion.Euler(-step*24-(afraid?48:0),0,sign*(afraid?10:3));
-            bones[arm+1].localRotation=Quaternion.Euler(-25-(afraid?35:0),0,0);
+            bones[arm].localRotation=Quaternion.Euler(-step*24-(afraid?48:0)-25*startle,0,sign*(afraid?10:3));
+            bones[arm+1].localRotation=Quaternion.Euler(-25-(afraid?35:0)-20*startle,0,0);
         }
         if(waiting)
         {bones[6].localRotation=Quaternion.Euler(-105,0,15);bones[7].localRotation=Quaternion.Euler(-25,0,-10);}

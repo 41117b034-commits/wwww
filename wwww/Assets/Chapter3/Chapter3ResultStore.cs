@@ -201,7 +201,7 @@ public static class Chapter3ResultStore
             "；親眼見過受傷與留下，由達多回報死亡，沒有目擊死亡瞬間":
             record.decision==Chapter3Rescue.Decision.Leave&&actorId=="tado"?
             "；回林路親眼確認死亡，再向接應處眾人回報":"";
-        string central=record.version>=2?"），中央攻入（"+Source(actor.centralSchool):"";
+        string central=record.version>=2?"），中央進入會場（"+Source(actor.centralSchool):"";
         return name+"："+origin+"；"+survival+"。學校左線（"+Source(actor.westSchool)+
             "），右線（"+Source(actor.eastSchool)+central+"）；比胡受傷（"+Source(actor.injury)+
             "）；"+result+"（"+Source(actor.outcome)+"）"+boundary+"。";

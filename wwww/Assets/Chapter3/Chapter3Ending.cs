@@ -96,10 +96,10 @@ public sealed class Chapter3Ending : MonoBehaviour
         }
         CurrentStage=Stage.RollCall;ui.objective.text="清點同行的小隊";
         yield return Say(school.bawan,Result.mission==Chapter3SchoolBattle.Mission.Tado
-            ?"你跟達多攻進學校，我走左側，比胡走右側。三路在校後匯合，才一起撤退。"
+            ?"你跟達多進入會場，我打通左側通路，比胡照應右側。大家在校後匯合，才一起撤退。"
             :Result.mission==Chapter3SchoolBattle.Mission.Bawan
-                ?"你和我走左側，達多攻進學校，比胡走右側。三路在校後匯合，才一起撤退。"
-                :"你掩護比胡走右側，我走左側，達多攻進學校。三路在校後匯合，才一起撤退。",5.8f);
+                ?"你和我打通左側通路，達多進入會場，比胡照應右側。大家在校後匯合，才一起撤退。"
+                :"你照應比胡穿過右側，我打通左側通路，達多進入會場。大家在校後匯合，才一起撤退。",5.8f);
         yield return Say(school.tado,Result.pihuSurvived
             ?"我們這一隊四個人都到了。比胡受了傷，接下來需要照應。"
             :"到這裡的只有你、巴萬和我。四個人出發，三個人回來。",5.2f);
@@ -129,13 +129,13 @@ public sealed class Chapter3Ending : MonoBehaviour
             yield return Walk(Mona,monaMotor,new[]{P(16.5f,102),P(15.3f,104)},1.8f);
             yield return Say(Mona,"人都到齊了嗎？把你們的情況告訴我。",4.5f);
             yield return Say(school.bawan,Result.mission==Chapter3SchoolBattle.Mission.Bawan
-                ?"他和我打通左側。中央和右側的經過，是在校後匯合時聽達多、比胡回報的。"
-                :"我打通左側。中央和右側的經過，是在校後匯合時聽他們回報的。",5.7f);
+                ?"他和我移開門閂、打開側門。中央和右側的經過，是在校後匯合時聽達多、比胡回報的。"
+                :"我打開左側通路的便門和側門。中央和右側的經過，是在校後匯合時聽他們回報的。",5.7f);
             yield return Say(school.tado,Result.mission==Chapter3SchoolBattle.Mission.Tado
-                ?"他跟我從中央攻進學校；比胡帶右側。三路在校後匯合，才一起撤進林路。"
+                ?"他跟我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。"
                 :Result.mission==Chapter3SchoolBattle.Mission.Pihu
-                    ?"我從中央攻進學校；他掩護比胡穿過右側。三路在校後匯合，才一起撤進林路。"
-                    :"我從中央攻進學校；比胡帶右側。三路在校後匯合，才一起撤進林路。",5.7f);
+                    ?"我從中央進入會場；他照應比胡穿過右側。大家在校後匯合，才一起撤進林路。"
+                    :"我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。",5.7f);
             yield return Say(school.bawan,Result.pihuSurvived
                 ?"我們四個都到了。比胡在撤離時受傷，是他扶著比胡走回來的。"
                 :"我們回來三個人。比胡受傷後留在林路，達多回去確認，他已經死了。",5.7f);
@@ -213,9 +213,13 @@ public sealed class Chapter3Ending : MonoBehaviour
             if(!endingLabelsChanged)
             {previousTitle=endTitle.text;previousBody=endBody.text;previousReplay=ui.replay.GetComponentInChildren<Text>().text;}
             endingLabelsChanged=true;endTitle.text="第三章 · 霧社突襲與戰鬥";
+            string missionSummary=Result.mission==Chapter3SchoolBattle.Mission.Tado?"你與達多完成中央攻入。":
+                Result.mission==Chapter3SchoolBattle.Mission.Bawan?"你與巴萬完成左側突破。":"你掩護比胡完成右側穿越。";
+            if(Result.version>=2)
+                missionSummary=Result.mission==Chapter3SchoolBattle.Mission.Tado?"你跟達多進入會場，帶同伴一起撤出。":
+                    Result.mission==Chapter3SchoolBattle.Mission.Bawan?"你和巴萬打通側門，照應同伴通過。":"你照應比胡穿過右側，一起撤出。";
             endBody.text=(Result.pihuSurvived?"比胡生還，四人抵達接應處。":"比胡死亡，三人抵達接應處。")+
-                "\n"+(Result.mission==Chapter3SchoolBattle.Mission.Tado?"你與達多完成中央攻入。":
-                    Result.mission==Chapter3SchoolBattle.Mission.Bawan?"你與巴萬完成左側突破。":"你掩護比胡完成右側穿越。")+
+                "\n"+missionSummary+
                 "\n\n"+(Saved?"結果已保存。戰鬥還沒有結束……":PersistResult?"結果尚未保存，請按「重試保存」。":"戰鬥還沒有結束……");
             ui.replay.GetComponentInChildren<Text>().text="重玩第三章";
         }

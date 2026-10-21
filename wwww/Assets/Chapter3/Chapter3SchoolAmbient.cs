@@ -4,17 +4,23 @@ using UnityEngine;
 // Panic is a visible, non-graphic staged assault, never a damage/score system.
 public sealed class Chapter3SchoolAmbient : MonoBehaviour
 {
+    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen }
+    enum SpectatorKind { Guest, Child, Indigenous, Police }
     public Transform[] spectators;
     public Chapter2Actor[] runners;
     public Vector3[] runningTrack;
     Quaternion[] rotations,runnerRotations;
-    Vector3[] homes,runnerHomes,escapePoints;
+    Vector3[] homes,runnerHomes,escapePoints,hesitationPoints;
     bool[] activeHomes;
     int[] waypoint;
     Chapter3PathMotor[] motors;
     Chapter3SchoolCrowdActor[] crowd;
+    CrowdPhase[] crowdPhases,runnerPhases;
+    SpectatorKind[] spectatorKinds;
+    float[] reactionDelays,flightDelays,runnerReactionDelays,runnerFlightDelays;
     readonly Chapter3SchoolCrowdActor[] assailants=new Chapter3SchoolCrowdActor[3];
     readonly int[] assailantSteps=new int[3];
+    readonly float[] assailantDelays={.55f,1.4f,2.3f};
     readonly Vector3[] assaultStarts={new Vector3(-8,0,1),new Vector3(8,0,1),new Vector3(-11,0,4)};
     readonly Vector3[][] assaultRoutes={
         new[]{new Vector3(-2,0,18),new Vector3(5.5f,0,27),new Vector3(8,0,35)},
@@ -27,7 +33,17 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     float panicBegan,nextUpdate;
     bool initialized;
     public bool Panicking {get;private set;}
+    public Vector3 PanicOrigin {get;private set;}
     public float AssaultElapsed=>Panicking?Mathf.Max(0,Time.time-panicBegan):0;
+    public int CalmSpectators=>CountPhase(CrowdPhase.Calm);
+    public int ReactingSpectators=>CountPhase(CrowdPhase.Reacting);
+    public int FleeingSpectators=>CountPhase(CrowdPhase.Fleeing);
+    public int ReactingRunners=>CountRunnerPhase(CrowdPhase.Reacting);
+    public int FleeingRunners=>CountRunnerPhase(CrowdPhase.Fleeing);
+    public CrowdPhase SpectatorPhase(int index)=>crowdPhases!=null&&index>=0&&index<crowdPhases.Length?crowdPhases[index]:CrowdPhase.Calm;
+    public CrowdPhase RunnerPhase(int index)=>runnerPhases!=null&&index>=0&&index<runnerPhases.Length?runnerPhases[index]:CrowdPhase.Calm;
+    public float SpectatorReactionDelay(int index)=>reactionDelays!=null&&index>=0&&index<reactionDelays.Length?reactionDelays[index]:0;
+    public float SpectatorFlightDelay(int index)=>flightDelays!=null&&index>=0&&index<flightDelays.Length?flightDelays[index]:0;
     public Transform Straggler=>straggler?straggler.transform:null;
     public int VisibleAssailants
     {
@@ -38,6 +54,18 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         get{int count=0;foreach(int index in casualties)if(index>=0&&crowd[index]&&crowd[index].IsFallen)count++;return count;}
     }
     public bool AftermathVisible=>Panicking&&FallenAdults==2;
+    int CountPhase(CrowdPhase phase)
+    {
+        int count=0;if(crowdPhases!=null)for(int i=0;i<crowdPhases.Length;i++)
+            if(crowd[i]&&crowd[i].gameObject.activeInHierarchy&&crowdPhases[i]==phase)count++;
+        return count;
+    }
+    int CountRunnerPhase(CrowdPhase phase)
+    {
+        int count=0;if(runnerPhases!=null)for(int i=0;i<runnerPhases.Length;i++)
+            if(runners[i]&&runners[i].gameObject.activeInHierarchy&&runnerPhases[i]==phase)count++;
+        return count;
+    }
     void Start(){Initialize();}
     void Initialize()
     {
@@ -45,7 +73,9 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         spectators=spectators??new Transform[0];runners=runners??new Chapter2Actor[0];
         runningTrack=runningTrack??new Vector3[0];
         rotations=new Quaternion[spectators.Length];homes=new Vector3[spectators.Length];
-        activeHomes=new bool[spectators.Length];escapePoints=new Vector3[spectators.Length];crowd=new Chapter3SchoolCrowdActor[spectators.Length];
+        activeHomes=new bool[spectators.Length];escapePoints=new Vector3[spectators.Length];hesitationPoints=new Vector3[spectators.Length];crowd=new Chapter3SchoolCrowdActor[spectators.Length];
+        crowdPhases=new CrowdPhase[spectators.Length];spectatorKinds=new SpectatorKind[spectators.Length];
+        reactionDelays=new float[spectators.Length];flightDelays=new float[spectators.Length];
         Transform template=null;
         var school=GetComponentInParent<Chapter3SchoolController>();
         Chapter2Actor nativeSource=school?school.bawan:null;
@@ -53,6 +83,9 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         {
             if(!spectators[i])continue;
             rotations[i]=spectators[i].localRotation;homes[i]=spectators[i].position;activeHomes[i]=spectators[i].gameObject.activeSelf;
+            string identity=spectators[i].name;
+            spectatorKinds[i]=identity.Contains("學童")?SpectatorKind.Child:identity.Contains("觀賽族人")?SpectatorKind.Indigenous:
+                identity.Contains("警察")?SpectatorKind.Police:SpectatorKind.Guest;
             crowd[i]=spectators[i].name.Contains("觀賽族人")&&nativeSource
                 ?Chapter3SchoolCrowdActor.AttachTo(spectators[i],nativeSource)
                 :Chapter3SchoolCrowdActor.AttachTo(spectators[i]);
@@ -60,6 +93,10 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             float side=homes[i].x<0?-1:1;
             // Different destinations keep fleeing guests off the central route.
             escapePoints[i]=new Vector3(side*(21+i%3*.7f),0,6+(i*7)%35);
+            // Some of the families already near the school turn toward its
+            // frontage, while nearer spectators leave toward either sideline.
+            if(homes[i].z>=30&&(spectatorKinds[i]==SpectatorKind.Guest||spectatorKinds[i]==SpectatorKind.Child))
+                escapePoints[i]=new Vector3(side*(16+i%3),0,44);
         }
         for(int eventIndex=0;eventIndex<casualties.Length;eventIndex++)
         {
@@ -73,6 +110,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             }
         }
         waypoint=new int[runners.Length];motors=new Chapter3PathMotor[runners.Length];
+        runnerPhases=new CrowdPhase[runners.Length];runnerReactionDelays=new float[runners.Length];runnerFlightDelays=new float[runners.Length];
         runnerHomes=new Vector3[runners.Length];runnerRotations=new Quaternion[runners.Length];
         for(int i=0;i<runners.Length;i++)
         {
@@ -114,15 +152,17 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     }
     public void ResetCalm()
     {
-        Initialize();Panicking=false;nextUpdate=0;
+        Initialize();Panicking=false;panicBegan=0;nextUpdate=0;PanicOrigin=Vector3.zero;
         for(int i=0;i<fallBegan.Length;i++)fallBegan[i]=-1;
         for(int i=0;i<spectators.Length;i++)if(spectators[i])
         {
+            crowdPhases[i]=CrowdPhase.Calm;reactionDelays[i]=flightDelays[i]=0;hesitationPoints[i]=homes[i];
             crowd[i].ResetPose();spectators[i].position=homes[i];spectators[i].localRotation=rotations[i];
             if(spectators[i].gameObject.activeSelf!=activeHomes[i])spectators[i].gameObject.SetActive(activeHomes[i]);
         }
         for(int i=0;i<runners.Length;i++)if(runners[i])
         {
+            runnerPhases[i]=CrowdPhase.Calm;runnerReactionDelays[i]=runnerFlightDelays[i]=0;
             runners[i].transform.SetPositionAndRotation(runnerHomes[i],runnerRotations[i]);
             runners[i].facing=runnerRotations[i]*Vector3.forward;motors[i].Reset();
             waypoint[i]=runningTrack.Length>0?i%runningTrack.Length:0;
@@ -132,10 +172,29 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         HideStraggler();
     }
     public void Panic()
+    {Panic(new Vector3(0,0,4));}
+    public void Panic(Vector3 origin)
     {
         Initialize();if(Panicking)return;
-        Panicking=true;panicBegan=Time.time;
-        foreach(var actor in crowd)if(actor){actor.SetAnimated(true);actor.SetAfraid(true);}
+        Panicking=true;panicBegan=Time.time;PanicOrigin=origin;
+        // Staged perception is a gameplay presentation, not a reconstruction
+        // of named victims' individual movements. Nobody reacts before the cue.
+        for(int i=0;i<crowd.Length;i++)if(crowd[i])
+        {
+            float distance=Vector3.ProjectOnPlane(crowd[i].transform.position-origin,Vector3.up).magnitude;
+            Vector3 away=Vector3.ProjectOnPlane(crowd[i].transform.position-origin,Vector3.up).normalized;
+            hesitationPoints[i]=crowd[i].transform.position+away*(distance<17?.42f:0);
+            float role=spectatorKinds[i]==SpectatorKind.Police?.02f:spectatorKinds[i]==SpectatorKind.Child?.32f:
+                spectatorKinds[i]==SpectatorKind.Indigenous?.12f:.22f;
+            reactionDelays[i]=.12f+Mathf.Min(1.65f,distance*.035f)+role+(i%5)*.105f;
+            flightDelays[i]=reactionDelays[i]+.48f+(i%4)*.14f+(spectatorKinds[i]==SpectatorKind.Child?.18f:0);
+        }
+        for(int i=0;i<runners.Length;i++)if(runners[i])
+        {
+            float distance=Vector3.ProjectOnPlane(runners[i].transform.position-origin,Vector3.up).magnitude;
+            runnerReactionDelays[i]=.32f+Mathf.Min(1.5f,distance*.035f)+i*.16f;
+            runnerFlightDelays[i]=runnerReactionDelays[i]+.78f+i*.18f;
+        }
         foreach(var motor in motors)motor.Reset();
     }
     public void Suspend(){if(initialized)ResetCalm();}
@@ -161,20 +220,33 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     void Update()
     {
         if(!initialized)Initialize();
-        if(!Panicking)
+        if(Time.time>=nextUpdate)
         {
-            if(Time.time>=nextUpdate)
-            {
-                nextUpdate=Time.time+.12f;
-                for(int i=0;i<spectators.Length;i++)if(spectators[i])
-                    spectators[i].localRotation=rotations[i]*Quaternion.Euler(0,Mathf.Sin(Time.time*.36f+i*1.8f)*3.3f,0);
-            }
+            nextUpdate=Time.time+.12f;
+            for(int i=0;i<spectators.Length;i++)if(spectators[i]&&crowdPhases[i]==CrowdPhase.Calm)
+                spectators[i].localRotation=rotations[i]*Quaternion.Euler(0,Mathf.Sin(Time.time*.36f+i*1.8f)*3.3f,0);
         }
-        else UpdateAssault();
+        if(Panicking)UpdateAssault();
         for(int i=0;i<runners.Length;i++)
         {
             if(!runners[i])continue;
-            if(Panicking){motors[i].Move(runners[i],new Vector3(-21-i*.8f,0,9+i*27),3.6f);continue;}
+            if(runners[i].Rig)runners[i].Rig.smoothLocomotion=true;
+            if(Panicking&&AssaultElapsed>=runnerReactionDelays[i])
+            {
+                if(AssaultElapsed<runnerFlightDelays[i])
+                {
+                    if(runnerPhases[i]!=CrowdPhase.Reacting){runnerPhases[i]=CrowdPhase.Reacting;motors[i].Reset();}
+                    Vector3 direction=Vector3.ProjectOnPlane(PanicOrigin-runners[i].transform.position,Vector3.up);
+                    Vector3 facing=Vector3.RotateTowards(runners[i].facing.normalized,direction.normalized,140*Mathf.Deg2Rad*Time.deltaTime,0);
+                    runners[i].Face(runners[i].transform.position+facing);
+                }
+                else
+                {
+                    runnerPhases[i]=CrowdPhase.Fleeing;
+                    motors[i].Move(runners[i],new Vector3(-21-i*.8f,0,9+i*27),3.6f);
+                }
+                continue;
+            }
             if(runningTrack.Length==0)continue;
             if(Vector3.ProjectOnPlane(runners[i].transform.position-runningTrack[waypoint[i]],Vector3.up).magnitude<.2f)
                 waypoint[i]=(waypoint[i]+1)%runningTrack.Length;
@@ -186,14 +258,14 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         float elapsed=AssaultElapsed;
         for(int i=0;i<assailants.Length;i++)
         {
-            var actor=assailants[i];if(!actor||elapsed<i*.45f)continue;
+            var actor=assailants[i];if(!actor||elapsed<assailantDelays[i])continue;
             if(!actor.gameObject.activeSelf){actor.gameObject.SetActive(true);actor.SetAnimated(true);}
             int step=assailantSteps[i];
             if(step<assaultRoutes[i].Length)
             {
                 // The first crossing reaches the viewer's centre within the
                 // shared outbreak look. Later gestures have no hit/damage API.
-                if(step==2&&elapsed<10+i)
+                if(step==2&&elapsed<11+i*1.8f)
                 {actor.Face(aftermathPoints[i==2?1:0]);actor.SetStrike(Mathf.Repeat(elapsed*.65f,1));continue;}
                 actor.SetStrike(0);
                 if(actor.MoveTowards(assaultRoutes[i][step],step==0?4.8f:3.4f))assailantSteps[i]++;
@@ -201,17 +273,33 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         }
         for(int i=0;i<crowd.Length;i++)
         {
-            var actor=crowd[i];if(!actor||elapsed<.25f+(i%4)*.16f)continue;
+            var actor=crowd[i];if(!actor||elapsed<reactionDelays[i])continue;
+            if(crowdPhases[i]==CrowdPhase.Calm)
+            {crowdPhases[i]=CrowdPhase.Reacting;actor.SetAnimated(true);}
+            if(elapsed<flightDelays[i])
+            {
+                // A short look and hesitation precede flight. Reuse the
+                // existing bones; no extra crowd, mesh, material or physics work.
+                float reaction=Mathf.InverseLerp(reactionDelays[i],flightDelays[i],elapsed);
+                if(reaction>.55f)actor.MoveTowards(hesitationPoints[i],.85f,false);
+                actor.Face(PanicOrigin,140);
+                actor.SetStartled(Mathf.Sin(reaction*Mathf.PI));
+                continue;
+            }
+            if(crowdPhases[i]==CrowdPhase.Reacting)
+            {crowdPhases[i]=CrowdPhase.Fleeing;actor.SetStartled(0);actor.SetAfraid(true);}
             int eventIndex=i==casualties[0]?0:i==casualties[1]?1:-1;
             if(eventIndex>=0)
             {
                 bool arrived=actor.MoveTowards(aftermathPoints[eventIndex],2.8f);
-                if(arrived&&elapsed>=7+eventIndex*1.8f)
+                bool incursionArrived=eventIndex==0?assailantSteps[0]>=2||assailantSteps[1]>=2:assailantSteps[2]>=2;
+                if(arrived&&incursionArrived&&elapsed>=7.6f+eventIndex*2.4f)
                 {
                     // A blocked guest still performs the full collapse after
                     // arriving; the shared outbreak clock must not skip it.
                     if(fallBegan[eventIndex]<0)fallBegan[eventIndex]=Time.time;
                     actor.SetFall((Time.time-fallBegan[eventIndex])/1.7f);
+                    crowdPhases[i]=actor.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
                 }
             }
             else actor.MoveTowards(escapePoints[i],2.3f+(i%3)*.25f);
