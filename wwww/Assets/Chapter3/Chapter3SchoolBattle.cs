@@ -114,7 +114,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     IEnumerator Outbreak()
     {
-        ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(-2,1.2f,22));
+        ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(0,1.1f,5));
         if(ambient)ambient.Panic();
         BeginOfficerResponse();
         for(int i=0;i<3;i++){if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f-i*.10f);yield return new WaitForSeconds(.65f);}

@@ -1,0 +1,72 @@
+{
+  "completedUtc": "2026-10-21T05:09:36.0992102Z",
+  "reports": [
+    {
+      "path": "test-repair-shots.json",
+      "completed": true,
+      "checks": 220,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T04:44:55.3261519Z"
+    },
+    {
+      "path": "test-diagnose.json",
+      "completed": true,
+      "checks": 345,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T04:53:08.1770867Z"
+    },
+    {
+      "path": "walk/test-walk-rifle.json",
+      "completed": true,
+      "checks": 67,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T04:48:45.8405599Z"
+    },
+    {
+      "path": "walk/test-walk-knife.json",
+      "completed": true,
+      "checks": 67,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T04:51:02.9065898Z"
+    },
+    {
+      "path": "test-tado-rescue-rifle.json",
+      "completed": true,
+      "checks": 562,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T04:57:23.6065731Z"
+    },
+    {
+      "path": "test-legacy-pihu.json",
+      "completed": true,
+      "checks": 506,
+      "errors": 0,
+      "warnings": 0,
+      "saveRestored": true,
+      "modifiedUtc": "2026-10-21T05:00:04.5412134Z"
+    }
+  ],
+  "totalChecks": 1767.0,
+  "allReportsCompleted": true,
+  "runtimeHashesMatch": true,
+  "protectedFilesUnchanged": 7,
+  "stoppedAudit": "scene=Assets/Scenes/第三章.unity\r\ndirty=False\r\nplaying=False\r\ncompileFailed=False\r\nmissingScripts=0\r\nmissingMeshes=0\r\nmissingSkinnedMeshes=0\r\n",
+  "archivedEditorScriptAndMetaCount": 14,
+  "remainingProbeFiles": 0,
+  "removalCompilationSucceeded": true,
+  "nativeKeyboardFullRun": false,
+  "headsetVR": false,
+  "standaloneBuilt": false,
+  "committed": false,
+  "pushed": false
+}

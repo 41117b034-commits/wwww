@@ -21,11 +21,11 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     readonly Chapter3SchoolCrowdActor[] assailants=new Chapter3SchoolCrowdActor[3];
     readonly int[] assailantSteps=new int[3];
     readonly float[] assailantDelays={.55f,1.4f,2.3f};
-    readonly Vector3[] assaultStarts={new Vector3(-8,0,1),new Vector3(8,0,1),new Vector3(-11,0,4)};
+    readonly Vector3[] assaultStarts={new Vector3(-11,0,-2),new Vector3(11,0,-2),new Vector3(-13,0,-4)};
     readonly Vector3[][] assaultRoutes={
-        new[]{new Vector3(-2,0,18),new Vector3(5.5f,0,27),new Vector3(8,0,35)},
-        new[]{new Vector3(2,0,20),new Vector3(8,0,28),new Vector3(11,0,35)},
-        new[]{new Vector3(-8,0,23),new Vector3(-7,0,32),new Vector3(-11,0,39)}};
+        new[]{new Vector3(-1.6f,0,-1.5f),new Vector3(-1.6f,0,8),new Vector3(-2,0,18),new Vector3(5.5f,0,27),new Vector3(8,0,35)},
+        new[]{new Vector3(1.6f,0,-1.5f),new Vector3(1.6f,0,10),new Vector3(2,0,20),new Vector3(8,0,28),new Vector3(11,0,35)},
+        new[]{new Vector3(0,0,-2.5f),new Vector3(0,0,8),new Vector3(-8,0,23),new Vector3(-7,0,32),new Vector3(-11,0,39)}};
     readonly Vector3[] aftermathPoints={new Vector3(3,0,27),new Vector3(-9,0,32)};
     readonly int[] casualties={-1,-1};
     readonly float[] fallBegan={-1,-1};
@@ -76,7 +76,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
         activeHomes=new bool[spectators.Length];escapePoints=new Vector3[spectators.Length];hesitationPoints=new Vector3[spectators.Length];crowd=new Chapter3SchoolCrowdActor[spectators.Length];
         crowdPhases=new CrowdPhase[spectators.Length];spectatorKinds=new SpectatorKind[spectators.Length];
         reactionDelays=new float[spectators.Length];flightDelays=new float[spectators.Length];
-        Transform template=null;
+        Transform template=null;int leftSlot=0,rightSlot=0;
         var school=GetComponentInParent<Chapter3SchoolController>();
         Chapter2Actor nativeSource=school?school.bawan:null;
         for(int i=0;i<spectators.Length;i++)
@@ -86,17 +86,19 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             string identity=spectators[i].name;
             spectatorKinds[i]=identity.Contains("學童")?SpectatorKind.Child:identity.Contains("觀賽族人")?SpectatorKind.Indigenous:
                 identity.Contains("警察")?SpectatorKind.Police:SpectatorKind.Guest;
+            // The two actual officers already attend the event. Do not render
+            // duplicate uniformed guests that reject every shot as civilians.
+            if(spectatorKinds[i]==SpectatorKind.Police){activeHomes[i]=false;spectators[i].gameObject.SetActive(false);}
             crowd[i]=spectators[i].name.Contains("觀賽族人")&&nativeSource
                 ?Chapter3SchoolCrowdActor.AttachTo(spectators[i],nativeSource)
                 :Chapter3SchoolCrowdActor.AttachTo(spectators[i]);
             if(!template&&spectators[i].name.Contains("觀賽族人"))template=spectators[i];
             float side=homes[i].x<0?-1:1;
             // Different destinations keep fleeing guests off the central route.
-            escapePoints[i]=new Vector3(side*(21+i%3*.7f),0,6+(i*7)%35);
-            // Some of the families already near the school turn toward its
-            // frontage, while nearer spectators leave toward either sideline.
-            if(homes[i].z>=30&&(spectatorKinds[i]==SpectatorKind.Guest||spectatorKinds[i]==SpectatorKind.Child))
-                escapePoints[i]=new Vector3(side*(16+i%3),0,44);
+            // Separate reachable waiting spots inside the perimeter. Targets
+            // beyond the solid fence used to funnel several people together.
+            int slot=activeHomes[i]?(side<0?leftSlot++:rightSlot++):0;
+            escapePoints[i]=new Vector3(side*(17.2f+(slot%2)*1.1f),0,7+slot*3.5f);
         }
         for(int eventIndex=0;eventIndex<casualties.Length;eventIndex++)
         {
@@ -265,15 +267,15 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             {
                 // The first crossing reaches the viewer's centre within the
                 // shared outbreak look. Later gestures have no hit/damage API.
-                if(step==2&&elapsed<11+i*1.8f)
+                if(step==4&&elapsed<15+i*1.8f)
                 {actor.Face(aftermathPoints[i==2?1:0]);actor.SetStrike(Mathf.Repeat(elapsed*.65f,1));continue;}
                 actor.SetStrike(0);
-                if(actor.MoveTowards(assaultRoutes[i][step],step==0?4.8f:3.4f))assailantSteps[i]++;
+                if(actor.MoveTowards(assaultRoutes[i][step],step<2?3.8f:3.4f))assailantSteps[i]++;
             }
         }
         for(int i=0;i<crowd.Length;i++)
         {
-            var actor=crowd[i];if(!actor||elapsed<reactionDelays[i])continue;
+            var actor=crowd[i];if(!actor||!actor.gameObject.activeInHierarchy||elapsed<reactionDelays[i])continue;
             if(crowdPhases[i]==CrowdPhase.Calm)
             {crowdPhases[i]=CrowdPhase.Reacting;actor.SetAnimated(true);}
             if(elapsed<flightDelays[i])
@@ -292,7 +294,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             if(eventIndex>=0)
             {
                 bool arrived=actor.MoveTowards(aftermathPoints[eventIndex],2.8f);
-                bool incursionArrived=eventIndex==0?assailantSteps[0]>=2||assailantSteps[1]>=2:assailantSteps[2]>=2;
+                bool incursionArrived=eventIndex==0?assailantSteps[0]>=4||assailantSteps[1]>=4:assailantSteps[2]>=4;
                 if(arrived&&incursionArrived&&elapsed>=7.6f+eventIndex*2.4f)
                 {
                     // A blocked guest still performs the full collapse after

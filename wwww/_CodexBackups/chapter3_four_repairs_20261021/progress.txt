@@ -1,0 +1,2 @@
+test-legacy-pihu F8 cleanup
+stage=AwaitingTado step=0 checkpoint=0 health=100 player=(0.000, 0.060, -18.000) Tado=(-4.700, 0.020, -5.000) StragglerPosition=(0.000, 0.000, 0.000) guideIndex=5 stragglerIndex=0 called=False arrived=False playerTadoGap=13.824 tadoStragglerGap=6.862 nearPlayerColliders=[School mountain terrain@(0.00, 0.00, 0.00)]

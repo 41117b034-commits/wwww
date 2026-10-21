@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 // setting is edited. Local rises and bends are a fictional level layout.
 public sealed class Chapter3ApproachEnvironment : MonoBehaviour
 {
+    public const float CombatOriginZ=-75, TrailStartZ=-47;
     public Vector3[] Waypoints {get;private set;}
     public Transform Root {get;private set;}
     readonly List<Mesh> owned=new List<Mesh>();
@@ -21,8 +22,7 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
     public void Build(Chapter3Flow owner)
     {
         flow=owner;
-        Waypoints=new[]{P(0,0,-92),P(-10,.55f,-82),P(-23,1.8f,-68),
-            P(-24,1.8f,-54),P(-14,.8f,-40),P(0,.035f,-28),P(0,0,-18)};
+        Waypoints=new[]{P(0,0,TrailStartZ),P(-6,.45f,-40),P(-8,.9f,-32),P(-4,.35f,-25),P(0,0,-18)};
         Root=new GameObject("林路連接 · 關卡安排").transform;
         Root.SetParent(transform,false);
         foreach(var m in flow.combatRegion.GetComponentsInChildren<MeshFilter>(true))
@@ -89,12 +89,12 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
     {
         // An irregular vegetated shoulder hides the straight sightline from
         // the encounter. The walking path bends around its western foot.
-        const int nx=25,nz=27;var v=new Vector3[nx*nz];var tr=new List<int>();
+        const int nx=19,nz=14;var v=new Vector3[nx*nz];var tr=new List<int>();
         for(int z=0;z<nz;z++)for(int x=0;x<nx;x++)
         {
-            float xx=-19+x*2,zz=-84+z*2;
-            float ellipse=Mathf.Pow((xx-5)/23,2)+Mathf.Pow((zz+57)/24,2);
-            float h=Mathf.Pow(Mathf.Max(0,1-ellipse),1.3f)*11.5f;
+            float xx=-12+x*2,zz=-46+z*2;
+            float ellipse=Mathf.Pow((xx-8)/17,2)+Mathf.Pow((zz+34)/13,2);
+            float h=Mathf.Pow(Mathf.Max(0,1-ellipse),1.3f)*6.5f;
             Vector3 p=P(xx,0,zz);
             Closest(p,out var near,out _);
             // The ridge cannot intrude into the real traversable corridor.
@@ -154,7 +154,7 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
             var renderers=t.GetComponentsInChildren<Renderer>(true);if(renderers.Length==0)continue;
             var bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);
             Vector3 center=bounds.center;
-            if(center.z>-18||center.z<-94)continue;
+            if(center.z>-18||center.z<TrailStartZ-2)continue;
             Closest(center,out var nearest,out _);
             float radius=Mathf.Max(bounds.extents.x,bounds.extents.z);
             if(Horizontal(center-nearest).magnitude<3+radius&&t.gameObject.activeSelf)clearedPlants.Add(t.gameObject);

@@ -1,0 +1,56 @@
+[
+  {
+    "path": "test-repair-shots.json",
+    "completed": true,
+    "checks": 220,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T04:44:55.3261519Z"
+  },
+  {
+    "path": "test-diagnose.json",
+    "completed": true,
+    "checks": 345,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T04:53:08.1770867Z"
+  },
+  {
+    "path": "walk/test-walk-rifle.json",
+    "completed": true,
+    "checks": 67,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T04:48:45.8405599Z"
+  },
+  {
+    "path": "walk/test-walk-knife.json",
+    "completed": true,
+    "checks": 67,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T04:51:02.9065898Z"
+  },
+  {
+    "path": "test-tado-rescue-rifle.json",
+    "completed": true,
+    "checks": 562,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T04:57:23.6065731Z"
+  },
+  {
+    "path": "test-legacy-pihu.json",
+    "completed": true,
+    "checks": 506,
+    "errors": 0,
+    "warnings": 0,
+    "saveRestored": true,
+    "modifiedUtc": "2026-10-21T05:00:04.5412134Z"
+  }
+]

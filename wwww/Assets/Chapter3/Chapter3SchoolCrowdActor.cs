@@ -368,7 +368,20 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     bool Obstacle(Collider collider,Vector3 next)
     {
         if(collider.transform.IsChildOf(transform)||collider.bounds.max.y<.28f)return false;
-        if(collider.GetComponentInParent<Chapter3Bystander>()||collider.GetComponentInParent<Chapter2Actor>())return false;
+        var bystander=collider.GetComponentInParent<Chapter3Bystander>();
+        var actor=collider.GetComponentInParent<Chapter2Actor>();
+        if(bystander||actor)
+        {
+            // Route companions follow the leader's constrained corridor.
+            // Background crowds instead yield to people, while permitting an
+            // already touching pair to separate rather than lock together.
+            if(IsRouteCompanion)return false;
+            var other=bystander?bystander.transform:actor.transform;
+            float before=Vector3.ProjectOnPlane(transform.position-other.position,Vector3.up).sqrMagnitude;
+            float after=Vector3.ProjectOnPlane(next-other.position,Vector3.up).sqrMagnitude;
+            float clearance=bystander?.72f:.85f;
+            return after<clearance*clearance&&after<=before+.00001f;
+        }
         // Yield to a player ahead. An already overlapping actor may step away,
         // but never walk deeper through the player to reach the next waypoint.
         if(collider is CharacterController&&

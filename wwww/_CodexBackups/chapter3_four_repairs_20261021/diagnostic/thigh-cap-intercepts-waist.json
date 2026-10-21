@@ -1,0 +1,22 @@
+{
+    "mode": "test-repair-shots",
+    "completed": false,
+    "elapsed": 14.217334747314454,
+    "checks": [
+        "stable serialized mission values=True",
+        "single third chapter scene=True",
+        "mountain waist corner 0/-1 hits Body=False",
+        "original PlayerPrefs restored exactly=True"
+    ],
+    "errors": [
+        "System.Exception: mountain waist corner 0/-1 hits Body\r\n  at Chapter3RepairProbe.Check (System.String label, System.Boolean value) [0x0002b] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.cs:642 \r\n  at Chapter3RepairProbe+<ProbeRegionShots>d__13.MoveNext () [0x00446] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Combat.cs:54 \r\n  at Chapter3RepairProbe+<Guard>d__53.MoveNext () [0x00041] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.cs:95 "
+    ],
+    "warnings": [],
+    "observations": [
+        "Editor driver evidence only: input events use a cloned InputSettings, walking uses Chapter3Player.Move/CharacterController, aiming uses FocusOn and attacks use actual weapon.Attack. Not native keyboard, standalone Player or headset evidence.",
+        "Each gameplay mode starts at the existing F8 school shortcut with Carry as an explicit weapon fixture. Station opening/pickup and short combat are outside this targeted run. No Stage/Step/position is assigned to advance gameplay.",
+        "Combat fixture: enemy templates cloned into a clear near-player lane; live guards held inactive, Combat.Update disabled during ray/region checks; every damage assertion calls Weapons.Attack.",
+        "mountain waist ray angle=0 side=-1 camera=(0.00, 1.71, -86.00) target=(0.20, 0.98, -83.10) hit=Hit zone · Left thigh region=Leg point=(0.19, 1.01, -83.22) torso=Center: (0.00, 1.17, -83.08), Extents: (0.36, 0.25, 0.15)",
+        "failure route state: stage=AwaitingTado step=0 checkpoint=0 health=100 player=(0.000, 0.060, -86.000) Tado=(-4.700, 0.020, -5.000) StragglerPosition=(0.000, 0.000, 0.000) guideIndex=0 stragglerIndex=0 called=False arrived=False playerTadoGap=81.136 tadoStragglerGap=6.862 nearPlayerColliders=[]"
+    ]
+}

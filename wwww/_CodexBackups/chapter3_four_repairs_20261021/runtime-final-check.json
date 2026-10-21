@@ -1,0 +1,32 @@
+[
+  {
+    "path": "Assets/Chapter3/Chapter3ApproachEnvironment.cs",
+    "hash": "D84EF99F850CE8E4F1F9D45E8E58B8CEC9367C99F21D3783368F7CD058624415",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolApproach.cs",
+    "hash": "0AB63929ED4B50FF23C5F5EEBA39C961AF7E863B686B12806C339629D57A3BF9",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3EnemyHitZone.cs",
+    "hash": "9396FB4F2BDB2C8D3E651F6B28B83DD3875ED917C4A8381EC0FE1798A2C5D7AF",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.cs",
+    "hash": "146A5B549D5D4E9D27F6FAC1E8CD965AC39D8B85DA7D406CFF7A57AF53888644",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolBattle.cs",
+    "hash": "4A0BF23B64D7126DF3EC5167F7907243E43880DF58485FE9C0768096F9977152",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "hash": "86874D57EFEDF3A8B7BFC296BE7B8DE7B76F9A6F5A9E2CC2E237DF16968B5439",
+    "matchesTested": true
+  }
+]

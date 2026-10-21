@@ -1,0 +1,63 @@
+{
+  "utc": "2026-10-21T05:06:44.0167465Z",
+  "editorLog": "C:\\Users\\jimmy\\AppData\\Local\\Unity\\Editor\\Editor.log",
+  "offset": 5241430,
+  "files": [
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Ambient.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Ambient.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Ambient.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Ambient.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Officers.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Officers.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Officers.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Officers.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Checkpoint.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Checkpoint.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Checkpoint.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Checkpoint.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Diagnose.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Diagnose.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Diagnose.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Diagnose.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Combat.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Combat.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3RepairProbe.Combat.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3RepairProbe.Combat.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3CompactWalkProbe.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3CompactWalkProbe.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3CompactWalkProbe.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_four_repairs_20261021\\verification-tools\\installed-final\\Chapter3CompactWalkProbe.cs.meta"
+    }
+  ]
+}

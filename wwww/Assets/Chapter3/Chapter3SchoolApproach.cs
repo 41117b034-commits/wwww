@@ -35,7 +35,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         // Relocate this region before any encounter starts. Every authored
         // school route stays in its original coordinates; the player never
         // moves because of a late origin shift.
-        flow.combatRegion.transform.position=new Vector3(0,0,-120);
+        flow.combatRegion.transform.position=new Vector3(0,0,Chapter3ApproachEnvironment.CombatOriginZ);
         environment=gameObject.AddComponent<Chapter3ApproachEnvironment>();
         environment.Build(flow);
         audioCue=gameObject.AddComponent<Chapter3ApproachAudio>();
@@ -117,16 +117,16 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         }
         else if(!RearActor.speaking)RearActor.Face(player.transform.position);
 
-        float hearing=Mathf.InverseLerp(-82,-35,player.transform.position.z);
+        float hearing=Mathf.InverseLerp(-44,-28,player.transform.position.z);
         // Establish the sports cue while the field is still behind the bend;
         // starting a barely audible source is not enough to lead the player.
-        audioCue.SetProgress(Mathf.InverseLerp(-82,-64,player.transform.position.z));
+        audioCue.SetProgress(Mathf.InverseLerp(-44,-35,player.transform.position.z));
         if(hearing>.12f&&!heardLine)
         {
             heardLine=true;
             Say(RearActor,"聽，前面是運動會的哨聲。沿這條路繼續走。",4.3f);
         }
-        SchoolRevealed=player.transform.position.z>-37;
+        SchoolRevealed=player.transform.position.z>-28;
         if(SchoolRevealed&&!revealLine&&lineUntil<=0)
         {
             revealLine=true;Say(LeadActor,"看見操場了。從前面的校門過去。",4.2f);
@@ -162,7 +162,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     {
         Vector3 current=actor.transform.position;
         // Existing cover-aware navigation remains in the flat encounter lane.
-        if(current.z<-92.3f&&target.z<=-92)
+        if(current.z<Chapter3ApproachEnvironment.TrailStartZ-.3f&&target.z<=Chapter3ApproachEnvironment.TrailStartZ)
         {
             flatMotor.Move(actor,target,speed);
             // Flat navigation ignores characters when searching. Reject its
@@ -195,8 +195,8 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     }
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
-        if(current.z<=-92&&desired.z<=-92)
-        {desired.x=Mathf.Clamp(desired.x,-7,7);desired.z=Mathf.Max(-132,desired.z);return desired;}
+        if(current.z<=Chapter3ApproachEnvironment.TrailStartZ&&desired.z<=Chapter3ApproachEnvironment.TrailStartZ)
+        {desired.x=Mathf.Clamp(desired.x,-7,7);desired.z=Mathf.Max(Chapter3ApproachEnvironment.CombatOriginZ-12,desired.z);return desired;}
         return environment.Constrain(current,desired);
     }
     public void Finish()
