@@ -4,7 +4,7 @@ using UnityEngine;
 // Panic is a visible, non-graphic staged assault, never a damage/score system.
 public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
 {
-    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen }
+    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen, Restrained, Escaped }
     enum SpectatorKind { Guest, Child, Indigenous, Police }
     public Transform[] spectators;
     public Chapter2Actor[] runners;
@@ -124,7 +124,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             for(int i=0;i<assailants.Length;i++)
             {
                 assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1));
-                assaultStarts[i]=Pocket(i)+Vector3.back*2.6f;
+                assaultStarts[i]=AmbusherStart(i);
                 assailants[i].transform.position=assaultStarts[i];AddKnife(assailants[i],school);
                 assailants[i].gameObject.SetActive(false);
             }

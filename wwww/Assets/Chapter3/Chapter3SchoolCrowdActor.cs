@@ -54,12 +54,13 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     readonly List<SkinnedMeshRenderer> nativeSkins=new List<SkinnedMeshRenderer>();
     Chapter2Actor nativeTemplate;
     Chapter1IncidentRig nativeRig;
+    Chapter3SchoolCrowdActor restrainedGuest;
     Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
     Vector3 nativePrevious;
     Transform boneRoot;
     Bounds body;
-    float height,phase,walkWeight,lastMovement=-100,fall,strike,startle;
-    bool initialized,animated,afraid,waiting,finalFallPoseReady;
+    float height,phase,walkWeight,lastMovement=-100,fall,strike,startle,fallSide=1;
+    bool initialized,animated,afraid,waiting,finalFallPoseReady,holdingAtNeck;
     Vector3 navigationGoal,detourPoint;
     float bestRemaining,progressAt,nextDetour;
     bool navigationReady,detouring,waitingAtObstacle;
@@ -71,6 +72,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public bool HasPoseGeometry=>parts.Count>0||nativeSkins.Count>0;
     public bool UsingOriginalSkin=>nativeRig;
     public Transform RightHand=>nativeRig?nativeRig.RightHand:bones[8];
+    public Vector3 NeckPoint=>bones[2]?bones[2].TransformPoint(0,-height*.065f,0):transform.TransformPoint(body.center.x,body.min.y+height*.805f,body.center.z);
+    public bool HoldingAtNeck=>holdingAtNeck&&restrainedGuest;
     public float ModelHeight=>height;
     public static int SharedMeshCount=>meshes.Count;
 
@@ -332,10 +335,14 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void SetWaiting(bool value){waiting=value;}
     public void SetFall(float progress){fall=Mathf.Clamp01(progress);if(fall<1)finalFallPoseReady=false;}
     public void SetStrike(float progress){strike=Mathf.Clamp01(progress);}
+    public void SetFallSide(float side){fallSide=side<0?-1:1;}
+    public void HoldAtNeck(Chapter3SchoolCrowdActor guest,bool posing)
+    {restrainedGuest=guest;holdingAtNeck=posing;}
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
         navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
+        restrainedGuest=null;holdingAtNeck=false;
         foreach(var saved in capsules)if(saved.collider)
         {saved.collider.center=saved.center;saved.collider.height=saved.height;saved.collider.radius=saved.radius;saved.collider.direction=saved.direction;}
     }
@@ -344,10 +351,11 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         Vector3 delta=point-transform.position;delta.y=0;
         if(delta.sqrMagnitude>.0001f)transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(delta),degreesPerSecond*Time.deltaTime);
     }
-    public bool MoveTowards(Vector3 target,float speed,bool faceTravel=true)
+    public bool MoveTowards(Vector3 target,float speed,bool faceTravel=true,float arrivalRadius=.2f)
     {
         target.y=transform.position.y;Vector3 delta=target-transform.position;
-        if(delta.sqrMagnitude<.04f){detouring=waitingAtObstacle=false;return true;}
+        float arrivalSquared=arrivalRadius*arrivalRadius;
+        if(delta.sqrMagnitude<arrivalSquared){detouring=waitingAtObstacle=false;return true;}
         if(!navigationReady||(target-navigationGoal).sqrMagnitude>.64f)
         {
             navigationReady=true;navigationGoal=target;detouring=waitingAtObstacle=false;
@@ -384,7 +392,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         transform.position=next;if(faceTravel)Face(next+direction);lastMovement=Time.time;
         phase+=distance/Mathf.Max(.4f,height*Mathf.Abs(transform.lossyScale.y)*.80f)*Mathf.PI*2;
-        return (target-next).sqrMagnitude<.04f;
+        return (target-next).sqrMagnitude<arrivalSquared;
     }
     bool Clear(Vector3 next)
     {
@@ -414,6 +422,9 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             float before=Vector3.ProjectOnPlane(transform.position-other.position,Vector3.up).sqrMagnitude;
             float after=Vector3.ProjectOnPlane(next-other.position,Vector3.up).sqrMagnitude;
             float clearance=bystander?.72f:.85f;
+            // A controlled, adult-only presentation pair can stand closer.
+            // This exception never applies to fences, other guests or leaders.
+            if(restrainedGuest&&other==restrainedGuest.transform)clearance=.40f;
             return after<clearance*clearance&&after<=before+.00001f;
         }
         // Yield to a player ahead. An already overlapping actor may step away,
@@ -431,7 +442,14 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
                 nativeRig.Head.rotation=Quaternion.AngleAxis(-8*startle,Vector3.Cross(Vector3.up,nativeRig.Forward))*nativeRig.Head.rotation;
             // IK rotates the real upper arm/forearm; the original skin weights
             // keep the tunic and feet attached to their correct bone chains.
-            if((waiting||afraid||startle>0)&&strike<=0&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand&&nativeRig.Head)
+            if(HoldingAtNeck&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand)
+            {
+                Vector3 target=restrainedGuest.NeckPoint+restrainedGuest.transform.right*.19f+restrainedGuest.transform.forward*.04f;
+                Transform hand=nativeRig.RightHand;Vector3 before=hand.position-nativeElbow.position;Quaternion wrist=hand.rotation;
+                Chapter1IncidentRig.Solve(nativeUpperArm,nativeElbow,hand,target,transform.right+Vector3.down*.25f);
+                hand.rotation=Quaternion.FromToRotation(before,hand.position-nativeElbow.position)*wrist;
+            }
+            else if((waiting||afraid||startle>0)&&strike<=0&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand&&nativeRig.Head)
             {
                 Vector3 right=Vector3.Cross(Vector3.up,nativeRig.Forward);
                 Vector3 target=nativeRig.Head.position+right*nativeRig.Height*.18f+nativeRig.Forward*nativeRig.Height*.10f-Vector3.up*nativeRig.Height*.08f;
@@ -450,8 +468,9 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(presentationKnife&&nativeRig.RightHand)
             {
                 float cut=strike>0?Mathf.Sin(strike*Mathf.PI):0;
-                Vector3 direction=Vector3.Slerp(Vector3.up,nativeRig.Forward*.7f-Vector3.up*.7f,cut);
-                presentationKnife.SetPositionAndRotation(nativeRig.RightHand.position,Quaternion.LookRotation(Vector3.Cross(Vector3.up,nativeRig.Forward),direction));
+                Vector3 direction=HoldingAtNeck?-restrainedGuest.transform.right:Vector3.Slerp(Vector3.up,nativeRig.Forward*.7f-Vector3.up*.7f,cut);
+                Vector3 bladeNormal=HoldingAtNeck?restrainedGuest.transform.forward:Vector3.Cross(Vector3.up,nativeRig.Forward);
+                presentationKnife.SetPositionAndRotation(nativeRig.RightHand.position,Quaternion.LookRotation(bladeNormal,direction));
             }
             return;
         }
@@ -483,7 +502,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     {
         float collapse=Mathf.SmoothStep(0,1,fall),bend=Mathf.Sin(collapse*Mathf.PI);
         bones[0].localPosition=bindPositions[0]-Vector3.up*(height*.39f*collapse);
-        bones[0].localRotation=Quaternion.Euler(-7*bend,0,87*collapse);
+        bones[0].localRotation=Quaternion.Euler(-7*bend,0,87*collapse*fallSide);
         bones[1].localRotation=Quaternion.Euler(18*bend,0,0);
         for(int side=0;side<2;side++)
         {
@@ -507,7 +526,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(!float.IsPositiveInfinity(lowest))bones[0].localPosition+=Vector3.up*Mathf.Max(0,body.min.y+height*.012f-lowest);
         if(fall>=.95f)
             foreach(var saved in capsules)if(saved.collider)
-            {saved.collider.direction=0;saved.collider.center=new Vector3(body.center.x-height*.02f,body.min.y+height*.17f,body.center.z);saved.collider.height=height;saved.collider.radius=height*.14f;}
+            {saved.collider.direction=0;saved.collider.center=new Vector3(body.center.x-height*.02f*fallSide,body.min.y+height*.17f,body.center.z);saved.collider.height=height;saved.collider.radius=height*.14f;}
         if(fall>=1)finalFallPoseReady=true;
     }
     void OnDisable(){if(initialized)ResetPose();}

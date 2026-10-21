@@ -21,22 +21,23 @@ public sealed partial class Chapter3SchoolAmbient
             if(!native&&t.name.Contains("觀賽族人"))native=t;
         }
         if(!woman||!child||!native)return native;
-        // Reuse existing face/body geometry with plain school clothing. These
-        // are anonymous dramatic roles, not identified historical people.
+        // Adults use the actual Japanese civilian model. Recolouring the
+        // Indigenous spectator retained its sash/jewellery and misidentified
+        // the casualties. Never use that geometry as a Japanese male teacher.
         var schoolChild=ClothedTemplate(child,"日籍學童服裝",new Color(.78f,.81f,.78f),new Color(.12f,.17f,.23f));
-        var teacher=ClothedTemplate(native,"日籍男教師服裝",new Color(.32f,.34f,.31f),new Color(.14f,.17f,.19f));
         var people=new List<Transform>();int adultNumber=0,childNumber=0;
         // Two of these pupils replace the running actors at the alarm, at
         // their exact current positions. Never render both copies together.
         for(int i=0;i<20;i++)
         {
-            bool pupil=i<10?i%2==1:i>=15;
+            bool pupil=i>=10;
             int number=pupil?++childNumber:++adultNumber;
-            Transform source=pupil?schoolChild:number%2==1?teacher:woman;
-            string role=pupil?"日籍學童":number%2==1?"日籍男教師":"日籍女教師與家屬";
+            Transform source=pupil?schoolChild:woman;
+            string role=pupil?"日籍學童":"日籍女教師與家屬";
             var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number);
-            person.transform.position=AttackSpot(i)+Vector3.forward*1.35f;
-            person.transform.rotation=Quaternion.LookRotation(new Vector3(-person.transform.position.x,0,0));
+            person.transform.position=GuestStart(i);
+            person.transform.rotation=Quaternion.Euler(0,(i*137+25)%360,0);
+            person.SetFallSide(i%2==0?1:-1);
             populationObjects.Add(person.gameObject);people.Add(person.transform);
             if(i>=18)person.gameObject.SetActive(false);
         }

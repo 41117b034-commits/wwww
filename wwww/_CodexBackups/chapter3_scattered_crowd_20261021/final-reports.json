@@ -1,0 +1,74 @@
+[
+  {
+    "mode": "test-scatter-tado",
+    "completed": true,
+    "checks": 427,
+    "errors": 0,
+    "warnings": 0,
+    "restored": true,
+    "observations": [
+      "Actual adult 0 日籍女教師與家屬 1 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 1 日籍女教師與家屬 2 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 2 日籍女教師與家屬 3 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 3 日籍女教師與家屬 4 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 4 日籍女教師與家屬 5 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 5 日籍女教師與家屬 6 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 6 日籍女教師與家屬 7 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 7 日籍女教師與家屬 8 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 8 日籍女教師與家屬 9 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 9 日籍女教師與家屬 10 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual Tado player (-3.91, 0.01, 7.88) unobstructed attackers=4",
+      "Bodies min root separation=4.428318 headings=330,331,3,63,65,299,55,117,301,324,310,293",
+      "Hold 0 blade center to neck=0.1230424 hand=(-12.63, 1.24, 18.20) neck=(-12.61, 1.20, 18.38)",
+      "Hold 1 blade center to neck=0.1230413 hand=(12.81, 1.24, 30.64) neck=(12.67, 1.20, 30.53)"
+    ]
+  },
+  {
+    "mode": "test-scatter-bawan",
+    "completed": true,
+    "checks": 400,
+    "errors": 0,
+    "warnings": 0,
+    "restored": true,
+    "observations": [
+      "Actual adult 0 日籍女教師與家屬 1 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 1 日籍女教師與家屬 2 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 2 日籍女教師與家屬 3 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 3 日籍女教師與家屬 4 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 4 日籍女教師與家屬 5 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 5 日籍女教師與家屬 6 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 6 日籍女教師與家屬 7 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 7 日籍女教師與家屬 8 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 8 日籍女教師與家屬 9 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 9 日籍女教師與家屬 10 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual Bawan player (-26.98, 0.01, 7.93) unobstructed attackers=7",
+      "Bodies min root separation=4.418021 headings=330,331,3,63,65,299,55,117,301,324,310,293",
+      "Hold 0 blade center to neck=0.1230424 hand=(-12.57, 1.24, 18.06) neck=(-12.55, 1.20, 18.24)",
+      "Hold 1 blade center to neck=0.1361777 hand=(12.77, 1.24, 30.78) neck=(12.62, 1.20, 30.67)"
+    ]
+  },
+  {
+    "mode": "test-scatter-pihu",
+    "completed": true,
+    "checks": 398,
+    "errors": 0,
+    "warnings": 0,
+    "restored": true,
+    "observations": [
+      "Actual adult 0 日籍女教師與家屬 1 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 1 日籍女教師與家屬 2 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 2 日籍女教師與家屬 3 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 3 日籍女教師與家屬 4 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 4 日籍女教師與家屬 5 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 5 日籍女教師與家屬 6 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 6 日籍女教師與家屬 7 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 7 日籍女教師與家屬 8 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 8 日籍女教師與家屬 9 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual adult 9 日籍女教師與家屬 10 native=False meshes=c150659026f26ab44a8c2633e6b76e8b_1_distant asset=Assets/Chapter3/Resources/Chapter3/CrowdDetailMeshes/c150659026f26ab44a8c2633e6b76e8b_1_distant.asset",
+      "Actual Pihu player (27.45, 0.01, 7.80) unobstructed attackers=9",
+      "Bodies min root separation=4.428318 headings=330,331,3,63,65,299,55,117,301,324,310,293",
+      "Hold 0 blade center to neck=0.1230424 hand=(-12.69, 1.24, 18.32) neck=(-12.67, 1.20, 18.50)",
+      "Hold 1 blade center to neck=0.1230413 hand=(12.83, 1.24, 30.60) neck=(12.69, 1.20, 30.49)"
+    ]
+  }
+]

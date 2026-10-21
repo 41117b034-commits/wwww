@@ -1,0 +1,18 @@
+[
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.cs",
+    "sha256": "427CF42D847B7165EB8D533719EF8D9DEA51B41A2D1DB80B6CD28DA751557F0D"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Ambush.cs",
+    "sha256": "A0350D0073C5F45EBD965B985B1991A1FBE5C8C2FB16A04C11189D85D38ED58A"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Population.cs",
+    "sha256": "DEE640F6098579FE3DA2B41014770171B064806D45299C4C6DC41E54E106C670"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "sha256": "0656D8E280349B59EB19F3510CADD2E7BA1B2942F42ED994740C9CE847497E96"
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-21",
+  "scene": "Assets/Scenes/第三章.unity",
+  "reports": [
+    "test-scatter-tado",
+    "test-scatter-bawan",
+    "test-scatter-pihu"
+  ],
+  "checks": 1225,
+  "errors": 0,
+  "warnings": 0,
+  "nativeAmbushersStanding": 10,
+  "JapaneseRestrainedAdults": 2,
+  "JapaneseFallenAdults": 8,
+  "JapaneseFallenChildren": 4,
+  "JapaneseFleeingChildren": 6,
+  "testedRuntimeHashesMatch": true,
+  "protectedHashesUnchanged": 7,
+  "temporaryProbeFilesArchived": 16,
+  "postRemovalCompile": "Tundra build success; Mono successfully reloaded assembly",
+  "manualKeyboardValidated": false,
+  "VRValidated": false,
+  "newStandaloneBuild": false
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.cs",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Ambush.cs",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Population.cs",
+    "matchesTested": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "matchesTested": true
+  }
+]
