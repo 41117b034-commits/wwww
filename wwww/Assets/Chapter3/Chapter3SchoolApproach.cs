@@ -16,6 +16,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     public Chapter2Actor RearActor=>flow?flow.combat.pihu:null;
     public Vector3[] WorldWaypoints=>environment?environment.Waypoints:System.Array.Empty<Vector3>();
     public Chapter3ApproachAudio AudioCue=>audioCue;
+    public Chapter3RouteGuide FollowGuide {get;private set;}
     Chapter3Flow flow;
     Chapter3ApproachEnvironment environment;
     Chapter3ApproachAudio audioCue;
@@ -40,6 +41,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         environment.Build(flow);
         audioCue=gameObject.AddComponent<Chapter3ApproachAudio>();
         audioCue.Configure(flow.school);
+        FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
     }
     public void Prepare()
     {
@@ -75,6 +77,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         Say(LeadActor,"前面的路通了，跟我沿林路走。比胡，照看後面的人。",4.5f);
         flow.ui.objective.text="跟隨巴萬穿過林路，前往學校";
         audioCue.Begin(flow.player.view.transform);
+        FollowGuide.Show(flow.player.transform.position,new[]{rally},flow.player.transform,LeadActor.transform);
     }
     void Update()
     {
@@ -96,7 +99,12 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
             MoveActor(LeadActor,target,1.9f,rallyLeader);
             if(Flat(LeadActor.transform.position,target)<.25f)
             {
-                if(gathering)gathering=false;
+                if(gathering)
+                {
+                    gathering=false;
+                    FollowGuide.Show(flow.player.transform.position,points,flow.player.transform,LeadActor.transform,
+                        p=>p.z<Chapter3ApproachEnvironment.TrailStartZ?0:environment.GroundHeight(p));
+                }
                 else if(CurrentWaypoint<points.Length-1)CurrentWaypoint++;
             }
         }
@@ -201,6 +209,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     }
     public void Finish()
     {
+        if(FollowGuide)FollowGuide.Hide();
         Active=false;Completed=true;Waiting=false;
         handoffFrame=Time.frameCount;
         LeadActor.speaking=RearActor.speaking=false;
@@ -220,6 +229,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     }
     public void Suspend()
     {
+        if(FollowGuide)FollowGuide.Hide();
         Active=Completed=Waiting=SchoolRevealed=false;
         if(LeadActor)LeadActor.speaking=false;if(RearActor)RearActor.speaking=false;
         RestoreSchool();

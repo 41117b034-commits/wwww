@@ -41,6 +41,7 @@ public sealed partial class Chapter3SchoolBattle
             {
                 AtCrossing=true;safePihu=school.pihu.transform.position;
                 guideIndex=0;activeRoute=east[Step];RevealCurrentThreat();
+                RefreshFollowGuide();
             }
         }
         else

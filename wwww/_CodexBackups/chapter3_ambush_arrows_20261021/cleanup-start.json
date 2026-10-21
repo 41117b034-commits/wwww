@@ -1,0 +1,71 @@
+{
+  "utc": "2026-10-21T07:30:15.7503369Z",
+  "editorLog": "C:\\Users\\jimmy\\AppData\\Local\\Unity\\Editor\\Editor.log",
+  "offset": 5531216,
+  "files": [
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Ambient.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Ambient.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Ambient.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Ambient.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Officers.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Officers.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Officers.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Officers.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Checkpoint.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Checkpoint.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Checkpoint.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Checkpoint.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Diagnose.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Diagnose.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Diagnose.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Diagnose.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Combat.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Combat.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.Combat.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.Combat.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.NewChecks.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.NewChecks.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3AmbushProbe.NewChecks.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3AmbushProbe.NewChecks.cs.meta"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ArrowWalkProbe.cs",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3ArrowWalkProbe.cs"
+    },
+    {
+      "source": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ArrowWalkProbe.cs.meta",
+      "target": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\_CodexBackups\\chapter3_ambush_arrows_20261021\\verification-tools\\installed-final\\Chapter3ArrowWalkProbe.cs.meta"
+    }
+  ]
+}

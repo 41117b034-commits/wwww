@@ -1,0 +1,62 @@
+{
+    "utc": "2026-10-21T06:58:24.7617817Z",
+    "scene": "Assets/Scenes/第三章.unity",
+    "capturePhase": "WaitForEndOfFrame after all LateUpdates",
+    "playing": true,
+    "dirty": false,
+    "compileFailed": false,
+    "frame": 104,
+    "missingScripts": 0,
+    "roots": [
+        "玩家 · 鍵鼠與VR active=True position=(0.00, 0.04, -83.00)",
+        "第三章字幕與交談 active=True position=(0.00, 1.67, -82.50)",
+        "EventSystem active=True position=(0.00, 0.00, 0.00)",
+        "第三章 · 單一場景流程與快速跳段 active=True position=(0.00, 0.00, 0.00)",
+        "02 駐在所 active=False position=(0.00, 0.00, 0.00)",
+        "03 山路短交戰 active=True position=(0.00, 0.00, -75.00)",
+        "04 霧社學校與運動會 active=True position=(0.00, 0.00, 0.00)"
+    ],
+    "components": [
+        "Chapter3SchoolApproach owner=第三章 · 單一場景流程與快速跳段 id=-836846 active=True",
+        "Chapter3ApproachEnvironment owner=第三章 · 單一場景流程與快速跳段 id=-836848 active=True",
+        "Chapter3ApproachAudio owner=第三章 · 單一場景流程與快速跳段 id=-837368 active=True"
+    ],
+    "audio": [
+        "第一人稱獵刀與步槍 id=1043448 active=True playing=True loop=False volume=1 clip=null samples=0 channels=0 timeSamples=0",
+        "山林清晨環境聲 id=1027056 active=False playing=False loop=True volume=0.24 clip=forest_morning samples=529200 channels=1 timeSamples=0",
+        "03 山路短交戰 id=1036614 active=True playing=True loop=True volume=0.2 clip=forest_morning samples=529200 channels=1 timeSamples=238022",
+        "巡警 1  id=-844588 active=True playing=False loop=False volume=0.45 clip=null samples=0 channels=0 timeSamples=0",
+        "巡警 2  id=-844692 active=True playing=False loop=False volume=0.45 clip=null samples=0 channels=0 timeSamples=0",
+        "巡警 3  id=-844796 active=True playing=False loop=False volume=0.45 clip=null samples=0 channels=0 timeSamples=0",
+        "04 霧社學校與運動會 id=1043530 active=True playing=True loop=True volume=0 clip=forest_morning samples=529200 channels=1 timeSamples=238022",
+        "04 霧社學校與運動會 id=-843640 active=True playing=False loop=False volume=0.35 clip=null samples=0 channels=0 timeSamples=0",
+        "會場警察 · 前場 id=-844380 active=True playing=False loop=False volume=0.45 clip=null samples=0 channels=0 timeSamples=0",
+        "會場警察 · 校舍附近 id=-844484 active=True playing=False loop=False volume=0.45 clip=null samples=0 channels=0 timeSamples=0"
+    ],
+    "sources": [
+        "Assets/Chapter3/Chapter3ApproachAudio.cs bytes=5606 sha256=54D655E091A16A1C8F16EFBC1A25B3DEE3D794ADF04D56521250D36AF081EA66",
+        "Assets/Chapter3/Chapter3ApproachAudio.cs.meta bytes=60 sha256=CA5C042586F49EB73E5021E80DAB568BDAA7830FE2EF21ADED093CD5F825AE95",
+        "Assets/Chapter3/Chapter3ApproachEnvironment.cs bytes=14641 sha256=D84EF99F850CE8E4F1F9D45E8E58B8CEC9367C99F21D3783368F7CD058624415",
+        "Assets/Chapter3/Chapter3ApproachEnvironment.cs.meta bytes=59 sha256=9A01C3486DADB347C9D8843C254D1B67BC2246184A5F607F73B7D78E7DC02953",
+        "Assets/Chapter3/Chapter3SchoolApproach.cs bytes=12789 sha256=553F1510CE3E480E4514826623D3AB544C5F029439338A4E5E8475A61588E5AA",
+        "Assets/Chapter3/Chapter3SchoolApproach.cs.meta bytes=59 sha256=90CAC2A412297F4AB3A370B6D6594BC5339FBCE1957CA5F58E1E7B108C370137"
+    ],
+    "heads": [
+        "ACTOR 03 山路短交戰/巴萬·拿威(Clone) id=1032272 active=True pos=(-5.1000, 0.0497, -80.0000) scale=(1.7124, 1.7124, 1.7124) speech=1032274 speechEnabled=True surfaceCount=1",
+        "SURFACE 0 owner=1032272 head=03 山路短交戰/巴萬·拿威(Clone)/Armature/Root/Hip/Waist/Spine01/Spine02/NeckTwist01/NeckTwist02/Head headId=1027538 headUnderOwner=True headWorld=(-5.0870, 1.4179, -79.9969) originLocal=(-0.0028, 0.0543, -0.0810) expectedCutWorld=(-4.9834, 1.5220, -80.0765) actualCutWorld=(-4.9834, 1.5220, -80.0765, 0.0000) cutEnabled=1 cutAsset=Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795_cut.asset",
+        "BODY 03 山路短交戰/巴萬·拿威(Clone)/tripo_node_f32c0c9b id=1022874 underOwner=True enabled=True forceOff=False active=True visible=True updateOffscreen=True pos=(-5.1000, 0.0497, -80.0000) scale=(1.7124, 1.7124, 1.7124) mesh=tripo_node_f32c0c9b meshId=75588 meshAsset=Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx localBounds=Center: (0.00, 0.02, 0.46), Extents: (0.23, 0.19, 0.51) worldBounds=Center: (-5.07, 0.85, -80.00), Extents: (0.49, 0.87, 0.51) rootBone=03 山路短交戰/巴萬·拿威(Clone)/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Body_8f52cf137c01269468711855767ba7d6_4233802154947684442 shader=Chapter2/Story Body asset=Assets/Chapter2/Poses/Speech/Body_8f52cf137c01269468711855767ba7d6_4233802154947684442.mat",
+        "PATCH 03 山路短交戰/巴萬·拿威(Clone)/tripo_node_f32c0c9b/Story face id=1036364 underOwner=True enabled=True forceOff=False active=True visible=True updateOffscreen=True pos=(-5.1000, 0.0497, -80.0000) scale=(1.7124, 1.7124, 1.7124) mesh=8f52cf137c01269468711855767ba7d6_3808560406325459795 meshId=50660 meshAsset=Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795.asset localBounds=Center: (0.01, -0.01, 0.88), Extents: (0.06, 0.05, 0.08) worldBounds=Center: (-5.03, 1.55, -80.04), Extents: (0.14, 0.14, 0.14) rootBone=03 山路短交戰/巴萬·拿威(Clone)/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Face_9e4fc8fc4a87ce349af7dbae20b73fdb_2100000 shader=Chapter2/Story Face asset=Assets/Chapter2/Poses/Speech/Face_9e4fc8fc4a87ce349af7dbae20b73fdb_2100000.mat",
+        "ACTOR 03 山路短交戰/比胡·帖木(Clone) id=1027646 active=True pos=(5.2000, 0.0289, -81.0000) scale=(1.7051, 1.7051, 1.7051) speech=1027648 speechEnabled=True surfaceCount=1",
+        "SURFACE 0 owner=1027646 head=03 山路短交戰/比胡·帖木(Clone)/Armature/Root/Hip/Waist/Spine01/Spine02/NeckTwist01/NeckTwist02/Head headId=1032050 headUnderOwner=True headWorld=(5.1979, 1.4143, -81.0067) originLocal=(-0.0006, 0.0625, -0.0833) expectedCutWorld=(5.0710, 1.5313, -81.0483) actualCutWorld=(5.0710, 1.5313, -81.0483, 0.0000) cutEnabled=1 cutAsset=Assets/Chapter2/Poses/Speech/04a74717488d6ae488d8cef381fb8b28_215812804378155711_cut.asset",
+        "BODY 03 山路短交戰/比胡·帖木(Clone)/tripo_node_9c8dfc1a id=1024208 underOwner=True enabled=True forceOff=False active=True visible=True updateOffscreen=True pos=(5.2000, 0.0289, -81.0000) scale=(1.7051, 1.7051, 1.7051) mesh=tripo_node_9c8dfc1a meshId=75592 meshAsset=Assets/人/畢專 賽德克青年/原住民青年2/tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx localBounds=Center: (0.00, 0.03, 0.48), Extents: (0.24, 0.17, 0.51) worldBounds=Center: (5.21, 0.84, -81.02), Extents: (0.41, 0.88, 0.48) rootBone=03 山路短交戰/比胡·帖木(Clone)/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Body_04a74717488d6ae488d8cef381fb8b28_3022369048091175306 shader=Chapter2/Story Body asset=Assets/Chapter2/Poses/Speech/Body_04a74717488d6ae488d8cef381fb8b28_3022369048091175306.mat",
+        "PATCH 03 山路短交戰/比胡·帖木(Clone)/tripo_node_9c8dfc1a/Story face id=1035702 underOwner=True enabled=True forceOff=False active=True visible=True updateOffscreen=True pos=(5.2000, 0.0289, -81.0000) scale=(1.7051, 1.7051, 1.7051) mesh=04a74717488d6ae488d8cef381fb8b28_215812804378155711 meshId=50440 meshAsset=Assets/Chapter2/Poses/Speech/04a74717488d6ae488d8cef381fb8b28_215812804378155711.asset localBounds=Center: (0.02, -0.02, 0.89), Extents: (0.07, 0.05, 0.08) worldBounds=Center: (5.13, 1.55, -81.02), Extents: (0.12, 0.14, 0.14) rootBone=03 山路短交戰/比胡·帖木(Clone)/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Face_01405522627961949a361728b06428f2_2100000 shader=Chapter2/Story Face asset=Assets/Chapter2/Poses/Speech/Face_01405522627961949a361728b06428f2_2100000.mat",
+        "ACTOR 04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威 id=1029592 active=True pos=(-1.4000, 0.0497, -19.7000) scale=(1.7124, 1.7124, 1.7124) speech=1029588 speechEnabled=True surfaceCount=1",
+        "SURFACE 0 owner=1029592 head=04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威/Armature/Root/Hip/Waist/Spine01/Spine02/NeckTwist01/NeckTwist02/Head headId=1044050 headUnderOwner=True headWorld=(-1.3908, 1.4179, -19.7096) originLocal=(-0.0028, 0.0543, -0.0810) expectedCutWorld=(-1.4068, 1.5220, -19.8393) actualCutWorld=(-1.4068, 1.5220, -19.8393, 0.0000) cutEnabled=1 cutAsset=Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795_cut.asset",
+        "BODY 04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威/tripo_node_f32c0c9b id=1041376 underOwner=True enabled=False forceOff=False active=True visible=False updateOffscreen=True pos=(-1.4000, 0.0497, -19.7000) scale=(1.7124, 1.7124, 1.7124) mesh=tripo_node_f32c0c9b meshId=75588 meshAsset=Assets/人/畢專 賽德克青年/原住民青年4/tripo_convert_f32c0c9b-4781-4a35-aa11-4c836bb607c6.fbx localBounds=Center: (0.00, 0.02, 0.46), Extents: (0.23, 0.19, 0.51) worldBounds=Center: (-1.39, 0.85, -19.73), Extents: (0.41, 0.87, 0.35) rootBone=04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Body_8f52cf137c01269468711855767ba7d6_4233802154947684442 shader=Chapter2/Story Body asset=Assets/Chapter2/Poses/Speech/Body_8f52cf137c01269468711855767ba7d6_4233802154947684442.mat",
+        "PATCH 04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威/tripo_node_f32c0c9b/Story face id=1029040 underOwner=True enabled=False forceOff=False active=True visible=False updateOffscreen=True pos=(-1.4000, 0.0497, -19.7000) scale=(1.7124, 1.7124, 1.7124) mesh=8f52cf137c01269468711855767ba7d6_3808560406325459795 meshId=50660 meshAsset=Assets/Chapter2/Poses/Speech/8f52cf137c01269468711855767ba7d6_3808560406325459795.asset localBounds=Center: (0.01, -0.01, 0.88), Extents: (0.06, 0.05, 0.08) worldBounds=Center: (-1.40, 1.55, -19.78), Extents: (0.12, 0.14, 0.10) rootBone=04 霧社學校與運動會/達多與兩位同伴/巴萬·拿威/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Face_9e4fc8fc4a87ce349af7dbae20b73fdb_2100000 shader=Chapter2/Story Face asset=Assets/Chapter2/Poses/Speech/Face_9e4fc8fc4a87ce349af7dbae20b73fdb_2100000.mat",
+        "ACTOR 04 霧社學校與運動會/達多與兩位同伴/比胡·帖木 id=1040028 active=True pos=(1.4000, 0.0289, -20.8000) scale=(1.7051, 1.7051, 1.7051) speech=1040024 speechEnabled=True surfaceCount=1",
+        "SURFACE 0 owner=1040028 head=04 霧社學校與運動會/達多與兩位同伴/比胡·帖木/Armature/Root/Hip/Waist/Spine01/Spine02/NeckTwist01/NeckTwist02/Head headId=1045438 headUnderOwner=True headWorld=(1.4055, 1.4143, -20.8044) originLocal=(-0.0006, 0.0625, -0.0833) expectedCutWorld=(1.3987, 1.5313, -20.9378) actualCutWorld=(1.3987, 1.5313, -20.9378, 0.0000) cutEnabled=1 cutAsset=Assets/Chapter2/Poses/Speech/04a74717488d6ae488d8cef381fb8b28_215812804378155711_cut.asset",
+        "BODY 04 霧社學校與運動會/達多與兩位同伴/比胡·帖木/tripo_node_9c8dfc1a id=1028224 underOwner=True enabled=False forceOff=False active=True visible=False updateOffscreen=True pos=(1.4000, 0.0289, -20.8000) scale=(1.7051, 1.7051, 1.7051) mesh=tripo_node_9c8dfc1a meshId=75592 meshAsset=Assets/人/畢專 賽德克青年/原住民青年2/tripo_convert_9c8dfc1a-8262-45ed-8cd9-4adc9d0040e8.fbx localBounds=Center: (0.00, 0.03, 0.48), Extents: (0.24, 0.17, 0.51) worldBounds=Center: (1.42, 0.84, -20.80), Extents: (0.41, 0.88, 0.30) rootBone=04 霧社學校與運動會/達多與兩位同伴/比胡·帖木/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Body_04a74717488d6ae488d8cef381fb8b28_3022369048091175306 shader=Chapter2/Story Body asset=Assets/Chapter2/Poses/Speech/Body_04a74717488d6ae488d8cef381fb8b28_3022369048091175306.mat",
+        "PATCH 04 霧社學校與運動會/達多與兩位同伴/比胡·帖木/tripo_node_9c8dfc1a/Story face id=1033372 underOwner=True enabled=False forceOff=False active=True visible=False updateOffscreen=True pos=(1.4000, 0.0289, -20.8000) scale=(1.7051, 1.7051, 1.7051) mesh=04a74717488d6ae488d8cef381fb8b28_215812804378155711 meshId=50440 meshAsset=Assets/Chapter2/Poses/Speech/04a74717488d6ae488d8cef381fb8b28_215812804378155711.asset localBounds=Center: (0.02, -0.02, 0.89), Extents: (0.07, 0.05, 0.08) worldBounds=Center: (1.40, 1.55, -20.88), Extents: (0.12, 0.14, 0.09) rootBone=04 霧社學校與運動會/達多與兩位同伴/比胡·帖木/Armature/Root rootBoneUnderOwner=True bones=41 externalBones= materials=Face_01405522627961949a361728b06428f2_2100000 shader=Chapter2/Story Face asset=Assets/Chapter2/Poses/Speech/Face_01405522627961949a361728b06428f2_2100000.mat"
+    ]
+}

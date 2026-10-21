@@ -2,7 +2,7 @@ using UnityEngine;
 
 // Sports-day background, independent of mission completion and rescue choices.
 // Panic is a visible, non-graphic staged assault, never a damage/score system.
-public sealed class Chapter3SchoolAmbient : MonoBehaviour
+public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
 {
     public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen }
     enum SpectatorKind { Guest, Child, Indigenous, Police }
@@ -20,17 +20,16 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     float[] reactionDelays,flightDelays,runnerReactionDelays,runnerFlightDelays;
     readonly Chapter3SchoolCrowdActor[] assailants=new Chapter3SchoolCrowdActor[3];
     readonly int[] assailantSteps=new int[3];
-    readonly float[] assailantDelays={.55f,1.4f,2.3f};
-    readonly Vector3[] assaultStarts={new Vector3(-11,0,-2),new Vector3(11,0,-2),new Vector3(-13,0,-4)};
+    readonly Vector3[] assaultStarts={new Vector3(-11,0,12),new Vector3(13,0,18),new Vector3(-12,0,32)};
     readonly Vector3[][] assaultRoutes={
-        new[]{new Vector3(-1.6f,0,-1.5f),new Vector3(-1.6f,0,8),new Vector3(-2,0,18),new Vector3(5.5f,0,27),new Vector3(8,0,35)},
-        new[]{new Vector3(1.6f,0,-1.5f),new Vector3(1.6f,0,10),new Vector3(2,0,20),new Vector3(8,0,28),new Vector3(11,0,35)},
-        new[]{new Vector3(0,0,-2.5f),new Vector3(0,0,8),new Vector3(-8,0,23),new Vector3(-7,0,32),new Vector3(-11,0,39)}};
+        new[]{new Vector3(-9,0,15),new Vector3(-5,0,23),new Vector3(1.5f,0,26)},
+        new[]{new Vector3(12,0,21),new Vector3(9,0,26),new Vector3(4.5f,0,27)},
+        new[]{new Vector3(-11,0,30),new Vector3(-10,0,30),new Vector3(-9,0,30.5f)}};
     readonly Vector3[] aftermathPoints={new Vector3(3,0,27),new Vector3(-9,0,32)};
     readonly int[] casualties={-1,-1};
     readonly float[] fallBegan={-1,-1};
     Chapter3SchoolCrowdActor straggler;
-    float panicBegan,nextUpdate;
+    float panicBegan;
     bool initialized;
     public bool Panicking {get;private set;}
     public Vector3 PanicOrigin {get;private set;}
@@ -126,7 +125,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             Material wood=FindWood();
             for(int i=0;i<assailants.Length;i++)
             {
-                assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"衝入運動場的族人 "+(i+1));
+                assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1));
                 assailants[i].transform.position=assaultStarts[i];AddBambooSpear(assailants[i],wood);
                 assailants[i].gameObject.SetActive(false);
             }
@@ -134,6 +133,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             straggler.IsRouteCompanion=true;
             straggler.gameObject.SetActive(false);
         }
+        ConfigureSkirmish();
     }
     Material FindWood()
     {
@@ -154,7 +154,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     }
     public void ResetCalm()
     {
-        Initialize();Panicking=false;panicBegan=0;nextUpdate=0;PanicOrigin=Vector3.zero;
+        Initialize();Panicking=false;panicBegan=0;PanicOrigin=Vector3.zero;ResetSkirmish();
         for(int i=0;i<fallBegan.Length;i++)fallBegan[i]=-1;
         for(int i=0;i<spectators.Length;i++)if(spectators[i])
         {
@@ -179,6 +179,10 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     {
         Initialize();if(Panicking)return;
         Panicking=true;panicBegan=Time.time;PanicOrigin=origin;
+        // These actors already occupy separate positions INSIDE the school.
+        // One signal releases all three in the same frame, on every route.
+        AmbushSignalFrame=Time.frameCount;skirmishActive=true;
+        foreach(var actor in assailants)if(actor){actor.gameObject.SetActive(true);actor.SetAnimated(true);}
         // Staged perception is a gameplay presentation, not a reconstruction
         // of named victims' individual movements. Nobody reacts before the cue.
         for(int i=0;i<crowd.Length;i++)if(crowd[i])
@@ -222,12 +226,6 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     void Update()
     {
         if(!initialized)Initialize();
-        if(Time.time>=nextUpdate)
-        {
-            nextUpdate=Time.time+.12f;
-            for(int i=0;i<spectators.Length;i++)if(spectators[i]&&crowdPhases[i]==CrowdPhase.Calm)
-                spectators[i].localRotation=rotations[i]*Quaternion.Euler(0,Mathf.Sin(Time.time*.36f+i*1.8f)*3.3f,0);
-        }
         if(Panicking)UpdateAssault();
         for(int i=0;i<runners.Length;i++)
         {
@@ -245,7 +243,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
                 else
                 {
                     runnerPhases[i]=CrowdPhase.Fleeing;
-                    motors[i].Move(runners[i],new Vector3(-21-i*.8f,0,9+i*27),3.6f);
+                    motors[i].Move(runners[i],new Vector3(-14.5f-i*1.2f,0,5+i*30),3.6f);
                 }
                 continue;
             }
@@ -258,21 +256,7 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
     void UpdateAssault()
     {
         float elapsed=AssaultElapsed;
-        for(int i=0;i<assailants.Length;i++)
-        {
-            var actor=assailants[i];if(!actor||elapsed<assailantDelays[i])continue;
-            if(!actor.gameObject.activeSelf){actor.gameObject.SetActive(true);actor.SetAnimated(true);}
-            int step=assailantSteps[i];
-            if(step<assaultRoutes[i].Length)
-            {
-                // The first crossing reaches the viewer's centre within the
-                // shared outbreak look. Later gestures have no hit/damage API.
-                if(step==4&&elapsed<15+i*1.8f)
-                {actor.Face(aftermathPoints[i==2?1:0]);actor.SetStrike(Mathf.Repeat(elapsed*.65f,1));continue;}
-                actor.SetStrike(0);
-                if(actor.MoveTowards(assaultRoutes[i][step],step<2?3.8f:3.4f))assailantSteps[i]++;
-            }
-        }
+        UpdateAmbush(elapsed);
         for(int i=0;i<crowd.Length;i++)
         {
             var actor=crowd[i];if(!actor||!actor.gameObject.activeInHierarchy||elapsed<reactionDelays[i])continue;
@@ -290,11 +274,12 @@ public sealed class Chapter3SchoolAmbient : MonoBehaviour
             }
             if(crowdPhases[i]==CrowdPhase.Reacting)
             {crowdPhases[i]=CrowdPhase.Fleeing;actor.SetStartled(0);actor.SetAfraid(true);}
+            if(UpdateSkirmishGuest(i))continue;
             int eventIndex=i==casualties[0]?0:i==casualties[1]?1:-1;
             if(eventIndex>=0)
             {
                 bool arrived=actor.MoveTowards(aftermathPoints[eventIndex],2.8f);
-                bool incursionArrived=eventIndex==0?assailantSteps[0]>=4||assailantSteps[1]>=4:assailantSteps[2]>=4;
+                bool incursionArrived=eventIndex==0?assailantSteps[0]>=3||assailantSteps[1]>=3:assailantSteps[2]>=3;
                 if(arrived&&incursionArrived&&elapsed>=7.6f+eventIndex*2.4f)
                 {
                     // A blocked guest still performs the full collapse after

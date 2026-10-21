@@ -11,7 +11,7 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
     Transform follower,leader;
     public float Length => distances.Count==0?0:distances[distances.Count-1];
     public int VisibleMarks {get;private set;}
-    public void Show(Vector3 start,Vector3[] route,Transform player,Transform guide)
+    public void Show(Vector3 start,Vector3[] route,Transform player,Transform guide,System.Func<Vector3,float> ground=null)
     {
         Hide();follower=player;leader=guide;points.Clear();distances.Clear();start.y=0;points.Add(start);distances.Add(0);
         foreach(var waypoint in route)
@@ -23,7 +23,15 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         for(float distance=Chapter3YellowArrow.StartDistance;distance<Length;distance+=Chapter3YellowArrow.Spacing)
         {
             var mark=Chapter3YellowArrow.Create(transform,"黃色地面帶路箭頭",dashes.Count);
-            mark.transform.position=Sample(distance,out var direction)+Vector3.up*Chapter3YellowArrow.Height;
+            var point=Sample(distance,out var direction);
+            if(ground!=null)
+            {
+                point.y=ground(point);
+                var ahead=Sample(Mathf.Min(Length,distance+.35f),out _);ahead.y=ground(ahead);
+                var behind=Sample(Mathf.Max(0,distance-.35f),out _);behind.y=ground(behind);
+                direction=(ahead-behind).normalized;
+            }
+            mark.transform.position=point+Vector3.up*Chapter3YellowArrow.Height;
             mark.transform.rotation=Quaternion.LookRotation(direction,Vector3.up);
             dashes.Add(mark);markDistances.Add(distance);
         }
@@ -32,6 +40,7 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
     void LateUpdate(){if(dashes.Count>0)UpdateVisible();}
     void UpdateVisible()
     {
+        if(!follower||!leader){Hide();return;}
         float start=Project(follower.position)+.3f,end=Project(leader.position)-.7f;
         VisibleMarks=0;
         for(int i=0;i<dashes.Count;i++)

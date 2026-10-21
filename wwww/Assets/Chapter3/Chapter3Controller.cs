@@ -23,6 +23,7 @@ public sealed class Chapter3Controller : MonoBehaviour
     public bool HasKnife { get; private set; }
     public bool CompanionsWaiting { get; private set; }
     public bool PartComplete => CurrentStage == Stage.Arrival;
+    public Chapter3RouteGuide FollowGuide {get;private set;}
     public int TrailPoint { get; private set; }
     public int GeneratedReplies { get; private set; }
     public int FallbackReplies { get; private set; }
@@ -186,6 +187,10 @@ public sealed class Chapter3Controller : MonoBehaviour
         CurrentStage=Stage.Departure;player.canMove=false;player.canLook=true;
         yield return Say(bawan,"走吧，跟緊我們。",lineSeconds);
         CurrentStage=Stage.Trail;player.canMove=true;ui.objective.text="跟隨巴萬與比胡走進山林";
+        if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
+        var markedRoute=new Vector3[Mathf.Min(4,trail.Length-1)];
+        for(int i=0;i<markedRoute.Length;i++)markedRoute[i]=trail[i+1];
+        FollowGuide.Show(player.transform.position,markedRoute,player.transform,bawan.transform,p=>Height(p.x,p.z));
         ui.Say("",null);
         // Reach the first large bend, then cut to the outpost. The remaining
         // forest is background scenery; no repeated stops on this short walk.
@@ -194,7 +199,7 @@ public sealed class Chapter3Controller : MonoBehaviour
             TrailPoint=i;
             yield return WalkTo(trail[i]);
         }
-        yield return Gather();player.canMove=false;
+        yield return Gather();FollowGuide.Hide();player.canMove=false;
         yield return Say(bawan,"前面就是駐在所，壓低聲音。",lineSeconds);
         ui.Say("",null);ui.hint.text="";
         for(float t=0;t<1.8f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.8f);yield return null;}
@@ -274,6 +279,7 @@ public sealed class Chapter3Controller : MonoBehaviour
     {requestVersion++;if(imeKeyboard!=null)imeKeyboard.onIMECompositionChange-=Composition;if(dialogue)dialogue.CancelRequest();}
     public void Suspend()
     {
+        if(FollowGuide)FollowGuide.Hide();
         requestVersion++;StopAllCoroutines();if(dialogue)dialogue.CancelRequest();WaitingForReply=false;
         bawan.speaking=pihu.speaking=false;
         if(imeKeyboard!=null)imeKeyboard.onIMECompositionChange-=Composition;imeKeyboard=null;

@@ -25,6 +25,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public Button ChoiceLeave {get;private set;}
     public Chapter3InjuryPose Pose {get;private set;}
     public Chapter3Ending Ending {get;private set;}
+    public Chapter3RouteGuide FollowGuide {get;private set;}
     Chapter3SchoolController school;
     Chapter3SchoolBattle battle;
     Chapter3Player player;
@@ -56,6 +57,8 @@ public sealed class Chapter3Rescue : MonoBehaviour
         CurrentStage=Stage.Advancing;player.speed=2.8f;player.canMove=player.canLook=true;
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.objective.text="與巴萬、比胡、達多沿林路離開學校";
+        if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
+        FollowGuide.Show(player.transform.position,approach,player.transform,school.pihu.transform);
     }
     void Update()
     {
@@ -119,6 +122,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     IEnumerator Injury()
     {
+        FollowGuide.Hide();
         CurrentStage=Stage.Injury;CompanionsWaiting=false;player.canMove=false;player.canLook=true;
         school.pihu.transform.position=InjuryPosition;
         ui.objective.text="比胡受傷了";ui.hint.text="";player.FocusOn(InjuryPosition+Vector3.up*.9f);
@@ -158,6 +162,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         ui.Say("",null);ui.fade.color=Color.clear;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
         if(Selected==Decision.Rescue)Notice(school.bawan.DisplayName,"扶住他，別急。我跟著你們。",3.5f);
         else Notice(school.bawan.DisplayName,"……跟上。別再有人落在後面。",3.5f);
+        if(Selected==Decision.Leave)FollowGuide.Show(player.transform.position,exit,player.transform,school.bawan.transform);
     }
     public bool WorkLift(bool held,float delta)
     {
@@ -169,6 +174,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         Pose.SetSupported(LiftProgress,player.transform);
         if(LiftProgress<1)return false;
         CurrentStage=Stage.Supporting;combat.weapons.Suspend();player.view.fieldOfView=60;player.speed=1.15f;
+        FollowGuide.Show(player.transform.position,exit,player.transform,school.tado.transform);
         supportRight=Vector3.ProjectOnPlane(school.pihu.transform.position-player.transform.position,Vector3.up).normalized;
         if(supportRight.sqrMagnitude<.1f)supportRight=Vector3.right;
         lastPlayerPosition=player.transform.position;SetPihuCollision(false);ui.Say("",null);noticeUntil=0;
@@ -192,6 +198,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     {
         if(!Supporting)return false;
         CurrentStage=Stage.AwaitingLift;LiftProgress=0;Pose.SetSupported(0,player.transform);combat.weapons.gameObject.SetActive(true);player.speed=2.8f;
+        FollowGuide.Hide();
         Notice(school.pihu.DisplayName,"我在這裡等你……",2.5f);return true;
     }
     public void Damage(int amount,Vector3 source)
@@ -201,6 +208,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         if(CurrentStage==Stage.AwaitingLift){LiftProgress=0;Pose.SetSupported(0,player.transform);}
         if(Health>0)return;
         CurrentStage=Stage.Down;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
+        FollowGuide.Hide();
         player.canMove=player.canLook=false;player.view.fieldOfView=60;ui.Say("",null);ui.hint.text="R 從林路檢查點重試";
         Pose.SetSupported(0,player.transform);
         battle.Menu.ShowResult("你受傷倒下了",Selected==Decision.Rescue?"回到比胡受傷處。\n救援選擇與攜帶的武器會保留。\n先處理警察，再扶比胡走向接應處。":"回到林路檢查點。\n留下比胡的選擇與攜帶的武器會保留。",true);
@@ -213,6 +221,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     IEnumerator Handoff()
     {
+        FollowGuide.Hide();
         CurrentStage=Stage.Handoff;player.canMove=false;player.canLook=true;player.speed=2.8f;
         combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;ui.hint.text="";ui.Say("",null);
         if(Selected==Decision.Rescue)
@@ -333,6 +342,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     public void Suspend()
     {
+        if(FollowGuide)FollowGuide.Hide();
         if(Ending)Ending.Suspend();
         StopAllCoroutines();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
         if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);if(shot)shot.Stop();

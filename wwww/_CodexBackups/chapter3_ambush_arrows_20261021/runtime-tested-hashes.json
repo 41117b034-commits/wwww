@@ -1,0 +1,38 @@
+[
+  {
+    "path": "Assets/Chapter3/Chapter3Controller.cs",
+    "hash": "945691F612EE6D9ACC7D80C3C65744718AF9D841EC3F3193CDDF42B40588F8E4"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Rescue.cs",
+    "hash": "17EFC4B984BA48AF6E1E15F5521B934E15E722EE584F52F3AB67A46DEE7A9401"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3RouteGuide.cs",
+    "hash": "85F4D6366B7314559C007186B0022F6E505398EFE71218948F2D90E4F009A24D"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Ambush.cs",
+    "hash": "B07338994D6B781145606D3ACBBF8179AA1ACD32DCC5738CCD8573E086C279D1"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.cs",
+    "hash": "67CB9196F590BEDBA4CA9B3A95A43FA305A1608848EB21ED55F0C2534D2246E4"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolApproach.cs",
+    "hash": "553F1510CE3E480E4514826623D3AB544C5F029439338A4E5E8475A61588E5AA"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolBattle.Cover.cs",
+    "hash": "EB4CF45E7304D731384DF8B29DC27E1175971C8CD5202695C3FDDF658C3ED101"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolBattle.cs",
+    "hash": "B30A493BF801EEA465CC60EBE1B37390053B310C06B587C847D6D8788E7B98D1"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "hash": "F7C8930478401B44E057F4D492E67B3283C2D11E5F64C97B2C3B0710FDB1CD6D"
+  }
+]

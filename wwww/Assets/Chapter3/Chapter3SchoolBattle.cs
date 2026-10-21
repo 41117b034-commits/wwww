@@ -29,6 +29,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     public bool AtCrossing {get;private set;}
     public float WorkProgress {get;private set;}
     public Chapter3MissionUI Menu {get;private set;}
+    public Chapter3RouteGuide FollowGuide {get;private set;}
     public readonly List<Chapter3Enemy> Enemies=new List<Chapter3Enemy>();
     public Chapter3CompanionReaction[] Companions {get;private set;}
     public Transform[] Barricades {get;private set;}
@@ -65,6 +66,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     static readonly Vector3[] eastSquad={P(8,-8),P(25,-4),P(27.5f,7),P(27.5f,14),P(27.5f,24),P(27.5f,30),P(29,37),P(32,43),P(32,53),P(27.5f,54),P(27.5f,60),P(25,68),P(12,74),P(1.6f,78)};
     public void Begin(Chapter3SchoolController owner)
     {
+        if(FollowGuide)FollowGuide.Hide();
         if(Rescue)Rescue.Suspend();
         school=owner;combat=school.flow.combat;player=school.player;ui=school.ui;
         ambient=school.GetComponentInChildren<Chapter3SchoolAmbient>(true);
@@ -114,10 +116,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     IEnumerator Outbreak()
     {
-        ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(0,1.1f,5));
+        ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(0,1.1f,23));
+        if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f);
         if(ambient)ambient.Panic();
         BeginOfficerResponse();
-        for(int i=0;i<3;i++){if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f-i*.10f);yield return new WaitForSeconds(.65f);}
+        for(int i=1;i<3;i++){yield return new WaitForSeconds(.65f);if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f-i*.10f);}
         // Keep the camera on the actual school event, not only on the speaker.
         ui.Say("", "會場遭到襲擊，日本平民也遭到殺害。人群在槍聲與呼喊中四散。");
         yield return new WaitForSeconds(4.5f);ui.Say("",null);
@@ -156,7 +159,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(ammoLabel)ammoLabel.gameObject.SetActive(true);
         combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;combat.weapons.ResetEquipment();
         player.canMove=player.canLook=true;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
-        MoveAmmo();
+        MoveAmmo();RefreshFollowGuide();
         if(Selected==Mission.Pihu&&Step>0)RevealCurrentThreat();
         if(Step>0)Notice(Selected==Mission.Bawan?school.bawan.DisplayName:school.pihu.DisplayName,"從這裡繼續，前一段已經通過了。",3);
     }
@@ -196,6 +199,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     void Fail(string title,string body)
     {
+        if(FollowGuide)FollowGuide.Hide();if(AssaultGuide)AssaultGuide.Hide();
         CurrentStage=Stage.Down;Advancing=Returning=false;ThreatRevealing=false;StopAllCoroutines();StopBreakthrough();ClearSchoolPoses();combat.weapons.Suspend();combat.hud.SetActive(false);
         player.canMove=player.canLook=false;player.view.fieldOfView=60;combat.hurtOverlay.color=Color.clear;ui.Say("",null);ui.hint.text="R 重試目前任務";
         Menu.ShowResult(title,body,true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
@@ -216,6 +220,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         player.view.fieldOfView=60;player.speed=2.8f;ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         activeRoute=Selected==Mission.Tado?new[]{P(0,76)}:Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();
+        if(ambient)ambient.EndSkirmish();RefreshFollowGuide();
         StartCoroutine(Regroup());
     }
     IEnumerator Regroup()
@@ -228,7 +233,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             MoveOtherSquad();ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"跟隨同伴到校後空地 · WASD 移動 · 按住右鍵環視";
             yield return null;
         }
-        player.canMove=false;
+        if(FollowGuide)FollowGuide.Hide();player.canMove=false;
         yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,true);
         yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,true);
         yield return Say(school.tado,Selected==Mission.Tado?"我們這隊撤出會場了，落後的族人也跟上了。先離開學校，沿林路走！":"我帶的人已從會場撤出。先離開學校，沿後面那條林路走！",4.5f,true);
@@ -293,6 +298,16 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             safePihu=checkpointPihu;activeRoute=east[Step];Advancing=Returning=CrossingArrived=false;
             pihuPose.ReportSafe();RevealCurrentThreat();
         }
+        RefreshFollowGuide();
+    }
+    void RefreshFollowGuide()
+    {
+        if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
+        if(Selected==Mission.Tado&&CurrentStage!=Stage.Regroup){FollowGuide.Hide();return;}
+        var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
+        var route=(Vector3[])activeRoute.Clone();
+        if(Selected==Mission.Bawan)for(int i=0;i<route.Length;i++)route[i]+=Vector3.left*1.15f;
+        FollowGuide.Show(player.transform.position,route,player.transform,guide.transform);
     }
     void ClearSchoolPoses(){if(pihuPose)pihuPose.Clear();}
     int DefeatedCount(){int count=0;for(int i=0;i<Enemies.Count;i++)if(i<CheckpointStep||(Enemies[i]&&Enemies[i].Defeated))count++;return count;}
@@ -311,6 +326,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();ClearOfficerStaging();}
     public void Suspend()
     {
+        if(FollowGuide)FollowGuide.Hide();
         if(Rescue)Rescue.Suspend();
         StopAllCoroutines();StopAssault();StopBreakthrough();ClearSchoolPoses();ThreatRevealing=CrossingArrived=false;CurrentStage=Stage.Inactive;ClearEnemies();
         if(combat&&combat.SchoolEncounter==this)combat.SchoolEncounter=null;

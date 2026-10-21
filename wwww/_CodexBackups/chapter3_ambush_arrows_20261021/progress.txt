@@ -1,0 +1,2 @@
+test-tado-leave-knife F8 cleanup
+stage=AwaitingTado step=0 checkpoint=0 health=100 player=(0.000, 0.060, -18.000) Tado=(-4.700, 0.020, -5.000) StragglerPosition=(1.433, 0.000, 75.516) guideIndex=1 stragglerIndex=0 called=False arrived=False playerTadoGap=13.824 tadoStragglerGap=80.750 nearPlayerColliders=[School mountain terrain@(0.00, 0.00, 0.00)]

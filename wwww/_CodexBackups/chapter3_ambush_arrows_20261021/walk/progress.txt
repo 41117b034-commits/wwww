@@ -1,0 +1,2 @@
+test-walk-rifle F8 final cleanup
+region=School combat=Inactive player=(0.00, 0.06, -18.00) route=Chapter3SchoolApproach active=False point=4 waiting=False

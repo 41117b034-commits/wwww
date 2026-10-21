@@ -60,6 +60,10 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     Bounds body;
     float height,phase,walkWeight,lastMovement=-100,fall,strike,startle;
     bool initialized,animated,afraid,waiting,finalFallPoseReady;
+    Vector3 navigationGoal,detourPoint;
+    float bestRemaining,progressAt,nextDetour;
+    bool navigationReady,detouring,waitingAtObstacle;
+    public bool WaitingAtObstacle=>waitingAtObstacle;
     public bool IsRouteCompanion {get;set;}
     public bool IsFallen=>fall>=.999f;
     public bool Posing=>animated;
@@ -324,6 +328,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
+        navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
         foreach(var saved in capsules)if(saved.collider)
         {saved.collider.center=saved.center;saved.collider.height=saved.height;saved.collider.radius=saved.radius;saved.collider.direction=saved.direction;}
     }
@@ -335,18 +340,40 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public bool MoveTowards(Vector3 target,float speed,bool faceTravel=true)
     {
         target.y=transform.position.y;Vector3 delta=target-transform.position;
-        if(delta.sqrMagnitude<.04f)return true;
+        if(delta.sqrMagnitude<.04f){detouring=waitingAtObstacle=false;return true;}
+        if(!navigationReady||(target-navigationGoal).sqrMagnitude>.64f)
+        {
+            navigationReady=true;navigationGoal=target;detouring=waitingAtObstacle=false;
+            bestRemaining=delta.magnitude;progressAt=Time.time;nextDetour=0;
+        }
+        if(delta.magnitude<bestRemaining-.2f){bestRemaining=delta.magnitude;progressAt=Time.time;waitingAtObstacle=false;}
+        // A frightened guest may shelter at a blocked bench. Never perform an
+        // endless left/right walking loop when the intended exit is unreachable.
+        if(!IsRouteCompanion&&Time.time-progressAt>5)waitingAtObstacle=true;
+        if(waitingAtObstacle)
+        {
+            if(!Clear(target))return false;
+            waitingAtObstacle=false;detouring=false;progressAt=Time.time;
+        }
         float distance=Mathf.Min(delta.magnitude,Mathf.Max(0,speed)*Time.deltaTime);
-        Vector3 direction=delta.normalized,next=transform.position+direction*distance;
+        if(detouring&&(detourPoint-transform.position).sqrMagnitude<.04f)detouring=false;
+        if(detouring)distance=Mathf.Min(distance,Vector3.Distance(transform.position,detourPoint));
+        Vector3 direction=(detouring?detourPoint-transform.position:delta).normalized;
+        Vector3 next=transform.position+direction*distance;
         if(!Clear(next))
         {
+            // Retain a chosen bypass until it is reached. Re-evaluating +/-35
+            // degrees every frame used to turn actors back and forth in place.
+            if(Time.time<nextDetour)return false;
+            nextDetour=Time.time+.65f;
             bool found=false;
             foreach(float angle in detours)
             {
-                direction=Quaternion.Euler(0,angle,0)*delta.normalized;next=transform.position+direction*distance;
-                if(Clear(next)){found=true;break;}
+                direction=Quaternion.Euler(0,angle,0)*delta.normalized;
+                var candidate=transform.position+direction*Mathf.Min(1.6f,delta.magnitude);
+                if(Clear(candidate)){detourPoint=candidate;detouring=true;next=Vector3.MoveTowards(transform.position,candidate,distance);found=true;break;}
             }
-            if(!found){if(faceTravel)Face(target);return false;}
+            if(!found)return false;
         }
         transform.position=next;if(faceTravel)Face(next+direction);lastMovement=Time.time;
         phase+=distance/Mathf.Max(.4f,height*Mathf.Abs(transform.lossyScale.y)*.80f)*Mathf.PI*2;
