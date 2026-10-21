@@ -67,22 +67,25 @@ public sealed class Chapter3Weapons : MonoBehaviour
     {
         if(!Ready){NoticeNotReady();return false;}
         if(Selected==Weapon.Knife){Slashes++;swingAt=Time.time;busyUntil=Time.time+.68f;StartCoroutine(Slash());return true;}
+        if(!Loaded){Notice(Reserve>0?"空膛，按 R 裝入一發。":"彈藥用盡，到身後木箱按 E 補給。");busyUntil=Time.time+.25f;return false;}
         var camera=combat.player.view;
         // Bone-following hit zones and moved cover must be in the same physics
         // pose as the most recently rendered frame, even between fixed steps.
         Physics.SyncTransforms();
         bool traced=combat.Trace(camera.transform.position,camera.transform.forward,65,out RaycastHit hit);
-        if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
-        {
-            hit.collider.GetComponentInParent<Chapter3CompanionReaction>().WarnAgainstAttack();
-            Notice("前方是同伴，請移開準星。");busyUntil=Time.time+.4f;return false;
-        }
-        if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
-        {Notice("不要向運動會的人群開槍，沿任務路線前進。",3);busyUntil=Time.time+.4f;return false;}
-        if(!Loaded){Notice(Reserve>0?"空膛，按 R 裝入一發。":"彈藥用盡，到身後木箱按 E 補給。");busyUntil=Time.time+.25f;return false;}
+        // A loaded trigger pull always produces the shot/recoil/ammo response.
+        // Protected people still block the bullet and take no player damage;
+        // they no longer silently cancel the weapon before its firing effects.
         Loaded=false;Shots++;firedAt=Time.time;busyUntil=Time.time+.48f;
         Notice("已射出一發，按 R 裝填。");
         if(audioSource&&shotClip)audioSource.PlayOneShot(shotClip,.65f);
+        if(traced&&hit.collider.GetComponentInParent<Chapter3CompanionReaction>())
+        {
+            hit.collider.GetComponentInParent<Chapter3CompanionReaction>().WarnAgainstAttack();
+            Notice("同伴擋住射線，未擊中警察。移開準星，按 R 裝填。",3);return true;
+        }
+        if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
+        {Notice("人群擋住射線，未擊中警察。移開準星，按 R 裝填。",3);return true;}
         if(traced)
         {
             var enemy=hit.collider.GetComponentInParent<Chapter3Enemy>();

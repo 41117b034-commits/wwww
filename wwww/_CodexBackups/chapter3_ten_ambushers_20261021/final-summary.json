@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21T17:25:17.6214691+08:00",
+  "scene": "Assets/Scenes/第三章.unity",
+  "reports": 3,
+  "checks": 1182.0,
+  "allCompleted": true,
+  "errors": 0.0,
+  "warnings": 0.0,
+  "runtimeFiles": 5,
+  "protectedFiles": 5,
+  "allHashesMatch": true,
+  "temporaryProbeFilesRemaining": 0,
+  "cleanupCompiled": true,
+  "cleanupReloaded": true,
+  "cleanupHasCSharpErrors": false,
+  "audit": [
+    "scene=Assets/Scenes/第三章.unity",
+    "dirty=False",
+    "playing=False",
+    "compileFailed=False",
+    "missingScripts=0",
+    "missingMeshes=0",
+    "missingSkinnedMeshes=0"
+  ],
+  "commitPushBuildPerformed": false,
+  "validation": "Editor Play Mode, Input System mouse/keyboard events, real CharacterController, officer hold-fire fixtures during observations. No human end-to-end controls, headset, standalone or ending replay."
+}

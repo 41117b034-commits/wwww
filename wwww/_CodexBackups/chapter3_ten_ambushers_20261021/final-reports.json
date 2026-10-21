@@ -1,0 +1,50 @@
+[
+  {
+    "mode": "test-ten-bawan",
+    "completed": true,
+    "checks": 387,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 181.29591369628906,
+    "observations": [
+      "Editor driver evidence only: input events use a cloned InputSettings, walking uses Chapter3Player.Move/CharacterController, aiming uses FocusOn and attacks use actual weapon.Attack. Not native keyboard, standalone Player or headset evidence.",
+      "Actual Bawan player (-26.97, 0.01, 7.92) unobstructed attackers=9",
+      "Final staged aftermath adults=10 children=10",
+      "Live guard aim: clear Hit zone · Left forearm Body from (-27.000, 1.665, 12.900); earlier blockers=[]",
+      "Live guard aim: clear Hit zone · Right upper arm Body from (-26.503, 1.665, 42.958); earlier blockers=[校內埋伏的族人 9 zone=none enemy=none]",
+      "Legacy regression covers both real guards, both authored interactions, new independent Tado route, actual regroup and natural Rescue.Advancing then F8. Legacy rescue and ending are not replayed."
+    ]
+  },
+  {
+    "mode": "test-ten-pihu",
+    "completed": true,
+    "checks": 383,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 209.69505310058594,
+    "observations": [
+      "Editor driver evidence only: input events use a cloned InputSettings, walking uses Chapter3Player.Move/CharacterController, aiming uses FocusOn and attacks use actual weapon.Attack. Not native keyboard, standalone Player or headset evidence.",
+      "Actual Pihu player (27.45, 0.01, 7.77) unobstructed attackers=9",
+      "Final staged aftermath adults=10 children=10",
+      "Live guard aim: clear Hit zone · Torso Body from (27.500, 1.665, 27.189); earlier blockers=[]",
+      "Live guard aim: clear Hit zone · Torso Body from (32.967, 1.824, 51.243); earlier blockers=[]",
+      "Legacy regression covers both real guards, both authored interactions, new independent Tado route, actual regroup and natural Rescue.Advancing then F8. Legacy rescue and ending are not replayed."
+    ]
+  },
+  {
+    "mode": "test-ten-tado",
+    "completed": true,
+    "checks": 412,
+    "errors": 0,
+    "warnings": 0,
+    "elapsed": 178.69300842285156,
+    "observations": [
+      "Editor driver evidence only: input events use a cloned InputSettings, walking uses Chapter3Player.Move/CharacterController, aiming uses FocusOn and attacks use actual weapon.Attack. Not native keyboard, standalone Player or headset evidence.",
+      "Friend shot input result: shots=0 -> 1 loaded=False feedback=同伴擋住射線，未擊中警察。移開準星，按 R 裝填。",
+      "Actual Tado player (-4.00, 0.01, 8.00) unobstructed attackers=5",
+      "Final staged aftermath adults=10 children=10",
+      "Live guard aim: clear Hit zone · Torso Body from (-4.000, 1.665, 8.000); earlier blockers=[]",
+      "Live guard aim: clear Hit zone · Left forearm Body from (-5.000, 1.665, 14.000); earlier blockers=[]"
+    ]
+  }
+]

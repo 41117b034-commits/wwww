@@ -18,16 +18,9 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     CrowdPhase[] crowdPhases,runnerPhases;
     SpectatorKind[] spectatorKinds;
     float[] reactionDelays,flightDelays,runnerReactionDelays,runnerFlightDelays;
-    readonly Chapter3SchoolCrowdActor[] assailants=new Chapter3SchoolCrowdActor[3];
-    readonly int[] assailantSteps=new int[3];
-    readonly Vector3[] assaultStarts={new Vector3(-11,0,12),new Vector3(13,0,18),new Vector3(-12,0,32)};
-    readonly Vector3[][] assaultRoutes={
-        new[]{new Vector3(-9,0,15),new Vector3(-5,0,23),new Vector3(1.5f,0,26)},
-        new[]{new Vector3(12,0,21),new Vector3(9,0,26),new Vector3(4.5f,0,27)},
-        new[]{new Vector3(-11,0,30),new Vector3(-10,0,30),new Vector3(-9,0,30.5f)}};
-    readonly Vector3[] aftermathPoints={new Vector3(3,0,27),new Vector3(-9,0,32)};
-    readonly int[] casualties={-1,-1};
-    readonly float[] fallBegan={-1,-1};
+    public const int AmbusherCount=10;
+    readonly Chapter3SchoolCrowdActor[] assailants=new Chapter3SchoolCrowdActor[AmbusherCount];
+    readonly Vector3[] assaultStarts=new Vector3[AmbusherCount];
     Chapter3SchoolCrowdActor straggler;
     float panicBegan;
     bool initialized;
@@ -50,9 +43,18 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     }
     public int FallenAdults
     {
-        get{int count=0;foreach(int index in casualties)if(index>=0&&crowd[index]&&crowd[index].IsFallen)count++;return count;}
+        get{return CountFallen(SpectatorKind.Guest);}
     }
-    public bool AftermathVisible=>Panicking&&FallenAdults==2;
+    public int FallenChildren=>CountFallen(SpectatorKind.Child);
+    public int JapaneseAdults=>10;
+    public int JapaneseChildren=>10;
+    public bool AftermathVisible=>Panicking&&FallenAdults>=2&&FallenChildren>=2;
+    int CountFallen(SpectatorKind kind)
+    {
+        int count=0;if(crowd!=null)for(int i=0;i<crowd.Length;i++)
+            if(spectatorKinds[i]==kind&&crowd[i]&&crowd[i].IsFallen)count++;
+        return count;
+    }
     int CountPhase(CrowdPhase phase)
     {
         int count=0;if(crowdPhases!=null)for(int i=0;i<crowdPhases.Length;i++)
@@ -71,11 +73,16 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         if(initialized)return;initialized=true;
         spectators=spectators??new Transform[0];runners=runners??new Chapter2Actor[0];
         runningTrack=runningTrack??new Vector3[0];
+        Transform template=PreparePopulation();
+        // The authored running lane crossed the entrance equipment table.
+        // Keep both pupils in the open track before the signal and handoff.
+        runningTrack=new[]{new Vector3(-4,0,14),new Vector3(-4,0,32),new Vector3(-2.4f,0,32),new Vector3(-2.4f,0,14)};
+        for(int i=0;i<runners.Length;i++)if(runners[i])runners[i].transform.position=runningTrack[(i*2)%runningTrack.Length];
         rotations=new Quaternion[spectators.Length];homes=new Vector3[spectators.Length];
         activeHomes=new bool[spectators.Length];escapePoints=new Vector3[spectators.Length];hesitationPoints=new Vector3[spectators.Length];crowd=new Chapter3SchoolCrowdActor[spectators.Length];
         crowdPhases=new CrowdPhase[spectators.Length];spectatorKinds=new SpectatorKind[spectators.Length];
         reactionDelays=new float[spectators.Length];flightDelays=new float[spectators.Length];
-        Transform template=null;int leftSlot=0,rightSlot=0;
+        int leftSlot=0,rightSlot=0;
         var school=GetComponentInParent<Chapter3SchoolController>();
         Chapter2Actor nativeSource=school?school.bawan:null;
         for(int i=0;i<spectators.Length;i++)
@@ -99,17 +106,6 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             int slot=activeHomes[i]?(side<0?leftSlot++:rightSlot++):0;
             escapePoints[i]=new Vector3(side*(17.2f+(slot%2)*1.1f),0,7+slot*3.5f);
         }
-        for(int eventIndex=0;eventIndex<casualties.Length;eventIndex++)
-        {
-            float closest=float.PositiveInfinity;
-            for(int i=0;i<spectators.Length;i++)
-            {
-                // Only authored adult guests; schoolchildren are never chosen.
-                if(!spectators[i]||!spectators[i].name.Contains("觀賽婦人")||i==casualties[0])continue;
-                float distance=(homes[i]-aftermathPoints[eventIndex]).sqrMagnitude;
-                if(distance<closest){closest=distance;casualties[eventIndex]=i;}
-            }
-        }
         waypoint=new int[runners.Length];motors=new Chapter3PathMotor[runners.Length];
         runnerPhases=new CrowdPhase[runners.Length];runnerReactionDelays=new float[runners.Length];runnerFlightDelays=new float[runners.Length];
         runnerHomes=new Vector3[runners.Length];runnerRotations=new Quaternion[runners.Length];
@@ -122,11 +118,14 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         }
         if(template)
         {
-            Material wood=FindWood();
+            template.gameObject.SetActive(true);
+            Chapter3SchoolCrowdActor.AttachTo(template,nativeSource);
+            template.gameObject.SetActive(false);
             for(int i=0;i<assailants.Length;i++)
             {
                 assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1));
-                assailants[i].transform.position=assaultStarts[i];AddBambooSpear(assailants[i],wood);
+                assaultStarts[i]=Pocket(i)+Vector3.back*2.6f;
+                assailants[i].transform.position=assaultStarts[i];AddKnife(assailants[i],school);
                 assailants[i].gameObject.SetActive(false);
             }
             straggler=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"運動場邊落後的族人");
@@ -135,27 +134,9 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         }
         ConfigureSkirmish();
     }
-    Material FindWood()
-    {
-        var school=GetComponentInParent<Chapter3SchoolController>();
-        if(!school)return null;
-        foreach(var renderer in school.GetComponentsInChildren<Renderer>(true))
-            foreach(var material in renderer.sharedMaterials)
-                if(material&&material.name=="School structural timber")return material;
-        return null;
-    }
-    static void AddBambooSpear(Chapter3SchoolCrowdActor actor,Material material)
-    {
-        if(!actor.RightHand||!material)return;
-        var spear=GameObject.CreatePrimitive(PrimitiveType.Cylinder);spear.name="族人竹槍 · 演出用無傷害";
-        var collider=spear.GetComponent<Collider>();collider.enabled=false;Destroy(collider);
-        actor.AttachPresentationSpear(spear.transform);
-        spear.GetComponent<Renderer>().sharedMaterial=material;
-    }
     public void ResetCalm()
     {
         Initialize();Panicking=false;panicBegan=0;PanicOrigin=Vector3.zero;ResetSkirmish();
-        for(int i=0;i<fallBegan.Length;i++)fallBegan[i]=-1;
         for(int i=0;i<spectators.Length;i++)if(spectators[i])
         {
             crowdPhases[i]=CrowdPhase.Calm;reactionDelays[i]=flightDelays[i]=0;hesitationPoints[i]=homes[i];
@@ -164,13 +145,14 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         }
         for(int i=0;i<runners.Length;i++)if(runners[i])
         {
+            runners[i].gameObject.SetActive(true);
             runnerPhases[i]=CrowdPhase.Calm;runnerReactionDelays[i]=runnerFlightDelays[i]=0;
             runners[i].transform.SetPositionAndRotation(runnerHomes[i],runnerRotations[i]);
             runners[i].facing=runnerRotations[i]*Vector3.forward;motors[i].Reset();
             waypoint[i]=runningTrack.Length>0?i%runningTrack.Length:0;
         }
         for(int i=0;i<assailants.Length;i++)if(assailants[i])
-        {assailants[i].ResetPose();assailants[i].gameObject.SetActive(false);assailants[i].transform.SetPositionAndRotation(assaultStarts[i],Quaternion.identity);assailantSteps[i]=0;}
+        {assailants[i].ResetPose();assailants[i].gameObject.SetActive(false);assailants[i].transform.SetPositionAndRotation(assaultStarts[i],Quaternion.identity);}
         HideStraggler();
     }
     public void Panic()
@@ -179,8 +161,9 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     {
         Initialize();if(Panicking)return;
         Panicking=true;panicBegan=Time.time;PanicOrigin=origin;
+        SwitchRunningPupils();
         // These actors already occupy separate positions INSIDE the school.
-        // One signal releases all three in the same frame, on every route.
+        // One signal releases all ten in the same frame, on every route.
         AmbushSignalFrame=Time.frameCount;skirmishActive=true;
         foreach(var actor in assailants)if(actor){actor.gameObject.SetActive(true);actor.SetAnimated(true);}
         // Staged perception is a gameplay presentation, not a reconstruction
@@ -212,6 +195,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         foreach(var actor in assailants)if(actor)Destroy(actor.gameObject);
         if(straggler)Destroy(straggler.gameObject);
         if(crowd!=null)foreach(var actor in crowd)if(actor)Destroy(actor);
+        ReleasePopulation();
     }
     public void ResetStraggler(Vector3 position)
     {
@@ -229,7 +213,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         if(Panicking)UpdateAssault();
         for(int i=0;i<runners.Length;i++)
         {
-            if(!runners[i])continue;
+            if(!runners[i]||!runners[i].gameObject.activeInHierarchy)continue;
             if(runners[i].Rig)runners[i].Rig.smoothLocomotion=true;
             if(Panicking&&AssaultElapsed>=runnerReactionDelays[i])
             {
@@ -275,21 +259,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             if(crowdPhases[i]==CrowdPhase.Reacting)
             {crowdPhases[i]=CrowdPhase.Fleeing;actor.SetStartled(0);actor.SetAfraid(true);}
             if(UpdateSkirmishGuest(i))continue;
-            int eventIndex=i==casualties[0]?0:i==casualties[1]?1:-1;
-            if(eventIndex>=0)
-            {
-                bool arrived=actor.MoveTowards(aftermathPoints[eventIndex],2.8f);
-                bool incursionArrived=eventIndex==0?assailantSteps[0]>=3||assailantSteps[1]>=3:assailantSteps[2]>=3;
-                if(arrived&&incursionArrived&&elapsed>=7.6f+eventIndex*2.4f)
-                {
-                    // A blocked guest still performs the full collapse after
-                    // arriving; the shared outbreak clock must not skip it.
-                    if(fallBegan[eventIndex]<0)fallBegan[eventIndex]=Time.time;
-                    actor.SetFall((Time.time-fallBegan[eventIndex])/1.7f);
-                    crowdPhases[i]=actor.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
-                }
-            }
-            else actor.MoveTowards(escapePoints[i],2.3f+(i%3)*.25f);
+            actor.MoveTowards(escapePoints[i],2.3f+(i%3)*.25f);
         }
     }
 }

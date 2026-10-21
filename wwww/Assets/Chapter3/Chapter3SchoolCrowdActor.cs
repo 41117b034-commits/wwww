@@ -54,7 +54,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     readonly List<SkinnedMeshRenderer> nativeSkins=new List<SkinnedMeshRenderer>();
     Chapter2Actor nativeTemplate;
     Chapter1IncidentRig nativeRig;
-    Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear;
+    Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
     Vector3 nativePrevious;
     Transform boneRoot;
     Bounds body;
@@ -212,6 +212,13 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         presentationSpear=spear;spear.SetParent(transform,false);
         float worldHeight=height*Mathf.Abs(transform.lossyScale.y);Vector3 scale=transform.lossyScale;
         spear.localScale=new Vector3(worldHeight*.015f/scale.x,worldHeight*.50f/scale.y,worldHeight*.015f/scale.z);
+    }
+    public void AttachPresentationKnife(Transform knife)
+    {
+        presentationKnife=knife;knife.SetParent(transform,false);
+        // Keep the existing handheld knife's world size regardless of the
+        // crowd template's authored scale.
+        var scale=transform.lossyScale;knife.localScale=new Vector3(1/scale.x,1/scale.y,1/scale.z);
     }
     void Update()
     {
@@ -440,6 +447,12 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
                 Vector3 direction=Vector3.Slerp(Vector3.up,nativeRig.Forward,strike>0?.3f+.35f*Mathf.Sin(strike*Mathf.PI):.18f);
                 presentationSpear.SetPositionAndRotation(nativeRig.RightHand.position+direction*nativeRig.Height*.20f,Quaternion.FromToRotation(Vector3.up,direction));
             }
+            if(presentationKnife&&nativeRig.RightHand)
+            {
+                float cut=strike>0?Mathf.Sin(strike*Mathf.PI):0;
+                Vector3 direction=Vector3.Slerp(Vector3.up,nativeRig.Forward*.7f-Vector3.up*.7f,cut);
+                presentationKnife.SetPositionAndRotation(nativeRig.RightHand.position,Quaternion.LookRotation(Vector3.Cross(Vector3.up,nativeRig.Forward),direction));
+            }
             return;
         }
         // Finished background casualties retain the already-verified final
@@ -503,6 +516,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         for(int i=0;i<nativeOriginals.Count;i++)if(nativeOriginals[i])nativeOriginals[i].enabled=nativeOriginalEnabled[i];
         if(nativeRoot)Destroy(nativeRoot.gameObject);
         if(presentationSpear)Destroy(presentationSpear.gameObject);
+        if(presentationKnife)Destroy(presentationKnife.gameObject);
         foreach(var part in parts)
         {
             if(part.original)part.original.enabled=part.originalEnabled;
