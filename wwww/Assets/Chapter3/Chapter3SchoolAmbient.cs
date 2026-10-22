@@ -136,7 +136,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     }
     public void ResetCalm()
     {
-        Initialize();Panicking=false;panicBegan=0;PanicOrigin=Vector3.zero;ResetSkirmish();
+        Initialize();CancelWithdrawal();Panicking=false;panicBegan=0;PanicOrigin=Vector3.zero;ResetSkirmish();
         for(int i=0;i<spectators.Length;i++)if(spectators[i])
         {
             crowdPhases[i]=CrowdPhase.Calm;reactionDelays[i]=flightDelays[i]=0;hesitationPoints[i]=homes[i];
@@ -211,6 +211,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     {
         if(!initialized)Initialize();
         if(Panicking)UpdateAssault();
+        UpdateWithdrawal();
         for(int i=0;i<runners.Length;i++)
         {
             if(!runners[i]||!runners[i].gameObject.activeInHierarchy)continue;

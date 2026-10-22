@@ -66,6 +66,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     bool navigationReady,detouring,waitingAtObstacle;
     public bool WaitingAtObstacle=>waitingAtObstacle;
     public bool IsRouteCompanion {get;set;}
+    public bool FollowingWithdrawal {get;set;}
     public bool IsFallen=>fall>=.999f;
     public bool Posing=>animated;
     public float StartleWeight=>startle;
@@ -393,6 +394,17 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         transform.position=next;if(faceTravel)Face(next+direction);lastMovement=Time.time;
         phase+=distance/Mathf.Max(.4f,height*Mathf.Abs(transform.lossyScale.y)*.80f)*Mathf.PI*2;
         return (target-next).sqrMagnitude<arrivalSquared;
+    }
+    // Follow the shared static-obstacle planner, but still yield to actual
+    // people at each proposed step. Never choose a new side every frame.
+    internal bool StepAlongWithdrawal(Vector3 next)
+    {
+        if(!FollowingWithdrawal||!Clear(next))return false;
+        Vector3 delta=next-transform.position;float distance=delta.magnitude;
+        if(distance<.00001f)return true;
+        transform.position=next;Face(next+delta.normalized);lastMovement=Time.time;
+        phase+=distance/Mathf.Max(.4f,height*Mathf.Abs(transform.lossyScale.y)*.80f)*Mathf.PI*2;
+        return true;
     }
     bool Clear(Vector3 next)
     {

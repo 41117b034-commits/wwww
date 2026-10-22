@@ -1,13 +1,18 @@
 using UnityEngine;
 
 // A third playable responsibility inside the same school: enter the event,
-// advance with Tado, then call a separated ally back and withdraw together.
+// advance with Tado, then signal every participant to withdraw together.
 public sealed partial class Chapter3SchoolBattle
 {
-    public bool StragglerCalled { get; private set; }
-    public bool StragglerArrived => StragglerCalled && ambient && ambient.Straggler
-        && Flat(ambient.Straggler.position, P(0, 75)) < 3;
-    public Vector3 StragglerPosition => ambient && ambient.Straggler ? ambient.Straggler.position : P(12, 32);
+    public bool RetreatCalled { get; private set; }
+    public bool RetreatArrived => RetreatCalled && ambient && ambient.WithdrawalArrived;
+    public int RetreatArrivedCount => ambient ? ambient.WithdrawalArrivedCount : 0;
+    public int RetreatSignalCount {get;private set;}
+    public AudioSource RetreatSignalSource => retreatSignal;
+    // Keep the earlier public mission queries compatible with saved tooling.
+    public bool StragglerCalled => RetreatCalled;
+    public bool StragglerArrived => RetreatArrived;
+    public Vector3 StragglerPosition => P(12,32);
     public Vector3 AssaultObjective => Step == 2 && !StragglerCalled ? StragglerPosition
         : activeRoute != null && activeRoute.Length > 0 ? activeRoute[activeRoute.Length - 1] : P(0, 76);
     public Vector3[] AssaultWaypoints => Step == 2 && !StragglerCalled ? new[] { StragglerPosition } : activeRoute;
@@ -28,8 +33,9 @@ public sealed partial class Chapter3SchoolBattle
         && otherEscortIndex >= (Selected == Mission.Tado ? eastSquad.Length : assaultBackgroundRoute.Length);
 
     Transform assaultProps;
-    int stragglerIndex;
     float nextAssaultCall;
+    AudioSource retreatSignal;
+    AudioClip retreatWhistle;
 
     void ResetAssaultMission(bool preserveArrival=false)
     {
@@ -38,7 +44,7 @@ public sealed partial class Chapter3SchoolBattle
         Step = CheckpointStep; guideIndex = 0;
         Health = 100; EscortPressure = 0; WorkProgress = 0; hurtAt = -10; noticeUntil = 0;
         AtCrossing = Advancing = Returning = ThreatRevealing = CrossingArrived = false;
-        StragglerCalled = false; stragglerIndex = 0; nextAssaultCall = 0;
+        RetreatCalled = false; nextAssaultCall = 0;
         scenery.gameObject.SetActive(true); ResetBreakthrough(CheckpointStep);
         BuildAssaultProps(); assaultProps.gameObject.SetActive(true);
 
@@ -94,8 +100,7 @@ public sealed partial class Chapter3SchoolBattle
         if (!AssaultGuide) AssaultGuide = gameObject.AddComponent<Chapter3RouteGuide>();
         if (Step == 2 && ambient)
         {
-            ambient.ResetStraggler(P(12,32)); ambient.SetStragglerWaiting(true);
-            AssaultGuide.Show(player.transform.position,new[] { P(12,32) },player.transform,ambient.Straggler);
+            ambient.HideStraggler();AssaultGuide.Hide();
         }
         else
         {
@@ -120,62 +125,64 @@ public sealed partial class Chapter3SchoolBattle
             return;
         }
 
-        ui.objective.text = "收攏同伴，一起撤到校後";
+        ui.objective.text = RetreatCalled ? "帶全體族人撤出學校，到校後集合" : "發出撤退信號，帶全體族人撤到校後";
         if (!StragglerCalled)
         {
-            school.tado.Face(StragglerPosition);
+            school.tado.Face(player.transform.position);
             if (Time.time >= nextAssaultCall)
             {
                 nextAssaultCall = Time.time + 12;
-                Notice(school.tado.DisplayName,"還有一個人落在那邊！靠近叫他跟上，我們一起從校舍旁撤出去。",5);
+                Notice(school.tado.DisplayName,"吹哨叫大家撤退！把會場裡的人都帶走，我們從校舍旁退出去。",5);
             }
-            ui.hint.text = Flat(player.transform.position,StragglerPosition) <= 3 ? "E 叫落後族人跟上" : "沿黃色箭頭靠近落後族人，再按 E";
-            combat.combatText.text = "先收攏同伴，再一起撤出";
-            if (player.ActionPressed && Flat(player.transform.position,Ammo.position) >= 2) CallStraggler();
+            ui.hint.text = "E 吹口哨，通知所有族人撤退";
+            combat.combatText.text = "發出信號後，全體族人會停手並跟隊撤出";
+            if (player.ActionPressed) CallRetreat();
             return;
         }
 
-        // Tado waits for both the player and the separated ally. Do not strand
-        // the ally at a corner or let the stage complete just by running ahead.
-        bool allyClose = Flat(school.tado.transform.position,StragglerPosition) < 6;
-        if (allyClose) MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
-        else school.tado.Face(StragglerPosition);
-        MoveAssaultStraggler();
-        ui.hint.text = "跟隨達多撤出 · 同伴落後時會等候 · WASD 移動";
-        combat.combatText.text = StragglerArrived ? "同伴已到校後安全位置" : "落後族人已跟上 · 帶他一起到校後";
+        bool catchingUp=ambient.WithdrawalNeedsCatchup(school.tado.transform.position);
+        if (!catchingUp) MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
+        else school.tado.Face(player.transform.position);
+        ui.hint.text = catchingUp ? "族人正在跟上，稍等大家再一起走 · WASD 移動" : "沿黃色箭頭與達多撤出 · 全體族人跟隨 · WASD 移動";
+        combat.combatText.text = RetreatArrived ? "校內族人已全數撤到校後" : "族人到達校後  "+RetreatArrivedCount+" / "+Chapter3SchoolAmbient.AmbusherCount;
         if (guideIndex >= activeRoute.Length && StragglerArrived && Flat(player.transform.position,P(0,76)) < 4)
         {
             Step = CheckpointStep = 3; AssaultGuide.Hide();
-            ambient.SetStragglerWaiting(true); StartRegroup();
+            StartRegroup();
         }
     }
 
-    public bool CallStraggler()
+    public bool CallStraggler()=>CallRetreat();
+    public bool CallRetreat()
     {
         if (!Fighting || Selected != Mission.Tado || Step != 2 || StragglerCalled
-            || !ambient || !ambient.Straggler || Flat(player.transform.position,StragglerPosition) > 3) return false;
-        StragglerCalled = true; stragglerIndex = guideIndex = 0; guideMotor.Reset();
-        ambient.SetStragglerWaiting(false);
+            || !ambient || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
+        if(!ambient.BeginWithdrawal(player.transform))return false;
+        RetreatCalled = true; guideIndex = 0; guideMotor.Reset();
+        PlayRetreatWhistle();
         AssaultGuide.Show(player.transform.position,activeRoute,player.transform,school.tado.transform);
-        Notice("族人","我在這裡！我跟你們一起走。",3.5f);
+        Notice("你","（口哨聲）大家撤退！跟上我們，到校後集合！",4.5f);
         return true;
     }
 
-    void MoveAssaultStraggler()
+    void PlayRetreatWhistle()
     {
-        if (!ambient || !ambient.Straggler || stragglerIndex >= activeRoute.Length) return;
-        if (stragglerIndex > guideIndex) return;
-        Vector3 current = ambient.Straggler.position;
-        float separation = Flat(current,school.tado.transform.position);
-        if (separation <= 1.4f) { ambient.SetStragglerWaiting(true); return; }
-        Vector3 target = activeRoute[stragglerIndex];
-        // Yield to the player's body, while keeping the authored route intact.
-        if (Flat(current,player.transform.position) < 1.2f
-            && Vector3.Dot(target-current,player.transform.position-current) > 0)
-        { ambient.SetStragglerWaiting(true); return; }
-        ambient.SetStragglerWaiting(false);
-        ambient.MoveStraggler(target,Mathf.Min(3,Mathf.Max(0,separation-1.4f)/Mathf.Max(Time.deltaTime,.0001f)));
-        if (Flat(ambient.Straggler.position,target) < .25f) stragglerIndex++;
+        if(!retreatSignal){retreatSignal=gameObject.AddComponent<AudioSource>();retreatSignal.playOnAwake=false;retreatSignal.spatialBlend=0;retreatSignal.volume=.65f;}
+        if(!retreatWhistle)
+        {
+            const int rate=22050;var samples=new float[(int)(rate*1.6f)];
+            for(int i=0;i<samples.Length;i++)
+            {
+                float t=i/(float)rate,start=t<.3f?0:t<.65f?.38f:.76f;
+                float duration=start<.7f?.24f:.68f,u=t-start;
+                if(u<0||u>=duration)continue;
+                float envelope=Mathf.Min(1,u/.025f)*Mathf.Min(1,(duration-u)/.06f);
+                float phase=2*Mathf.PI*(1850*u+22*u*u+.18f*Mathf.Sin(2*Mathf.PI*12*u));
+                samples[i]=.35f*envelope*(Mathf.Sin(phase)+.12f*Mathf.Sin(phase*2));
+            }
+            retreatWhistle=AudioClip.Create("全員撤退 · 兩短一長口哨",samples.Length,1,rate,false);retreatWhistle.SetData(samples,0);
+        }
+        retreatSignal.PlayOneShot(retreatWhistle);RetreatSignalCount++;
     }
 
     void AdvanceAssaultStage()
@@ -189,7 +196,7 @@ public sealed partial class Chapter3SchoolBattle
         guideIndex = 0; guideMotor.Reset();
         activeRoute = Step < 2 ? assaultApproach[Step] : assaultWithdrawal;
         PrepareAssaultStage();
-        Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : "準備撤出！先把落後的族人叫過來。",4);
+        Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : "準備撤出！吹哨叫所有人跟我們一起走。",4);
     }
 
     Vector3 ConstrainAssault(Vector3 current,Vector3 desired)
@@ -204,6 +211,8 @@ public sealed partial class Chapter3SchoolBattle
     {
         if (AssaultGuide) AssaultGuide.Hide();
         if (ambient) ambient.HideStraggler();
-        StragglerCalled = false; stragglerIndex = 0;
+        if(ambient)ambient.CancelWithdrawal(CurrentStage==Stage.Down);
+        if(retreatSignal)retreatSignal.Stop();
+        RetreatCalled = false;RetreatSignalCount=0;
     }
 }

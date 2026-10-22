@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-22",
+  "reports": [
+    {
+      "mode": "test-retreat-rifle",
+      "completed": true,
+      "checks": 399,
+      "errors": 0,
+      "warnings": 0,
+      "restoredPlayerPrefs": true
+    },
+    {
+      "mode": "test-retreat-knife",
+      "completed": true,
+      "checks": 386,
+      "errors": 0,
+      "warnings": 0,
+      "restoredPlayerPrefs": true
+    },
+    {
+      "mode": "test-retreat-reset",
+      "completed": true,
+      "checks": 387,
+      "errors": 0,
+      "warnings": 0,
+      "restoredPlayerPrefs": true
+    }
+  ],
+  "totalChecks": 1172.0,
+  "runtimeMatches": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "toolsRemaining": 0,
+  "cleanupCompilationSuccess": true,
+  "protectedUnchangedCount": 8,
+  "intentionalPreviouslyProtectedChange": "Chapter3SchoolCrowdActor.cs - retreat step collision",
+  "validation": "Editor driver and synthetic Input System input; no native keyboard, listening, VR or standalone claim",
+  "commitOrPush": false
+}

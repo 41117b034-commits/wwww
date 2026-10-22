@@ -236,7 +236,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(FollowGuide)FollowGuide.Hide();player.canMove=false;
         yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,true);
         yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,true);
-        yield return Say(school.tado,Selected==Mission.Tado?"我們這隊撤出會場了，落後的族人也跟上了。先離開學校，沿林路走！":"我帶的人已從會場撤出。先離開學校，沿後面那條林路走！",4.5f,true);
+        yield return Say(school.tado,Selected==Mission.Tado?"大家都撤出會場了，一個也沒落下。先離開學校，沿林路走！":"我帶的人已從會場撤出。先離開學校，沿後面那條林路走！",4.5f,true);
         CurrentStage=Stage.Complete;ClearEnemies();Menu.Hide();
         if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
         Rescue.Begin(school,this);
@@ -276,6 +276,8 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             return;
         }
         bool playerAhead=Vector3.Dot(toPlayer,target-actor.transform.position)>0;
+        if(Selected==Mission.Tado&&RetreatCalled&&Step==2&&actor==school.tado)
+            playerAhead=player.transform.position.z>=actor.transform.position.z-1.5f;
         if(waitForPlayer&&toPlayer.magnitude>8&&!playerAhead){actor.Face(player.transform.position);return;}
         float speed=waitForPlayer?(playerAhead&&toPlayer.magnitude>5?3.1f:2.1f):2.9f;
         motor.Move(actor,target,Mathf.Min(speed,maxSpeed));
@@ -333,7 +335,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(Menu)Menu.Hide();if(scenery)scenery.gameObject.SetActive(false);
         if(distantShots)distantShots.Stop();if(ambient)ambient.ResetCalm();
     }
-    void OnDestroy(){if(Menu)Destroy(Menu.gameObject);}
+    void OnDestroy(){if(Menu)Destroy(Menu.gameObject);if(retreatWhistle)Destroy(retreatWhistle);}
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
         if(Rescue&&Rescue.Active)return Rescue.Constrain(current,desired);

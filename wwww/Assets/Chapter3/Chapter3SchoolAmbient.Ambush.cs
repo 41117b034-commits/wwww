@@ -120,9 +120,9 @@ public sealed partial class Chapter3SchoolAmbient
             crowdPhases[index]=guest.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
             return true;
         }
-        if(index>=14)
+        if(index>=14||Withdrawing)
         {
-            var route=escapeRoutes[index-14];
+            var route=escapeRoutes[index>=14?index-14:index%escapeRoutes.Length];
             if(escapeLeg[index]<route.Length)
             {
                 crowdPhases[index]=CrowdPhase.Fleeing;

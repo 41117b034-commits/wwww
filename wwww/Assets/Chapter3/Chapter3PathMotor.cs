@@ -18,7 +18,8 @@ public sealed class Chapter3PathMotor
     readonly Dictionary<Vector2Int,Vector2Int> parent=new Dictionary<Vector2Int,Vector2Int>();
     Vector3 goal,searchStart,searchTarget,origin;
     Vector2Int first,last;
-    Chapter2Actor boundActor;
+    Transform boundActor;
+    Chapter3SchoolCrowdActor boundCrowd;
     int width,height,iterations;
     bool searching;
     float nextPlan;
@@ -28,7 +29,7 @@ public sealed class Chapter3PathMotor
 
     public void Reset()
     {
-        path.Clear();CancelSearch();goal=Vector3.zero;nextPlan=0;boundActor=null;
+        path.Clear();CancelSearch();goal=Vector3.zero;nextPlan=0;boundActor=null;boundCrowd=null;
     }
 
     void CancelSearch()
@@ -45,12 +46,19 @@ public sealed class Chapter3PathMotor
     }
 
     public void Move(Chapter2Actor actor,Vector3 target,float speed,float stoppingDistance=.08f)
+    {MoveRoot(actor?actor.transform:null,actor,null,target,speed,stoppingDistance);}
+
+    public void Move(Chapter3SchoolCrowdActor actor,Vector3 target,float speed,float stoppingDistance=.08f)
+    {MoveRoot(actor?actor.transform:null,null,actor,target,speed,stoppingDistance);}
+
+    void MoveRoot(Transform root,Chapter2Actor actor,Chapter3SchoolCrowdActor crowd,Vector3 target,float speed,float stoppingDistance)
     {
         using var sample=MoveMarker.Auto();
-        if(!actor||!actor.gameObject.activeInHierarchy){Reset();return;}
-        if(boundActor!=actor){Reset();boundActor=actor;}
+        if(!root||!root.gameObject.activeInHierarchy){Reset();return;}
+        if(boundActor!=root){Reset();boundActor=root;}
+        boundCrowd=crowd;
         PrepareFrameBudget();
-        target.y=0;Vector3 start=actor.transform.position;float groundedY=start.y;start.y=0;
+        target.y=0;Vector3 start=root.position;float groundedY=start.y;start.y=0;
         // Moving formation slots need a smaller tolerance than fixed goals;
         // otherwise a rear companion alternates idle and walk every few frames.
         stoppingDistance=Mathf.Max(.001f,stoppingDistance);
@@ -66,7 +74,7 @@ public sealed class Chapter3PathMotor
             (path.Count==1&&(path[0]-start).sqrMagnitude<.04f)))
         {path.Clear();nextPlan=0;}
 
-        if(Clear(start,target))
+        if(ClearForActor(start,target))
         {
             // A door/crowd move can make the direct route clear while searching.
             CancelSearch();path.Clear();path.Add(target);goal=target;
@@ -91,16 +99,18 @@ public sealed class Chapter3PathMotor
         for(int i=path.Count-1;i>0&&shortcutChecksThisFrame<ShortcutChecksPerFrame;i--)
         {
             shortcutChecksThisFrame++;
-            if(Clear(start,path[i])){path.RemoveRange(0,i);break;}
+            if(ClearForActor(start,path[i])){path.RemoveRange(0,i);break;}
         }
         Vector3 step=Vector3.MoveTowards(start,path[0],speed*Time.deltaTime);
         // Search observations may span several frames. Always validate the
         // actual current-position step again; never trust stale search physics.
-        if(!Clear(start,step)){path.Clear();return;}
+        if(!ClearForActor(start,step)){path.Clear();return;}
         // Search stays on the flat grid, but an escort coroutine can run after
         // Actor.Update has grounded the rig. Keep that root-height correction.
         Vector3 direction=step-start;
-        step.y=groundedY;actor.transform.position=step;actor.GroundHeight=0;
+        step.y=groundedY;
+        if(crowd){crowd.StepAlongWithdrawal(step);return;}
+        root.position=step;actor.GroundHeight=0;
         if(direction.sqrMagnitude>.000001f)actor.Face(step+direction.normalized);
     }
 
@@ -109,7 +119,7 @@ public sealed class Chapter3PathMotor
         if((target-goal).sqrMagnitude<.000001f)return true;
         if((target-goal).sqrMagnitude>RetargetDistanceSquared)return false;
         Vector3 from=path.Count>1?path[path.Count-2]:start;
-        if(!Clear(from,target))return false;
+        if(!ClearForActor(from,target))return false;
         path[path.Count-1]=target;goal=target;return true;
     }
 
@@ -119,18 +129,44 @@ public sealed class Chapter3PathMotor
         // Preserve the explicit recalled-companion exception. Other crowd
         // members still participate in every real-time collision query.
         var crowd=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
-        if(crowd&&crowd.IsRouteCompanion)return false;
+        // The retreating crowd yields to leaders with its own collision checks.
+        // Do not let a waiting follower trap the leader inside a capsule.
+        if(crowd&&(crowd.IsRouteCompanion||crowd.FollowingWithdrawal))return false;
         return collider.bounds.max.y>.28f;
     }
 
     public static bool Clear(Vector3 from,Vector3 to)
+    {return Clear(from,to,null);}
+
+    bool ClearForActor(Vector3 from,Vector3 to)
+    {return Clear(from,to,boundCrowd?boundActor:null);}
+
+    static bool Blocks(Collider collider,Vector3 from,Vector3 to,Transform separating)
+    {
+        if(!Obstacle(collider))return false;
+        // A nearby person may have fallen across the retreat's starting point.
+        // Permit only a short step away from that existing overlap, so the
+        // search can leave it. Walls and long edges never get this exception.
+        if(separating&&(from-Vector3.ProjectOnPlane(separating.position,Vector3.up)).sqrMagnitude<.01f
+            &&(to-from).sqrMagnitude<1.21f)
+        {
+            var person=collider.GetComponentInParent<Chapter3Bystander>();
+            if(person)
+            {
+                Vector3 centre=Vector3.ProjectOnPlane(person.transform.position,Vector3.up);
+                if((to-centre).sqrMagnitude>(from-centre).sqrMagnitude+.00001f)return false;
+            }
+        }
+        return true;
+    }
+    static bool Clear(Vector3 from,Vector3 to,Transform separating)
     {
         from.y=to.y=0;Vector3 delta=to-from;
         foreach(var c in Physics.OverlapCapsule(to+Vector3.up*.42f,to+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
-            if(Obstacle(c))return false;
+            if(Blocks(c,from,to,separating))return false;
         if(delta.sqrMagnitude<.000001f)return true;
         foreach(var h in Physics.CapsuleCastAll(from+Vector3.up*.42f,from+Vector3.up*1.25f,Radius,delta.normalized,delta.magnitude,~0,QueryTriggerInteraction.Ignore))
-            if(Obstacle(h.collider))return false;
+            if(Blocks(h.collider,from,to,separating))return false;
         return true;
     }
 
@@ -164,7 +200,7 @@ public sealed class Chapter3PathMotor
             {float f=cost[open[i]]+Vector2Int.Distance(open[i],last);if(f<score){score=f;best=i;}}
             var node=open[best];open.RemoveAt(best);closed.Add(node);
             Vector3 here=node==first?searchStart:World(node);
-            if(Vector3.Distance(here,searchTarget)<.8f&&Clear(here,searchTarget))
+            if(Vector3.Distance(here,searchTarget)<.8f&&ClearForActor(here,searchTarget))
             {
                 // Same point order as repeated Insert(0), with linear work.
                 path.Add(searchTarget);
@@ -179,7 +215,7 @@ public sealed class Chapter3PathMotor
                 if(n.x<0||n.y<0||n.x>=width||n.y>=height||closed.Contains(n))continue;
                 float value=cost[node]+(x==0||z==0?1:1.414214f);
                 if(cost.TryGetValue(n,out float old)&&value>=old)continue;
-                if(!Clear(here,World(n)))continue;
+                if(!ClearForActor(here,World(n)))continue;
                 cost[n]=value;parent[n]=node;if(!open.Contains(n))open.Add(n);
             }
         }
