@@ -104,7 +104,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="空白鍵略過當句台詞";
         // Proximity starts the conversation immediately, without a viewing task.
-        yield return Say(school.tado,"我帶人進運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",6.5f,true);
+        yield return Say(school.tado,"前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。\n等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",12f,true);
         yield return Say(school.bawan,"跟緊各自的領隊，別落單。最後在校後空地集合。",4.2f,true);
         CurrentStage=Stage.Choice;ui.Say("",null);ui.hint.text="點選任務，或按數字 1／2／3";ui.objective.text="決定分工";
         Menu.choice.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;

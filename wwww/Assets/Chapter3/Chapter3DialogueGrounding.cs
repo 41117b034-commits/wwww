@@ -16,8 +16,8 @@ public static class Chapter3DialogueGrounding
     }
     public static string OpeningReply(string text)
     {
-        if(!text.Contains("?")&&!text.Contains("？")&&(text.Contains("我會跟")||text.Contains("我会跟")||text.Contains("照應")||text=="好"||text=="好的"))return "好，我們一起走，路上彼此照應。";
+        if(!text.Contains("?")&&!text.Contains("？")&&(text.Contains("我會跟")||text.Contains("我会跟")||text.Contains("照應")||text=="好"||text=="好的"))return "好，保持間距，別烙單了!";
         string answer=SceneAnswer(text);if(answer!=null)return answer;
-        return "這個問題我現在答不上來。先去見莫那，聽聽眼前的安排。";
+        return "這個問題我現在答不上來。先去見莫那，聽聽他的安排。";
     }
 }

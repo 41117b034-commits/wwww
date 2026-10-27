@@ -134,7 +134,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         // Authored character dialogue, not a quotation from a historical record.
         yield return Say(mona,"你來了。歡迎你加入我們，一起反抗日本警察的壓迫。這條路不好走，記住，要和同伴彼此照應。",lineSeconds+4);
         yield return Say(mona,"我們已經攻下這裡，打倒了駐在所的日本警察。",lineSeconds+1);
-        yield return Say(mona,"接下來到霧社，跟達多會合。先選一把襯手的武器，刀或槍，只帶一種。",lineSeconds+2);
+        yield return Say(mona,"選一個趁手的武器吧，帶著你的武器與達多會合，接下來還有一場硬仗。",lineSeconds+2);
         CurrentStage=Stage.WeaponChoice;player.canMove=player.canLook=false;ui.objective.text="選一把襯手的武器";
         ui.hint.text="點選武器，或按數字 1／2";Choice.gameObject.SetActive(true);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;

@@ -52,7 +52,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         ui.input.interactable=ui.send.interactable=false;ui.input.text="";
         Input.imeCompositionMode=IMECompositionMode.Off;
         WaitingForOpeningRelease=true;
-        LastReply=station.WeaponName+"拿好了。接下來要跟隊伍出發，你準備好了嗎？";
+        LastReply=station.HasKnife?"手握獵刀，接下來就要與日本決戰了，你準備好了嗎？":"拿穩步槍，接下來就要與日本決戰了，你準備好了嗎？";
         history.Add(new Chapter2LocalDialogue.Message("assistant",LastReply));
         Chapter3ConversationHistory.Get(ui).Begin(station.bawan.DisplayName,LastReply);ui.status.text="放開拿取按鍵後，即可輸入回答。";
         ui.hint.text="";Speak(LastReply,5);StartCoroutine(OpenInputAfterRelease());
