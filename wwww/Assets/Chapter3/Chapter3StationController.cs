@@ -228,6 +228,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     IEnumerator Escort(Vector3[] route)
     {
+        if(route==departurePath)route=TightDepartureCorners(route);
         attendingPlayer=false;bawanMotor.Reset();pihuMotor.Reset();
         bawan.Rig.smoothLocomotion=pihu.Rig.smoothLocomotion=true;
         RouteGuide.Show(bawan.transform.position,route,player.transform,bawan.transform);
@@ -248,7 +249,7 @@ public sealed class Chapter3StationController : MonoBehaviour
                     float rearProgress=Mathf.Max(0,leaderProgress-1.6f);
                     if(rearProgress>=pihuStart)
                     {
-                        Vector3 target=RouteGuide.SampleBeside(rearProgress,.9f);
+                        Vector3 target=RouteGuide.Sample(rearProgress,out _);
                         // This target moves every frame. A normal arrival
                         // deadzone repeatedly toggled walking and turned him
                         // back toward the player between tiny forward steps.
@@ -260,6 +261,22 @@ public sealed class Chapter3StationController : MonoBehaviour
             }
         }
         CompanionsWaiting=false;
+    }
+    Vector3[] TightDepartureCorners(Vector3[] route)
+    {
+        var compact=new System.Collections.Generic.List<Vector3>();
+        compact.Add(route[0]);
+        for(int i=1;i<route.Length-1;i++)
+        {
+            var incoming=route[i-1]-route[i];var outgoing=route[i+1]-route[i];
+            float trim=Mathf.Min(1.6f,Mathf.Min(incoming.magnitude,outgoing.magnitude)*.35f);
+            Vector3 a=route[i]+incoming.normalized*trim,b=route[i]+outgoing.normalized*trim;
+            bool safe=Chapter3PathMotor.Clear(a,b);
+            for(int sample=0;safe&&sample<=12;sample++)
+                safe=roadBoundary.Contains(Vector3.Lerp(a,b,sample/12f),.42f,true);
+            if(safe){compact.Add(a);compact.Add(b);}else compact.Add(route[i]);
+        }
+        compact.Add(route[route.Length-1]);return compact.ToArray();
     }
     IEnumerator Gather()
     {

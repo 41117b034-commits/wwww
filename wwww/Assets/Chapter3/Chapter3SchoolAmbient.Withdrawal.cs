@@ -100,7 +100,12 @@ public sealed partial class Chapter3SchoolAmbient
             Vector3 current=actor.transform.position,target=route[withdrawalLeg[i]],toPlayer=withdrawalPlayer.position-current;
             // Consume an intermediate corner before yielding to neighbours:
             // nobody needs to stand on its exact centre to turn through it.
-            float arrival=withdrawalLeg[i]==route.Length-1?.2f:.5f;
+            // The longer campus battle brings both flanks here together.
+            // Consume the open gathering point before two adjacent arrivals
+            // yield to each other while trying to stand on its exact centre.
+            // Tight fence corners and final slots keep their original tolerance.
+            bool fieldMerge=Horizontal(target,new Vector3(17,0,34))<.01f;
+            float arrival=withdrawalLeg[i]==route.Length-1?.2f:fieldMerge?1.2f:.5f;
             if(Horizontal(current,target)<arrival)
             {
                 withdrawalLeg[i]++;
@@ -114,15 +119,20 @@ public sealed partial class Chapter3SchoolAmbient
             // corner must not misclassify a player already at the rear as
             // "behind" merely because they are left of this short waypoint.
             bool playerBehind=withdrawalPlayer.position.z<current.z-1.5f;
-            if((toPlayer.magnitude>10&&playerBehind)||YieldToWithdrawal(i,direction.normalized))
-            {actor.SetWaiting(false);continue;}
+            if(toPlayer.magnitude>10&&playerBehind){actor.SetWaiting(false);continue;}
+            if(YieldToWithdrawal(i,direction.normalized,out var yieldPoint))
+            {
+                actor.SetWaiting(false);
+                if(Horizontal(current,yieldPoint)>.1f)withdrawalMotors[i].Move(actor,yieldPoint,1.4f);
+                continue;
+            }
             actor.SetWaiting(false);
             withdrawalMotors[i].Move(actor,target,3.2f);
         }
     }
-    bool YieldToWithdrawal(int index,Vector3 direction)
+    bool YieldToWithdrawal(int index,Vector3 direction,out Vector3 yieldPoint)
     {
-        Vector3 current=assailants[index].transform.position;
+        Vector3 current=assailants[index].transform.position;yieldPoint=current;
         for(int other=0;other<AmbusherCount;other++)if(other!=index&&assailants[other])
         {
             if(withdrawalRoutes[other]==null||withdrawalLeg[other]>=withdrawalRoutes[other].Length)continue;
@@ -130,7 +140,20 @@ public sealed partial class Chapter3SchoolAmbient
             Vector3 otherDirection=withdrawalRoutes[other][withdrawalLeg[other]]-assailants[other].transform.position;otherDirection.y=0;
             if(Vector3.Dot(direction,otherDirection.normalized)<.4f&&index<other)continue;
             float along=Vector3.Dot(delta,direction);
-            if(delta.sqrMagnitude<1.05f*1.05f&&along>.15f&&Vector3.Cross(delta,direction).magnitude<.8f)return true;
+            if(delta.sqrMagnitude<1.05f*1.05f&&along>.15f&&Vector3.Cross(delta,direction).magnitude<.8f)
+            {
+                // At the rear assembly area one participant turns north while
+                // the next is still heading west. Waiting in place blocks the
+                // very person being yielded to. Make a small perpendicular
+                // step away, using the same motor and per-step body collisions.
+                if(current.z>66&&Vector3.Dot(direction,otherDirection.normalized)<.85f)
+                {
+                    var side=Vector3.Cross(Vector3.up,otherDirection.normalized);
+                    if(Vector3.Dot(side,delta)>0)side=-side;
+                    yieldPoint=current+side*1.1f;
+                }
+                return true;
+            }
         }
         return false;
     }

@@ -1,0 +1,36 @@
+{
+    "completed": false,
+    "mode": "retreat",
+    "checks": [
+        "formal scene",
+        "first subtitle only first paragraph",
+        "second subtitle separate",
+        "choose Tado",
+        "six police in Tado route",
+        "no premature retreat",
+        "allies contribute to battle",
+        "police exchange fire with allies",
+        "all four support officers defeated",
+        "retreat after full battle",
+        "no duplicate signal",
+        "all ten physically arrived"
+    ],
+    "observations": [
+        "Campus fixture: player health is restored each frame while observing real police shots. Combat targets use scene placement fixtures for weapon inspection; guide and ten-person withdrawal must physically walk.",
+        "background shots=1,1,1,1 health=60,80,80,80",
+        "Isolated retreat diagnostic: all officers defeated and four stage handoffs invoked; guide positioned at final support rally.",
+        "retreater 0 pos=(-4.40, 0.00, 72.50) leg=13 target=(-4.40, 0.00, 72.50) obstacles=校內埋伏的族人 1 at (-4.40, 0.00, 72.50)",
+        "retreater 1 pos=(-2.20, 0.00, 72.50) leg=8 target=(-2.20, 0.00, 72.50) obstacles=校內埋伏的族人 2 at (-2.20, 0.00, 72.50)",
+        "retreater 2 pos=(0.00, 0.00, 72.50) leg=13 target=(0.00, 0.00, 72.50) obstacles=校內埋伏的族人 3 at (0.00, 0.00, 72.50)",
+        "retreater 3 pos=(2.20, 0.00, 72.50) leg=10 target=(2.20, 0.00, 72.50) obstacles=校內埋伏的族人 4 at (2.20, 0.00, 72.50)",
+        "retreater 4 pos=(4.40, 0.00, 72.50) leg=11 target=(4.40, 0.00, 72.50) obstacles=校內埋伏的族人 5 at (4.40, 0.00, 72.50)",
+        "retreater 5 pos=(-4.40, 0.00, 74.70) leg=8 target=(-4.40, 0.00, 74.70) obstacles=校內埋伏的族人 6 at (-4.40, 0.00, 74.70)",
+        "retreater 6 pos=(-2.20, 0.00, 74.70) leg=11 target=(-2.20, 0.00, 74.70) obstacles=校內埋伏的族人 7 at (-2.20, 0.00, 74.70)",
+        "retreater 7 pos=(0.00, 0.00, 74.70) leg=8 target=(0.00, 0.00, 74.70) obstacles=校內埋伏的族人 8 at (0.00, 0.00, 74.70)",
+        "retreater 8 pos=(2.20, 0.00, 74.70) leg=8 target=(2.20, 0.00, 74.70) obstacles=校內埋伏的族人 9 at (2.20, 0.00, 74.70)",
+        "retreater 9 pos=(4.40, 0.00, 74.70) leg=11 target=(4.40, 0.00, 74.70) obstacles=校內埋伏的族人 10 at (4.40, 0.00, 74.70)"
+    ],
+    "errors": [
+        "System.Exception: FAILED: retreat continuous movement\r\n  at Chapter3FiveVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:256 \r\n  at Chapter3FiveVerify+<Campus>d__16.MoveNext () [0x00ef1] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:209 \r\n  at Chapter3FiveVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:49 "
+    ]
+}

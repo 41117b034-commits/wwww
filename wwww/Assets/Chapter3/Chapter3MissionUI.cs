@@ -19,7 +19,7 @@ public sealed class Chapter3MissionUI : MonoBehaviour
         ui.tado=Button(choice,"1  跟達多進入會場",font,new Vector2(.035f,.48f),new Vector2(.335f,.69f));
         ui.bawan=Button(choice,"2  跟巴萬打通側門",font,new Vector2(.35f,.48f),new Vector2(.65f,.69f));
         ui.pihu=Button(choice,"3  跟比胡照應穿越",font,new Vector2(.665f,.48f),new Vector2(.965f,.69f));
-        Label(choice,"跟上達多，穿過混亂的會場。\n吹哨通知全體族人撤退。",font,25,new Vector2(.045f,.16f),new Vector2(.325f,.45f));
+        Label(choice,"跟達多深入校園，支援交戰的族人。\n擊倒各處警察後，吹哨帶全體族人撤退。",font,25,new Vector2(.045f,.16f),new Vector2(.325f,.45f));
         Label(choice,"移開門閂，再協助巴萬開門。\n照應同伴通過學校側邊。",font,25,new Vector2(.36f,.16f),new Vector2(.64f,.45f));
         Label(choice,"看住通道，照應比胡穿越。\nE 示意前進／撤回。",font,25,new Vector2(.675f,.16f),new Vector2(.955f,.45f));
         Label(choice,"沿用你攜帶的獵刀或步槍。",font,22,new Vector2(.04f,.035f),new Vector2(.96f,.13f));

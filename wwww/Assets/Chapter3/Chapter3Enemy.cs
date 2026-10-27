@@ -29,6 +29,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     bool started,restorePending;
     Vector3 restoredFallSource;
     AudioSource reportAudio;
+    Transform escortAim;
     Vector3 fallGrip,fallenWeaponPosition;
     Quaternion fallRotation,fallenWeaponRotation;
     Renderer[] weaponRenderers;
@@ -63,7 +64,16 @@ public sealed class Chapter3Enemy : MonoBehaviour
         if(!attackGranted){attackGranted=true;nextAttack=Time.time+(knife?3.5f:2);}
         Vector3 target=escortTarget?escortTarget.position+Vector3.up*1.05f:combat.playerTarget.position;
         actor.Face(target);
-        if(rifle){rifle.aimTarget=escortTarget?null:combat.playerTarget;rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;}
+        if(rifle)
+        {
+            rifle.target=escortTarget?escortTarget.GetComponent<Chapter2Actor>():null;
+            if(escortTarget&&!rifle.target)
+            {
+                if(!escortAim){escortAim=new GameObject("同伴胸前瞄準點").transform;escortAim.SetParent(transform,false);}
+                escortAim.position=target;rifle.aimTarget=escortAim;
+            }
+            else rifle.aimTarget=rifle.target?null:combat.playerTarget;
+        }
         float distance=Vector3.Distance(AimPoint,target);
         bool visible=distance<engagementRange&&combat.ClearLine(AimPoint,target,this);
         if(advances&&!LegWounded&&distance>2.6f&&distance<22&&!Telegraphing)
@@ -82,7 +92,9 @@ public sealed class Chapter3Enemy : MonoBehaviour
             if(combat.ClearLine(AimPoint,target,this))
             {
                 Shots++;if(rifle)rifle.Fire();if(combat.weapons.shotClip)reportAudio.PlayOneShot(combat.weapons.shotClip);
-                if(escortTarget&&combat.SchoolEncounter)combat.SchoolEncounter.EscortHit();else combat.Damage(20,AimPoint);
+                if(escortTarget&&combat.SchoolEncounter)
+                {if(!combat.SchoolEncounter.CampusAllyUnderFire(escortTarget))combat.SchoolEncounter.EscortHit();}
+                else combat.Damage(20,AimPoint);
             }
             Telegraphing=false;nextAttack=Time.time+(knife?Mathf.Max(6.5f,attackInterval):attackInterval);
         }

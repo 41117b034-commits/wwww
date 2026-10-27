@@ -96,7 +96,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
                 else enemy.Hit(100,camera.transform.position);
                 Notice(enemy.Defeated?"命中，警察倒下":"命中腿部，警察受傷蹲低");
             }
-            else Notice("擊中掩體");
+            else Notice("子彈被掩體擋住，未擊中警察。移出掩體邊緣再瞄準。",3);
         }
         return true;
     }

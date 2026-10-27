@@ -1,0 +1,26 @@
+[
+  {
+    "mode": "rifle",
+    "completed": true,
+    "checks": 45,
+    "errors": []
+  },
+  {
+    "mode": "knife",
+    "completed": true,
+    "checks": 35,
+    "errors": []
+  },
+  {
+    "mode": "combat",
+    "completed": true,
+    "checks": 9,
+    "errors": []
+  },
+  {
+    "mode": "route",
+    "completed": true,
+    "checks": 3,
+    "errors": []
+  }
+]

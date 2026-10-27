@@ -48,6 +48,7 @@ public sealed partial class Chapter3SchoolAmbient
     void ConfigureSkirmish(){fallBegan=new float[crowd.Length];escapeLeg=new int[crowd.Length];ResetSkirmish();}
     void ResetSkirmish()
     {
+        ClearPoliceOpposition();
         skirmishActive=false;AmbushSignalFrame=-1;SkirmishPairsReady=0;
         for(int i=0;i<AmbusherCount;i++){assaultVictim[i]=i;strikeBegan[i]=-1;}
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
@@ -65,6 +66,7 @@ public sealed partial class Chapter3SchoolAmbient
         for(int attacker=0;attacker<AmbusherCount;attacker++)
         {
             var actor=assailants[attacker];if(!actor||!skirmishActive)continue;
+            if(UpdatePoliceOpposition(attacker,actor))continue;
             int index=assaultVictim[attacker];
             if(index<0)
             {
@@ -120,7 +122,7 @@ public sealed partial class Chapter3SchoolAmbient
             crowdPhases[index]=guest.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
             return true;
         }
-        if(index>=14||Withdrawing)
+        if(index>=14||Withdrawing||(index<policeAssigned.Length&&policeAssigned[index]))
         {
             var route=escapeRoutes[index>=14?index-14:index%escapeRoutes.Length];
             if(escapeLeg[index]<route.Length)

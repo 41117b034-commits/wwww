@@ -1,0 +1,21 @@
+{
+    "completed": false,
+    "mode": "combat",
+    "checks": [
+        "formal scene",
+        "both companions in cover",
+        "three rocks use visible mesh",
+        "reproduced old box blocking exposed body",
+        "actual rifle trigger",
+        "exposed torso officer defeated",
+        "cover still blocks solid centre",
+        "crouch clears after battle"
+    ],
+    "observations": [
+        "Combat fixture: officers hold fire for hit/cover inspection; actual weapon Attack and collision remain enabled.",
+        "old hit=山路岩石掩體 exposed torso origin=(-6.00, 1.65, -81.00) target=巡警 1  torso=(0.00, 1.20, -68.08) candidate=1"
+    ],
+    "errors": [
+        "System.Exception: FAILED: both companions walked out of cover\r\n  at Chapter3FiveVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:260 \r\n  at Chapter3FiveVerify+<Combat>d__15.MoveNext () [0x008cb] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:137 \r\n  at Chapter3FiveVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:49 "
+    ]
+}

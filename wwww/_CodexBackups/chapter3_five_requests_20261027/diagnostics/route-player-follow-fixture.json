@@ -1,0 +1,14 @@
+{
+    "completed": false,
+    "mode": "route",
+    "checks": [
+        "formal scene",
+        "tight route shorter"
+    ],
+    "observations": [
+        "old=56.65314 new=53.30966 points=(0.00, 0.00, -1.50);(4.28, 0.00, -2.67);(6.55, 0.00, -2.30);(7.45, 0.00, -1.70);(8.50, 0.00, 0.26);(8.50, 0.00, 1.60);(9.90, 0.00, 3.00);(11.89, 0.00, 3.00);(13.35, 0.00, 1.95);(13.65, 0.00, 1.05);(14.14, 0.00, -1.10);(14.80, 0.00, -6.41);(16.39, 0.00, -7.21);(20.61, 0.00, -4.79);(23.13, 0.00, -2.87);(28.87, 0.00, 2.87);(30.39, 0.00, 5.55);(32.00, 0.00, 12.00)"
+    ],
+    "errors": [
+        "System.Exception: route timeout waypoint=11 leader=(14.41, 0.05, -3.28) player=(9.91, 0.03, 1.46)\r\n  at Chapter3FiveVerify+<Route>d__13.MoveNext () [0x003c2] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:89 \r\n  at Chapter3FiveVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:49 "
+    ]
+}

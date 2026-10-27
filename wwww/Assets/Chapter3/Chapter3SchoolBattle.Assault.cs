@@ -13,14 +13,16 @@ public sealed partial class Chapter3SchoolBattle
     public bool StragglerCalled => RetreatCalled;
     public bool StragglerArrived => RetreatArrived;
     public Vector3 StragglerPosition => P(12,32);
-    public Vector3 AssaultObjective => Step == 2 && !StragglerCalled ? StragglerPosition
+    public Vector3 AssaultObjective => Step == AssaultCombatStages && !StragglerCalled ? StragglerPosition
         : activeRoute != null && activeRoute.Length > 0 ? activeRoute[activeRoute.Length - 1] : P(0, 76);
-    public Vector3[] AssaultWaypoints => Step == 2 && !StragglerCalled ? new[] { StragglerPosition } : activeRoute;
+    public Vector3[] AssaultWaypoints => Step == AssaultCombatStages && !StragglerCalled ? new[] { StragglerPosition } : activeRoute;
     public Chapter3RouteGuide AssaultGuide { get; private set; }
 
     static readonly Vector3[][] assaultApproach = {
         new[] { P(0,-3), P(0,3), P(-4,8), P(-5,16) },
-        new[] { P(-4,23), P(-3,29), P(4,32), P(9,33) }
+        new[] { P(-4,23), P(-3,29), P(4,32), P(9,33) },
+        new[] { P(7,34), P(2,36), P(-6,36), P(-9,34) },
+        new[] { P(-6,37), P(2,38), P(8,37), P(10,37), P(12,36) }
     };
     static readonly Vector3[] assaultWithdrawal = {
         P(13,33), P(18,44.8f), P(24.2f,45.4f), P(24.2f,61), P(22,66), P(12,72), P(0,76)
@@ -55,7 +57,7 @@ public sealed partial class Chapter3SchoolBattle
             school.tado.transform.position = Step == 0 ? P(0,-5) : checkpointTado;
         }
         foreach (var companion in Companions) companion.ResetReaction();
-        activeRoute = Step < 2 ? assaultApproach[Step] : assaultWithdrawal;
+        activeRoute = Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal;
         otherRoute = school.breakthroughRoute;
         otherIndex = Step == 0 ? 1 : checkpointOtherIndex;
         otherEscortIndex = Step == 0 ? 0 : checkpointOtherEscortIndex;
@@ -66,7 +68,7 @@ public sealed partial class Chapter3SchoolBattle
             Step == 0 ? new Vector3(0,1.2f,12) : Step == 1 ? new Vector3(4,1.2f,32) : new Vector3(12,1.2f,32));
         combat.playerTarget.position = player.view.transform.position - Vector3.up * .38f;
 
-        if(!preserveArrival)ResetOfficersForCheckpoint();
+        if(!preserveArrival){ResetOfficersForCheckpoint();RestoreCampusOfficers();}
         foreach(var officer in Enemies)if(officer)officer.attackInterval=5.2f;
         CurrentStage = Stage.Fighting; Menu.Hide(); ui.Say("",null); ui.fade.color = Color.clear;
         if(ammoLabel)ammoLabel.gameObject.SetActive(true);
@@ -96,9 +98,9 @@ public sealed partial class Chapter3SchoolBattle
 
     void PrepareAssaultStage()
     {
-        Ammo.position = Step == 0 ? P(-8,7) : P(8,29);
+        Ammo.position = Step == 0 ? P(-8,7) : Step == 1 ? P(8,29) : Step == 2 ? P(-7,32) : P(10,36);
         if (!AssaultGuide) AssaultGuide = gameObject.AddComponent<Chapter3RouteGuide>();
-        if (Step == 2 && ambient)
+        if (Step == AssaultCombatStages && ambient)
         {
             ambient.HideStraggler();AssaultGuide.Hide();
         }
@@ -111,16 +113,15 @@ public sealed partial class Chapter3SchoolBattle
 
     void UpdateAssault()
     {
-        if (Step >= 3) return;
-        if (Step < 2)
+        if (Step > AssaultCombatStages) return;
+        if (Step < AssaultCombatStages)
         {
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
-            var guard = Step < Enemies.Count ? Enemies[Step] : null;
-            bool clear = guard && guard.Defeated;
+            bool clear = AssaultStageCleared();
             bool gathered = guideIndex >= activeRoute.Length && Flat(player.transform.position,AssaultObjective) < 4;
-            ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : "照應同伴，穿過運動場";
+            ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : Step == 1 ? "照應同伴，穿過運動場" : Step == 2 ? "支援西側族人，擊倒兩名警察" : "深入校舍前方，支援東側族人";
             ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "留意警察的動作，借器材箱掩蔽 · " + combat.weapons.Controls;
-            combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : "看住通道警察 · 不要離開隊伍";
+            combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : Step < 2 ? "看住通道警察 · 不要離開隊伍" : "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
             if (gathered && clear) AdvanceAssaultStage();
             return;
         }
@@ -147,7 +148,7 @@ public sealed partial class Chapter3SchoolBattle
         combat.combatText.text = RetreatArrived ? "校內族人已全數撤到校後" : "族人到達校後  "+RetreatArrivedCount+" / "+Chapter3SchoolAmbient.AmbusherCount;
         if (guideIndex >= activeRoute.Length && StragglerArrived && Flat(player.transform.position,P(0,76)) < 4)
         {
-            Step = CheckpointStep = 3; AssaultGuide.Hide();
+            Step = CheckpointStep = AssaultCombatStages+1; AssaultGuide.Hide();
             StartRegroup();
         }
     }
@@ -155,8 +156,8 @@ public sealed partial class Chapter3SchoolBattle
     public bool CallStraggler()=>CallRetreat();
     public bool CallRetreat()
     {
-        if (!Fighting || Selected != Mission.Tado || Step != 2 || StragglerCalled
-            || !ambient || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
+        if (!Fighting || Selected != Mission.Tado || Step != AssaultCombatStages || StragglerCalled
+            || Enemies.Exists(e=>e&&!e.Defeated) || !ambient || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
         if(!ambient.BeginWithdrawal(player.transform))return false;
         RetreatCalled = true; guideIndex = 0; guideMotor.Reset();
         PlayRetreatWhistle();
@@ -191,19 +192,19 @@ public sealed partial class Chapter3SchoolBattle
         SaveOfficerCheckpoint();
         checkpointBawan = school.bawan.transform.position; checkpointPihu = school.pihu.transform.position;
         checkpointTado = school.tado.transform.position;
-        checkpointPlayer = Step == 1 ? new Vector3(-5,.06f,14) : new Vector3(8,.06f,32);
+        checkpointPlayer = player.transform.position;
         checkpointOtherIndex = otherIndex; checkpointOtherEscortIndex = otherEscortIndex;
         guideIndex = 0; guideMotor.Reset();
-        activeRoute = Step < 2 ? assaultApproach[Step] : assaultWithdrawal;
+        activeRoute = Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal;
         PrepareAssaultStage();
-        Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : "準備撤出！吹哨叫所有人跟我們一起走。",4);
+        Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : Step == 2 ? "西邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
     }
 
     Vector3 ConstrainAssault(Vector3 current,Vector3 desired)
     {
         // Keep checkpoints sequential without invisible bounds through a target.
         if (Step == 0) desired.z = Mathf.Min(desired.z,24);
-        else if (Step == 1 || !StragglerCalled) desired.z = Mathf.Min(desired.z,42);
+        else if (Step < AssaultCombatStages || !StragglerCalled) desired.z = Mathf.Min(desired.z,43);
         return desired;
     }
 

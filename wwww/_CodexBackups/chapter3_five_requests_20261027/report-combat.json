@@ -1,0 +1,21 @@
+{
+    "completed": true,
+    "mode": "combat",
+    "checks": [
+        "formal scene",
+        "both companions in cover",
+        "three rocks use visible mesh",
+        "reproduced old box blocking exposed body",
+        "actual rifle trigger",
+        "exposed torso officer defeated",
+        "cover still blocks solid centre",
+        "crouch clears after battle",
+        "both companions walked out of cover"
+    ],
+    "observations": [
+        "Combat fixture: officers hold fire for hit/cover inspection; actual weapon Attack and collision remain enabled.",
+        "old hit=山路岩石掩體 exposed torso origin=(-6.00, 1.65, -81.00) target=巡警 1  torso=(0.00, 1.20, -68.08) candidate=1",
+        "cover exit leader=(-3.13, 0.05, -78.78) -> (-3.05, 0.28, -43.47) rear=(-2.64, 0.03, -78.82) -> (-0.59, 0.08, -46.45) player=(-1.31, 0.11, -46.61)"
+    ],
+    "errors": []
+}

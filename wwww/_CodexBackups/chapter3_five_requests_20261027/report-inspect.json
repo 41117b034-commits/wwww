@@ -1,0 +1,15 @@
+{
+    "completed": true,
+    "mode": "inspect",
+    "checks": [
+        "formal scene"
+    ],
+    "observations": [
+        "target=(12.00, 0.00, 38.00) clear=False collisions=桌面 at (13.00, 0.82, 38.50) bounds=Center: (13.00, 0.82, 38.50), Extents: (2.50, 0.06, 0.42)",
+        "target=(10.00, 0.00, 37.00) clear=True collisions=",
+        "target=(10.00, 0.00, 35.00) clear=True collisions=",
+        "target=(12.00, 0.00, 36.00) clear=True collisions=",
+        "target=(13.00, 0.00, 33.00) clear=True collisions="
+    ],
+    "errors": []
+}

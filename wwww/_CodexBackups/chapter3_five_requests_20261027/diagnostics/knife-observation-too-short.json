@@ -1,0 +1,20 @@
+{
+    "completed": false,
+    "mode": "knife",
+    "checks": [
+        "formal scene",
+        "first subtitle only first paragraph",
+        "second subtitle separate",
+        "choose Tado",
+        "six police in Tado route",
+        "no premature retreat",
+        "allies contribute to battle"
+    ],
+    "observations": [
+        "Campus fixture: player health is restored each frame while observing real police shots. Combat targets use scene placement fixtures for weapon inspection; guide and ten-person withdrawal must physically walk.",
+        "background shots=0,0,0,0 health=40,40,40,40"
+    ],
+    "errors": [
+        "System.Exception: FAILED: police exchange fire with allies\r\n  at Chapter3FiveVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:249 \r\n  at Chapter3FiveVerify+<Campus>d__16.MoveNext () [0x004a7] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:157 \r\n  at Chapter3FiveVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FiveVerify.cs:49 "
+    ]
+}

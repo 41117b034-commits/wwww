@@ -104,7 +104,8 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="空白鍵略過當句台詞";
         // Proximity starts the conversation immediately, without a viewing task.
-        yield return Say(school.tado,"前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。\n等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",12f,true);
+        yield return Say(school.tado,"前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。",5.5f,true);
+        yield return Say(school.tado,"等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",8f,false);
         yield return Say(school.bawan,"跟緊各自的領隊，別落單。最後在校後空地集合。",4.2f,true);
         CurrentStage=Stage.Choice;ui.Say("",null);ui.hint.text="點選任務，或按數字 1／2／3";ui.objective.text="決定分工";
         Menu.choice.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
@@ -117,6 +118,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     IEnumerator Outbreak()
     {
         ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(0,1.1f,23));
+        if(Selected==Mission.Tado)PrepareCampusOfficers();
         if(combat.weapons.shotClip)distantShots.PlayOneShot(combat.weapons.shotClip,.48f);
         if(ambient)ambient.Panic();
         BeginOfficerResponse();
@@ -167,6 +169,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         if(!school||CurrentStage==Stage.Inactive)return;
         UpdateOfficerResponse();
+        UpdateCampusOfficers();
         if(CurrentStage==Stage.Choice)
         {
             if(Keyboard.current?.digit1Key.wasPressedThisFrame==true)Choose(Mission.Tado);
@@ -213,7 +216,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void StartRegroup()
     {
         // Never freeze an unresolved guard into an idle bystander at handoff.
-        if(Step<(Selected==Mission.Tado?3:2)||Enemies.Exists(e=>e&&!e.Defeated))return;
+        if(Step<(Selected==Mission.Tado?AssaultCombatStages+1:2)||Enemies.Exists(e=>e&&!e.Defeated))return;
         StopBreakthrough();ClearSchoolPoses();
         CurrentStage=Stage.Regroup;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
         foreach(var e in Enemies)if(e)e.escortTarget=null;
@@ -276,7 +279,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             return;
         }
         bool playerAhead=Vector3.Dot(toPlayer,target-actor.transform.position)>0;
-        if(Selected==Mission.Tado&&RetreatCalled&&Step==2&&actor==school.tado)
+        if(Selected==Mission.Tado&&RetreatCalled&&Step==AssaultCombatStages&&actor==school.tado)
             playerAhead=player.transform.position.z>=actor.transform.position.z-1.5f;
         if(waitForPlayer&&toPlayer.magnitude>8&&!playerAhead){actor.Face(player.transform.position);return;}
         float speed=waitForPlayer?(playerAhead&&toPlayer.magnitude>5?3.1f:2.1f):2.9f;

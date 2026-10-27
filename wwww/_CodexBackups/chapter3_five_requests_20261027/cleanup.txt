@@ -1,0 +1,1 @@
+收尾：臨時驗證工具與 meta 已移至本輪證據的 verification-tools/；移除後 Unity 編譯成功（5.23 秒）並完成 assembly reload，Editor DLL 已無臨時工具。13 份 runtime 測試版及 3 份保護檔案共 16 份雜湊均一致；git diff --check 通過。

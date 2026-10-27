@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public sealed class Chapter3Combat : MonoBehaviour
+public sealed partial class Chapter3Combat : MonoBehaviour
 {
     public enum Stage { Inactive, Intro, Fighting, Down, Cleared, Complete }
     public Chapter3Flow flow;
@@ -41,6 +41,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     public Vector3 WorldPoint(Vector3 point)=>point+transform.position;
     public void Begin()
     {
+        FitRockColliders();
         SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
         player.canMove=player.canLook=false;weapons.gameObject.SetActive(false);
         StartCoroutine(Introduction());
@@ -62,6 +63,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     void ResetCheckpoint()
     {
+        ClearCompanionCover();
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
         warningUntil=0;EscortWaiting=false;escortFacingActive=false;leaderMotor.Reset();rearMotor.Reset();
         bawan.transform.position=WorldPoint(new Vector3(-5.1f,0,-5));pihu.transform.position=WorldPoint(new Vector3(5.2f,0,-6));
@@ -87,6 +89,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     public void Suspend()
     {
+        ClearCompanionCover();
         SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;EscortWaiting=false;escortFacingActive=false;
         if(weapons)weapons.Suspend();if(hud)hud.SetActive(false);if(downPanel)downPanel.SetActive(false);if(hurtOverlay)hurtOverlay.color=Color.clear;
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;
@@ -105,6 +108,7 @@ public sealed class Chapter3Combat : MonoBehaviour
         string progress="前方巡警  "+DefeatedCount+" / "+enemyTemplates.Length;
         if(Fighting)
         {
+            UpdateCompanionCover();
             player.speed=weapons.Aiming?1.7f:2.8f;
             bool near=weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Vector3.Distance(player.transform.position,ammoPoint.position)<2.2f;
             if(near&&player.ActionPressed)weapons.Refill();
@@ -162,6 +166,7 @@ public sealed class Chapter3Combat : MonoBehaviour
     }
     IEnumerator ClearEncounter()
     {
+        ClearCompanionCover();
         if(flow&&flow.Approach)
         {
             CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();

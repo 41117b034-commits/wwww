@@ -123,6 +123,7 @@ public sealed partial class Chapter3SchoolBattle
     }
     void SaveOfficerCheckpoint()
     {
+        SaveCampusCheckpoint();
         SavePassageCheckpoint();
         // A future officer can already be wounded or defeated while the player
         // completes the current passage. Retrying must keep that saved outcome.

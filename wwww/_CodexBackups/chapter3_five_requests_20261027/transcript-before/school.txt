@@ -1,0 +1,217 @@
+﻿第三章：學校／運動會全部固定劇情文字
+核對日期：2026-10-27。依目前 Assets/Chapter3 程式及 Assets/Scenes/第三章.unity。本文件依 2026-10-27 六處台詞修訂同步；驗證情況以 PROJECT_CONTEXT.md 本次紀錄為準。
+本文的「旁白」是無姓名字幕（ui.Say("", ...)），不代表存在配音。
+場景姓名：巴萬·拿威、比胡·帖木、達多·莫那。來源場景 characterName（83591/129312、64014/187383、146994 行；Unicode 解碼）。
+來源行號均相對 Assets/Chapter3/。
+
+一、抵達學校（兩種入口擇一）
+01.【巴萬·拿威｜正常沿林路步行抵達】
+到了。達多就在校門旁，我們過去。
+來源 Chapter3SchoolController.cs:94
+02.【巴萬·拿威｜快捷鍵／直接進入學校】
+學校就在前面，達多在校門旁等我們。
+來源 Chapter3SchoolController.cs:103
+
+二、靠近達多後自動分工（靠近 3 公尺，不需按 E）
+03.【達多·莫那】
+前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。
+等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。
+來源 Chapter3SchoolBattle.cs:107
+04.【巴萬·拿威】
+跟緊各自的領隊，別落單。最後在校後空地集合。
+來源 Chapter3SchoolBattle.cs:108
+
+三、選完任一路線、第一聲槍響與突襲
+05.【旁白／無姓名字幕】
+會場遭到襲擊，日本平民也遭到殺害。人群在槍聲與呼喊中四散。
+來源 Chapter3SchoolBattle.cs:125
+06.【達多·莫那】
+各隊照分工走！我進會場，巴萬走左邊，比胡走右邊。校後會合！
+來源 Chapter3SchoolBattle.cs:127
+07.【達多·莫那｜選 1 跟達多】
+跟緊我，從校門進去！別讓同伴落單，留意會場裡的動靜。
+來源 Chapter3SchoolBattle.cs:129
+08.【巴萬·拿威｜選 2 跟巴萬】
+跟我來，打開側邊通路，讓同伴能從那邊撤出！
+來源 Chapter3SchoolBattle.cs:129
+09.【比胡·帖木｜選 3 跟比胡】
+跟我走右側。我聽你的信號前進，必要時叫我撤回！
+來源 Chapter3SchoolBattle.cs:129
+
+四、達多路線（中央會場與全員撤退）
+10.【達多·莫那｜第一段通過】
+通了！跟我穿過會場，別落在後面。
+來源 Chapter3SchoolBattle.Assault.cs:199
+11.【達多·莫那｜第二段通過】
+準備撤出！吹哨叫所有人跟我們一起走。
+來源 Chapter3SchoolBattle.Assault.cs:199
+12.【達多·莫那｜尚未吹哨；每隔 12 秒可重複】
+吹哨叫大家撤退！把會場裡的人都帶走，我們從校舍旁退出去。
+來源 Chapter3SchoolBattle.Assault.cs:135
+13.【你｜E 成功發出撤退信號】
+（口哨聲）大家撤退！跟上我們，到校後集合！
+來源 Chapter3SchoolBattle.Assault.cs:164
+
+五、巴萬路線（左側便門與側門）
+14.【巴萬·拿威｜第一段掩護、可重複觸發】
+我來照應！小心前面的警察，別離我太遠！
+來源 Chapter3SchoolBattle.Breakthrough.cs:159
+15.【巴萬·拿威｜第一段移開門閂完成】
+門閂移開了，跟上！後面的側門我來推，你照應通道。
+來源 Chapter3SchoolBattle.Breakthrough.cs:72
+16.【巴萬·拿威｜E 請他開第二扇門】
+這扇門我來推。幫我看著通道，開了就一起走！
+來源 Chapter3SchoolBattle.Breakthrough.cs:249
+17.【巴萬·拿威｜開門中警察抬槍或剛開火；可重複】
+小心，警察抬槍了！我先停一下，幫我看著通道！
+來源 Chapter3SchoolBattle.Breakthrough.cs:224
+
+六、比胡路線（右側兩段穿越；操作和受壓台詞依實際狀況觸發）
+18.【比胡·帖木｜第二段威脅出場前】
+這一段到了，先在掩體後等！前面還有警察。
+來源 Chapter3SchoolBattle.Cover.cs:19
+19.【比胡·帖木｜每段警察移動出場】
+前面的警察正往通路移動，先看清楚再走。
+來源 Chapter3SchoolBattle.Cover.cs:23
+20.【比胡·帖木｜警察停止移動且仍存活】
+他停下來了！先看清他的動作，我等你的信號。
+來源 Chapter3SchoolBattle.Cover.cs:32
+21.【比胡·帖木｜收到前進指令】
+收到！我先往前，你看住警察！
+來源 Chapter3SchoolBattle.Cover.cs:111
+22.【比胡·帖木｜收到撤回指令】
+收到，我退回剛才的掩體！
+來源 Chapter3SchoolBattle.Cover.cs:106
+23.【比胡·帖木｜已回到原掩體】
+退回來了，等你重新下令。
+來源 Chapter3SchoolBattle.Cover.cs:54
+24.【比胡·帖木｜抵達且警察已倒下】
+我到掩體了，這一段安全了！
+來源 Chapter3SchoolBattle.Cover.cs:62
+25.【比胡·帖木｜抵達但警察仍存活】
+我到掩體了！警察還在，先處理他再走！
+來源 Chapter3SchoolBattle.Cover.cs:62
+26.【比胡·帖木｜警察剛開槍】
+他開過槍了！看住前方，等你的信號！
+來源 Chapter3SchoolBattle.Cover.cs:91
+27.【比胡·帖木｜正在前進、警察抬槍】
+警察抬槍了！掩護我，必要時叫我撤回！
+來源 Chapter3SchoolBattle.Cover.cs:94
+28.【比胡·帖木｜沒有前進、警察抬槍】
+先壓低身體，他正在瞄準！
+來源 Chapter3SchoolBattle.Cover.cs:94
+29.【比胡·帖木｜下指令時離他太遠】
+離得太遠了，回到能照應我的位置！
+來源 Chapter3SchoolBattle.Cover.cs:102
+30.【比胡·帖木｜被火力壓制】
+火力太強！掩護我，先撤回去！
+來源 Chapter3SchoolBattle.Cover.cs:118
+
+七、任務失敗後從已通過段落重試（各路線）
+31.【所選領隊：達多·莫那／巴萬·拿威／比胡·帖木】
+從這裡繼續，前一段已經通過了。
+來源 Chapter3SchoolBattle.Assault.cs:77、Chapter3SchoolBattle.cs:164
+
+八、校後匯合（依序巴萬 → 比胡 → 達多，每位各擇對應版本）
+32.【巴萬·拿威｜玩家選巴萬】
+我們把左邊打通了，側門已經打開。你們都到了嗎？
+來源 Chapter3SchoolBattle.cs:237
+33.【巴萬·拿威｜玩家選達多或比胡】
+左邊的通道打通了，側門已經打開。我們在這裡接應。
+來源 Chapter3SchoolBattle.cs:237
+34.【比胡·帖木｜玩家選比胡】
+到了！剛才他替我看住警察，我才能穿過右邊。
+來源 Chapter3SchoolBattle.cs:238
+35.【比胡·帖木｜玩家選達多或巴萬】
+右邊的族人也通過了，我從那邊撤過來。
+來源 Chapter3SchoolBattle.cs:238
+36.【達多·莫那｜玩家選達多】
+大家都撤出會場了，一個也沒落下。先離開學校，沿林路走！
+來源 Chapter3SchoolBattle.cs:239
+37.【達多·莫那｜玩家選巴萬或比胡】
+我帶的人已從會場撤出。先離開學校，沿後面那條林路走！
+來源 Chapter3SchoolBattle.cs:239
+
+九、任務選擇介面（非角色發言）
+來源 Chapter3MissionUI.cs:17–25
+選擇你要跟隨的同伴
+跟緊同伴，彼此照應；離開會場後在校後匯合。
+1  跟達多進入會場
+跟上達多，穿過混亂的會場。
+吹哨通知全體族人撤退。
+2  跟巴萬打通側門
+移開門閂，再協助巴萬開門。
+照應同伴通過學校側邊。
+3  跟比胡照應穿越
+看住通道，照應比胡穿越。
+E 示意前進／撤回。
+沿用你攜帶的獵刀或步槍。
+
+十、失敗／重試介面（非旁白）
+【生命值歸零】來源 Chapter3SchoolBattle.cs:198
+你受傷倒下了
+從目前任務起點重試。
+任務與武器選擇保留。
+【已過檢查點後生命值歸零；{段數}=CheckpointStep+1】來源 Chapter3SchoolBattle.cs:198
+你受傷倒下了
+從第 {段數} 段安全位置重試。
+已完成段落、任務與武器選擇保留。
+【比胡受壓達 3 次】來源 Chapter3SchoolBattle.Cover.cs:119
+比胡被火力壓制
+（第一段）
+從第一段出發點重整。
+先觀察警察，再下令前進。任務與武器選擇保留。
+（第二段）
+從第二段掩體重整。
+第一段已完成，任務與武器選擇保留。
+【按鈕】來源 Chapter3MissionUI.cs:29–30
+R  重試目前任務
+重新選擇任務
+備註：「重新選擇任務」按鈕由 !failed 才啟用，目前學校任務成功直接進 Rescue，沒有呼叫 ShowResult(...,false) 的正常流程；屬保留 UI 字串，不應誤列為目前主流程的結尾。
+
+核對與排除：Chapter3SchoolAmbient.cs、Population、Ambush、Withdrawal 與 Chapter3SchoolBattle.Staging.cs 未找到可見台詞或旁白；群眾聲音／槍聲是音效，不存在可逐字列出的字幕。現行達多路線 E 是全員撤退，舊落後族人召回不是現行台詞。三條路線所有固定劇情台詞共 37 種文字／分支列項，包含一種全路共用重試句與兩種入口；重複播放未重複計數。
+
+附錄：純 HUD、任務目標及操作提示（字串與動態欄位原始來源，非對話）
+[Chapter3SchoolBattle.Assault.cs:121] ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : "照應同伴，穿過運動場";
+[Chapter3SchoolBattle.Assault.cs:122] ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "留意警察的動作，借器材箱掩蔽 · " + combat.weapons.Controls;
+[Chapter3SchoolBattle.Assault.cs:123] combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : "看住通道警察 · 不要離開隊伍";
+[Chapter3SchoolBattle.Assault.cs:128] ui.objective.text = RetreatCalled ? "帶全體族人撤出學校，到校後集合" : "發出撤退信號，帶全體族人撤到校後";
+[Chapter3SchoolBattle.Assault.cs:137] ui.hint.text = "E 吹口哨，通知所有族人撤退";
+[Chapter3SchoolBattle.Assault.cs:138] combat.combatText.text = "發出信號後，全體族人會停手並跟隊撤出";
+[Chapter3SchoolBattle.Assault.cs:146] ui.hint.text = catchingUp ? "族人正在跟上，稍等大家再一起走 · WASD 移動" : "沿黃色箭頭與達多撤出 · 全體族人跟隨 · WASD 移動";
+[Chapter3SchoolBattle.Assault.cs:147] combat.combatText.text = RetreatArrived ? "校內族人已全數撤到校後" : "族人到達校後  "+RetreatArrivedCount+" / "+Chapter3SchoolAmbient.AmbusherCount;
+[Chapter3SchoolBattle.Breakthrough.cs:47] ui.objective.text = "跟巴萬打通側門 · 移開便門門閂";
+[Chapter3SchoolBattle.Breakthrough.cs:48] ui.hint.text = near ? guarded ? "先處理通道上的警察，巴萬會照應你" : "按住 E 移開門閂 · 放開會中止"
+: "跟巴萬走到關閉的便門 · " + combat.weapons.Controls;
+[Chapter3SchoolBattle.Breakthrough.cs:50] combat.combatText.text = guarded
+? "通道上有警察 · 與巴萬彼此照應" + (BawanCovering ? "\n巴萬正在掩護，留意前方動靜" : "")
+: "移開門閂  " + Mathf.FloorToInt(WorkProgress / 1.8f * 100) + "%";
+[Chapter3SchoolBattle.Breakthrough.cs:227] ui.objective.text = "跟巴萬打通側門 · 照應同伴通過";
+[Chapter3SchoolBattle.Breakthrough.cs:228] ui.hint.text = !arrived ? "跟巴萬到校舍後側 · " + combat.weapons.Controls
+: playerBlocking ? "讓出門邊工作位置，站到通道旁掩護巴萬"
+: !GateCommanded ? "靠近巴萬，E 請他開門 · " + combat.weapons.Controls
+: "留意通道，照應正在開門的巴萬 · " + combat.weapons.Controls;
+[Chapter3SchoolBattle.Breakthrough.cs:232] string status = !GateCommanded ? "巴萬到位後，按 E 讓他開門" : GatePaused ? "巴萬暫停 · 已保留開門進度" : GateWorkProgress >= 1 ? "側門已打開" : "巴萬正在推開側門";
+[Chapter3SchoolBattle.Breakthrough.cs:233] combat.combatText.text = status + "\n側門  " + Mathf.RoundToInt(GateWorkProgress * 100) + "%"
++ (guard && !guard.Defeated ? " · 通道上仍有警察" : " · 通道上的威脅已解除");
+[Chapter3SchoolBattle.Cover.cs:74] ui.objective.text=Step==0?"照應比胡，穿過東側通路":"跟比胡接近校後，準備撤出";
+[Chapter3SchoolBattle.Cover.cs:75] string order=!AtCrossing?"先跟比胡到東側器材後":ThreatRevealing?"警察正在移動 · 留意前方":Returning?"比胡正在撤回":Advancing?"比胡正在穿越 · E 撤回":
+CrossingArrived?"比胡已抵達 · 留意通路上的警察":"比胡在器材後等待信號 · E 前進";
+[Chapter3SchoolBattle.Cover.cs:78] string window=guard&&guard.gameObject.activeInHierarchy&&!guard.Defeated&&!ThreatRevealing?
+guard.Telegraphing?"警察正在抬槍！":guard.SafeWindowSeconds>.4f?"警察暫時停火 · 留意再次抬槍":"警察準備瞄準":"";
+[Chapter3SchoolBattle.Cover.cs:80] combat.combatText.text=order+"\n比胡受壓 "+EscortPressure+" / 3  ·  威脅 "+(CurrentThreatCleared?"已解除":"尚未解除")+(window.Length>0?"\n"+window:"");
+[Chapter3SchoolBattle.Cover.cs:81] ui.hint.text=CompletionBlockedByThreat?"比胡已到，先處理警察 · "+combat.weapons.Controls:"E 指揮前進／撤回 · "+combat.weapons.Controls;
+[Chapter3SchoolBattle.cs:105] player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="空白鍵略過當句台詞";
+[Chapter3SchoolBattle.cs:109] CurrentStage=Stage.Choice;ui.Say("",null);ui.hint.text="點選任務，或按數字 1／2／3";ui.objective.text="決定分工";
+[Chapter3SchoolBattle.cs:119] ui.hint.text="";ui.objective.text="運動會場遭到襲擊";player.canMove=false;player.FocusOn(new Vector3(0,1.1f,23));
+[Chapter3SchoolBattle.cs:185] if(supply)ui.hint.text="E 補充備彈   ·   R 單發裝填";
+[Chapter3SchoolBattle.cs:187] combat.healthText.text="生命值  "+Health+" / 100";
+[Chapter3SchoolBattle.cs:188] var w=combat.weapons;combat.ammoText.text=w.Selected==Chapter3Weapons.Weapon.Rifle?"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve:"獵刀";
+[Chapter3SchoolBattle.cs:204] player.canMove=player.canLook=false;player.view.fieldOfView=60;combat.hurtOverlay.color=Color.clear;ui.Say("",null);ui.hint.text="R 重試目前任務";
+[Chapter3SchoolBattle.cs:228] ui.objective.text="到校後空地，與另外兩隊匯合";
+[Chapter3SchoolBattle.cs:233] MoveOtherSquad();ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"跟隨同伴到校後空地 · WASD 移動 · 按住右鍵環視";
+[Chapter3SchoolBattle.cs:368] label.text="彈藥";label.font=ui.subtitle.font;label.fontSize=64;label.characterSize=.085f;label.anchor=TextAnchor.MiddleCenter;label.color=new Color(1,.84f,.25f);
+[Chapter3SchoolController.cs:82] ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
+[Chapter3SchoolController.cs:83] ui.objective.text="霧社公學校 · 運動會";
+[Chapter3SchoolController.cs:133] ui.objective.text="到校門旁與達多會合";
+[Chapter3SchoolController.cs:135] ui.hint.text="沿黃色箭頭靠近達多，自動開始對話 · WASD 移動";
