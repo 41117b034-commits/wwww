@@ -16869,7 +16869,7 @@ MonoBehaviour:
   - id: C2_021
     role: 3
     chinese: "\u6B7B\u8DEF\uFF1F"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: ca99455aca35a554e88441725e1201bf, type: 3}
     volumeDb: 0
   - id: C2_022
     role: 3
