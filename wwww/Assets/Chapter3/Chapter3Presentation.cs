@@ -16,10 +16,14 @@ public sealed class Chapter3Presentation : MonoBehaviour
     Vector2 desktopAnchorMin, desktopAnchorMax, desktopPivot, desktopSizeDelta;
     Vector3 desktopAnchoredPosition, desktopScale;
     Quaternion desktopRotation;
+    RectTransform expandedSubtitlePanel;
+    Vector2 subtitlePanelSize;
+    Vector3 subtitlePanelPosition;
     void Awake(){if(progress)progress.gameObject.SetActive(false);}
     public void ConfigureVR(bool enabled)
     {
         if (vr == enabled || !canvas || (enabled && !canvas.worldCamera)) return;
+        RestoreSubtitlePanel();
         var r = (RectTransform)canvas.transform;
         if (enabled)
         {
@@ -48,10 +52,36 @@ public sealed class Chapter3Presentation : MonoBehaviour
             canvas.renderMode = desktopRenderMode;
         }
         vr = enabled;
+        FitMultilineSubtitle();
     }
     public void Say(string name, string line)
     {
+        RestoreSubtitlePanel();
         subtitlePanel.SetActive(!string.IsNullOrEmpty(line)); speaker.text = name; subtitle.text = line;
+        FitMultilineSubtitle();
+    }
+    void RestoreSubtitlePanel()
+    {
+        if(!expandedSubtitlePanel)return;
+        expandedSubtitlePanel.sizeDelta=subtitlePanelSize;
+        expandedSubtitlePanel.anchoredPosition3D=subtitlePanelPosition;
+        expandedSubtitlePanel=null;
+    }
+    void FitMultilineSubtitle()
+    {
+        if(!subtitlePanel||!subtitlePanel.activeInHierarchy||!subtitle||string.IsNullOrEmpty(subtitle.text)||!subtitle.text.Contains("\n"))return;
+        Canvas.ForceUpdateCanvases();
+        var textRect=subtitle.rectTransform;
+        float heightFraction=textRect.anchorMax.y-textRect.anchorMin.y;
+        float extra=Mathf.Ceil(subtitle.preferredHeight+2-textRect.rect.height);
+        if(extra<=0||heightFraction<=.01f)return;
+        // Keep the authored font, width and bottom edge; grow upward only for
+        // an explicit multiline subtitle, and restore before the next line.
+        expandedSubtitlePanel=(RectTransform)subtitlePanel.transform;
+        subtitlePanelSize=expandedSubtitlePanel.sizeDelta;
+        subtitlePanelPosition=expandedSubtitlePanel.anchoredPosition3D;
+        expandedSubtitlePanel.offsetMax+=Vector2.up*(extra/heightFraction);
+        Canvas.ForceUpdateCanvases();
     }
     public static Chapter3Presentation Build(Camera camera, Font font)
     {

@@ -1,0 +1,33 @@
+{
+    "completed": false,
+    "scene": "Assets/Scenes/第三章.unity",
+    "checks": [
+        "formal Chapter3Flow",
+        "affirm input accepted",
+        "affirm fallback actually displayed",
+        "unknown input accepted",
+        "unknown fallback actually displayed",
+        "knife choice accepted",
+        "knife pickup accepted",
+        "knife greeting actually displayed",
+        "rifle choice accepted",
+        "rifle pickup accepted",
+        "rifle greeting actually displayed",
+        "Tado full string and newline"
+    ],
+    "observations": [
+        "Editor driver: runtime-only Busy=true forces the authored error fallback without sending a question to the LLM; no service settings changed.",
+        "01-opening-affirm: 巴萬·拿威：我們到駐在所了。莫那在前面；見他之前，你有什麼想說的？\n\n你：好\n\n巴萬·拿威：好，保持間距，別烙單了!",
+        "02-opening-unknown: 巴萬·拿威：我們到駐在所了。莫那在前面；見他之前，你有什麼想說的？\n\n你：好\n\n巴萬·拿威：好，保持間距，別烙單了!\n\n你：請回答未知代碼XYZ\n\n巴萬·拿威：這個問題我現在答不上來。先去見莫那，聽聽他的安排。",
+        "At each selected weapon table, player positioning uses Warp, then the real TakeKnife/TakeRifle -> ConfirmDeparture -> Readiness.Begin path.",
+        "03-knife-readiness: 巴萬·拿威：手握獵刀，接下來就要與日本決戰了，你準備好了嗎？",
+        "Second weapon branch uses a runtime-only WeaponChoice stage fixture to avoid replaying the already observed escort.",
+        "04-rifle-readiness: 巴萬·拿威：拿穩步槍，接下來就要與日本決戰了，你準備好了嗎？",
+        "School entry uses EnterSchool; player positioned within 3 metres of Tado; SchoolController.Update triggers the normal proximity briefing.",
+        "05-tado-briefing: 前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。\n等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",
+        "Tado subtitle rect=(x:-535.68, y:-47.79, width:1071.36, height:95.58) preferredHeight=116.6667 font=30 generatedLines=2 visibleCharacters=61 textLength=67"
+    ],
+    "errors": [
+        "System.Exception: FAILED: Tado text fits subtitle height\r\n  at Chapter3DialogueVerify20261027.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3DialogueVerify20261027.cs:121 \r\n  at Chapter3DialogueVerify20261027+<Scenario>d__10.MoveNext () [0x00a25] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3DialogueVerify20261027.cs:116 \r\n  at Chapter3DialogueVerify20261027+<Run>d__9.MoveNext () [0x0006e] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3DialogueVerify20261027.cs:54 "
+    ]
+}
