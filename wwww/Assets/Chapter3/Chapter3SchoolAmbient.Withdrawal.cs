@@ -106,7 +106,10 @@ public sealed partial class Chapter3SchoolAmbient
             // Tight fence corners and final slots keep their original tolerance.
             bool fieldMerge=Horizontal(target,new Vector3(17,0,34))<.01f;
             float arrival=withdrawalLeg[i]==route.Length-1?.2f:fieldMerge?1.2f:.5f;
-            if(Horizontal(current,target)<arrival)
+            // A fighter approaching from the east can already be beyond the
+            // open merge point. Do not send him south into the northbound queue.
+            bool passedMerge=fieldMerge&&current.z>=34&&current.x>=15&&current.x<=19.5f;
+            if(Horizontal(current,target)<arrival||passedMerge)
             {
                 withdrawalLeg[i]++;
                 // A settled participant is now a standing obstacle. Later

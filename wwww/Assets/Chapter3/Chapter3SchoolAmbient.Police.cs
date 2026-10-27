@@ -34,10 +34,12 @@ public sealed partial class Chapter3SchoolAmbient
         actor.HoldAtNeck(null,false);actor.SetAfraid(false);
         Vector3 direction=Vector3.ProjectOnPlane(actor.transform.position-enemy.transform.position,Vector3.up).normalized;
         if(direction.sqrMagnitude<.1f)direction=Vector3.left;
-        Vector3 stand=enemy.transform.position+direction*1.55f;
+        Vector3 stand=enemy.transform.position+direction*(enemy.Melee?1.3f:1.55f);
         actor.MoveTowards(stand,2.4f);
         actor.Face(enemy.transform.position,150);
-        actor.SetStartled(Time.time<policeFlinchUntil[index]?.8f:0);
+        // Keep the knife up between exchanges; the shared arm pose provides
+        // a guard, then yields to the actual attack swing when it starts.
+        actor.SetStartled(Time.time<policeFlinchUntil[index]?.8f:enemy.Melee?(enemy.Melee.Swinging?.8f:.5f):0);
         float distance=Vector3.ProjectOnPlane(actor.transform.position-enemy.transform.position,Vector3.up).magnitude;
         if(distance>2.1f||Time.time<policeFlinchUntil[index]){actor.SetStrike(0);return true;}
         if(policeStrikeAt[index]<0){policeStrikeAt[index]=Time.time;policeStrikeLanded[index]=false;}
@@ -50,7 +52,7 @@ public sealed partial class Chapter3SchoolAmbient
             policeStrikeLanded[index]=true;
             if(enemy.Health>20)enemy.Hit(Mathf.Min(20,enemy.Health-20),actor.transform.position);
         }
-        if(elapsed>3.8f)policeStrikeAt[index]=-1;
+        if(elapsed>(enemy.Melee?2.6f:3.8f))policeStrikeAt[index]=-1;
         return true;
     }
 }

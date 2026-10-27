@@ -6,6 +6,12 @@ public sealed class Chapter3Enemy : MonoBehaviour
     public Chapter3Combat combat;
     public Chapter2Actor actor;
     public Chapter2Rifle rifle;
+    public Chapter3PoliceMelee Melee {get;private set;}
+    public void EquipSabre()
+    {
+        Melee=GetComponent<Chapter3PoliceMelee>()??gameObject.AddComponent<Chapter3PoliceMelee>();
+        Melee.Configure(this);
+    }
     public bool advances;
     // Mission staging may move a guard before allowing it to aim. Existing
     // mountain and rescue encounters keep their original enabled default.
@@ -49,6 +55,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     }
     void Update()
     {
+        if(Melee){Melee.Tick();return;}
         if(!AttackEnabled){CancelAim();attackGranted=false;return;}
         if(HoldingFire)
         {
@@ -141,6 +148,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     {
         if(!isActiveAndEnabled||!combat||!combat.Fighting||Defeated)return;
         Health=Mathf.Max(0,Health-damage);hitAt=Time.time;Telegraphing=false;nextAttack=Time.time+2.2f;
+        if(Melee)Melee.ReactToHit();
         if(Defeated)
         {
             BeginDefeat(from);combat.EnemyDefeated();

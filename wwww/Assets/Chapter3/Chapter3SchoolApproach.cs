@@ -141,7 +141,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         }
         flow.ui.objective.text=SchoolRevealed?"走到校門旁，與達多會合":heardLine?"沿林路緩坡前進，循聲接近學校":"跟隨巴萬穿過林路，前往學校";
         flow.ui.hint.text=Waiting?"同伴停下等你，走近後繼續 · WASD 移動 · 右鍵環視":"跟上巴萬 · WASD 移動 · 右鍵環視";
-        if(CurrentWaypoint==points.Length-1&&Flat(player.transform.position,points[points.Length-1])<2.4f&&
+        if(CurrentWaypoint==points.Length-1&&player.transform.position.z>=points[points.Length-1].z-1&&environment.Walkable(player.transform.position)&&
             Flat(LeadActor.transform.position,points[points.Length-1])<.5f&&Flat(RearActor.transform.position,points[points.Length-1])<4)
             flow.CompleteSchoolApproach();
     }

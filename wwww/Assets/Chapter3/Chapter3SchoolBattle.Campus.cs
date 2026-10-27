@@ -19,6 +19,7 @@ public sealed partial class Chapter3SchoolBattle
         {
             campusHealth[i]=100;campusWounded[i]=false;campusSavedPosition[i]=campusPositions[i];
             var enemy=CreateSchoolOfficer(i+2,campusPositions[i]);enemy.name="校內交戰警察 · "+(i+1);
+            enemy.EquipSabre();
             enemy.actor.Face(ambient.Ambusher(campusAllies[i]).position);
         }
         BindCampusAllies();
@@ -38,6 +39,7 @@ public sealed partial class Chapter3SchoolBattle
         for(int i=0;i<4;i++)
         {
             var enemy=CreateSchoolOfficer(i+2,campusSavedPosition[i]);enemy.name="校內交戰警察 · "+(i+1);
+            enemy.EquipSabre();
             enemy.RestoreEncounterState(campusHealth[i],campusWounded[i],campusSavedPosition[i]-Vector3.forward);
         }
         BindCampusAllies();
@@ -53,8 +55,8 @@ public sealed partial class Chapter3SchoolBattle
             // Keep visible exchanges around the campus. Close player support
             // draws the officer's attention; distant combat remains with allies.
             var ally=ambient.Ambusher(campusAllies[i-2]);
-            enemy.escortTarget=Flat(player.transform.position,enemy.transform.position)<8?null:ally;
-            enemy.engagementRange=32;enemy.attackInterval=5.2f;
+            enemy.escortTarget=Flat(player.transform.position,enemy.transform.position)<1.8f?null:ally;
+            enemy.engagementRange=1.9f;enemy.attackInterval=2.8f;
         }
     }
     bool AssaultStageCleared()

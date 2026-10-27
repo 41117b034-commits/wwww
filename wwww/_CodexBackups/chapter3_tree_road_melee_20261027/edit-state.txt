@@ -1,0 +1,1 @@
+playing=False dirty=False compileFailed=False

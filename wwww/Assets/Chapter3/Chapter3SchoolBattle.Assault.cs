@@ -120,7 +120,7 @@ public sealed partial class Chapter3SchoolBattle
             bool clear = AssaultStageCleared();
             bool gathered = guideIndex >= activeRoute.Length && Flat(player.transform.position,AssaultObjective) < 4;
             ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : Step == 1 ? "照應同伴，穿過運動場" : Step == 2 ? "支援西側族人，擊倒兩名警察" : "深入校舍前方，支援東側族人";
-            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "留意警察的動作，借器材箱掩蔽 · " + combat.weapons.Controls;
+            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : (Step<2?"留意警察的動作，借器材箱掩蔽 · ":"支援交戰的族人，瞄準持刀警察 · ") + combat.weapons.Controls;
             combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : Step < 2 ? "看住通道警察 · 不要離開隊伍" : "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
             if (gathered && clear) AdvanceAssaultStage();
             return;

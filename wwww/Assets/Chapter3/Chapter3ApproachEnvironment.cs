@@ -15,8 +15,9 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
     readonly List<(MeshFilter filter,Mesh original,Mesh open)> entranceMeshes=new List<(MeshFilter,Mesh,Mesh)>();
     MeshFilter valley;
     Mesh originalValley,cutValley;
-    MeshCollider trailSurface;
+    MeshCollider trailSurface,ridgeSurface;
     Material earth,road;
+    static readonly Vector3[] roadFootprint={Vector3.zero,Vector3.left*.32f,Vector3.right*.32f,Vector3.forward*.32f,Vector3.back*.32f};
     Chapter3Flow flow;
     static Vector3 P(float x,float y,float z)=>new Vector3(x,y,z);
     public void Build(Chapter3Flow owner)
@@ -223,6 +224,7 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
         {
             var collider=go.AddComponent<MeshCollider>();collider.sharedMesh=mesh;
             if(name=="連續緩坡與林路")trailSurface=collider;
+            if(name=="彎道內側林坡")ridgeSurface=collider;
         }
     }
     public void SetVisible(bool visible)
@@ -249,11 +251,25 @@ public sealed class Chapter3ApproachEnvironment : MonoBehaviour
     }
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
-        Closest(desired,out var nearest,out _);
-        if(Horizontal(desired-nearest).sqrMagnitude<=2.35f*2.35f)return desired;
+        if(Walkable(desired))return desired;
         // Reject an outward step. Never project a distant body to a waypoint,
         // which would be a visible teleport at the encounter/path junction.
         return new Vector3(current.x,desired.y,current.z);
+    }
+    public bool Walkable(Vector3 position)
+    {
+        // Use the rendered earth strip, including its broad shoulders and
+        // mitered corners. The old 2.35 m centreline tube rejected visible road.
+        // Retain body clearance at the mesh edge and the vegetated ridge.
+        foreach(var offset in roadFootprint)
+        {
+            Vector3 p=position+offset;
+            if(p.z>=-20&&p.z<=-14&&Mathf.Abs(p.x)<=9)continue; // Existing school dirt apron; fences still collide.
+            var ray=new Ray(new Vector3(p.x,12,p.z),Vector3.down);
+            if(!trailSurface||!trailSurface.Raycast(ray,out var floor,20)||floor.normal.y<.7f)return false;
+            if(ridgeSurface&&ridgeSurface.Raycast(ray,out var ridge,20)&&ridge.point.y>floor.point.y+.06f)return false;
+        }
+        return true;
     }
     void Closest(Vector3 position,out Vector3 point,out int segment)
     {

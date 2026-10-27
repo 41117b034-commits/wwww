@@ -1,0 +1,1 @@
+收尾：臨時驗證工具與 meta 已移至本輪證據的 verification-tools/；移除後 Tundra build success（5.65 秒），Mono assembly reload 完成，Editor DLL 已無 Chapter3TreeRoadVerify。9 份 runtime 與 3 份保護檔案共 12 份雜湊一致，git diff --check 通過。

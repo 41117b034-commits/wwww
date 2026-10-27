@@ -1,0 +1,20 @@
+[
+  {
+    "mode": "coverroad",
+    "completed": true,
+    "checks": 10,
+    "errors": []
+  },
+  {
+    "mode": "rifle",
+    "completed": true,
+    "checks": 50,
+    "errors": []
+  },
+  {
+    "mode": "knife",
+    "completed": true,
+    "checks": 40,
+    "errors": []
+  }
+]
