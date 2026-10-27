@@ -16859,12 +16859,12 @@ MonoBehaviour:
   - id: C2_019
     role: 6
     chinese: "\u90E8\u843D\u7684\u5A66\u5973\u548C\u5B69\u5B50\u600E\u9EBC\u8FA6\uFF1F"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: e158528ac7d2b354f817b4f7752b2abd, type: 3}
     volumeDb: 0
   - id: C2_020
     role: 6
     chinese: "\u83AB\u90A3\uFF0C\u9019\u662F\u4E00\u689D\u6B7B\u8DEF\u554A\uFF01"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 50539417a28cdb24ba84f1a0bbc3577b, type: 3}
     volumeDb: 0
   - id: C2_021
     role: 3
