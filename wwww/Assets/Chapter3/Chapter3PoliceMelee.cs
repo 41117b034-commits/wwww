@@ -34,7 +34,7 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
     {
         if(!enemy||!enemy.actor||!enemy.actor.Rig)return;
         var rig=enemy.actor.Rig;rig.strike=false;
-        if(enemy.Defeated||!enemy.AttackEnabled||enemy.HoldingFire||!enemy.combat.Fighting)
+        if(enemy.Defeated||!enemy.AttackEnabled||enemy.HoldingFire||!enemy.combat.Fighting||(enemy.AlliesOnly&&!enemy.escortTarget))
         {started=-1;return;}
         Vector3 target=enemy.escortTarget?enemy.escortTarget.position:enemy.combat.player.transform.position;
         enemy.actor.Face(target);
@@ -53,7 +53,7 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
             {
                 Contacts++;
                 if(strikeTarget)enemy.combat.SchoolEncounter.CampusAllyUnderFire(strikeTarget);
-                else enemy.combat.Damage(20,enemy.AimPoint);
+                else if(!enemy.AlliesOnly)enemy.combat.Damage(20,enemy.AimPoint);
             }
         }
         if(progress>=1){started=-1;nextStrike=Time.time+1.4f;}

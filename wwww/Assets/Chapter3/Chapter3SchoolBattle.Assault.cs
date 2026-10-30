@@ -20,9 +20,9 @@ public sealed partial class Chapter3SchoolBattle
 
     static readonly Vector3[][] assaultApproach = {
         new[] { P(0,-3), P(0,3), P(-4,8), P(-5,16) },
-        new[] { P(-4,23), P(-3,29), P(4,32), P(9,33) },
-        new[] { P(7,34), P(2,36), P(-6,36), P(-9,34) },
-        new[] { P(-6,37), P(2,38), P(8,37), P(10,37), P(12,36) }
+        new[] { P(-4,23), P(-5,28) },
+        new[] { P(-3,29), P(4,32), P(8,30) },
+        new[] { P(6,34), P(6,36) }
     };
     static readonly Vector3[] assaultWithdrawal = {
         P(13,33), P(18,44.8f), P(24.2f,45.4f), P(24.2f,61), P(22,66), P(12,72), P(0,76)
@@ -41,6 +41,7 @@ public sealed partial class Chapter3SchoolBattle
 
     void ResetAssaultMission(bool preserveArrival=false)
     {
+        routeBypasses.Clear();
         StopAssault(); ClearSchoolPoses(); StopBreakthrough();
         guideMotor.Reset(); tadoMotor.Reset(); otherMotor.Reset(); threatMotor.Reset();
         Step = CheckpointStep; guideIndex = 0;
@@ -68,7 +69,7 @@ public sealed partial class Chapter3SchoolBattle
             Step == 0 ? new Vector3(0,1.2f,12) : Step == 1 ? new Vector3(4,1.2f,32) : new Vector3(12,1.2f,32));
         combat.playerTarget.position = player.view.transform.position - Vector3.up * .38f;
 
-        if(!preserveArrival){ResetOfficersForCheckpoint();RestoreCampusOfficers();}
+        if(!preserveArrival)RestoreCampusOfficers();
         foreach(var officer in Enemies)if(officer)officer.attackInterval=5.2f;
         CurrentStage = Stage.Fighting; Menu.Hide(); ui.Say("",null); ui.fade.color = Color.clear;
         if(ammoLabel)ammoLabel.gameObject.SetActive(true);
@@ -119,9 +120,9 @@ public sealed partial class Chapter3SchoolBattle
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
             bool clear = AssaultStageCleared();
             bool gathered = guideIndex >= activeRoute.Length && Flat(player.transform.position,AssaultObjective) < 4;
-            ui.objective.text = Step == 0 ? "跟緊達多，進入混亂的會場" : Step == 1 ? "照應同伴，穿過運動場" : Step == 2 ? "支援西側族人，擊倒兩名警察" : "深入校舍前方，支援東側族人";
-            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : (Step<2?"留意警察的動作，借器材箱掩蔽 · ":"支援交戰的族人，瞄準持刀警察 · ") + combat.weapons.Controls;
-            combat.combatText.text = clear ? "通路已清 · 等你與達多到位" : Step < 2 ? "看住通道警察 · 不要離開隊伍" : "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
+            ui.objective.text = Step == 0 ? "支援前場交戰的族人" : Step == 1 ? "趕到西側，幫助被追趕的族人" : Step == 2 ? "支援東側包圍警察的同伴" : "前往校舍前，協助最後一組族人";
+            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "協助族人擊倒警察 · " + combat.weapons.Controls;
+            combat.combatText.text = clear ? "這組已解圍 · 等你與達多到位" : "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
             if (gathered && clear) AdvanceAssaultStage();
             return;
         }
@@ -197,7 +198,7 @@ public sealed partial class Chapter3SchoolBattle
         guideIndex = 0; guideMotor.Reset();
         activeRoute = Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal;
         PrepareAssaultStage();
-        Notice(school.tado.DisplayName,Step == 1 ? "通了！跟我穿過會場，別落在後面。" : Step == 2 ? "西邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
+        Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : Step == 2 ? "東邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
     }
 
     Vector3 ConstrainAssault(Vector3 current,Vector3 desired)

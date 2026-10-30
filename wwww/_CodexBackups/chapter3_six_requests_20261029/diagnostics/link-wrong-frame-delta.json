@@ -1,0 +1,16 @@
+{
+    "completed": false,
+    "mode": "link",
+    "checks": [
+        "formal scene",
+        "departure under 32 metres",
+        "station to fight has zero black fade"
+    ],
+    "observations": [
+        "short path=27.81047",
+        "max frame step=0.9333109 max speed=21.12572"
+    ],
+    "errors": [
+        "System.Exception: FAILED: player never teleported at handoff\r\n  at Chapter3SixRequestsVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:541 \r\n  at Chapter3SixRequestsVerify+<Link>d__14.MoveNext () [0x006c6] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:157 \r\n  at Chapter3SixRequestsVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:60 "
+    ]
+}

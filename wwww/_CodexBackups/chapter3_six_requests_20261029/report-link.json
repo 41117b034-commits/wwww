@@ -1,0 +1,20 @@
+{
+    "completed": true,
+    "mode": "link",
+    "checks": [
+        "formal scene",
+        "departure under 32 metres",
+        "station to fight has zero black fade",
+        "player never teleported at handoff",
+        "player control retained",
+        "joined mountain continues walking to school",
+        "F7 restores combat light",
+        "F6 restores both station companions"
+    ],
+    "observations": [
+        "short path=27.81047",
+        "max frame step=0.933344 max speed=3.172665",
+        "max frame step=0.933344 elapsed=22.84192"
+    ],
+    "errors": []
+}

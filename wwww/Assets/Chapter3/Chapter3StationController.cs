@@ -37,6 +37,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     public Chapter3RouteGuide RouteGuide {get;private set;}
     bool attendingPlayer;
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor();
+    public Vector3 WorldPoint(Vector3 local)=>local+(flow&&flow.StationLink?Chapter3StationLink.Origin:Vector3.zero);
 
     void Start()
     {
@@ -65,10 +66,11 @@ public sealed class Chapter3StationController : MonoBehaviour
         Chapter3PickupArrow.Hide(ui);
         bawanMotor.Reset();pihuMotor.Reset();
         bawan.speaking=pihu.speaking=mona.speaking=false;
-        bawan.transform.position=new Vector3(0,0,-15);pihu.transform.position=new Vector3(1.6f,0,-17);
-        bawan.Face(Vector3.zero);pihu.Face(Vector3.zero);mona.Face(new Vector3(0,0,-3));
+        bawan.gameObject.SetActive(true);pihu.gameObject.SetActive(true);
+        bawan.transform.position=WorldPoint(new Vector3(0,0,-15));pihu.transform.position=WorldPoint(new Vector3(1.6f,0,-17));
+        bawan.Face(WorldPoint(Vector3.zero));pihu.Face(WorldPoint(Vector3.zero));mona.Face(WorldPoint(new Vector3(0,0,-3)));
         riflePickup.gameObject.SetActive(true);knifePickup.gameObject.SetActive(true);player.station=this;player.chapter=null;player.combat=null;player.school=null;
-        player.Warp(new Vector3(0,.06f,-18),bawan.transform.position+Vector3.up*1.2f);
+        player.Warp(WorldPoint(new Vector3(0,.06f,-18)),bawan.transform.position+Vector3.up*1.2f);
         bawan.Face(player.transform.position);
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
         Opening.PrepareService();
@@ -127,7 +129,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         CurrentStage=Stage.Briefing;player.canMove=false;ui.hint.text="";
         attendingPlayer=false;
         // Step aside so the player can see Mona during the handoff.
-        Vector3 left=new Vector3(-1.9f,0,-.4f),right=new Vector3(1.9f,0,-1);
+        Vector3 left=WorldPoint(new Vector3(-1.9f,0,-.4f)),right=WorldPoint(new Vector3(1.9f,0,-1));
         while(Flat(bawan.transform.position,left)>.1f||Flat(pihu.transform.position,right)>.1f)
         {MoveActor(bawan,left,1.75f);MoveActor(pihu,right,2.05f);yield return null;}
         yield return Say(bawan,"莫那，我們到了。",lineSeconds);
@@ -221,10 +223,10 @@ public sealed class Chapter3StationController : MonoBehaviour
         player.canMove=false;
         yield return Say(bawan,"往前就是霧社。到學校外面，再和達多會合。",lineSeconds+1);
         yield return Say(pihu,"前面山路有日本警察擋著。先突破他們，再去學校外和達多會合。",lineSeconds+2);
-        ui.Say("",null);ui.hint.text="";yield return Fade(true,1.5f);
-        CurrentStage=Stage.SchoolHandoff;player.canLook=false;
+        ui.Say("",null);ui.hint.text="";
+        CurrentStage=Stage.SchoolHandoff;player.canMove=player.canLook=true;
         ui.objective.text="前往霧社的山路";
-        if(flow) flow.EnterCombat();
+        if(flow) flow.ContinueFromStation();
     }
     IEnumerator Escort(Vector3[] route)
     {
@@ -244,7 +246,7 @@ public sealed class Chapter3StationController : MonoBehaviour
                 ui.hint.text=CompanionsWaiting?"巴萬與比胡正在等你，走近他們。":HasWeapon?WeaponName+"已攜帶 · 跟上同伴":"跟上巴萬，先去見莫那";
                 if(!CompanionsWaiting)
                 {
-                    MoveActor(bawan,route[i],1.75f);
+                    MoveActor(bawan,route[i],HasWeapon?2.4f:1.75f);
                     leaderProgress=Mathf.Max(leaderProgress,RouteGuide.Project(bawan.transform.position,leaderProgress+2));
                     float rearProgress=Mathf.Max(0,leaderProgress-1.6f);
                     if(rearProgress>=pihuStart)
@@ -253,7 +255,7 @@ public sealed class Chapter3StationController : MonoBehaviour
                         // This target moves every frame. A normal arrival
                         // deadzone repeatedly toggled walking and turned him
                         // back toward the player between tiny forward steps.
-                        pihuMotor.Move(pihu,target,2.05f,.005f);
+                        pihuMotor.Move(pihu,target,HasWeapon?2.7f:2.05f,.005f);
                     }
                 }
                 else {FacePlayer(bawan);FacePlayer(pihu);}

@@ -123,7 +123,8 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             template.gameObject.SetActive(false);
             for(int i=0;i<assailants.Length;i++)
             {
-                assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1));
+                var appearance=i%3==0?school.bawan:i%3==1?school.pihu:school.tado;
+                assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1),appearance);
                 assaultStarts[i]=AmbusherStart(i);
                 assailants[i].transform.position=assaultStarts[i];AddKnife(assailants[i],school);
                 assailants[i].gameObject.SetActive(false);

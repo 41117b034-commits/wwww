@@ -91,7 +91,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(!actor.InitializeNative(source))actor.Initialize();
         return actor;
     }
-    public static Chapter3SchoolCrowdActor CreateFrom(Transform template,Transform parent,string name)
+    public static Chapter3SchoolCrowdActor CreateFrom(Transform template,Transform parent,string name,Chapter2Actor nativeSource=null)
     {
         var root=new GameObject(name).transform;root.SetParent(parent,false);
         root.localScale=template.localScale;
@@ -114,7 +114,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             capsule.radius=sourceCapsule.radius;capsule.direction=sourceCapsule.direction;
         }
         var templateActor=template.GetComponent<Chapter3SchoolCrowdActor>();
-        return templateActor&&templateActor.nativeTemplate?AttachTo(root,templateActor.nativeTemplate):AttachTo(root);
+        return nativeSource?AttachTo(root,nativeSource):templateActor&&templateActor.nativeTemplate?AttachTo(root,templateActor.nativeTemplate):AttachTo(root);
     }
     static Matrix4x4 RelativeMatrix(Transform part,Transform root)
     {

@@ -62,6 +62,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     void UpdateAmbush(float elapsed)
     {
+        UpdatePoliceMovement();
         SkirmishPairsReady=0;
         for(int attacker=0;attacker<AmbusherCount;attacker++)
         {

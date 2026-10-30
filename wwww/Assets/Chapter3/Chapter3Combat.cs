@@ -46,6 +46,31 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         player.canMove=player.canLook=false;weapons.gameObject.SetActive(false);
         StartCoroutine(Introduction());
     }
+    public void BeginFromStation(Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
+    {
+        FitRockColliders();SchoolEncounter=null;StopAllCoroutines();Retries=0;
+        ResetCheckpoint(false);
+        bawan.transform.position=leader;pihu.transform.position=rear;
+        bawan.Face(leader+leaderFacing);pihu.Face(rear+rearFacing);
+        CurrentStage=Stage.Intro;player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
+        StartCoroutine(ContinuousIntroduction());
+    }
+    IEnumerator ContinuousIntroduction()
+    {
+        ui.fade.color=Color.clear;ui.objective.text="沿土路前進，準備突破巡警";
+        ui.Say(bawan.DisplayName,"前面有巡警。靠著岩石走，別站在路中央。");
+        float until=Time.time+lineSeconds;
+        var left=WorldPoint(new Vector3(-5.1f,0,-5));var right=WorldPoint(new Vector3(5.2f,0,-6));
+        while(Time.time<until||player.transform.position.z<WorldPoint(new Vector3(0,0,-11)).z)
+        {
+            if(Vector3.Distance(player.transform.position,bawan.transform.position)<7)leaderMotor.Move(bawan,left,2.4f);
+            if(Vector3.Distance(player.transform.position,pihu.transform.position)<7)rearMotor.Move(pihu,right,2.7f);
+            ui.hint.text="沿土路前進 · WASD 移動 · 按住右鍵環視";yield return null;
+        }
+        ui.Say(pihu.DisplayName,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。");
+        yield return new WaitForSeconds(lineSeconds);
+        StartFighting(false);
+    }
     IEnumerator Introduction()
     {
         ui.fade.color=Color.black;ui.objective.text="前往霧社 · 山路遭遇";
@@ -54,14 +79,14 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         yield return Say(pihu,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。",lineSeconds);
         StartFighting();
     }
-    void StartFighting()
+    void StartFighting(bool focus=true)
     {
         CurrentStage=Stage.Fighting;ui.Say("",null);ui.hint.text="";ui.objective.text="突破前方巡警，與同伴繼續前進";
         player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
-        player.FocusOn(WorldPoint(new Vector3(0,1.3f,10)));
+        if(focus)player.FocusOn(WorldPoint(new Vector3(0,1.3f,10)));
         Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
     }
-    void ResetCheckpoint()
+    void ResetCheckpoint(bool relocate=true)
     {
         ClearCompanionCover();
         clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
@@ -77,7 +102,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
             var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=this;Enemies.Add(enemy);
         }
         player.chapter=null;player.station=null;player.combat=this;player.speed=2.8f;
-        player.Warp(WorldPoint(spawn),WorldPoint(new Vector3(0,1.55f,8)));player.view.fieldOfView=60;
+        if(relocate)player.Warp(WorldPoint(spawn),WorldPoint(new Vector3(0,1.55f,8)));player.view.fieldOfView=60;
         weapons.ResetEquipment();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.fade.color=Color.clear;
         hud.SetActive(true);downPanel.SetActive(false);hurtOverlay.color=Color.clear;
         retry.onClick.RemoveAllListeners();retry.onClick.AddListener(()=>Retry());
@@ -250,6 +275,11 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
         if(flow&&flow.Approach&&flow.Approach.Active)return flow.Approach.Constrain(current,desired);
+        if(flow&&flow.StationLink&&current.z<WorldPoint(new Vector3(0,0,-12)).z)
+        {
+            if(desired.z<WorldPoint(new Vector3(0,0,-12)).z)return flow.station.Constrain(current,desired);
+            return desired;
+        }
         Vector3 local=desired-transform.position;
         local.x=Mathf.Clamp(local.x,-7,7);local.z=Mathf.Clamp(local.z,-12,30);return local+transform.position;
     }

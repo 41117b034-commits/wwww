@@ -1,0 +1,26 @@
+[
+  {
+    "mode": "link",
+    "completed": true,
+    "checks": 8,
+    "errors": 0
+  },
+  {
+    "mode": "school-quick",
+    "completed": true,
+    "checks": 58,
+    "errors": 0
+  },
+  {
+    "mode": "school-knife",
+    "completed": true,
+    "checks": 53,
+    "errors": 0
+  },
+  {
+    "mode": "bypass",
+    "completed": true,
+    "checks": 3,
+    "errors": 0
+  }
+]

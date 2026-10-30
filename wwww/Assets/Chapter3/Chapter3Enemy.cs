@@ -16,6 +16,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     // Mission staging may move a guard before allowing it to aim. Existing
     // mountain and rescue encounters keep their original enabled default.
     public bool AttackEnabled=true;
+    public bool AlliesOnly;
     public bool HoldingFire=>!Defeated&&Time.time<holdFireUntil;
     public float SafeWindowSeconds=>!Defeated&&AttackEnabled&&!Telegraphing?Mathf.Max(0,Mathf.Max(holdFireUntil,nextAttack)-Time.time):0;
     // School cover mission targets the moving escort. Null preserves the
@@ -55,6 +56,7 @@ public sealed class Chapter3Enemy : MonoBehaviour
     }
     void Update()
     {
+        if(AlliesOnly&&!escortTarget){CancelAim();return;}
         if(Melee){Melee.Tick();return;}
         if(!AttackEnabled){CancelAim();attackGranted=false;return;}
         if(HoldingFire)

@@ -1,0 +1,14 @@
+{
+    "completed": true,
+    "mode": "bypass",
+    "checks": [
+        "formal scene",
+        "right leader walks around stationary player",
+        "does not cross player body"
+    ],
+    "observations": [
+        "old recomputed side arrived=1 elapsed=2.750426 minGap=0.9973451 final=(-2.80, 0.03, 78.08)",
+        "retained bypass arrived=1 elapsed=2.839452 minGap=1.061437 final=(-2.86, 0.03, 78.05)"
+    ],
+    "errors": []
+}

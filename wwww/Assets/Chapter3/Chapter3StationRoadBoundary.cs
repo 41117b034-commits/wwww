@@ -5,10 +5,12 @@ using UnityEngine;
 public sealed class Chapter3StationRoadBoundary
 {
     readonly List<BoxCollider> roads=new List<BoxCollider>();
+    readonly Transform region;
     public Chapter3StationRoadBoundary(Transform region)
     {
+        this.region=region;
         foreach(var box in region.GetComponentsInChildren<BoxCollider>(true))
-            if(box.name.StartsWith("前往霧社的土路 "))roads.Add(box);
+            if(box.name.StartsWith("前往霧社的土路 ")&&box.gameObject.activeSelf)roads.Add(box);
         if(roads.Count==0)Debug.LogError("[Chapter3] Station road surface is missing.");
     }
     public bool Contains(Vector3 point,float radius,bool allowRoad)
@@ -24,7 +26,8 @@ public sealed class Chapter3StationRoadBoundary
     }
     bool OnSurface(Vector3 point,bool allowRoad)
     {
-        if(point.x>=-10&&point.x<=10&&point.z>=-24&&point.z<=2.7f)return true;
+        var courtyard=region.InverseTransformPoint(point);
+        if(courtyard.x>=-10&&courtyard.x<=10&&courtyard.z>=-24&&courtyard.z<=2.7f)return true;
         if(!allowRoad)return false;
         foreach(var box in roads)
         {

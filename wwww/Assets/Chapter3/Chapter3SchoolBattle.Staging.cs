@@ -65,6 +65,7 @@ public sealed partial class Chapter3SchoolBattle
     }
     void BeginOfficerResponse()
     {
+        if(Selected==Mission.Tado)return;
         threatPositions=MissionOfficerPositions();
         if(Selected==Mission.Tado)
             officerRoutes=new[]{new[]{P(-7,16),threatPositions[0]},new[]{P(7,33),threatPositions[1]}};
@@ -125,6 +126,7 @@ public sealed partial class Chapter3SchoolBattle
     {
         SaveCampusCheckpoint();
         SavePassageCheckpoint();
+        if(Selected==Mission.Tado)return;
         // A future officer can already be wounded or defeated while the player
         // completes the current passage. Retrying must keep that saved outcome.
         for(int i=0;i<2;i++)
@@ -140,7 +142,7 @@ public sealed partial class Chapter3SchoolBattle
     {
         // Rescue reuses Enemies for its forest pursuer after the school mission.
         // Its own encounter must retain control of that officer's attacks.
-        if(CurrentStage==Stage.Complete)return;
+        if(CurrentStage==Stage.Complete||Selected==Mission.Tado)return;
         for(int i=0;i<Enemies.Count&&i<2;i++)
         {
             var enemy=Enemies[i];if(!enemy)continue;

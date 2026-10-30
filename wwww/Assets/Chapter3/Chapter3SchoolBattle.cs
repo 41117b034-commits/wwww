@@ -54,6 +54,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     Transform scenery, enemiesRoot;
     Chapter3PathMotor guideMotor=new Chapter3PathMotor(),tadoMotor=new Chapter3PathMotor(),otherMotor=new Chapter3PathMotor();
     int guideIndex,otherIndex,otherEscortIndex;
+    readonly Dictionary<Chapter2Actor,Vector3> routeBypasses=new Dictionary<Chapter2Actor,Vector3>();
     Vector3[] activeRoute,otherRoute;
     Vector3 safePihu;
     float noticeUntil,hurtAt=-10;
@@ -66,6 +67,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     static readonly Vector3[] eastSquad={P(8,-8),P(25,-4),P(27.5f,7),P(27.5f,14),P(27.5f,24),P(27.5f,30),P(29,37),P(32,43),P(32,53),P(27.5f,54),P(27.5f,60),P(25,68),P(12,74),P(1.6f,78)};
     public void Begin(Chapter3SchoolController owner)
     {
+        routeBypasses.Clear();
         if(FollowGuide)FollowGuide.Hide();
         if(Rescue)Rescue.Suspend();
         school=owner;combat=school.flow.combat;player=school.player;ui=school.ui;
@@ -133,6 +135,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     void ResetMission(bool preserveArrival=false)
     {
+        routeBypasses.Clear();
         if(Selected==Mission.Tado){ResetAssaultMission(preserveArrival);return;}
         StopAssault();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
         Step=CheckpointStep;guideIndex=0;otherIndex=otherEscortIndex=0;
@@ -233,7 +236,16 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         while(guideIndex<activeRoute.Length||!OtherSquadsArrived||Flat(player.transform.position,P(0,78))>4||Flat(school.tado.transform.position,P(0,78))>4)
         {
             MoveRoute(guide,guideMotor,activeRoute,ref guideIndex,true,Selected==Mission.Bawan?Vector3.left*1.15f:Vector3.zero);
-            MoveOtherSquad();ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"跟隨同伴到校後空地 · WASD 移動 · 按住右鍵環視";
+            MoveOtherSquad();
+            bool playerArrived=Flat(player.transform.position,P(0,78))<=4;
+            if(playerArrived&&!OtherSquadsArrived)
+            {
+                bool rightPending=Selected==Mission.Tado?otherEscortIndex<eastSquad.Length:
+                    Selected==Mission.Bawan&&otherIndex<otherRoute.Length;
+                ui.objective.text=rightPending?"等待比胡從右側通道到校後匯合":"等待另外一隊到校後匯合";
+                ui.hint.text=rightPending?"比胡正在沿右側通道趕來 · 讓出集合處 · WASD 移動 · 按住右鍵環視":"同伴正在趕來，讓出集合處 · WASD 移動 · 按住右鍵環視";
+            }
+            else ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"到校後黃色指引處集合 · WASD 移動 · 按住右鍵環視";
             yield return null;
         }
         if(FollowGuide)FollowGuide.Hide();player.canMove=false;
@@ -258,6 +270,15 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     void MoveRoute(Chapter2Actor actor,Chapter3PathMotor motor,Vector3[] route,ref int index,bool waitForPlayer,Vector3 offset=default,float maxSpeed=float.PositiveInfinity)
     {
         if(index>=route.Length)return;
+        if(routeBypasses.TryGetValue(actor,out var bypass))
+        {
+            // Retain one side of the player until it is reached. Recomputing
+            // a new tangent every frame could leave a returning squad circling
+            // a player who is standing at the rear meeting point.
+            if(Flat(actor.transform.position,bypass)<.2f||Flat(player.transform.position,bypass)>3.5f||Flat(player.transform.position,bypass)<.95f)
+                routeBypasses.Remove(actor);
+            else {motor.Move(actor,bypass,Mathf.Min(3.1f,maxSpeed));return;}
+        }
         var target=route[index]+offset;
         // Give a player standing on a waypoint room instead of walking a face
         // through the first-person camera. Keep the route's collision checks.
@@ -274,8 +295,8 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         {
             var side=Vector3.Cross(Vector3.up,direction)*1.25f;
             var right=player.transform.position+side;right.y=0;var left=player.transform.position-side;left.y=0;
-            if(Chapter3PathMotor.Clear(actor.transform.position,right)){motor.Move(actor,right,Mathf.Min(3.1f,maxSpeed));return;}
-            if(Chapter3PathMotor.Clear(actor.transform.position,left)){motor.Move(actor,left,Mathf.Min(3.1f,maxSpeed));return;}
+            if(Chapter3PathMotor.Clear(actor.transform.position,right)){routeBypasses[actor]=right;motor.Move(actor,right,Mathf.Min(3.1f,maxSpeed));return;}
+            if(Chapter3PathMotor.Clear(actor.transform.position,left)){routeBypasses[actor]=left;motor.Move(actor,left,Mathf.Min(3.1f,maxSpeed));return;}
             return;
         }
         bool playerAhead=Vector3.Dot(toPlayer,target-actor.transform.position)>0;

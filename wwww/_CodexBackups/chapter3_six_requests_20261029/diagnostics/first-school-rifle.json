@@ -1,0 +1,20 @@
+{
+    "completed": false,
+    "mode": "school-rifle",
+    "checks": [
+        "formal scene",
+        "choose Tado",
+        "exactly four campus officers",
+        "retreat blocked before helping all groups",
+        "at least three visible native meshes",
+        "group 0 officer moves",
+        "group 1 officer moves",
+        "group 2 officer moves"
+    ],
+    "observations": [
+        "officer travel=19.75371,24.64394,18.66706,0 contacts=16,10,15,15"
+    ],
+    "errors": [
+        "System.Exception: FAILED: group 3 officer moves\r\n  at Chapter3SixRequestsVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:475 \r\n  at Chapter3SixRequestsVerify+<SixCampus>d__14.MoveNext () [0x00403] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:148 \r\n  at Chapter3SixRequestsVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3SixRequestsVerify.cs:49 "
+    ]
+}

@@ -27,6 +27,7 @@ public sealed class Chapter3Flow : MonoBehaviour
     int schoolEnteredFrame=-1;
     Text shortcutLegend;
     bool stationStarted;
+    public Chapter3StationLink StationLink {get;private set;}
     void Awake()
     {
         activeFlow=this;
@@ -39,6 +40,8 @@ public sealed class Chapter3Flow : MonoBehaviour
         if(school&&schoolRegion)
         {
             Approach=gameObject.AddComponent<Chapter3SchoolApproach>();
+            combatRegion.transform.position=new Vector3(0,0,Chapter3ApproachEnvironment.CombatOriginZ);
+            StationLink=gameObject.AddComponent<Chapter3StationLink>();StationLink.Build(this);
             Approach.Initialize(this);
         }
     }
@@ -47,6 +50,7 @@ public sealed class Chapter3Flow : MonoBehaviour
         foreach(var label in ui.canvas.GetComponentsInChildren<Text>(true))
             if(label.text.Contains("F6")&&label.text.Contains("F7")){shortcutLegend=label;break;}
         UpdateShortcutLegend();
+        if(startAtStation&&StationLink)StationLink.Preview();
         // One persistent camera, presentation, listener and EventSystem for every region.
         ui.replay.onClick.RemoveAllListeners();ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章"));
         ui.menu.onClick.RemoveAllListeners();ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
@@ -99,15 +103,27 @@ public sealed class Chapter3Flow : MonoBehaviour
         LeaveCurrent();Region="Station";Transitions++;stationRegion.SetActive(true);
         UpdateShortcutLegend();
         if(stationStarted)station.Begin();stationStarted=true;
+        if(StationLink)StationLink.Preview();
         // On its first activation Start() performs the initialization.
     }
     public void EnterCombat()
     {
         if(station.RefusalCommitted)return;
         LeaveCurrent();Region="Combat";Transitions++;combatRegion.SetActive(true);
+        combat.bawan.gameObject.SetActive(true);combat.pihu.gameObject.SetActive(true);
+        foreach(var light in combatRegion.GetComponentsInChildren<Light>(true))light.enabled=true;
         if(Approach)Approach.Prepare();
         combat.Begin();
         UpdateShortcutLegend();
+    }
+    public void ContinueFromStation()
+    {
+        Vector3 leader=station.bawan.transform.position,rear=station.pihu.transform.position;
+        Vector3 leaderFacing=station.bawan.facing,rearFacing=station.pihu.facing;
+        station.Suspend();station.bawan.gameObject.SetActive(false);station.pihu.gameObject.SetActive(false);
+        Region="Combat";Transitions++;
+        combat.bawan.gameObject.SetActive(true);combat.pihu.gameObject.SetActive(true);
+        combat.BeginFromStation(leader,rear,leaderFacing,rearFacing);UpdateShortcutLegend();
     }
     public void CompleteSchoolApproach()
     {
@@ -117,7 +133,7 @@ public sealed class Chapter3Flow : MonoBehaviour
         Vector3 leader=combat.bawan.transform.position,rear=combat.pihu.transform.position;
         Vector3 leaderFacing=combat.bawan.facing,rearFacing=combat.pihu.facing;
         schoolEnteredFrame=Time.frameCount;Region="School";Transitions++;
-        combat.Suspend();combatRegion.SetActive(false);
+        combat.Suspend();combatRegion.SetActive(false);stationRegion.SetActive(false);
         school.BeginFromApproach(leader,rear,leaderFacing,rearFacing);
         Approach.Finish();UpdateShortcutLegend();
     }
