@@ -1,0 +1,26 @@
+[
+  {
+    "report": "report-school-quick.json",
+    "completed": true,
+    "checks": 58,
+    "errors": []
+  },
+  {
+    "report": "report-school-knife.json",
+    "completed": true,
+    "checks": 54,
+    "errors": []
+  },
+  {
+    "report": "report-acceptance.json",
+    "completed": true,
+    "checks": 32,
+    "errors": []
+  },
+  {
+    "report": "report-retreat-reset.json",
+    "completed": true,
+    "checks": 17,
+    "errors": []
+  }
+]

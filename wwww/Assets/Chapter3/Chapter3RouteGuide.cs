@@ -9,6 +9,7 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
     readonly List<GameObject> dashes=new List<GameObject>();
     readonly List<float> markDistances=new List<float>();
     Transform follower,leader;
+    bool playerLeads;
     public float Length => distances.Count==0?0:distances[distances.Count-1];
     public int VisibleMarks {get;private set;}
     public void Show(Vector3 start,Vector3[] route,Transform player,Transform guide,System.Func<Vector3,float> ground=null)
@@ -38,10 +39,13 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         UpdateVisible();
     }
     void LateUpdate(){if(dashes.Count>0)UpdateVisible();}
+    public void ShowAhead(Vector3 start,Vector3[] route,Transform player)
+    {Show(start,route,player,player);playerLeads=true;UpdateVisible();}
     void UpdateVisible()
     {
         if(!follower||!leader){Hide();return;}
         float start=Project(follower.position)+.3f,end=Project(leader.position)-.7f;
+        if(playerLeads)end=Mathf.Min(Length,start+14);
         VisibleMarks=0;
         for(int i=0;i<dashes.Count;i++)
         {
@@ -86,5 +90,5 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         }
         return result;
     }
-    public void Hide(){foreach(var mark in dashes)if(mark){mark.SetActive(false);Destroy(mark);}dashes.Clear();markDistances.Clear();VisibleMarks=0;follower=leader=null;}
+    public void Hide(){foreach(var mark in dashes)if(mark){mark.SetActive(false);Destroy(mark);}dashes.Clear();markDistances.Clear();VisibleMarks=0;follower=leader=null;playerLeads=false;}
 }

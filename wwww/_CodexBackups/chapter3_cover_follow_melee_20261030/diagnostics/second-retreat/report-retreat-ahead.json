@@ -1,0 +1,45 @@
+{
+    "completed": false,
+    "mode": "retreat-ahead",
+    "checks": [
+        "formal scene",
+        "choose Tado",
+        "duel 0 has contact",
+        "duel 0 uses parry",
+        "duel 1 has contact",
+        "duel 1 uses parry",
+        "duel 2 has contact",
+        "duel 2 uses parry",
+        "duel 3 has contact",
+        "duel 3 uses parry",
+        "whistle",
+        "duplicate whistle blocked"
+    ],
+    "observations": [
+        "melee contacts=7,8,6,11 parries=3,4,10,7 swings=15,17,14,17",
+        "Setup fixture: four guards defeated and stages advanced; Tado at fourth rally, player at whistle. All subsequent walking uses runtime collisions.",
+        "retreater 0 pos=(-4.40, 0.00, 72.50) leg=13 target=(-4.40, 0.00, 72.50) obstacles=校內埋伏的族人 1 at (-4.40, 0.00, 72.50)",
+        "retreater 1 pos=(-2.19, 0.00, 72.46) leg=8 target=(-2.19, 0.00, 72.46) obstacles=校內埋伏的族人 2 at (-2.19, 0.00, 72.46)",
+        "retreater 2 pos=(0.00, 0.00, 72.50) leg=13 target=(0.00, 0.00, 72.50) obstacles=校內埋伏的族人 3 at (0.00, 0.00, 72.50)",
+        "retreater 3 pos=(17.98, 0.00, 44.44) leg=3 target=(24.20, 0.00, 45.40) obstacles=",
+        "retreater 4 pos=(4.42, 0.00, 72.33) leg=8 target=(4.42, 0.00, 72.33) obstacles=校內埋伏的族人 5 at (4.42, 0.00, 72.33)",
+        "retreater 5 pos=(-4.40, 0.00, 74.70) leg=8 target=(-4.40, 0.00, 74.70) obstacles=校內埋伏的族人 6 at (-4.40, 0.00, 74.70)",
+        "retreater 6 pos=(-2.19, 0.00, 74.60) leg=12 target=(-2.19, 0.00, 74.60) obstacles=校內埋伏的族人 7 at (-2.19, 0.00, 74.60)",
+        "retreater 7 pos=(0.00, 0.00, 74.70) leg=9 target=(0.00, 0.00, 74.70) obstacles=校內埋伏的族人 8 at (0.00, 0.00, 74.70)",
+        "retreater 8 pos=(2.20, 0.00, 74.70) leg=8 target=(2.20, 0.00, 74.70) obstacles=校內埋伏的族人 9 at (2.20, 0.00, 74.70)",
+        "retreater 9 pos=(4.40, 0.00, 74.70) leg=12 target=(4.40, 0.00, 74.70) obstacles=校內埋伏的族人 10 at (4.40, 0.00, 74.70)",
+        "retreater 0 pos=(-4.40, 0.00, 72.50) leg=13 target=(-4.40, 0.00, 72.50) obstacles=校內埋伏的族人 1 at (-4.40, 0.00, 72.50)",
+        "retreater 1 pos=(-2.19, 0.00, 72.46) leg=8 target=(-2.19, 0.00, 72.46) obstacles=校內埋伏的族人 2 at (-2.19, 0.00, 72.46)",
+        "retreater 2 pos=(0.00, 0.00, 72.50) leg=13 target=(0.00, 0.00, 72.50) obstacles=校內埋伏的族人 3 at (0.00, 0.00, 72.50)",
+        "retreater 3 pos=(17.98, 0.00, 44.44) leg=3 target=(24.20, 0.00, 45.40) obstacles=",
+        "retreater 4 pos=(4.42, 0.00, 72.33) leg=8 target=(4.42, 0.00, 72.33) obstacles=校內埋伏的族人 5 at (4.42, 0.00, 72.33)",
+        "retreater 5 pos=(-4.40, 0.00, 74.70) leg=8 target=(-4.40, 0.00, 74.70) obstacles=校內埋伏的族人 6 at (-4.40, 0.00, 74.70)",
+        "retreater 6 pos=(-2.19, 0.00, 74.60) leg=12 target=(-2.19, 0.00, 74.60) obstacles=校內埋伏的族人 7 at (-2.19, 0.00, 74.60)",
+        "retreater 7 pos=(0.00, 0.00, 74.70) leg=9 target=(0.00, 0.00, 74.70) obstacles=校內埋伏的族人 8 at (0.00, 0.00, 74.70)",
+        "retreater 8 pos=(2.20, 0.00, 74.70) leg=8 target=(2.20, 0.00, 74.70) obstacles=校內埋伏的族人 9 at (2.20, 0.00, 74.70)",
+        "retreater 9 pos=(4.40, 0.00, 74.70) leg=12 target=(4.40, 0.00, 74.70) obstacles=校內埋伏的族人 10 at (4.40, 0.00, 74.70)"
+    ],
+    "errors": [
+        "System.Exception: retreat timeout count=9 player=(0.41, 0.01, 78.13) T=(0.04, 0.02, 75.98) guide=7\r\n  at Chapter3FollowMeleeVerify+<RetreatAhead>d__15.MoveNext () [0x00735] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FollowMeleeVerify.cs:170 \r\n  at Chapter3FollowMeleeVerify+<Run>d__10.MoveNext () [0x00092] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FollowMeleeVerify.cs:60 "
+    ]
+}

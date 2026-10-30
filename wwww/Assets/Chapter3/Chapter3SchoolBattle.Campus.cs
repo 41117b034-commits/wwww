@@ -57,7 +57,7 @@ public sealed partial class Chapter3SchoolBattle
             var enemy=Enemies[i];if(!enemy)continue;
             enemy.AttackEnabled=Fighting&&!enemy.Defeated&&Step<AssaultCombatStages;
             if(!enemy.AttackEnabled){enemy.escortTarget=null;continue;}
-            var ally=ambient.Ambusher(campusAllies[i]);
+            var ally=ambient.PoliceTarget(i);
             enemy.escortTarget=ally;
             enemy.engagementRange=1.9f;enemy.attackInterval=2.8f;
         }

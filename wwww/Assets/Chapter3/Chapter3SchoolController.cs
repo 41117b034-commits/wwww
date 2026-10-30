@@ -29,6 +29,8 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     Light previousSun;
     bool lightingSet;
     bool approachPrepared;
+    Chapter3SchoolCompanionPose tadoCoverPose;
+    public Transform TadoCover {get;private set;}
     public bool ApproachPrepared=>approachPrepared;
 
     public void Begin()
@@ -46,7 +48,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         StopAllCoroutines();Exploring=false;MetTado=false;
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
-        Battle.Begin(this);approachPrepared=true;
+        Battle.Begin(this);PlaceTadoInCover();approachPrepared=true;
     }
     void BeginCore(bool walking,Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
     {
@@ -69,7 +71,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
             pihu.Face(pihu.transform.position+rearFacing);
         }
         bawan.speaking=pihu.speaking=tado.speaking=false;
-        tado.transform.position=new Vector3(-4.7f,0,-5);
+        PlaceTadoInCover();
         player.chapter=null;player.station=null;player.combat=null;player.school=this;
         // Solid companions keep the camera out of their heads. Mission walking
         // also gives the player room when a companion crosses their position.
@@ -102,6 +104,19 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         ArrivalGuide.Show(spawn,new[]{tado.transform.position},player.transform,tado.transform);
         Speak(bawan,"學校就在前面，達多在校門旁等我們。",4.2f);
     }
+    void PlaceTadoInCover()
+    {
+        // Reuse the authored rock southwest of the gate, on its forest side.
+        if(!TadoCover)foreach(var t in GetComponentsInChildren<Transform>(true))
+            if(t.name=="可碰撞岩石 0"){TadoCover=t;break;}
+        Vector3 rock=TadoCover?TadoCover.position:new Vector3(-9,0,-12);
+        Vector3 away=Vector3.ProjectOnPlane(rock-new Vector3(0,0,20),Vector3.up).normalized;
+        tado.transform.position=rock+away*1.9f;tado.GroundHeight=0;
+        tado.Face(new Vector3(0,0,20));
+        if(!tadoCoverPose)tadoCoverPose=tado.GetComponent<Chapter3SchoolCompanionPose>()??tado.gameObject.AddComponent<Chapter3SchoolCompanionPose>();
+        tadoCoverPose.SetUnderFire(true);
+    }
+    public void ReleaseTadoCover(){if(tadoCoverPose)tadoCoverPose.Clear();}
     public void Suspend()
     {
         StopAllCoroutines();Exploring=false;

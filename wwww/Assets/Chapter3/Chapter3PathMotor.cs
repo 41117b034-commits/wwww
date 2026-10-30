@@ -65,6 +65,12 @@ public sealed class Chapter3PathMotor
         if((target-start).sqrMagnitude<stoppingDistance*stoppingDistance)
         {path.Clear();CancelSearch();goal=target;nextPlan=0;return;}
 
+        // A moving guest can enter a follower's capsule after a path was
+        // planned. A half-metre search cell may then have no valid first edge.
+        // Separate by one normal walking step before resuming that search.
+        if(crowd&&SeparateCrowdOverlap(crowd,start,target,speed,groundedY))
+        {path.Clear();CancelSearch();nextPlan=0;return;}
+
         // Explicit retargeting/repositioning cannot publish an old search.
         // Small moving-target adjustments retain the original search snapshot.
         if(searching&&((target-searchTarget).sqrMagnitude>RetargetDistanceSquared||
@@ -123,6 +129,32 @@ public sealed class Chapter3PathMotor
         path[path.Count-1]=target;goal=target;return true;
     }
 
+    bool SeparateCrowdOverlap(Chapter3SchoolCrowdActor actor,Vector3 start,Vector3 target,float speed,float groundedY)
+    {
+        var people=new List<Transform>();
+        foreach(var c in Physics.OverlapCapsule(start+Vector3.up*.42f,start+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
+        {
+            if(c.transform.IsChildOf(actor.transform))continue;
+            var crowd=c.GetComponentInParent<Chapter3SchoolCrowdActor>();var leader=c.GetComponentInParent<Chapter2Actor>();
+            Transform person=crowd?crowd.transform:leader?leader.transform:c is CharacterController?c.transform:null;
+            if(person&&!people.Contains(person))people.Add(person);
+        }
+        if(people.Count==0)return false;
+        Vector3 wanted=(target-start).normalized,best=Vector3.zero;float score=float.NegativeInfinity;
+        float distance=Mathf.Min(speed*Time.deltaTime,.15f);
+        for(int i=0;i<16;i++)
+        {
+            Vector3 direction=Quaternion.Euler(0,i*22.5f,0)*Vector3.forward,step=start+direction*distance;
+            if(!ClearForActor(start,step))continue;
+            float clearance=float.PositiveInfinity;
+            foreach(var person in people)clearance=Mathf.Min(clearance,Vector3.ProjectOnPlane(step-person.position,Vector3.up).sqrMagnitude);
+            float value=clearance*10+Vector3.Dot(direction,wanted)*.1f;
+            if(value>score){score=value;best=step;}
+        }
+        if(float.IsNegativeInfinity(score))return false;
+        best.y=groundedY;return actor.StepAlongWithdrawal(best);
+    }
+
     static bool Obstacle(Collider collider)
     {
         if(collider is CharacterController||collider.GetComponentInParent<Chapter2Actor>())return false;
@@ -143,17 +175,24 @@ public sealed class Chapter3PathMotor
 
     static bool Blocks(Collider collider,Vector3 from,Vector3 to,Transform separating)
     {
-        if(!Obstacle(collider))return false;
+        if(separating&&collider.transform.IsChildOf(separating))return false;
+        // Retreat followers must plan around people, including standing
+        // leaders and the player. Ignoring them here but rejecting their
+        // bodies in StepAlongWithdrawal created a permanently blocked path.
+        bool person=separating&&(collider is CharacterController||collider.GetComponentInParent<Chapter2Actor>()||collider.GetComponentInParent<Chapter3SchoolCrowdActor>());
+        if(!person&&!Obstacle(collider))return false;
         // A nearby person may have fallen across the retreat's starting point.
         // Permit only a short step away from that existing overlap, so the
         // search can leave it. Walls and long edges never get this exception.
         if(separating&&(from-Vector3.ProjectOnPlane(separating.position,Vector3.up)).sqrMagnitude<.01f
             &&(to-from).sqrMagnitude<1.21f)
         {
-            var person=collider.GetComponentInParent<Chapter3Bystander>();
-            if(person)
+            var bystander=collider.GetComponentInParent<Chapter3Bystander>();
+            if(person||bystander)
             {
-                Vector3 centre=Vector3.ProjectOnPlane(person.transform.position,Vector3.up);
+                var other=collider.GetComponentInParent<Chapter2Actor>();
+                var crowd=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
+                Vector3 centre=Vector3.ProjectOnPlane(crowd?crowd.transform.position:other?other.transform.position:bystander?bystander.transform.position:collider.transform.position,Vector3.up);
                 if((to-centre).sqrMagnitude>(from-centre).sqrMagnitude+.00001f)return false;
             }
         }

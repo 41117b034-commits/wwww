@@ -153,7 +153,9 @@ public sealed class Chapter3Weapons : MonoBehaviour
     {if(!combat.Fighting||Selected!=Weapon.Rifle||Reloading||Reserve>=8)return false;Reserve=8;Notice("取得備用彈藥，按 R 裝填。");return true;}
     public string Controls => Selected==Weapon.Knife ? "左鍵揮刀 · Esc 放開滑鼠" : "左鍵射擊 · 右鍵瞄準 · R 單發裝填 · Esc 放開滑鼠";
     void Notice(string text,float seconds=1.6f){Feedback=text;feedbackUntil=Time.time+seconds;}
-    void LateUpdate()
+    void LateUpdate(){Present();}
+    // Also called on the combat transition, before its first rendered frame.
+    public void Present()
     {
         if(!combat||!combat.Fighting)return;
         if(Time.time>feedbackUntil)Feedback="";

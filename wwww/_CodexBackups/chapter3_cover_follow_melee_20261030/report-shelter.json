@@ -1,0 +1,16 @@
+{
+    "completed": true,
+    "mode": "shelter",
+    "checks": [
+        "formal scene",
+        "existing shelter rock",
+        "Tado outside gate and concealed",
+        "rock physically screens Tado",
+        "choose covered Tado",
+        "cover releases for mission"
+    ],
+    "observations": [
+        "rock=(-9.68, 0.89, -11.93) tado=(-10.24, 0.02, -13.75)"
+    ],
+    "errors": []
+}

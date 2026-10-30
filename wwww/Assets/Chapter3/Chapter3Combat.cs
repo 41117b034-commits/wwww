@@ -59,16 +59,11 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     {
         ui.fade.color=Color.clear;ui.objective.text="沿土路前進，準備突破巡警";
         ui.Say(bawan.DisplayName,"前面有巡警。靠著岩石走，別站在路中央。");
-        float until=Time.time+lineSeconds;
-        var left=WorldPoint(new Vector3(-5.1f,0,-5));var right=WorldPoint(new Vector3(5.2f,0,-6));
-        while(Time.time<until||player.transform.position.z<WorldPoint(new Vector3(0,0,-11)).z)
-        {
-            if(Vector3.Distance(player.transform.position,bawan.transform.position)<7)leaderMotor.Move(bawan,left,2.4f);
-            if(Vector3.Distance(player.transform.position,pihu.transform.position)<7)rearMotor.Move(pihu,right,2.7f);
-            ui.hint.text="沿土路前進 · WASD 移動 · 按住右鍵環視";yield return null;
-        }
+        // Dialogue completion alone starts combat, even if the player stays
+        // at the station handoff. Cover movement must never wait on that walk.
+        yield return Chapter3Flow.WaitForLine(lineSeconds);
         ui.Say(pihu.DisplayName,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。");
-        yield return new WaitForSeconds(lineSeconds);
+        yield return Chapter3Flow.WaitForLine(lineSeconds);
         StartFighting(false);
     }
     IEnumerator Introduction()
@@ -83,6 +78,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     {
         CurrentStage=Stage.Fighting;ui.Say("",null);ui.hint.text="";ui.objective.text="突破前方巡警，與同伴繼續前進";
         player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
+        weapons.Present();UpdateCompanionCover();
         if(focus)player.FocusOn(WorldPoint(new Vector3(0,1.3f,10)));
         Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
     }

@@ -10,6 +10,42 @@ public sealed partial class Chapter3SchoolAmbient
     readonly Chapter3PathMotor[] withdrawalMotors=new Chapter3PathMotor[AmbusherCount];
     readonly Vector3[] withdrawalHomes=new Vector3[AmbusherCount];
     readonly Quaternion[] withdrawalRotations=new Quaternion[AmbusherCount];
+    // A route coordinate, independent of camera yaw, keeps the player ahead
+    // through the two right-angle corners as well as on straight ground.
+    static readonly Vector3[] withdrawalSpine={new Vector3(13,0,33),new Vector3(17,0,34),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(24.2f,0,61),new Vector3(22,0,66),new Vector3(12,0,70),new Vector3(0,0,76)};
+    public static float WithdrawalProgress(Vector3 point)
+    {
+        float best=float.PositiveInfinity,result=0,length=0;
+        for(int i=1;i<withdrawalSpine.Length;i++)
+        {
+            Vector3 a=withdrawalSpine[i-1],d=withdrawalSpine[i]-a;point.y=0;
+            float t=Mathf.Clamp01(Vector3.Dot(point-a,d)/d.sqrMagnitude);
+            float distance=(point-a-d*t).sqrMagnitude;
+            if(distance<best){best=distance;result=length+d.magnitude*t;}
+            length+=d.magnitude;
+        }
+        return result;
+    }
+    static Vector3 WithdrawalSample(float progress)
+    {
+        for(int i=1;i<withdrawalSpine.Length;i++)
+        {
+            float length=Horizontal(withdrawalSpine[i-1],withdrawalSpine[i]);
+            if(progress<=length)return Vector3.Lerp(withdrawalSpine[i-1],withdrawalSpine[i],Mathf.Clamp01(progress/length));
+            progress-=length;
+        }
+        return withdrawalSpine[withdrawalSpine.Length-1];
+    }
+    public bool PlayerAtWithdrawalAssembly=>withdrawalPlayer&&Horizontal(withdrawalPlayer.position,new Vector3(0,0,78))<4;
+    public bool CanFollowWithdrawal(Vector3 current,ref Vector3 target,float gap)
+    {
+        if(PlayerAtWithdrawalAssembly)return true;
+        float limit=WithdrawalProgress(withdrawalPlayer.position)-gap;
+        float progress=WithdrawalProgress(current);
+        if(limit<=0||progress>=limit-.15f)return false;
+        if(WithdrawalProgress(target)>limit)target=WithdrawalSample(limit);
+        return true;
+    }
     Transform withdrawalPlayer;
     public bool Withdrawing {get;private set;}
     public int WithdrawalSignalFrame {get;private set;}=-1;
@@ -44,7 +80,7 @@ public sealed partial class Chapter3SchoolAmbient
             actor.FollowingWithdrawal=true;
             if(withdrawalMotors[i]==null)withdrawalMotors[i]=new Chapter3PathMotor();
             withdrawalMotors[i].Reset();
-            actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
+            actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
             withdrawalRoutes[i]=BuildWithdrawalRoute(actor.transform.position,i);withdrawalLeg[i]=0;
         }
         // Releasing the two holds must not leave their former partners frozen
@@ -98,6 +134,16 @@ public sealed partial class Chapter3SchoolAmbient
             if(withdrawalLeg[i]>=route.Length)
             {actor.SetWaiting(false);actor.Face(withdrawalPlayer.position,65);continue;}
             Vector3 current=actor.transform.position,target=route[withdrawalLeg[i]],toPlayer=withdrawalPlayer.position-current;
+            // A fleeing guest can stop on an authored corner. A* cannot
+            // solve an occupied goal, even when the aisle beside it is open.
+            // Pick a nearby clear corner and retain it in this actor's route.
+            // The last assembly slot is never moved or counted early.
+            if(withdrawalLeg[i]<route.Length-1)
+            {
+                Vector3 corner=OpenWithdrawalCorner(target,route[withdrawalLeg[i]+1]);
+                if((corner-target).sqrMagnitude>.001f)
+                {target=route[withdrawalLeg[i]]=corner;withdrawalMotors[i].Reset();}
+            }
             // Consume an intermediate corner before yielding to neighbours:
             // nobody needs to stand on its exact centre to turn through it.
             // The longer campus battle brings both flanks here together.
@@ -117,48 +163,25 @@ public sealed partial class Chapter3SchoolAmbient
                 if(withdrawalLeg[i]>=route.Length)actor.FollowingWithdrawal=false;
                 continue;
             }
-            toPlayer.y=0;Vector3 direction=target-current;direction.y=0;
-            // The withdrawal progresses toward the north/rear. A lateral
-            // corner must not misclassify a player already at the rear as
-            // "behind" merely because they are left of this short waypoint.
-            bool playerBehind=withdrawalPlayer.position.z<current.z-1.5f;
-            if(toPlayer.magnitude>10&&playerBehind){actor.SetWaiting(false);continue;}
-            if(YieldToWithdrawal(i,direction.normalized,out var yieldPoint))
-            {
-                actor.SetWaiting(false);
-                if(Horizontal(current,yieldPoint)>.1f)withdrawalMotors[i].Move(actor,yieldPoint,1.4f);
-                continue;
-            }
+            // Join the exit from the authored safe aisle, then follow behind
+            // the player. Never wait for a leader who is waiting for this crowd.
+            bool onSpine=target.x>=17||target.z>=44;
+            if(onSpine&&!CanFollowWithdrawal(current,ref target,3.4f)){actor.SetWaiting(false);continue;}
             actor.SetWaiting(false);
             withdrawalMotors[i].Move(actor,target,3.2f);
         }
     }
-    bool YieldToWithdrawal(int index,Vector3 direction,out Vector3 yieldPoint)
+    public static Vector3 OpenWithdrawalCorner(Vector3 target,Vector3 next)
     {
-        Vector3 current=assailants[index].transform.position;yieldPoint=current;
-        for(int other=0;other<AmbusherCount;other++)if(other!=index&&assailants[other])
-        {
-            if(withdrawalRoutes[other]==null||withdrawalLeg[other]>=withdrawalRoutes[other].Length)continue;
-            Vector3 delta=assailants[other].transform.position-current;delta.y=0;
-            Vector3 otherDirection=withdrawalRoutes[other][withdrawalLeg[other]]-assailants[other].transform.position;otherDirection.y=0;
-            if(Vector3.Dot(direction,otherDirection.normalized)<.4f&&index<other)continue;
-            float along=Vector3.Dot(delta,direction);
-            if(delta.sqrMagnitude<1.05f*1.05f&&along>.15f&&Vector3.Cross(delta,direction).magnitude<.8f)
+        if(Chapter3PathMotor.Clear(target,target))return target;
+        Vector3 forward=Vector3.ProjectOnPlane(next-target,Vector3.up).normalized;
+        foreach(float radius in new[]{.8f,1.25f,1.75f})
+            foreach(float angle in new[]{0f,45f,-45f,90f,-90f,135f,-135f,180f})
             {
-                // At the rear assembly area one participant turns north while
-                // the next is still heading west. Waiting in place blocks the
-                // very person being yielded to. Make a small perpendicular
-                // step away, using the same motor and per-step body collisions.
-                if(current.z>66&&Vector3.Dot(direction,otherDirection.normalized)<.85f)
-                {
-                    var side=Vector3.Cross(Vector3.up,otherDirection.normalized);
-                    if(Vector3.Dot(side,delta)>0)side=-side;
-                    yieldPoint=current+side*1.1f;
-                }
-                return true;
+                Vector3 alternative=target+Quaternion.Euler(0,angle,0)*forward*radius;
+                if(Chapter3PathMotor.Clear(alternative,alternative)&&Chapter3PathMotor.Clear(alternative,next))return alternative;
             }
-        }
-        return false;
+        return target;
     }
     static float Horizontal(Vector3 a,Vector3 b){a.y=b.y=0;return Vector3.Distance(a,b);}
 }

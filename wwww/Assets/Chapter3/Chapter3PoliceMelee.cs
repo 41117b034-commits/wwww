@@ -16,6 +16,17 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
     public int Swings {get;private set;}
     public int Contacts {get;private set;}
     public bool Swinging=>started>=0;
+    public float StrikeProgress=>started<0?0:Mathf.Clamp01((Time.time-started)/.9f);
+    public bool Blocking=>Time.time<blockUntil;
+    public bool Recovering=>Swinging&&StrikeProgress>.70f;
+    public int Parries {get;private set;}
+    public int AttackVariant=>Swings%3;
+    float blockUntil;
+    public bool ParryAlly()
+    {
+        if(Swinging||Time.time<flinchUntil)return false;
+        blockUntil=Time.time+.42f;nextStrike=Mathf.Min(nextStrike,Time.time+.48f);Parries++;return true;
+    }
     public Transform Weapon=>weapon;
     public void Configure(Chapter3Enemy owner)
     {
@@ -38,12 +49,12 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
         {started=-1;return;}
         Vector3 target=enemy.escortTarget?enemy.escortTarget.position:enemy.combat.player.transform.position;
         enemy.actor.Face(target);
-        if(Time.time<flinchUntil)return;
+        if(Time.time<flinchUntil||Blocking)return;
         float range=Vector3.ProjectOnPlane(target-transform.position,Vector3.up).magnitude;
         if(started<0&&range<=1.9f&&Time.time>=nextStrike)
         {started=Time.time;strikeTarget=enemy.escortTarget;landed=false;Swings++;}
         if(started<0)return;
-        float progress=(Time.time-started)/1.15f;
+        float progress=StrikeProgress;
         if(progress>=.62f&&!landed)
         {
             landed=true;
@@ -56,7 +67,7 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
                 else if(!enemy.AlliesOnly)enemy.combat.Damage(20,enemy.AimPoint);
             }
         }
-        if(progress>=1){started=-1;nextStrike=Time.time+1.4f;}
+        if(progress>=1){started=-1;nextStrike=Time.time+(Swings%3==0?.85f:.38f);}
     }
     void LateUpdate()
     {
@@ -80,15 +91,17 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
         }
         if(!upper||!elbow)return;
         Vector3 forward=rig.Forward,right=Vector3.Cross(Vector3.up,forward);
-        float p=started<0?0:Mathf.Clamp01((Time.time-started)/1.15f);
+        float p=StrikeProgress;
         float wind=started<0?0:Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,.38f,p));
         float cut=started<0?0:Mathf.SmoothStep(0,1,Mathf.InverseLerp(.38f,.72f,p));
         float recover=started<0?0:Mathf.SmoothStep(0,1,Mathf.InverseLerp(.76f,1,p));
         Vector3 guard=upper.position+forward*.32f+right*.07f-Vector3.up*.22f;
         Vector3 raised=upper.position+Vector3.up*.28f-forward*.08f;
         Vector3 follow=upper.position+forward*.48f-right*.16f-Vector3.up*.24f;
+        if(AttackVariant==1){raised=upper.position+right*.33f+forward*.10f+Vector3.up*.12f;follow=upper.position-right*.30f+forward*.40f-Vector3.up*.08f;}
+        if(AttackVariant==2){raised=upper.position-right*.22f+forward*.12f;follow=upper.position+right*.27f+forward*.43f-Vector3.up*.14f;}
         Vector3 hand=Vector3.Lerp(Vector3.Lerp(Vector3.Lerp(guard,raised,wind),follow,cut),guard,recover);
-        bool block=Time.time<flinchUntil;
+        bool block=Time.time<flinchUntil||Blocking;
         if(block)hand=upper.position+forward*.26f+Vector3.up*.04f;
         Quaternion wrist=rig.RightHand.rotation;
         Chapter1IncidentRig.Solve(upper,elbow,rig.RightHand,hand,right+Vector3.down*.3f);
@@ -97,6 +110,7 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
             Chapter1IncidentRig.Solve(leftUpper,leftElbow,rig.LeftHand,leftUpper.position+forward*.24f-Vector3.up*.22f,-right);
         Vector3 direction=block?(Vector3.up+right*.85f).normalized:
             Vector3.Slerp(Vector3.Slerp((Vector3.up+forward*.55f).normalized,Vector3.up-forward*.3f,wind),forward-Vector3.up*.65f,cut*(1-recover));
+        if(!block&&AttackVariant>0)direction=Vector3.Slerp(direction,(forward+(AttackVariant==1?-right:right)*.65f-Vector3.up*.15f).normalized,cut*(1-recover));
         weapon.SetPositionAndRotation(rig.RightHand.position+forward*.025f,Quaternion.LookRotation(right,direction));
     }
     Material Material(string name,Color color,float metal)

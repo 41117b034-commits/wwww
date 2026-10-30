@@ -115,6 +115,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     public bool Choose(Mission mission)
     {
         if(CurrentStage!=Stage.Choice||(mission!=Mission.Tado&&mission!=Mission.Bawan&&mission!=Mission.Pihu))return false;
+        school.ReleaseTadoCover();
         Selected=mission;CheckpointStep=0;Menu.Hide();CurrentStage=Stage.Outbreak;StartCoroutine(Outbreak());return true;
     }
     IEnumerator Outbreak()

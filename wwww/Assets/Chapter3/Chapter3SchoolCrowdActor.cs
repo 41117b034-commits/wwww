@@ -56,6 +56,10 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     Chapter1IncidentRig nativeRig;
     Chapter3SchoolCrowdActor restrainedGuest;
     Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
+    Transform meleeSpine;
+    float meleeGuard;
+    int meleeVariant;
+    public void SetMeleePose(float guard,int variant){meleeGuard=guard;meleeVariant=variant;}
     Vector3 nativePrevious;
     Transform boneRoot;
     Bounds body;
@@ -472,6 +476,28 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
                 Chapter1IncidentRig.Solve(nativeUpperArm,nativeElbow,hand,target,right+nativeRig.Forward*.2f);
                 hand.rotation=Quaternion.FromToRotation(before,hand.position-nativeElbow.position)*wrist;
             }
+            if(meleeGuard>0&&nativeUpperArm&&nativeElbow&&nativeRig.RightHand)
+            {
+                Vector3 forward=nativeRig.Forward,right=Vector3.Cross(Vector3.up,forward);
+                float wind=strike>0?Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,.36f,strike)):0;
+                float cut=strike>0?Mathf.SmoothStep(0,1,Mathf.InverseLerp(.36f,.68f,strike)):0;
+                float recover=strike>0?Mathf.SmoothStep(0,1,Mathf.InverseLerp(.7f,1,strike)):0;
+                Vector3 guard=nativeUpperArm.position+forward*.28f+right*.05f-Vector3.up*(meleeGuard>.8f?-.03f:.15f);
+                Vector3 raised=nativeUpperArm.position+Vector3.up*.28f-forward*.07f;
+                Vector3 follow=nativeUpperArm.position+forward*.44f-right*.18f-Vector3.up*.23f;
+                if(meleeVariant>0)
+                {
+                    float side=meleeVariant==1?1:-1;
+                    raised=nativeUpperArm.position+right*side*.28f+Vector3.up*.10f;
+                    follow=nativeUpperArm.position+forward*.43f-right*side*.25f-Vector3.up*.1f;
+                }
+                Vector3 hand=Vector3.Lerp(Vector3.Lerp(Vector3.Lerp(guard,raised,wind),follow,cut),guard,recover);
+                Vector3 forearm=nativeRig.RightHand.position-nativeElbow.position;Quaternion wrist=nativeRig.RightHand.rotation;
+                Chapter1IncidentRig.Solve(nativeUpperArm,nativeElbow,nativeRig.RightHand,hand,right-Vector3.up*.3f);
+                nativeRig.RightHand.rotation=Quaternion.FromToRotation(forearm,nativeRig.RightHand.position-nativeElbow.position)*wrist;
+                if(!meleeSpine)meleeSpine=FindNativeBone(nativeRig.animator,HumanBodyBones.Spine,"Spine","Spine1","Waist");
+                if(meleeSpine)meleeSpine.rotation=Quaternion.AngleAxis((wind*10-cut*22)*(1-recover)*(meleeVariant==2?-1:1),Vector3.up)*meleeSpine.rotation;
+            }
             if(presentationSpear&&nativeRig.RightHand)
             {
                 Vector3 direction=Vector3.Slerp(Vector3.up,nativeRig.Forward,strike>0?.3f+.35f*Mathf.Sin(strike*Mathf.PI):.18f);
@@ -481,6 +507,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             {
                 float cut=strike>0?Mathf.Sin(strike*Mathf.PI):0;
                 Vector3 direction=HoldingAtNeck?-restrainedGuest.transform.right:Vector3.Slerp(Vector3.up,nativeRig.Forward*.7f-Vector3.up*.7f,cut);
+                if(meleeGuard>0&&strike<=0)direction=(Vector3.up+Vector3.Cross(Vector3.up,nativeRig.Forward)*.55f).normalized;
                 Vector3 bladeNormal=HoldingAtNeck?restrainedGuest.transform.forward:Vector3.Cross(Vector3.up,nativeRig.Forward);
                 presentationKnife.SetPositionAndRotation(nativeRig.RightHand.position,Quaternion.LookRotation(bladeNormal,direction));
             }

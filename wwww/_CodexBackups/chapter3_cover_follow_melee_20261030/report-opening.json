@@ -1,0 +1,18 @@
+{
+    "completed": true,
+    "mode": "opening",
+    "checks": [
+        "formal scene",
+        "dialogue alone starts fight",
+        "player stayed at handoff",
+        "rifle visible on first combat frame",
+        "rifle immediately ready",
+        "rock and right tree crouch",
+        "Pihu retains original tree",
+        "F7 weapon ready",
+        "mountain retry",
+        "retry ready"
+    ],
+    "observations": [],
+    "errors": []
+}

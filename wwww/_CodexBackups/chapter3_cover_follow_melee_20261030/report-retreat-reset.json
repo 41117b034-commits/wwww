@@ -1,0 +1,28 @@
+{
+    "completed": true,
+    "mode": "retreat-reset",
+    "checks": [
+        "formal scene",
+        "choose Tado",
+        "duel 0 has contact",
+        "duel 0 uses parry",
+        "duel 1 has contact",
+        "duel 1 uses parry",
+        "duel 2 has contact",
+        "duel 2 uses parry",
+        "duel 3 has contact",
+        "duel 3 uses parry",
+        "whistle",
+        "forward retreat arrows",
+        "duplicate whistle blocked",
+        "retry withdrawal",
+        "retry requires new signal",
+        "retry whistle",
+        "F8 clears crowd following"
+    ],
+    "observations": [
+        "melee contacts=8,9,6,11 parries=2,6,9,7 swings=15,17,14,18",
+        "Setup fixture: four guards defeated and stages advanced; Tado at fourth rally, player at whistle. All subsequent walking uses runtime collisions."
+    ],
+    "errors": []
+}
