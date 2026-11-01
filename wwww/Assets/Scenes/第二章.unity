@@ -16874,27 +16874,27 @@ MonoBehaviour:
   - id: C2_022
     role: 3
     chinese: "\u74E6\u65E6\uFF0C\u770B\u770B\u6211\u5011\u7684\u5E74\u8F15\u4EBA\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 0cb1f18d1bb09f145b118c101650fc83, type: 3}
     volumeDb: 0
   - id: C2_023
     role: 3
     chinese: "\u624B\u662F\u7528\u4F86\u63E1\u7375\u5200\u7684\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 0f46ce7bb2694eb4ca933fea32c270a9, type: 3}
     volumeDb: 0
   - id: C2_024
     role: 3
     chinese: "\u73FE\u5728\u537B\u5728\u5E6B\u65E5\u4EBA\u625B\u6728\u6750\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 530aeee5f11dfa04f92da75b90880518, type: 3}
     volumeDb: 0
   - id: C2_025
     role: 3
     chinese: "\u4E1F\u4E86 Gaya\uFF08\u7956\u9748\u7684\u6559\u8AA8\uFF09\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 3f6e4fc1bf3e235468f71d4b4c102cd6, type: 3}
     volumeDb: 0
   - id: C2_026
     role: 3
     chinese: "\u6211\u5011\u6D3B\u8457\u548C\u91CE\u7378\u6709\u4EC0\u9EBC\u5169\u6A23\uFF1F"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: e8c1c5e67f3571644b5de91ba3f8c268, type: 3}
     volumeDb: 0
   - id: C2_027
     role: 5
