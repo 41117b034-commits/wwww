@@ -1,0 +1,41 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "Tado looks at player's camera while speaking",
+        "briefing keeps crouch and relaxed hands",
+        "all four clear without returning to old rally",
+        "Tado advances on foot after four defeated",
+        "E whistle starts retreat",
+        "walked actual controller to (17.00, 0.00, 34.00)",
+        "walked actual controller to (18.00, 0.00, 44.80)",
+        "walked actual controller to (24.20, 0.00, 45.40)",
+        "walked actual controller to (24.20, 0.00, 61.00)",
+        "walked actual controller to (22.00, 0.00, 66.00)",
+        "walked actual controller to (12.00, 0.00, 72.00)",
+        "walked actual controller to (0.00, 0.00, 78.00)",
+        "reunion begins before all NPCs arrive",
+        "forest reaches injury naturally",
+        "keyboard rescue choice",
+        "walked actual controller to (0.00, 0.00, 98.00)",
+        "walked actual controller to (8.00, 0.00, 103.00)",
+        "walked actual controller to (13.00, 0.00, 106.00)",
+        "choice preserves physical Pihu outcome",
+        "branch rollcall matches choice",
+        "fixed ending reply accepted",
+        "fixed ending reply accepted",
+        "two replies unlock Mona",
+        "chapter ending is playable to completion",
+        "late participants keep walking after player leaves reunion",
+        "verification preserves chapter save",
+        "F8 clears rescue ending and withdrawal"
+    ],
+    "observations": [
+        "Tado head=(-10.18, 1.10, -13.97) camera=(-9.74, 1.67, -16.25)",
+        "No player movement input after clearing: (12.00, 0.06, 34.00) -> (12.00, 0.01, 34.00) step=4",
+        "Tado before=(-10.24, 0.02, -13.75) after=(-7.06, 0.02, -11.63)",
+        "Physical player arrival=(3.49, 0.01, 76.25) villagers=0/10 Tado=(12.72, 0.02, 32.97)",
+        "Editor fixture defeated four school officers and forest guard with Hit(100); actual CharacterController walking, E whistle/lift, proximity transitions and authored ending used. Save persistence disabled only on temporary ending component."
+    ],
+    "errors": []
+}

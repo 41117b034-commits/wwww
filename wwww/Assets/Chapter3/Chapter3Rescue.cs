@@ -112,9 +112,9 @@ public sealed class Chapter3Rescue : MonoBehaviour
     void AdvanceTogether()
     {
         // Everyone walks the same established rear route before the fixed event.
-        MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,2.1f,true,Vector3.left*1.15f);
-        MoveAlong(school.pihu,pihuMotor,approach,ref pihuIndex,2.05f,true,Vector3.zero);
-        MoveAlong(school.tado,tadoMotor,approach,ref tadoIndex,2.2f,true,Vector3.right*1.15f);
+        if(battle.ContinueToAssembly(school.bawan))MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,2.1f,true,Vector3.left*1.15f);
+        if(battle.ContinueToAssembly(school.pihu))MoveAlong(school.pihu,pihuMotor,approach,ref pihuIndex,2.05f,true,Vector3.zero);
+        if(battle.ContinueToAssembly(school.tado))MoveAlong(school.tado,tadoMotor,approach,ref tadoIndex,2.2f,true,Vector3.right*1.15f);
         CompanionsWaiting=Flat(player.transform.position,school.pihu.transform.position)>7;
         ui.hint.text=Flat(player.transform.position,InjuryPosition)<1.1f?"讓出林路轉折處，等同伴一起過來。":CompanionsWaiting?"同伴在林路上等你，走近後繼續。":"跟上同伴 · WASD 移動 · 按住右鍵環視";
         if(bawanIndex>=approach.Length&&pihuIndex>=approach.Length&&tadoIndex>=approach.Length&&Flat(player.transform.position,InjuryPosition)<5)

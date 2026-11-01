@@ -35,6 +35,7 @@ public sealed partial class Chapter3SchoolBattle
         && otherEscortIndex >= (Selected == Mission.Tado ? eastSquad.Length : assaultBackgroundRoute.Length);
 
     Transform assaultProps;
+    int withdrawalEntryIndex;
     float nextAssaultCall;
     AudioSource retreatSignal;
     AudioClip retreatWhistle;
@@ -58,7 +59,7 @@ public sealed partial class Chapter3SchoolBattle
             school.tado.transform.position = Step == 0 ? P(0,-5) : checkpointTado;
         }
         foreach (var companion in Companions) companion.ResetReaction();
-        activeRoute = Step < AssaultCombatStages ? assaultApproach[Step] : (Vector3[])assaultWithdrawal.Clone();
+        activeRoute = RouteFromTado(Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal);
         otherRoute = school.breakthroughRoute;
         otherIndex = Step == 0 ? 1 : checkpointOtherIndex;
         otherEscortIndex = Step == 0 ? 0 : checkpointOtherEscortIndex;
@@ -115,22 +116,24 @@ public sealed partial class Chapter3SchoolBattle
     void UpdateAssault()
     {
         if (Step > AssaultCombatStages) return;
+        // Encounters may be cleared in any order across the open campus.
+        // A defeated group never requires the player to walk back to its rally.
+        while(Step<AssaultCombatStages&&AssaultStageCleared())AdvanceAssaultStage();
         if (Step < AssaultCombatStages)
         {
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
-            bool clear = AssaultStageCleared();
-            bool gathered = guideIndex >= activeRoute.Length && Flat(player.transform.position,AssaultObjective) < 4;
             ui.objective.text = Step == 0 ? "支援前場交戰的族人" : Step == 1 ? "趕到西側，幫助被追趕的族人" : Step == 2 ? "支援東側包圍警察的同伴" : "前往校舍前，協助最後一組族人";
-            ui.hint.text = clear ? "跟上達多，到前方集合位置 · WASD 移動" : "協助族人擊倒警察 · " + combat.weapons.Controls;
-            combat.combatText.text = clear ? "這組已解圍 · 等你與達多到位" : "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
-            if (gathered && clear) AdvanceAssaultStage();
+            ui.hint.text = "協助族人擊倒警察 · " + combat.weapons.Controls;
+            combat.combatText.text = "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
             return;
         }
 
         ui.objective.text = RetreatCalled ? "帶全體族人撤出學校，到校後集合" : "發出撤退信號，帶全體族人撤到校後";
         if (!StragglerCalled)
         {
-            school.tado.Face(player.transform.position);
+            // Tado catches up on foot as soon as the campus is cleared.
+            if(guideIndex<=withdrawalEntryIndex)MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,false);
+            else school.tado.Face(player.transform.position);
             if (Time.time >= nextAssaultCall)
             {
                 nextAssaultCall = Time.time + 12;
@@ -143,10 +146,11 @@ public sealed partial class Chapter3SchoolBattle
         }
 
         MoveRetreatFollower();
-        ui.hint.text = ambient.PlayerAtWithdrawalAssembly ? "已到集合處，等後方族人到齊 · 請讓出通道" : "你在前方帶路，達多與族人跟在後面 · 沿黃色箭頭前進 · WASD 移動";
-        combat.combatText.text = RetreatArrived ? "校內族人已全數撤到校後" : "族人到達校後  "+RetreatArrivedCount+" / "+Chapter3SchoolAmbient.AmbusherCount;
-        if (guideIndex >= activeRoute.Length && StragglerArrived && Flat(player.transform.position,P(0,76)) < 4)
+        ui.hint.text = "你在前方帶路，達多與族人跟在後面 · 沿黃色箭頭前進 · WASD 移動";
+        combat.combatText.text = "前往校後集合點，抵達後繼續沿林路撤離";
+        if (ambient.PlayerAtWithdrawalAssembly)
         {
+            ambient.ReleaseWithdrawalAtAssembly();
             Step = CheckpointStep = AssaultCombatStages+1; AssaultGuide.Hide();
             StartRegroup();
         }
@@ -175,7 +179,7 @@ public sealed partial class Chapter3SchoolBattle
         if (!Fighting || Selected != Mission.Tado || Step != AssaultCombatStages || StragglerCalled
             || Enemies.Exists(e=>e&&!e.Defeated) || !ambient || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
         if(!ambient.BeginWithdrawal(player.transform))return false;
-        RetreatCalled = true; guideIndex = 0; guideMotor.Reset();
+        RetreatCalled = true; guideMotor.Reset();
         PlayRetreatWhistle();
         AssaultGuide.ShowAhead(player.transform.position,activeRoute,player.transform);
         Notice("你","（口哨聲）大家撤退！跟上我們，到校後集合！",4.5f);
@@ -211,9 +215,24 @@ public sealed partial class Chapter3SchoolBattle
         checkpointPlayer = player.transform.position;
         checkpointOtherIndex = otherIndex; checkpointOtherEscortIndex = otherEscortIndex;
         guideIndex = 0; guideMotor.Reset();
-        activeRoute = Step < AssaultCombatStages ? assaultApproach[Step] : (Vector3[])assaultWithdrawal.Clone();
+        activeRoute = RouteFromTado(Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal);
         PrepareAssaultStage();
         Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : Step == 2 ? "東邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
+    }
+
+    Vector3[] RouteFromTado(Vector3[] next)
+    {
+        // Clearing a distant group must not discard the entrance/campus
+        // corners a lagging Tado still needs to walk around fences and props.
+        var route=new System.Collections.Generic.List<Vector3>();
+        float z=school.tado.transform.position.z;
+        foreach(var point in assaultBackgroundRoute)
+        {
+            if(point.z>=next[0].z)break;
+            if(point.z>z+.5f)route.Add(point);
+        }
+        withdrawalEntryIndex=route.Count;
+        route.AddRange(next);return route.ToArray();
     }
 
     void StopAssault()

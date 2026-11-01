@@ -181,6 +181,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             else if(Keyboard.current?.digit3Key.wasPressedThisFrame==true)Choose(Mission.Pihu);
         }
         if(CurrentStage==Stage.Down){if(Keyboard.current?.rKey.wasPressedThisFrame==true)Retry();return;}
+        if(CurrentStage==Stage.Regroup)
+        {
+            ContinueToAssembly(school.bawan);ContinueToAssembly(school.pihu);ContinueToAssembly(school.tado);
+            return;
+        }
         if(!Fighting)return;
         if(noticeUntil>0&&Time.time>=noticeUntil){noticeUntil=0;ui.Say("",null);}
         combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
@@ -226,36 +231,49 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         foreach(var e in Enemies)if(e)e.escortTarget=null;
         player.view.fieldOfView=60;player.speed=2.8f;ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
-        activeRoute=Selected==Mission.Tado?new[]{P(0,76)}:Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();
+        // Tado may still be inside the school when the player reaches the rear.
+        // Preserve his remaining exit corners instead of cutting through a wall.
+        if(Selected!=Mission.Tado){activeRoute=Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();}
         if(ambient)ambient.EndSkirmish();RefreshFollowGuide();
         StartCoroutine(Regroup());
     }
     IEnumerator Regroup()
     {
         ui.objective.text="到校後空地，與另外兩隊匯合";
-        var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
-        while(guideIndex<activeRoute.Length||!OtherSquadsArrived||Flat(player.transform.position,P(0,78))>4||Flat(school.tado.transform.position,P(0,78))>4)
+        while(Flat(player.transform.position,P(0,78))>4)
         {
-            MoveRoute(guide,guideMotor,activeRoute,ref guideIndex,true,Selected==Mission.Bawan?Vector3.left*1.15f:Vector3.zero);
-            MoveOtherSquad();
-            bool playerArrived=Flat(player.transform.position,P(0,78))<=4;
-            if(playerArrived&&!OtherSquadsArrived)
-            {
-                bool rightPending=Selected==Mission.Tado?otherEscortIndex<eastSquad.Length:
-                    Selected==Mission.Bawan&&otherIndex<otherRoute.Length;
-                ui.objective.text=rightPending?"等待比胡從右側通道到校後匯合":"等待另外一隊到校後匯合";
-                ui.hint.text=rightPending?"比胡正在沿右側通道趕來 · 讓出集合處 · WASD 移動 · 按住右鍵環視":"同伴正在趕來，讓出集合處 · WASD 移動 · 按住右鍵環視";
-            }
-            else ui.hint.text=Flat(player.transform.position,guide.transform.position)>8?"同伴在前方等你，沿校舍側道跟上。":"到校後黃色指引處集合 · WASD 移動 · 按住右鍵環視";
+            ui.hint.text="到校後黃色指引處集合 · WASD 移動 · 按住右鍵環視";
             yield return null;
         }
+        if(ambient)ambient.ReleaseWithdrawalAtAssembly();
         if(FollowGuide)FollowGuide.Hide();player.canMove=false;
-        yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,true);
-        yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,true);
-        yield return Say(school.tado,Selected==Mission.Tado?"大家都撤出會場了，一個也沒落下。先離開學校，沿林路走！":"我帶的人已從會場撤出。先離開學校，沿後面那條林路走！",4.5f,true);
+        ui.objective.text="校後會合 · 準備沿林路撤離";ui.hint.text="空白鍵略過當句台詞";
+        yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,Flat(player.transform.position,school.bawan.transform.position)<8);
+        yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,Flat(player.transform.position,school.pihu.transform.position)<8);
+        yield return Say(school.tado,Selected==Mission.Tado?"大家正往校後撤，後面的人會跟上。先離開學校，沿林路走！":"我帶的人正從會場撤出。先離開學校，沿後面那條林路走！",4.5f,Flat(player.transform.position,school.tado.transform.position)<8);
         CurrentStage=Stage.Complete;ClearEnemies();Menu.Hide();
         if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
         Rescue.Begin(school,this);
+    }
+    // Rescue takes over each leader only after that leader has walked their
+    // remaining school route. Late arrivals never block the player's reunion.
+    public bool ContinueToAssembly(Chapter2Actor actor)
+    {
+        var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
+        if(actor==guide)
+        {
+            MoveRoute(actor,guideMotor,activeRoute,ref guideIndex,false,Selected==Mission.Bawan?Vector3.left*1.15f:Vector3.zero);
+            return guideIndex>=activeRoute.Length;
+        }
+        var other=Selected==Mission.Bawan?school.pihu:school.bawan;
+        if(actor==other)
+        {
+            if(Selected==Mission.Bawan||UpdateBackgroundWestPassages())MoveRoute(actor,otherMotor,otherRoute,ref otherIndex,false);
+            return otherIndex>=otherRoute.Length;
+        }
+        var route=Selected==Mission.Tado?eastSquad:assaultBackgroundRoute;
+        MoveRoute(actor,tadoMotor,route,ref otherEscortIndex,false);
+        return otherEscortIndex>=route.Length;
     }
     void MoveOtherSquad()
     {
@@ -368,7 +386,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // the rear forest belongs to batch 5.
         if(CurrentStage==Stage.AwaitingTado)desired.z=Mathf.Min(desired.z,-1);
         // All four Tado encounters are active across the field. Their defeat
-        // and rally conditions advance the mission, not an invisible interior wall.
+        // conditions advance the mission, not an invisible interior wall.
         if(Fighting&&Selected!=Mission.Tado&&Step<2)desired.z=Mathf.Min(desired.z,Selected==Mission.Bawan?(Step==0?23:55):(Step==0?29:60));
         if(CurrentStage!=Stage.Inactive)desired.z=Mathf.Min(desired.z,84);
         return desired;

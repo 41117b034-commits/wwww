@@ -26,6 +26,8 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     Quaternion[] originalRotations;
     float forwardBegan,forwardUntil=-1,reportBegan,reportUntil=-1;
     bool prepared,poseApplied;
+    Vector3 headForward,headUp;
+    float gazeWeight;
 
     void Awake(){actor=GetComponent<Chapter2Actor>();school=GetComponentInParent<Chapter3SchoolController>();}
     public void SignalForward(float seconds)
@@ -46,11 +48,17 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     }
     public void Clear()
     {
-        RestorePose();UnderFire=Sheltered=false;ForwardSignalWeight=UnderFireWeight=SafeReportWeight=0;
+        RestorePose();UnderFire=Sheltered=false;ForwardSignalWeight=UnderFireWeight=SafeReportWeight=gazeWeight=0;
         forwardUntil=reportUntil=-1;
     }
     public void Suspend(){Clear();}
     void OnDisable(){Clear();}
+
+    void Update()
+    {
+        if(Sheltered&&actor&&actor.speaking&&school&&school.player)
+            actor.Face(school.player.view.transform.position);
+    }
 
     void LateUpdate()
     {
@@ -124,6 +132,19 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
             rig.Head.rotation=Quaternion.AngleAxis(nod*report,right)*rig.Head.rotation;
         }
         if(crouch>0)rig.Head.rotation=Quaternion.AngleAxis(10*crouch,right)*rig.Head.rotation;
+        bool watching=Sheltered&&actor.speaking&&school&&school.player;
+        gazeWeight=Mathf.MoveTowards(gazeWeight,watching?1:0,Time.deltaTime*5);
+        if(gazeWeight>0&&school&&school.player)
+        {
+            // The imported head's local Z is not its visual face direction.
+            // Keep the crouch and hands, but lift the face to the listener's eyes.
+            Vector3 look=school.player.view.transform.position-rig.Head.position;
+            if(look.sqrMagnitude>.01f)
+            {
+                Quaternion target=Quaternion.LookRotation(look,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(headForward,headUp));
+                rig.Head.rotation=Quaternion.Slerp(rig.Head.rotation,target,gazeWeight);
+            }
+        }
     }
     static float Envelope(float began,float until)
     {
@@ -145,6 +166,8 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
         if(!actor)actor=GetComponent<Chapter2Actor>();
         if(!actor||!actor.Rig||!actor.Rig.animator||!actor.Rig.Hips||!actor.Rig.Head)return false;
         rig=actor.Rig;var animator=rig.animator;
+        headForward=rig.Head.InverseTransformDirection(rig.Forward);
+        headUp=rig.Head.InverseTransformDirection(Vector3.up);
         spine=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.Spine,"Spine","Spine1","Waist");
         thighs[0]=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftUpperLeg,"L_Thigh","LeftUpLeg");
         thighs[1]=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightUpperLeg,"R_Thigh","RightUpLeg");

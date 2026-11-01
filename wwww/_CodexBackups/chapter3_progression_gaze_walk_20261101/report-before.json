@@ -1,0 +1,17 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "old four-clear rally gate reproduced",
+        "whistle fixture",
+        "old player-arrival gate reproduced"
+    ],
+    "observations": [
+        "Tado head=(-10.18, 1.10, -13.97) camera=(-9.74, 1.68, -16.25)",
+        "All four defeated while player stays ahead; step=0 Tado=(-2.97, 0.02, -6.61)",
+        "Player at reunion: (0.00, 0.01, 78.00) arrived=0 stage=Fighting",
+        "日籍女教師與家屬 1 skin=False local mesh=c150659026f26ab44a8c2633e6b76e8b_1_distant (0.00, 0.00, 0.00)",
+        "日籍學童 1 skin=False local mesh=日籍學童服裝 shared clothing (0.00, 0.00, 0.00);日籍學童服裝 shared clothing (0.00, 0.00, 0.00)"
+    ],
+    "errors": []
+}

@@ -95,18 +95,19 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(!actor.InitializeNative(source))actor.Initialize();
         return actor;
     }
-    public static Chapter3SchoolCrowdActor CreateFrom(Transform template,Transform parent,string name,Chapter2Actor nativeSource=null)
+    public static Chapter3SchoolCrowdActor CreateFrom(Transform template,Transform parent,string name,Chapter2Actor nativeSource=null,float bakedYaw=0)
     {
         var root=new GameObject(name).transform;root.SetParent(parent,false);
         root.localScale=template.localScale;
+        Quaternion heading=Quaternion.Euler(0,bakedYaw,0);
         foreach(var source in template.GetComponentsInChildren<MeshFilter>(true))
         {
             var renderer=source.GetComponent<MeshRenderer>();
             if(!source.sharedMesh||!renderer)continue;
             Matrix4x4 local=RelativeMatrix(source.transform,template);
             var part=new GameObject(source.name,typeof(MeshFilter),typeof(MeshRenderer)).transform;
-            part.SetParent(root,false);part.localPosition=local.GetColumn(3);
-            part.localRotation=local.rotation;part.localScale=local.lossyScale;
+            part.SetParent(root,false);part.localPosition=heading*(Vector3)local.GetColumn(3);
+            part.localRotation=heading*local.rotation;part.localScale=local.lossyScale;
             part.GetComponent<MeshFilter>().sharedMesh=source.sharedMesh;
             part.GetComponent<MeshRenderer>().sharedMaterials=renderer.sharedMaterials;
         }
@@ -114,7 +115,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(sourceCapsule)
         {
             var capsule=root.gameObject.AddComponent<CapsuleCollider>();
-            capsule.center=sourceCapsule.center;capsule.height=sourceCapsule.height;
+            capsule.center=heading*sourceCapsule.center;capsule.height=sourceCapsule.height;
             capsule.radius=sourceCapsule.radius;capsule.direction=sourceCapsule.direction;
         }
         var templateActor=template.GetComponent<Chapter3SchoolCrowdActor>();

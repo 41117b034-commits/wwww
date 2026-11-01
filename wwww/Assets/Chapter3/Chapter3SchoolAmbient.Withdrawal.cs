@@ -39,7 +39,7 @@ public sealed partial class Chapter3SchoolAmbient
     public bool PlayerAtWithdrawalAssembly=>withdrawalPlayer&&Horizontal(withdrawalPlayer.position,new Vector3(0,0,78))<4;
     public bool CanFollowWithdrawal(Vector3 current,ref Vector3 target,float gap)
     {
-        if(PlayerAtWithdrawalAssembly)return true;
+        if(withdrawalReleased||PlayerAtWithdrawalAssembly)return true;
         float limit=WithdrawalProgress(withdrawalPlayer.position)-gap;
         float progress=WithdrawalProgress(current);
         if(limit<=0||progress>=limit-.15f)return false;
@@ -47,6 +47,8 @@ public sealed partial class Chapter3SchoolAmbient
         return true;
     }
     Transform withdrawalPlayer;
+    bool withdrawalReleased;
+    public void ReleaseWithdrawalAtAssembly(){if(Withdrawing)withdrawalReleased=true;}
     public bool Withdrawing {get;private set;}
     public int WithdrawalSignalFrame {get;private set;}=-1;
     public Vector3 WithdrawalDestination(int index)=>new Vector3(-4.4f+(index%5)*2.2f,0,72.5f+(index/5)*2.2f);
@@ -73,7 +75,7 @@ public sealed partial class Chapter3SchoolAmbient
     {
         if(!Panicking||Withdrawing||!player)return false;
         foreach(var actor in assailants)if(!actor||!actor.gameObject.activeInHierarchy)return false;
-        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;WithdrawalSignalFrame=Time.frameCount;
+        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;WithdrawalSignalFrame=Time.frameCount;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];withdrawalHomes[i]=actor.transform.position;withdrawalRotations[i]=actor.transform.rotation;
@@ -120,7 +122,7 @@ public sealed partial class Chapter3SchoolAmbient
                 assailants[i].ResetPose();assailants[i].transform.SetPositionAndRotation(withdrawalHomes[i],withdrawalRotations[i]);
                 assailants[i].SetAnimated(true);
             }
-        Withdrawing=false;WithdrawalSignalFrame=-1;withdrawalPlayer=null;
+        Withdrawing=false;withdrawalReleased=false;WithdrawalSignalFrame=-1;withdrawalPlayer=null;
         for(int i=0;i<AmbusherCount;i++){if(assailants[i])assailants[i].FollowingWithdrawal=false;withdrawalMotors[i]?.Reset();withdrawalRoutes[i]=null;withdrawalLeg[i]=0;}
     }
     void UpdateWithdrawal()

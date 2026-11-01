@@ -1,0 +1,14 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter",
+        "Tado looks at player's camera while speaking",
+        "briefing keeps crouch and relaxed hands"
+    ],
+    "observations": [
+        "Tado head=(-10.18, 1.10, -13.97) camera=(-9.74, 1.67, -16.25)"
+    ],
+    "errors": [
+        "System.Exception: FAILED: all four clear without returning to old rally\r\n  at Chapter3ProgressionVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ProgressionVerify.cs:163 \r\n  at Chapter3ProgressionVerify+<CurrentScenario>d__24.MoveNext () [0x0095c] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ProgressionVerify.Current.cs:54 \r\n  at Chapter3ProgressionVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ProgressionVerify.cs:49 "
+    ]
+}

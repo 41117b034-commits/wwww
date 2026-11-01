@@ -34,7 +34,10 @@ public sealed partial class Chapter3SchoolAmbient
             int number=pupil?++childNumber:++adultNumber;
             Transform source=pupil?schoolChild:woman;
             string role=pupil?"日籍學童":"日籍女教師與家屬";
-            var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number);
+            // These two baked donors retain model-space -X as their face.
+            // Normalize geometry BEFORE generating the +Z walking skeleton;
+            // turning only the root would keep the sideways gait deformation.
+            var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number,bakedYaw:90);
             person.transform.position=GuestStart(i);
             person.transform.rotation=Quaternion.Euler(0,(i*137+25)%360,0);
             person.SetFallSide(i%2==0?1:-1);
