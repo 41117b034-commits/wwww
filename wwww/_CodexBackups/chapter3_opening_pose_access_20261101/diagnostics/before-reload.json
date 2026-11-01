@@ -1,0 +1,34 @@
+{
+    "completed": false,
+    "checks": [
+        "formal scene"
+    ],
+    "observations": [],
+    "errors": [
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "System.NullReferenceException: Object reference not set to an instance of an object\r\n  at Chapter3SchoolAmbient.ResetCalm () [0x001a3] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.cs:152 \r\n  at Chapter3SchoolBattle.Suspend () [0x000ec] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.cs:361 \r\n  at Chapter3SchoolController.Suspend () [0x00039] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs:125 \r\n  at Chapter3Flow.LeaveCurrent () [0x0005e] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs:93 \r\n  at Chapter3Flow.EnterSchool () [0x00034] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs:145 \r\n  at Chapter3OpeningAccessVerify+<Scenario>d__12.MoveNext () [0x00121] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningAccessVerify.cs:63 \r\n  at Chapter3OpeningAccessVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningAccessVerify.cs:49 ",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array."
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "completed": false,
+    "checks": [
+        "formal scene",
+        "choose Tado",
+        "movement enabled",
+        "four officers",
+        "Tado cover cleared"
+    ],
+    "observations": [
+        "School start fixture: enter via shortcut and place player near Tado; normal proximity dialogue follows.",
+        "Tado height=1.510444 head=(-10.22, 1.10, -13.98) hips=(-10.21, 0.58, -13.78) hands=(-10.03, 0.94, -14.16),(-10.41, 0.85, -14.11)",
+        "Before: W 2 seconds at z23 -> (2.00, 0.01, 23.28) step=0"
+    ],
+    "errors": [
+        "System.Exception: FAILED: old boundary reproduced\r\n  at Chapter3OpeningAccessVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningAccessVerify.cs:162 \r\n  at Chapter3OpeningAccessVerify+<Scenario>d__12.MoveNext () [0x00610] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningAccessVerify.cs:85 \r\n  at Chapter3OpeningAccessVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3OpeningAccessVerify.cs:49 "
+    ]
+}

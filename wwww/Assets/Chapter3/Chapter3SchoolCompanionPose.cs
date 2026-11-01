@@ -8,6 +8,7 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
 {
     public bool BonesReady=>prepared;
     public bool UnderFire {get;private set;}
+    public bool Sheltered {get;private set;}
     public float ForwardSignalWeight {get;private set;}
     public float UnderFireWeight {get;private set;}
     public float SafeReportWeight {get;private set;}
@@ -30,21 +31,22 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     public void SignalForward(float seconds)
     {
         if(seconds<=0)return;
-        UnderFire=false;reportUntil=-1;forwardBegan=Time.time;forwardUntil=Time.time+seconds;
+        UnderFire=Sheltered=false;reportUntil=-1;forwardBegan=Time.time;forwardUntil=Time.time+seconds;
     }
     public void SetUnderFire(bool value)
     {
         if(value&&!UnderFire)forwardUntil=reportUntil=-1;
-        UnderFire=value;
+        UnderFire=value;Sheltered=false;
     }
+    public void SetSheltered(){SetUnderFire(true);Sheltered=true;}
     public void ReportSafe(float seconds=2.4f)
     {
         if(seconds<=0)return;
-        UnderFire=false;forwardUntil=-1;reportBegan=Time.time;reportUntil=Time.time+seconds;
+        UnderFire=Sheltered=false;forwardUntil=-1;reportBegan=Time.time;reportUntil=Time.time+seconds;
     }
     public void Clear()
     {
-        RestorePose();UnderFire=false;ForwardSignalWeight=UnderFireWeight=SafeReportWeight=0;
+        RestorePose();UnderFire=Sheltered=false;ForwardSignalWeight=UnderFireWeight=SafeReportWeight=0;
         forwardUntil=reportUntil=-1;
     }
     public void Suspend(){Clear();}
@@ -83,7 +85,22 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
                 feet[i].rotation=footRotations[i];
             }
 
-        if(crouch>0)
+        if(crouch>0&&Sheltered)
+        {
+            // Quiet cover is different from shielding the face under fire.
+            // Rest each hand above its own thigh, with a relaxed downward palm.
+            for(int i=0;i<2;i++)
+            {
+                Vector3 side=right*(i==0?-1:1);
+                Vector3 target=Vector3.Lerp(thighs[i].position,knees[i].position,.72f)
+                    +Vector3.up*height*.055f+side*height*.035f;
+                PoseArm(i,target,side-forward*.35f,crouch);
+                Quaternion relaxed=Quaternion.LookRotation(forward-Vector3.up*.25f,-Vector3.up)
+                    *Quaternion.Inverse(rig.PalmFrame(i==0));
+                hands[i].rotation=Quaternion.Slerp(hands[i].rotation,relaxed,crouch);
+            }
+        }
+        else if(crouch>0)
         {
             // Arms come visibly in front of the head/chest rather than simply
             // bending the spine while leaving the hands hanging at the sides.

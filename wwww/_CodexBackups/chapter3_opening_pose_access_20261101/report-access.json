@@ -1,0 +1,39 @@
+{
+    "completed": true,
+    "checks": [
+        "formal scene",
+        "Tado remains crouched",
+        "Tado hands below chest",
+        "hands kept apart",
+        "choose Tado",
+        "movement enabled",
+        "four officers",
+        "Tado cover cleared",
+        "walked to (-4.00, 0.00, -18.00)",
+        "walked to (0.00, 0.00, -6.00)",
+        "walked to (0.00, 0.00, 5.00)",
+        "walked to (5.00, 0.00, 23.00)",
+        "W crosses old z24 wall",
+        "S moves back",
+        "A moves left",
+        "D moves right",
+        "visiting later groups cannot skip first fight",
+        "walked to (5.00, 0.00, 32.00)",
+        "walked to (8.00, 0.00, 35.00)",
+        "walk reaches fourth group before first clear",
+        "retreat blocked until four cleared",
+        "knife defeats fourth officer without warp",
+        "out of order defeat cannot skip stage",
+        "retry accepted",
+        "retry keeps knife",
+        "retry has no old interior bound",
+        "F8 restores normal briefing",
+        "F8 restores cover"
+    ],
+    "observations": [
+        "School start fixture: enter via shortcut and place player near Tado; normal proximity dialogue follows.",
+        "Tado height=1.510444 head=(-10.22, 1.10, -13.98) hips=(-10.21, 0.58, -13.78) hands=(-10.02, 0.66, -13.99),(-10.42, 0.63, -14.00)",
+        "WASD Input System events used actual Chapter3Player.Update and CharacterController; old-wall crossing (4.87, 0.02, 22.52) -> (4.91, 0.02, 28.04)"
+    ],
+    "errors": []
+}

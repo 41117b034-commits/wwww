@@ -73,7 +73,6 @@ public sealed class Chapter3StationController : MonoBehaviour
         player.Warp(WorldPoint(new Vector3(0,.06f,-18)),bawan.transform.position+Vector3.up*1.2f);
         bawan.Face(player.transform.position);
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
-        Opening.PrepareService();
         StartCoroutine(Arrival());
     }
     void Update()
@@ -112,16 +111,16 @@ public sealed class Chapter3StationController : MonoBehaviour
         ui.Say("","馬赫坡駐在所 · 清晨");
         ui.fade.color=Color.black;
         yield return Fade(false,1.8f);
-        // Keep the establishing shot and place/time legible before opening chat.
+        // Keep the establishing shot and place/time legible before the introduction.
         yield return new WaitForSecondsRealtime(3);
         CurrentStage=Stage.Conversation;
-        ui.objective.text="馬赫坡駐在所 · 和巴萬交談";
-        Opening.Begin(this,()=>{if(CurrentStage==Stage.Conversation)StartCoroutine(ApproachMona());});
+        ui.objective.text="馬赫坡駐在所 · 聽巴萬介紹";
+        yield return ApproachMona();
     }
     IEnumerator ApproachMona()
     {
         player.canLook=true;
-        yield return Say(bawan,"先去見莫那，聽他安排。跟我來。",lineSeconds);
+        yield return Say(bawan,"我們到馬赫坡駐在所了。莫那在前面，我帶你過去，聽他安排。跟我來。",lineSeconds+2);
         CurrentStage=Stage.Approach;player.canMove=true;
         ui.objective.text="跟隨巴萬，與莫那會合";
         yield return Escort(approachPath);

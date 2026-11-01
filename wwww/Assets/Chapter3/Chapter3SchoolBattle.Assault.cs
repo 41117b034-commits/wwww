@@ -216,14 +216,6 @@ public sealed partial class Chapter3SchoolBattle
         Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : Step == 2 ? "東邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
     }
 
-    Vector3 ConstrainAssault(Vector3 current,Vector3 desired)
-    {
-        // Keep checkpoints sequential without invisible bounds through a target.
-        if (Step == 0) desired.z = Mathf.Min(desired.z,24);
-        else if (Step < AssaultCombatStages || !StragglerCalled) desired.z = Mathf.Min(desired.z,43);
-        return desired;
-    }
-
     void StopAssault()
     {
         if (AssaultGuide) AssaultGuide.Hide();

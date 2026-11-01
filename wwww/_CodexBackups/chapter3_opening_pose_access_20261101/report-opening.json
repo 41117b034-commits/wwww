@@ -1,0 +1,20 @@
+{
+    "completed": true,
+    "checks": [
+        "formal scene",
+        "brief fixed introduction",
+        "no opening chat",
+        "guide starts walking automatically",
+        "player free to follow",
+        "opening made no LLM exchanges",
+        "choose knife after escort",
+        "pickup works",
+        "readiness conversation retained",
+        "F6 still bypasses opening chat",
+        "intro cancelled on shortcut"
+    ],
+    "observations": [
+        "Weapon pickup uses a table-side positioning fixture; no LLM answer submitted."
+    ],
+    "errors": []
+}

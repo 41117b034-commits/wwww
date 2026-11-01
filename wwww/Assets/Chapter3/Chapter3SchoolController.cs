@@ -114,7 +114,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         tado.transform.position=rock+away*1.9f;tado.GroundHeight=0;
         tado.Face(new Vector3(0,0,20));
         if(!tadoCoverPose)tadoCoverPose=tado.GetComponent<Chapter3SchoolCompanionPose>()??tado.gameObject.AddComponent<Chapter3SchoolCompanionPose>();
-        tadoCoverPose.SetUnderFire(true);
+        tadoCoverPose.SetSheltered();
     }
     public void ReleaseTadoCover(){if(tadoCoverPose)tadoCoverPose.Clear();}
     public void Suspend()

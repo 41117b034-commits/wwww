@@ -367,8 +367,9 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // Keep the approach before the mission briefing and choice;
         // the rear forest belongs to batch 5.
         if(CurrentStage==Stage.AwaitingTado)desired.z=Mathf.Min(desired.z,-1);
-        if(Fighting&&Selected==Mission.Tado)desired=ConstrainAssault(current,desired);
-        else if(Fighting&&Step<2)desired.z=Mathf.Min(desired.z,Selected==Mission.Bawan?(Step==0?23:55):(Step==0?29:60));
+        // All four Tado encounters are active across the field. Their defeat
+        // and rally conditions advance the mission, not an invisible interior wall.
+        if(Fighting&&Selected!=Mission.Tado&&Step<2)desired.z=Mathf.Min(desired.z,Selected==Mission.Bawan?(Step==0?23:55):(Step==0?29:60));
         if(CurrentStage!=Stage.Inactive)desired.z=Mathf.Min(desired.z,84);
         return desired;
     }
