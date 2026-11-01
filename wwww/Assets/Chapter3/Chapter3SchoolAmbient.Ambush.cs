@@ -57,8 +57,8 @@ public sealed partial class Chapter3SchoolAmbient
     {
         skirmishActive=false;SkirmishPairsReady=0;
         foreach(var actor in assailants)if(actor)actor.SetStrike(0);
-        // Retain the two established holds until the school is suspended;
-        // the remaining survivors continue fleeing while the squad regroups.
+        // Holds are released by the withdrawal signal. Surviving guests wait
+        // inside the campus until they can join that same departing group.
     }
     void UpdateAmbush(float elapsed)
     {
@@ -123,19 +123,14 @@ public sealed partial class Chapter3SchoolAmbient
             crowdPhases[index]=guest.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
             return true;
         }
-        if(index>=14||Withdrawing||(index<policeAssigned.Length&&policeAssigned[index]))
+        if(Withdrawing)return true; // The escort motor owns every living guest.
+        if(index>=14||(index<policeAssigned.Length&&policeAssigned[index]))
         {
-            var route=escapeRoutes[index>=14?index-14:index%escapeRoutes.Length];
-            if(escapeLeg[index]<route.Length)
-            {
-                crowdPhases[index]=CrowdPhase.Fleeing;
-                if(guest.MoveTowards(route[escapeLeg[index]],2.2f+(index%3)*.23f))escapeLeg[index]++;
-            }
-            else
-            {
-                // Only hide after physically reaching the rear exit.
-                crowdPhases[index]=CrowdPhase.Escaped;guest.gameObject.SetActive(false);
-            }
+            // Reach nearby shelter, not the distant exit. Nobody disappears
+            // or leaves the school ahead of the player's withdrawal signal.
+            Vector3 shelter=index<14?refuges[index]:new Vector3(-10+(index-14)*3.3f,0,38.5f);
+            crowdPhases[index]=CrowdPhase.Fleeing;
+            guest.MoveTowards(shelter,2.2f+(index%3)*.23f);
             return true;
         }
         if(index<2&&crowdPhases[index]==CrowdPhase.Restrained)

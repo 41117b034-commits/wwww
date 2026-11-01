@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -19,7 +20,8 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public int Retries {get;private set;}
     public bool Delivered {get;private set;}
     public bool CompanionsWaiting {get;private set;}
-    public Vector3 InjuryPosition=>new Vector3(-3,0,92);
+    Vector3 injuryPosition=new Vector3(-3,0,92);
+    public Vector3 InjuryPosition=>injuryPosition;
     public Vector3 ReceptionPosition=>new Vector3(13,0,106);
     public Button ChoiceRescue {get;private set;}
     public Button ChoiceLeave {get;private set;}
@@ -33,6 +35,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     Chapter3Presentation ui;
     GameObject choicePanel;
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor(),tadoMotor=new Chapter3PathMotor();
+    readonly Dictionary<Chapter2Actor,Vector3> bypasses=new Dictionary<Chapter2Actor,Vector3>();
     int bawanIndex,pihuIndex,tadoIndex;
     float hurtAt=-10,noticeUntil;
     Vector3 supportRight=Vector3.right,lastPlayerPosition;
@@ -46,7 +49,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public void Begin(Chapter3SchoolController owner,Chapter3SchoolBattle encounter)
     {
         Suspend();school=owner;battle=encounter;player=school.player;combat=school.flow.combat;ui=school.ui;
-        Selected=Decision.None;Retries=0;Health=100;Delivered=false;LiftProgress=0;
+        Selected=Decision.None;Retries=0;Health=100;Delivered=false;LiftProgress=0;injuryPosition=P(-3,92);
         Pose=school.pihu.GetComponent<Chapter3InjuryPose>();if(!Pose)Pose=school.pihu.gameObject.AddComponent<Chapter3InjuryPose>();
         Pose.Configure(school.pihu);Pose.ResetPose();
         pihuColliders=school.pihu.GetComponentsInChildren<Collider>(true);colliderEnabled=new bool[pihuColliders.Length];
@@ -58,7 +61,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.objective.text="與巴萬、比胡、達多沿林路離開學校";
         if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
-        FollowGuide.Show(player.transform.position,approach,player.transform,school.pihu.transform);
+        FollowGuide.ShowAhead(player.transform.position,approach,player.transform);
     }
     void Update()
     {
@@ -112,19 +115,23 @@ public sealed class Chapter3Rescue : MonoBehaviour
     void AdvanceTogether()
     {
         // Everyone walks the same established rear route before the fixed event.
+        CompanionsWaiting=false;
         if(battle.ContinueToAssembly(school.bawan))MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,2.1f,true,Vector3.left*1.15f);
         if(battle.ContinueToAssembly(school.pihu))MoveAlong(school.pihu,pihuMotor,approach,ref pihuIndex,2.05f,true,Vector3.zero);
         if(battle.ContinueToAssembly(school.tado))MoveAlong(school.tado,tadoMotor,approach,ref tadoIndex,2.2f,true,Vector3.right*1.15f);
-        CompanionsWaiting=Flat(player.transform.position,school.pihu.transform.position)>7;
-        ui.hint.text=Flat(player.transform.position,InjuryPosition)<1.1f?"讓出林路轉折處，等同伴一起過來。":CompanionsWaiting?"同伴在林路上等你，走近後繼續。":"跟上同伴 · WASD 移動 · 按住右鍵環視";
+        ui.hint.text=CompanionsWaiting?"同伴在前方等你，沿黃色箭頭走近後繼續。":"沿黃色箭頭前進，同伴會跟上 · WASD 移動 · 按住右鍵環視";
         if(bawanIndex>=approach.Length&&pihuIndex>=approach.Length&&tadoIndex>=approach.Length&&Flat(player.transform.position,InjuryPosition)<5)
+        {
+            // The player may stand on the authored marker. Pihu can arrive
+            // beside them and be injured there, without a snap to their feet.
+            injuryPosition=school.pihu.transform.position;injuryPosition.y=0;
             StartCoroutine(Injury());
+        }
     }
     IEnumerator Injury()
     {
         FollowGuide.Hide();
         CurrentStage=Stage.Injury;CompanionsWaiting=false;player.canMove=false;player.canLook=true;
-        school.pihu.transform.position=InjuryPosition;
         ui.objective.text="比胡受傷了";ui.hint.text="";player.FocusOn(InjuryPosition+Vector3.up*.9f);
         if(!shot){shot=gameObject.AddComponent<AudioSource>();shot.playOnAwake=false;shot.spatialBlend=0;shot.volume=.4f;}
         if(combat.weapons.shotClip)shot.PlayOneShot(combat.weapons.shotClip);
@@ -144,7 +151,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     void ResetCheckpoint(bool retry)
     {
-        ClearGuard();bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();bawanIndex=tadoIndex=0;
+        ClearGuard();bypasses.Clear();bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();bawanIndex=tadoIndex=0;
         Health=100;hurtAt=-10;noticeUntil=0;LiftProgress=0;Delivered=false;
         Pose.SetSupported(0,player.transform);Pose.SetInjured(1);SetPihuCollision(false);
         school.pihu.transform.position=InjuryPosition;school.pihu.Face(InjuryPosition+Vector3.back);
@@ -275,13 +282,19 @@ public sealed class Chapter3Rescue : MonoBehaviour
         if(index>=route.Length)return;
         var target=route[index]+offset;
         var toPlayer=Vector3.ProjectOnPlane(player.transform.position-actor.transform.position,Vector3.up);
-        if(waits&&toPlayer.magnitude>7&&Vector3.Dot(toPlayer,target-actor.transform.position)<0){actor.Face(player.transform.position);return;}
-        if(Flat(target,player.transform.position)<1.05f)
+        if(waits&&toPlayer.magnitude>7&&Vector3.Dot(toPlayer,target-actor.transform.position)<0){CompanionsWaiting=true;actor.Face(player.transform.position);return;}
+        if(bypasses.TryGetValue(actor,out var bypass))
         {
-            if(CurrentStage==Stage.Advancing&&actor==school.pihu&&index==route.Length-1){actor.Face(player.transform.position);return;}
+            if(Flat(actor.transform.position,bypass)<.22f||Flat(player.transform.position,bypass)>3.5f||Flat(player.transform.position,bypass)<1)
+                bypasses.Remove(actor);
+            else {motor.Move(actor,bypass,speed);return;}
+        }
+        if(Flat(target,player.transform.position)<1.25f)
+        {
             var apart=Vector3.ProjectOnPlane(target-player.transform.position,Vector3.up).normalized;
+            if(apart.sqrMagnitude<.1f)apart=Vector3.ProjectOnPlane(actor.transform.position-player.transform.position,Vector3.up).normalized;
             if(apart.sqrMagnitude<.1f)apart=Vector3.left;
-            target=player.transform.position+apart*1.05f;target.y=0;
+            target=player.transform.position+apart*1.25f;target.y=0;
         }
         Vector3 direction=Vector3.ProjectOnPlane(target-actor.transform.position,Vector3.up).normalized;
         float along=Vector3.Dot(toPlayer,direction);
@@ -289,7 +302,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         {
             Vector3 side=Vector3.Cross(Vector3.up,direction)*1.25f;
             foreach(var candidate in new[]{player.transform.position+side,player.transform.position-side})
-                if(Chapter3PathMotor.Clear(actor.transform.position,candidate)){motor.Move(actor,candidate,speed);return;}
+                if(Chapter3PathMotor.Clear(actor.transform.position,candidate)){bypasses[actor]=candidate;motor.Move(actor,candidate,speed);return;}
             return;
         }
         motor.Move(actor,target,speed);if(Flat(actor.transform.position,target)<.25f)index++;
@@ -344,7 +357,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     {
         if(FollowGuide)FollowGuide.Hide();
         if(Ending)Ending.Suspend();
-        StopAllCoroutines();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
+        StopAllCoroutines();bypasses.Clear();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
         if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);if(shot)shot.Stop();
         if(school){school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;}
         if(player){player.speed=2.8f;player.view.fieldOfView=60;}

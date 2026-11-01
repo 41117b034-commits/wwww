@@ -170,6 +170,11 @@ public sealed class Chapter3PathMotor
     public static bool Clear(Vector3 from,Vector3 to)
     {return Clear(from,to,null);}
 
+    // A shared corner can be occupied even while its static geometry is clear.
+    // Use the same people-aware check as a retreat follower's actual path.
+    public static bool ClearCrowdPoint(Vector3 point,Chapter3SchoolCrowdActor walker)
+    {return Clear(point,point,walker?walker.transform:null);}
+
     bool ClearForActor(Vector3 from,Vector3 to)
     {return Clear(from,to,boundCrowd?boundActor:null);}
 

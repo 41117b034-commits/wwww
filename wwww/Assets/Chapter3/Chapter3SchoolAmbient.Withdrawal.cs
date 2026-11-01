@@ -89,6 +89,7 @@ public sealed partial class Chapter3SchoolAmbient
         // in a restraint pose. Any unfinished encounter also becomes flight.
         for(int i=0;i<crowd.Length;i++)if(crowd[i]&&crowd[i].gameObject.activeInHierarchy&&fallBegan[i]<0)
         {crowdPhases[i]=CrowdPhase.Fleeing;crowd[i].SetAfraid(true);crowd[i].SetStartled(0);if(i<14)escapeLeg[i]=0;}
+        BeginCivilianWithdrawal();
         return true;
     }
     static Vector3[] BuildWithdrawalRoute(Vector3 start,int index)
@@ -116,6 +117,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     public void CancelWithdrawal(bool restorePositions=false)
     {
+        CancelCivilianWithdrawal(restorePositions);
         if(Withdrawing&&restorePositions)
             for(int i=0;i<AmbusherCount;i++)if(assailants[i])
             {
@@ -142,7 +144,7 @@ public sealed partial class Chapter3SchoolAmbient
             // The last assembly slot is never moved or counted early.
             if(withdrawalLeg[i]<route.Length-1)
             {
-                Vector3 corner=OpenWithdrawalCorner(target,route[withdrawalLeg[i]+1]);
+                Vector3 corner=OpenWithdrawalCorner(target,route[withdrawalLeg[i]+1],actor);
                 if((corner-target).sqrMagnitude>.001f)
                 {target=route[withdrawalLeg[i]]=corner;withdrawalMotors[i].Reset();}
             }
@@ -172,16 +174,18 @@ public sealed partial class Chapter3SchoolAmbient
             actor.SetWaiting(false);
             withdrawalMotors[i].Move(actor,target,3.2f);
         }
+        UpdateCivilianWithdrawal();
     }
-    public static Vector3 OpenWithdrawalCorner(Vector3 target,Vector3 next)
+    public static Vector3 OpenWithdrawalCorner(Vector3 target,Vector3 next,Chapter3SchoolCrowdActor walker=null)
     {
-        if(Chapter3PathMotor.Clear(target,target))return target;
+        bool Free(Vector3 point)=>walker?Chapter3PathMotor.ClearCrowdPoint(point,walker):Chapter3PathMotor.Clear(point,point);
+        if(Free(target))return target;
         Vector3 forward=Vector3.ProjectOnPlane(next-target,Vector3.up).normalized;
         foreach(float radius in new[]{.8f,1.25f,1.75f})
             foreach(float angle in new[]{0f,45f,-45f,90f,-90f,135f,-135f,180f})
             {
                 Vector3 alternative=target+Quaternion.Euler(0,angle,0)*forward*radius;
-                if(Chapter3PathMotor.Clear(alternative,alternative)&&Chapter3PathMotor.Clear(alternative,next))return alternative;
+                if(Free(alternative)&&Chapter3PathMotor.Clear(alternative,next))return alternative;
             }
         return target;
     }

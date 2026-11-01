@@ -1,0 +1,4 @@
+*** Tundra build success (5.92 seconds), 6 items updated, 1246 evaluated
+Reloading assemblies after finishing script compilation.
+Reloading assemblies after forced synchronous recompile.
+Domain Reload Profiling: 4477ms

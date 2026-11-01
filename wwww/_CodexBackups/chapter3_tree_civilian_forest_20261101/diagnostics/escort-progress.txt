@@ -1,0 +1,33 @@
+日籍女教師與家屬 1 position=(-7.06, 0.00, 27.41) leg=1/13 target=(-7.00, 0.00, 28.00)
+  path= search=True iterations=320 motorClear=False bodyClear=True
+日籍女教師與家屬 2 position=(-6.74, 0.00, 65.70) leg=8/8 target=arrived
+日籍女教師與家屬 4 position=(18.45, 0.00, 44.02) leg=3/10 target=(18.00, 0.00, 44.80)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 5 position=(15.26, 0.00, 34.37) leg=4/11 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=32 motorClear=False bodyClear=True
+日籍女教師與家屬 6 position=(3.41, 0.00, 65.76) leg=8/8 target=arrived
+日籍女教師與家屬 7 position=(15.17, 0.00, 35.65) leg=4/11 target=(18.00, 0.00, 44.80)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 8 position=(16.73, 0.00, 32.90) leg=3/10 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=288 motorClear=True bodyClear=True
+日籍女教師與家屬 9 position=(17.50, 0.00, 39.09) leg=1/8 target=(18.00, 0.00, 44.80)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 10 position=(-7.52, 0.00, 27.86) leg=0/12 target=(-7.00, 0.00, 28.00)
+  path= search=True iterations=320 motorClear=False bodyClear=True
+日籍學童 2 position=(-3.39, 0.00, 67.79) leg=9/9 target=arrived
+日籍學童 3 position=(16.08, 0.00, 31.53) leg=3/11 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 4 position=(17.26, 0.00, 39.79) leg=1/8 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=224 motorClear=True bodyClear=True
+日籍學童 5 position=(15.18, 0.00, 34.99) leg=4/11 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=32 motorClear=False bodyClear=True
+日籍學童 6 position=(15.90, 0.00, 33.81) leg=4/11 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=288 motorClear=True bodyClear=True
+日籍學童 7 position=(16.61, 0.00, 31.16) leg=3/11 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=False bodyClear=True
+日籍學童 8 position=(16.81, 0.00, 32.22) leg=3/11 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 9 position=(17.07, 0.04, 31.62) leg=3/11 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=False bodyClear=True
+日籍學童 10 position=(17.00, 0.04, 44.37) leg=1/8 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=192 motorClear=True bodyClear=True

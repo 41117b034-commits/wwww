@@ -25,6 +25,9 @@ public sealed class Chapter3StationLink : MonoBehaviour
             // Remove the old path's far scenery, and stones inside the new
             // physical connector. Keep the courtyard and building intact.
             if(t.name.StartsWith("駐在所林木 ")&&t.position.z>-93)t.gameObject.SetActive(false);
+            // The shorter connector crosses this old roadside trunk.
+            // Move the existing tree, including its colliders, onto the verge.
+            if(t.name=="駐在所林木 83")t.position+=new Vector3(3,0,-3);
             if(t.name=="庭院石緣"&&t.position.x>-10&&t.position.z>-101)t.gameObject.SetActive(false);
             if(t.name=="Station mountain ground")Trim(t.GetComponent<MeshFilter>(),-93,false);
         }
