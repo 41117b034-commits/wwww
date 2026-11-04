@@ -2,6 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 const root='Assets/Resources/ChineseVoice',evidence='_CodexBackups/voice_languages_20261104';
+const previous=JSON.parse(await fs.readFile(root+'/catalog.json','utf8').catch(()=>'{}'));
+const previousEntries=new Map((previous.entries??[]).map(e=>[e.chinese,e]));
 const entries=new Map();
 function add(chinese,source,female=false){if(!chinese||!/[\u4e00-\u9fff]/.test(chinese))return;let e=entries.get(chinese);if(!e){const key=crypto.createHash('sha256').update(chinese).digest('hex').slice(0,20);e={chinese,source,resource:'ChineseVoice/Audio/'+key+'_m',femaleResource:'',provider:'Windows installed Taiwan Chinese voice (Microsoft Zhiwei / Hanhan)'};entries.set(chinese,e);}if(female)e.femaleResource=e.resource.slice(0,-1)+'f';}
 function decode(b){const utf=b.toString('utf8');return utf.includes('\ufffd')?new TextDecoder('big5').decode(b):utf;}
@@ -12,7 +14,9 @@ for(const name of ['第一章新版警察','第二章']){const scene=await fs.re
 const c3=JSON.parse(await fs.readFile('Assets/Resources/Chapter3Voice/catalog.json','utf8'));for(const e of c3.entries)add(e.chinese,'Chapter3:'+e.source);
 add('謝謝你。','Chapter1 delivery',true);add('放開我！','Chapter1 female',true);
 await fs.mkdir(root+'/Audio',{recursive:true});
-const catalog={language:'zh-TW',male:'Microsoft Zhiwei - Chinese (Traditional, Taiwan)',female:'Microsoft Hanhan - Chinese (Traditional, Taiwan)',rate:-1,entries:[...entries.values()]};
+// Inventory refresh must retain authored neural voice variants and provenance.
+for(const entry of entries.values()){const old=previousEntries.get(entry.chinese);if(old){Object.assign(entry,{...old,source:entry.source});}}
+const catalog={language:'zh-TW',male:'Microsoft Zhiwei - Chinese (Traditional, Taiwan)',female:'Microsoft Hanhan - Chinese (Traditional, Taiwan)',rate:-1,...previous,entries:[...entries.values()]};
 await fs.writeFile(root+'/catalog.json',JSON.stringify(catalog,null,2));
 const jobs=[];for(const e of catalog.entries)for(const [female,resource] of [[false,e.resource],[true,e.femaleResource]])if(resource){const file=path.resolve('Assets/Resources',resource+'.wav');try{if((await fs.stat(file)).size>100)continue;}catch{}jobs.push({text:e.chinese,path:file,female});}
 await fs.writeFile(evidence+'/chinese-jobs.json',JSON.stringify({jobs},null,2));

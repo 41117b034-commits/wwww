@@ -1,0 +1,16 @@
+{
+  "completed": true,
+  "editState": "playing=False dirty=False compileFailed=False",
+  "temporaryVerifierRemovedFromAssetsAndAssembly": true,
+  "protectedFilesUnchanged": true,
+  "runtimeHashes": {
+    "Assets/腳本/場景切換/GameChineseVoice.cs": "79b872a6401356957b9645e98bd4e9fc6589a9ece46b98ee8c3f0cc5e15a9d58",
+    "Assets/腳本/場景切換/ChineseNeuralRuntime.cs": "970b693cc8cc656f5ed5c74e7fa97ab6c93975ba4f7f70b010a1912b10c12735",
+    "Assets/StreamingAssets/ChineseVoice/neural-worker.py": "4514027c1a801d71897ae0d36ddb52c743d060c1490c21d45582b4491a5917e0",
+    "Assets/StreamingAssets/ChineseVoice/delivery.json": "beee1087b15d8f96ddc75a54c70b71f27d133f8f7f996fb43f71e7a643cc1e3e",
+    "Assets/StreamingAssets/ChineseVoice/neural-runtime.zip": "40c037a48732e3ddedf1d3afa85c4b98e75b43dba6433af5d76d56db0f213431",
+    "Assets/Resources/ChineseVoice/catalog.json": "92080e7a155a1cb4d165ece429e6209832e8646c0a011f518ff35713e0a10323"
+  },
+  "editorAssemblyWriteTime": 1793801137.0979936,
+  "lastBuild": "*** Tundra build success (3.96 seconds), 6 items updated, 1246 evaluated"
+}

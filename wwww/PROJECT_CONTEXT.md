@@ -2,6 +2,16 @@
 
 更新日期：2026-11-04。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
 
+最新中文聲音修訂（2026-11-04 22:04，晚於下方配音語言初版）：使用者認為自然版太年輕、有活力，接受較成熟沉穩的試音，並要求第三章四種聲音。第一至第三章固定中文已重製為神經語音；巴萬／一般男性 YunJhe（-4%、-14 Hz），莫那 Yunjian（-7%、-8 Hz），達多 Yunxi（-4%、-14 Hz），比胡 Yunyang（-5%、-6 Hz），第一章女性 HsiaoChen（-3%、-5 Hz）。四男性是不同模型，警告／催促／受傷等按字詞小幅調整韻律，固定與即時共用 delivery.json；達多姓名優先辨識，避免誤選莫那。巴萬是台灣中文，其他三位為普通話模型，聲音與口音是否合適仍由使用者試聽。下方 Zhiwei／Hanhan 的固定錄音紀錄被本版取代，原族語、中文字幕與預設中文／音量 10 保留。
+
+清單 666 文字鍵、1330 WAV（含女性、第三章 198 鍵各四男聲及第二章角色變體，非單次台詞數），原 706 份 meta 全保留。固定句可離線；Windows 即時新句由內附可攜 Python worker 連網以同角色合成，取消會停止該隱藏程序並清理請求；服務失敗或離線的新句回退舊 Windows 本機聲音，因此該備援不保證四個模型。已修正 LocalLow worker 無法寫 Temp 的實測問題，請求改在遊戲 persistentDataPath/ChineseVoiceRequests，未改作業系統安全設定。其他平台動態中文未實作。
+
+本輪最終 56 項 Editor 配音專項通過，completed=true、errors=[]：實載入選單與三章，預設／字幕／切語言、第二章 59 中文及 28 原 clip、第三章四種固定錄音與四角色線上新句、嘴型、完整等待、快取分角、離線備援及取消工作均通過。自動退出 Play Mode，playing=false、dirty=false、compileFailed=false，原四個設定鍵還原；無遺留 worker，請求資料夾為空。1330 WAV 均有效非靜音且 SHA256 與產製記錄一致、峰值最高 0.869；原 666 字串鍵及三章場景／設定／族語清單六份保護檔不變。此次非整章真人鍵鼠、VR、獨立 exe 或真實 LLM 全流程驗收。詳見 `Documentation/Chinese-voice-mature-four-roles.md`，證據 `_CodexBackups/chinese_natural_voice_20261104/`，首次失敗另存 diagnostics/。未 commit／push。
+
+本次曾遇 C 槽不足 1 GB，僅整理本次產物：舊中文 WAV／meta 備份壓縮至 `D:/CodexBackups/wwww/chinese_natural_voice_20261104/before-audio.zip`，1412 檔逐一雜湊核對後才移除 C 槽重複副本；authoring env、MP3 中間檔、portable test 也移至該 D 槽目錄。正式專案位置未改，還原索引在證據目錄 backup-archive.json、ARCHIVE-LOCATION.txt；C 槽仍僅約 1 GB，後續大型工作需注意容量。
+
+本輪收尾：臨時驗證工具與 meta 已移出 Assets，清理編譯成功（3.96 秒）、Editor DLL 無驗證類別，畫面確認停止 Play Mode；保護檔雜湊不變，最終 runtime 雜湊及狀態見 final-state.json，git diff --check 通過。
+
 最新第一至第三章配音語言（2026-11-04，晚於下方第三章聲音風格補測）：依使用者要求，字幕／說話者一律原中文；選中文播放新增台灣中文配音，選賽德克語保留各章原有配音。語言選單只呈現中文與賽德克語並註明「字幕固定中文」。未設定預設中文、音量 10，讀取預設不再自行保存選擇；舊版自動寫入的 5、且沒有明確選擇標記者以 10 處理，新手動選 5 仍保留，其他舊音量維持。新配音設定鍵 `WusheEvent.VoiceLanguage` 相容舊有效族語選擇；舊日文／無字幕回退中文。
 
 新增 `GameChineseVoice`，三章共用中文 Resources 查找、停止／快取及 Windows 本機動態合成。666 文字鍵、706 WAV（含 40 女性版本、分支／備援及部分非實播文字），固定中文可離線播放；角色使用已安裝的 Microsoft Zhiwei／Hanhan 台灣中文聲音。第三章族語維持既有音檔、官方動態合成與 .95 pitch 風格。第一、二章原聲綁定保留，不另改影片與音效。Windows 未快取新句使用 StreamingAssets 的合成腳本及已安裝台灣中文語音；其他平台動態中文尚未提供，固定句不受影響。詳見 `Documentation/Voice-language-selection.md`。
