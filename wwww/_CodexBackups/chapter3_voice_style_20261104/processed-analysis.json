@@ -1,0 +1,16 @@
+[
+  {
+    "path": "_CodexBackups/chapter3_voice_style_20261104/third-chapter-style-preview.wav",
+    "rate": 22800,
+    "channels": 1,
+    "seconds": 7.769824561403508,
+    "peak": 0.6656494140625,
+    "rms": 0.06849597349927632,
+    "activeRms": 0.09700103763438987,
+    "rms90": 0.12635820892509578,
+    "voicedFrames": 114,
+    "f0q10": 131.71001461291416,
+    "f0median": 147.8781523805088,
+    "f0q90": 218.58445693309127
+  }
+]

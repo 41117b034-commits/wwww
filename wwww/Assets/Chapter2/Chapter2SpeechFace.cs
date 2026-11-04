@@ -41,14 +41,14 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
     }
     public void BeginRecordedLine(string text,AudioSource source)
     {
-        BeginLine(text,source&&source.clip?source.clip.length:.1f,null);
+        BeginLine(text,source&&source.clip?source.clip.length/Mathf.Max(.1f,Mathf.Abs(source.pitch)):.1f,null);
         voice=source;recorded=voice&&voice.isPlaying;
     }
     void LateUpdate()
     {
         if(!actor)return;
         if(block==null)block=new MaterialPropertyBlock();
-        bool talking=actor.speaking&&!actor.fallen&&Time.unscaledTime<ends;
+        bool talking=actor.speaking&&!actor.fallen&&(recorded?voice&&voice.isPlaying:Time.unscaledTime<ends);
         float open=0,elapsed=Time.unscaledTime-began;
         if(talking)
         {

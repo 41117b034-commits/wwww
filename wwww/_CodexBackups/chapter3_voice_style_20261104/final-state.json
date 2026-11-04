@@ -1,0 +1,35 @@
+{
+  "completed": true,
+  "cleanupReloadComplete": true,
+  "cleanupErrors": [],
+  "checks": 16,
+  "protected": [
+    {
+      "unchanged": true,
+      "path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第一章新版警察.unity"
+    },
+    {
+      "unchanged": true,
+      "path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Scenes\\第三章.unity"
+    },
+    {
+      "unchanged": true,
+      "path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Resources\\Chapter3Voice\\catalog.json"
+    },
+    {
+      "unchanged": true,
+      "path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\音樂\\我們只是辦婚禮，沒有冒犯。.mp3"
+    },
+    {
+      "unchanged": true,
+      "path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\音樂\\喝.mp3"
+    }
+  ],
+  "verifiedAt": "2026-11-04T16:20:13.9917046+08:00",
+  "errors": [],
+  "probeOutsideAssets": true,
+  "playModeRetest": "Passed in formal Chapter 3 Editor Play Mode",
+  "pendingCommand": false,
+  "editState": "playing=False dirty=False compileFailed=False",
+  "probeAbsentFromEditorAssembly": true
+}

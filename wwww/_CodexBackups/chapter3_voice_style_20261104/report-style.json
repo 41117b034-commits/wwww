@@ -1,0 +1,27 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "Chinese subtitle unchanged",
+        "offline processed clip plays",
+        "reference pitch and 2D mix",
+        "processing preserves full source duration",
+        "processed clip finite and below ceiling",
+        "processed clip audible",
+        "slower speech completes before advancing",
+        "mouth follows processed audio",
+        "clear stops processed voice",
+        "replay reuses processed cache",
+        "mouth remains active beyond unpitched duration",
+        "all prepared lines retain finite non-silent PCM",
+        "live official voice uses same tone",
+        "dynamic Chinese subtitle preserved",
+        "online playback stops cleanly"
+    ],
+    "errors": [],
+    "observations": [
+        "full sample duration=7.755564 expected=7.769825 mouthPeak=0.9",
+        "Processed bank lines=198",
+        "Live official translation=msange ta hini han ma, soopo ta mosa deno."
+    ]
+}

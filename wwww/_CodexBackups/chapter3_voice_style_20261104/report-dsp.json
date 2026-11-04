@@ -1,0 +1,1197 @@
+{
+  "stereoIndependent": true,
+  "clips": [
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7831607,
+      "resource": "Chapter3Voice/Audio/b2a4a9a44732f43d0664",
+      "seconds": 7.769824561403509
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6950879,
+      "resource": "Chapter3Voice/Audio/054c70e7b9fb9bf11c7f",
+      "seconds": 4.715789473684211
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.65296614,
+      "resource": "Chapter3Voice/Audio/52ceab4b6cc98bd149ca",
+      "seconds": 6.815438596491228
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69396675,
+      "resource": "Chapter3Voice/Audio/463ca8251281eec5bf38",
+      "seconds": 5.973333333333334
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.66967803,
+      "resource": "Chapter3Voice/Audio/5f3c03835e4d9b379535",
+      "seconds": 5.243508771929825
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71704537,
+      "resource": "Chapter3Voice/Audio/3f25818da11f55181624",
+      "seconds": 6.186666666666667
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7175753,
+      "resource": "Chapter3Voice/Audio/61c99249424c081dd14a",
+      "seconds": 4.40140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67846143,
+      "resource": "Chapter3Voice/Audio/aa223d0704e8315e9e8c",
+      "seconds": 5.658947368421053
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7345165,
+      "resource": "Chapter3Voice/Audio/d2de46f22b8e618a7ac7",
+      "seconds": 7.657543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7939773,
+      "resource": "Chapter3Voice/Audio/8bfd76192665c6bc35d5",
+      "seconds": 7.3431578947368426
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6749245,
+      "resource": "Chapter3Voice/Audio/1b6f740b96e7485dcfc4",
+      "seconds": 5.872280701754386
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.72478676,
+      "resource": "Chapter3Voice/Audio/6dc3c7d1fc02380de778",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8442584,
+      "resource": "Chapter3Voice/Audio/0c74d84b3c7c93e6efa4",
+      "seconds": 12.081403508771931
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74741703,
+      "resource": "Chapter3Voice/Audio/66d93de919811740e757",
+      "seconds": 4.929122807017545
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6834924,
+      "resource": "Chapter3Voice/Audio/11e54b05a9f441f3693c",
+      "seconds": 9.027368421052632
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7300645,
+      "resource": "Chapter3Voice/Audio/c730e391712720009910",
+      "seconds": 10.498245614035088
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.77836555,
+      "resource": "Chapter3Voice/Audio/fda461032b455fddbd80",
+      "seconds": 14.596491228070176
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69886243,
+      "resource": "Chapter3Voice/Audio/d10781d38412c5bdde0d",
+      "seconds": 6.4
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7355175,
+      "resource": "Chapter3Voice/Audio/8636a062c42dd4733255",
+      "seconds": 3.3459649122807016
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7112025,
+      "resource": "Chapter3Voice/Audio/7d21c432b38dc33c655b",
+      "seconds": 8.926315789473685
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8664353,
+      "resource": "Chapter3Voice/Audio/ad2a7bf7bb4769e41441",
+      "seconds": 7.028771929824562
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.651234,
+      "resource": "Chapter3Voice/Audio/eb334bd29bc31519f9eb",
+      "seconds": 5.557894736842106
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73337674,
+      "resource": "Chapter3Voice/Audio/04651651ae98334ae454",
+      "seconds": 7.455438596491228
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7556344,
+      "resource": "Chapter3Voice/Audio/8198378b7c41d4e78179",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6667499,
+      "resource": "Chapter3Voice/Audio/d5a9347ad11d03d1a3ff",
+      "seconds": 2.40280701754386
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69579643,
+      "resource": "Chapter3Voice/Audio/6965f27db4e471599665",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69637465,
+      "resource": "Chapter3Voice/Audio/a965425db2473cbcb204",
+      "seconds": 7.971929824561403
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7630865,
+      "resource": "Chapter3Voice/Audio/fe16bd88305b8c8b9fd7",
+      "seconds": 19.12140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7111321,
+      "resource": "Chapter3Voice/Audio/01d7ea5e2a15bd116973",
+      "seconds": 18.279298245614036
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7885659,
+      "resource": "Chapter3Voice/Audio/113222ae0705244e53ff",
+      "seconds": 16.392982456140352
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.87644315,
+      "resource": "Chapter3Voice/Audio/043efba7fa0271d80e11",
+      "seconds": 9.970526315789474
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6926226,
+      "resource": "Chapter3Voice/Audio/54b1ff8a436e48f9a771",
+      "seconds": 8.71298245614035
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6985364,
+      "resource": "Chapter3Voice/Audio/68400b0c63ca2092493d",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8003369,
+      "resource": "Chapter3Voice/Audio/9bbeea8c96a73cb868de",
+      "seconds": 17.23508771929825
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.84517676,
+      "resource": "Chapter3Voice/Audio/161b87bfd858897063ee",
+      "seconds": 15.236491228070175
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.78659695,
+      "resource": "Chapter3Voice/Audio/d6869500011b707bacb5",
+      "seconds": 15.966315789473684
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.76088583,
+      "resource": "Chapter3Voice/Audio/be4f2d7736abd889e63f",
+      "seconds": 19.233684210526317
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.76088154,
+      "resource": "Chapter3Voice/Audio/fda0634906458cc9431d",
+      "seconds": 14.708771929824561
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73206264,
+      "resource": "Chapter3Voice/Audio/b0031ad7d93744ed7b03",
+      "seconds": 10.924912280701754
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8182426,
+      "resource": "Chapter3Voice/Audio/476d0e607bd8374e56d0",
+      "seconds": 13.440000000000001
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.83574945,
+      "resource": "Chapter3Voice/Audio/39e62db276432bbd8163",
+      "seconds": 11.969122807017545
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7137216,
+      "resource": "Chapter3Voice/Audio/67ef766fca44418bd9c9",
+      "seconds": 1.3473684210526318
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8625329,
+      "resource": "Chapter3Voice/Audio/7477dd6a0387ef7dc95d",
+      "seconds": 8.611929824561404
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.75526273,
+      "resource": "Chapter3Voice/Audio/0c2648d0c7a9a686f893",
+      "seconds": 6.08561403508772
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6717407,
+      "resource": "Chapter3Voice/Audio/60c734e9b3c5c36868be",
+      "seconds": 5.456842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73022586,
+      "resource": "Chapter3Voice/Audio/edc57f03ca6540ac7e0b",
+      "seconds": 5.131228070175438
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.65926707,
+      "resource": "Chapter3Voice/Audio/e0a898f2d35317c087ce",
+      "seconds": 9.341754385964911
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71024144,
+      "resource": "Chapter3Voice/Audio/0701f5ce9bf04acaac3e",
+      "seconds": 6.4
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6650453,
+      "resource": "Chapter3Voice/Audio/2eb127605ec30bc333ae",
+      "seconds": 4.40140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.82934964,
+      "resource": "Chapter3Voice/Audio/eca277e5cf3308f3ebdc",
+      "seconds": 6.714385964912281
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6998176,
+      "resource": "Chapter3Voice/Audio/01d2f8a3e23ab93a7896",
+      "seconds": 6.186666666666667
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7254274,
+      "resource": "Chapter3Voice/Audio/b5cf64be1347e9522a4e",
+      "seconds": 5.030175438596492
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6772683,
+      "resource": "Chapter3Voice/Audio/402e23238ad04fb4cc21",
+      "seconds": 4.300350877192983
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.64236623,
+      "resource": "Chapter3Voice/Audio/0af3f80def8da82e3dd7",
+      "seconds": 3.031578947368421
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71585494,
+      "resource": "Chapter3Voice/Audio/ec04c55ffd4d28b4190f",
+      "seconds": 6.4
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7020941,
+      "resource": "Chapter3Voice/Audio/83a1ca37320ad0f69e19",
+      "seconds": 7.870877192982456
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7129918,
+      "resource": "Chapter3Voice/Audio/a650792eae194c0f501e",
+      "seconds": 10.924912280701754
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7094161,
+      "resource": "Chapter3Voice/Audio/ba350311e668a1fd8db2",
+      "seconds": 2.3017543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70013726,
+      "resource": "Chapter3Voice/Audio/a784a0e99fff3a01751f",
+      "seconds": 6.08561403508772
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6969075,
+      "resource": "Chapter3Voice/Audio/6dcaf006bc33fcba3a96",
+      "seconds": 6.298947368421053
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6909973,
+      "resource": "Chapter3Voice/Audio/e2032c98a23564940ea0",
+      "seconds": 3.8736842105263163
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70826477,
+      "resource": "Chapter3Voice/Audio/dd6e5f8cd0bf8b61fa95",
+      "seconds": 2.3017543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.79769677,
+      "resource": "Chapter3Voice/Audio/5dd8b329a3eeab7cef8a",
+      "seconds": 11.553684210526317
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8563406,
+      "resource": "Chapter3Voice/Audio/a5630e21c93af78fe25c",
+      "seconds": 15.337543859649124
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7856902,
+      "resource": "Chapter3Voice/Audio/8fc7e8ab56079e3c503b",
+      "seconds": 13.967719298245616
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.791764,
+      "resource": "Chapter3Voice/Audio/87dec7bdef0598ad6d80",
+      "seconds": 17.86385964912281
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.75807697,
+      "resource": "Chapter3Voice/Audio/d2ddd5332875ef77be1f",
+      "seconds": 15.236491228070175
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8609294,
+      "resource": "Chapter3Voice/Audio/a6517294e4d405a61e7c",
+      "seconds": 17.336140350877194
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7291995,
+      "resource": "Chapter3Voice/Audio/3448c77280cd49fea5bf",
+      "seconds": 13.552280701754386
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7450309,
+      "resource": "Chapter3Voice/Audio/f772451fb170c3960261",
+      "seconds": 15.764210526315791
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6877541,
+      "resource": "Chapter3Voice/Audio/8dd35be321656725b1a3",
+      "seconds": 7.455438596491228
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7256982,
+      "resource": "Chapter3Voice/Audio/b4d3fb7cb0c3e4650768",
+      "seconds": 5.771228070175439
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.78989285,
+      "resource": "Chapter3Voice/Audio/1823ca19b51cf3bce788",
+      "seconds": 11.969122807017545
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6940178,
+      "resource": "Chapter3Voice/Audio/4beddbe5b478295a95eb",
+      "seconds": 2.6161403508771928
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.83758247,
+      "resource": "Chapter3Voice/Audio/fc8859d12c66842df3df",
+      "seconds": 7.3431578947368426
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7813908,
+      "resource": "Chapter3Voice/Audio/65ea22abdfc6d4735c08",
+      "seconds": 11.553684210526317
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7817114,
+      "resource": "Chapter3Voice/Audio/d9ee0b9b8dda2a04bc98",
+      "seconds": 9.656140350877195
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.76979995,
+      "resource": "Chapter3Voice/Audio/24652d85763838d83660",
+      "seconds": 14.394385964912281
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.81482774,
+      "resource": "Chapter3Voice/Audio/a80768fe3fc4d1406116",
+      "seconds": 18.705964912280702
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7106235,
+      "resource": "Chapter3Voice/Audio/48ccf9b12f6aa2caafc9",
+      "seconds": 7.3431578947368426
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67905515,
+      "resource": "Chapter3Voice/Audio/56d18854f15c76182024",
+      "seconds": 5.872280701754386
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6924696,
+      "resource": "Chapter3Voice/Audio/5b83121bf613608c660f",
+      "seconds": 5.243508771929825
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.81005645,
+      "resource": "Chapter3Voice/Audio/9f46f41c78e64704b1ff",
+      "seconds": 19.053333333333335
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.65493625,
+      "resource": "Chapter3Voice/Audio/54ab1e334c299f778a88",
+      "seconds": 5.456842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69737566,
+      "resource": "Chapter3Voice/Audio/764dfedf7124da25682e",
+      "seconds": 8.08421052631579
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8655349,
+      "resource": "Chapter3Voice/Audio/a2ae38944b877d032bcb",
+      "seconds": 5.456842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.81097084,
+      "resource": "Chapter3Voice/Audio/8271f11e253f53d9a757",
+      "seconds": 2.5038596491228073
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6865782,
+      "resource": "Chapter3Voice/Audio/88777468d02e7e1ff9d1",
+      "seconds": 3.772631578947369
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8004494,
+      "resource": "Chapter3Voice/Audio/a93ae87eaa0908c9d7fb",
+      "seconds": 9.656140350877195
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73982656,
+      "resource": "Chapter3Voice/Audio/690d598974611af275bc",
+      "seconds": 5.557894736842106
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8313092,
+      "resource": "Chapter3Voice/Audio/203581d9ba93c617ca78",
+      "seconds": 8.611929824561404
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71317095,
+      "resource": "Chapter3Voice/Audio/7f6c5440440a0157c76a",
+      "seconds": 5.131228070175438
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.77698684,
+      "resource": "Chapter3Voice/Audio/da37ffc82c931a7643dd",
+      "seconds": 4.40140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6950282,
+      "resource": "Chapter3Voice/Audio/5aec1096b52579f98398",
+      "seconds": 4.300350877192983
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.68825126,
+      "resource": "Chapter3Voice/Audio/6f2cd913bf906283efc1",
+      "seconds": 9.341754385964911
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67631304,
+      "resource": "Chapter3Voice/Audio/a86cbc2c5fc33d030383",
+      "seconds": 9.4540350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7355562,
+      "resource": "Chapter3Voice/Audio/bbca2034cff6130089c7",
+      "seconds": 5.658947368421053
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7006552,
+      "resource": "Chapter3Voice/Audio/821cad7170078a1afcba",
+      "seconds": 5.131228070175438
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.683319,
+      "resource": "Chapter3Voice/Audio/6d95bd586ba1c71bebf6",
+      "seconds": 9.341754385964911
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6767,
+      "resource": "Chapter3Voice/Audio/b774e98f663b8852408f",
+      "seconds": 9.240701754385965
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7773537,
+      "resource": "Chapter3Voice/Audio/f77a7a5440ddc114439f",
+      "seconds": 3.5592982456140354
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7150273,
+      "resource": "Chapter3Voice/Audio/36a6fd5d12293d74ec1c",
+      "seconds": 2.1894736842105265
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7204705,
+      "resource": "Chapter3Voice/Audio/6c6530b9701dd553b879",
+      "seconds": 12.081403508771931
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6760216,
+      "resource": "Chapter3Voice/Audio/6a672f87ac2ba6a41936",
+      "seconds": 3.244912280701755
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71525633,
+      "resource": "Chapter3Voice/Audio/fbac15bd363125050650",
+      "seconds": 2.6161403508771928
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.700854,
+      "resource": "Chapter3Voice/Audio/ef097d4218edc409f757",
+      "seconds": 4.816842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6705768,
+      "resource": "Chapter3Voice/Audio/45781438207f7f5fa85f",
+      "seconds": 9.341754385964911
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7140574,
+      "resource": "Chapter3Voice/Audio/74c5ef7ac7fef176cae8",
+      "seconds": 8.71298245614035
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70256674,
+      "resource": "Chapter3Voice/Audio/90b35de2d6ad0001bd8d",
+      "seconds": 5.030175438596492
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.68086857,
+      "resource": "Chapter3Voice/Audio/04dc8213db7ae468105a",
+      "seconds": 5.344561403508773
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70538586,
+      "resource": "Chapter3Voice/Audio/4062fd998057c330f49b",
+      "seconds": 5.344561403508773
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.68136215,
+      "resource": "Chapter3Voice/Audio/bd792eea261a8fc5bce0",
+      "seconds": 4.300350877192983
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6722665,
+      "resource": "Chapter3Voice/Audio/5b1f86a088b396e5d8c9",
+      "seconds": 4.087017543859649
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8343206,
+      "resource": "Chapter3Voice/Audio/5377680b13524ffc01fa",
+      "seconds": 7.769824561403509
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73151696,
+      "resource": "Chapter3Voice/Audio/e95437312a8db5565380",
+      "seconds": 4.40140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69523084,
+      "resource": "Chapter3Voice/Audio/e1837af322022d037c74",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.66219854,
+      "resource": "Chapter3Voice/Audio/c9723bb2a6cf45dffef3",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71603256,
+      "resource": "Chapter3Voice/Audio/43802ff0320387e3905e",
+      "seconds": 2.7171929824561403
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7875514,
+      "resource": "Chapter3Voice/Audio/c2e2077f1fa98dfde70c",
+      "seconds": 14.181052631578947
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7271587,
+      "resource": "Chapter3Voice/Audio/e51d0b441ca99c56c19b",
+      "seconds": 7.12982456140351
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73895234,
+      "resource": "Chapter3Voice/Audio/b2a0ed61ebdcf55d66c8",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7183711,
+      "resource": "Chapter3Voice/Audio/f68329268836638b9bc4",
+      "seconds": 1.560701754385965
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69318986,
+      "resource": "Chapter3Voice/Audio/6eb757b19692a3a6918a",
+      "seconds": 2.3017543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7083722,
+      "resource": "Chapter3Voice/Audio/9d2ede7d30a5054b6e47",
+      "seconds": 4.502456140350877
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7569712,
+      "resource": "Chapter3Voice/Audio/4ad6d627cd58ac2f9d90",
+      "seconds": 2.9305263157894736
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7124704,
+      "resource": "Chapter3Voice/Audio/a862488ab854e388687a",
+      "seconds": 10.81263157894737
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67714727,
+      "resource": "Chapter3Voice/Audio/86449a4d3ea0262c7c13",
+      "seconds": 7.12982456140351
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6909999,
+      "resource": "Chapter3Voice/Audio/1d5c19c641824faf3cf4",
+      "seconds": 7.769824561403509
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7054555,
+      "resource": "Chapter3Voice/Audio/e0c3d9889b89754e076e",
+      "seconds": 8.08421052631579
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7578199,
+      "resource": "Chapter3Voice/Audio/b0c46a5e41d60c4b75dc",
+      "seconds": 7.3431578947368426
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74951863,
+      "resource": "Chapter3Voice/Audio/a797de47eff6e5335779",
+      "seconds": 5.771228070175439
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7180097,
+      "resource": "Chapter3Voice/Audio/a1417ca93d34e64c8725",
+      "seconds": 4.816842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71722996,
+      "resource": "Chapter3Voice/Audio/fb12d255c9d1a5fdfe04",
+      "seconds": 7.242105263157895
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.77335536,
+      "resource": "Chapter3Voice/Audio/2e57dc5b2d5d33527307",
+      "seconds": 7.657543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.706609,
+      "resource": "Chapter3Voice/Audio/abff08cb012594015227",
+      "seconds": 7.657543859649123
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7709458,
+      "resource": "Chapter3Voice/Audio/8df2703fc7c963255b6e",
+      "seconds": 8.71298245614035
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7065915,
+      "resource": "Chapter3Voice/Audio/d985fc98fdbd40ef4978",
+      "seconds": 7.971929824561403
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71693116,
+      "resource": "Chapter3Voice/Audio/f8a7c74083fa116bc6b0",
+      "seconds": 10.183859649122807
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71076745,
+      "resource": "Chapter3Voice/Audio/2c3b9e267ba881b50db0",
+      "seconds": 7.5564912280701755
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.76336503,
+      "resource": "Chapter3Voice/Audio/4405745afcd6391e1ba9",
+      "seconds": 6.501052631578948
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71872014,
+      "resource": "Chapter3Voice/Audio/be17a728466f2828f6c3",
+      "seconds": 9.240701754385965
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6819411,
+      "resource": "Chapter3Voice/Audio/aa7adc80dc1a38bcc56b",
+      "seconds": 8.398596491228071
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7805758,
+      "resource": "Chapter3Voice/Audio/cd5866d1c75e013862ab",
+      "seconds": 7.12982456140351
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7145555,
+      "resource": "Chapter3Voice/Audio/6485a85ab947e0e8ccd6",
+      "seconds": 7.971929824561403
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7960734,
+      "resource": "Chapter3Voice/Audio/7a1993426dc8579314fe",
+      "seconds": 6.613333333333333
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7765685,
+      "resource": "Chapter3Voice/Audio/9356581dbf42a9742748",
+      "seconds": 5.131228070175438
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67919767,
+      "resource": "Chapter3Voice/Audio/d818cd2f50987f071f80",
+      "seconds": 3.8736842105263163
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8110417,
+      "resource": "Chapter3Voice/Audio/858f11c3a527756493c6",
+      "seconds": 5.973333333333334
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.68276864,
+      "resource": "Chapter3Voice/Audio/72fcb3bad0d454d368c1",
+      "seconds": 3.031578947368421
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.67873526,
+      "resource": "Chapter3Voice/Audio/d02213cde50bd3549446",
+      "seconds": 5.973333333333334
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71966,
+      "resource": "Chapter3Voice/Audio/52bf1f036e1c90bb0f93",
+      "seconds": 6.815438596491228
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74284285,
+      "resource": "Chapter3Voice/Audio/68c03a676f30e03b9ce2",
+      "seconds": 3.3459649122807016
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.65570295,
+      "resource": "Chapter3Voice/Audio/f69bd4d9e1820617f73f",
+      "seconds": 4.40140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7474897,
+      "resource": "Chapter3Voice/Audio/b7de76bfffded3c79631",
+      "seconds": 5.771228070175439
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.66696066,
+      "resource": "Chapter3Voice/Audio/c7b4ebd7b978345c1ecd",
+      "seconds": 5.456842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69937694,
+      "resource": "Chapter3Voice/Audio/6bf3b2f367265ed2d8d0",
+      "seconds": 5.771228070175439
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.78717774,
+      "resource": "Chapter3Voice/Audio/7fb85add4e74af6eb0ba",
+      "seconds": 11.12701754385965
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.83923304,
+      "resource": "Chapter3Voice/Audio/3dd82f021aef403bc2ad",
+      "seconds": 14.922105263157896
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6874781,
+      "resource": "Chapter3Voice/Audio/4ca50fe31741508f7890",
+      "seconds": 9.869473684210526
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8166835,
+      "resource": "Chapter3Voice/Audio/9f07aaf3d40bdb09d41d",
+      "seconds": 16.80842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7571857,
+      "resource": "Chapter3Voice/Audio/81d1949964716be76014",
+      "seconds": 9.4540350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.72922015,
+      "resource": "Chapter3Voice/Audio/0adb8041ca793ce2ca4e",
+      "seconds": 13.237894736842106
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7551681,
+      "resource": "Chapter3Voice/Audio/1059d3db13b95839bc84",
+      "seconds": 13.237894736842106
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74561316,
+      "resource": "Chapter3Voice/Audio/9f7f8c1e0a14e953a4fa",
+      "seconds": 11.654736842105264
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8436887,
+      "resource": "Chapter3Voice/Audio/ace1044f96f2802bb7f9",
+      "seconds": 8.814035087719299
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6966365,
+      "resource": "Chapter3Voice/Audio/ee7b17d1199bfdf3f5af",
+      "seconds": 4.087017543859649
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6897858,
+      "resource": "Chapter3Voice/Audio/198fd44f5f1f45a746ff",
+      "seconds": 5.557894736842106
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7133102,
+      "resource": "Chapter3Voice/Audio/77f93d055fb1d94927da",
+      "seconds": 4.087017543859649
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7356941,
+      "resource": "Chapter3Voice/Audio/82cf70b539895a79e98f",
+      "seconds": 9.555087719298246
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7400437,
+      "resource": "Chapter3Voice/Audio/ba682d66379319b64809",
+      "seconds": 7.769824561403509
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70013,
+      "resource": "Chapter3Voice/Audio/349e3ba6dc078c24a5ec",
+      "seconds": 7.3431578947368426
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.73857063,
+      "resource": "Chapter3Voice/Audio/fc2b78e8bf8567723244",
+      "seconds": 6.927719298245615
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.84342325,
+      "resource": "Chapter3Voice/Audio/d47993859b8ee46126eb",
+      "seconds": 14.181052631578947
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.81316584,
+      "resource": "Chapter3Voice/Audio/9b853253461a74fbfa65",
+      "seconds": 10.924912280701754
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.69134176,
+      "resource": "Chapter3Voice/Audio/69bb4034370b65b01a67",
+      "seconds": 6.613333333333333
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.723123,
+      "resource": "Chapter3Voice/Audio/97f8e90cee395895c26e",
+      "seconds": 12.609122807017545
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71384716,
+      "resource": "Chapter3Voice/Audio/82dee4e742a7cc931c84",
+      "seconds": 1.976140350877193
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7448419,
+      "resource": "Chapter3Voice/Audio/afbf3f89d99f32d391a8",
+      "seconds": 16.392982456140352
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71023005,
+      "resource": "Chapter3Voice/Audio/6b781a1d7e63429d2402",
+      "seconds": 11.868070175438596
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7046457,
+      "resource": "Chapter3Voice/Audio/10703d5af3e6623d1eeb",
+      "seconds": 18.59368421052632
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7174099,
+      "resource": "Chapter3Voice/Audio/87e58c49443190408480",
+      "seconds": 7.455438596491228
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6853267,
+      "resource": "Chapter3Voice/Audio/e5ef9a7395cb6ed10f0c",
+      "seconds": 4.6147368421052635
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.70720345,
+      "resource": "Chapter3Voice/Audio/eeeb230fc84f06f70777",
+      "seconds": 7.12982456140351
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74618423,
+      "resource": "Chapter3Voice/Audio/7c650192c56418e7236d",
+      "seconds": 3.1438596491228075
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7109018,
+      "resource": "Chapter3Voice/Audio/536c3b9ecf1f8290186c",
+      "seconds": 7.971929824561403
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.74007636,
+      "resource": "Chapter3Voice/Audio/f785819a24dcebb56ce0",
+      "seconds": 13.866666666666667
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7251212,
+      "resource": "Chapter3Voice/Audio/37bd4f20d894ffb2c825",
+      "seconds": 5.344561403508773
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71533376,
+      "resource": "Chapter3Voice/Audio/fa07655ec435a613bce4",
+      "seconds": 6.4
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6691687,
+      "resource": "Chapter3Voice/Audio/2f90eb4e784537651fe2",
+      "seconds": 8.08421052631579
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7159491,
+      "resource": "Chapter3Voice/Audio/b7805bf39b584a69dde0",
+      "seconds": 14.181052631578947
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.71326154,
+      "resource": "Chapter3Voice/Audio/448c7a54d92297abb352",
+      "seconds": 9.12842105263158
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7114265,
+      "resource": "Chapter3Voice/Audio/86d96a215a381e31a550",
+      "seconds": 7.028771929824562
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8110251,
+      "resource": "Chapter3Voice/Audio/893d7b87bceadbf29d6b",
+      "seconds": 10.08280701754386
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7576327,
+      "resource": "Chapter3Voice/Audio/304d9805f71aff3c0dab",
+      "seconds": 11.76701754385965
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6545194,
+      "resource": "Chapter3Voice/Audio/f7c45131444475f33ff7",
+      "seconds": 2.4364912280701754
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.6644072,
+      "resource": "Chapter3Voice/Audio/a8af4062f63d6da881bb",
+      "seconds": 2.088421052631579
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.7083667,
+      "resource": "Chapter3Voice/Audio/04f5c955528646d4547d",
+      "seconds": 6.298947368421053
+    },
+    {
+      "sourcePeak": 0.9999695,
+      "processedPeak": 0.8032172,
+      "resource": "Chapter3Voice/Audio/7d8a88601848e85a3bd9",
+      "seconds": 8.185263157894736
+    }
+  ],
+  "completed": true,
+  "silencePreserved": true,
+  "count": 198,
+  "layer": "Actual production C# DSP compiled and executed outside Unity; not Editor Play Mode"
+}

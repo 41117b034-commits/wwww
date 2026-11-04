@@ -40,7 +40,8 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     public Chapter3Flow Flow {get;set;}
     void Awake()
     {
-        output=gameObject.AddComponent<AudioSource>();output.playOnAwake=false;output.spatialBlend=0;output.volume=.85f;
+        output=gameObject.AddComponent<AudioSource>();output.playOnAwake=false;output.spatialBlend=0;
+        output.volume=Chapter3VoiceTone.PlaybackVolume;output.pitch=Chapter3VoiceTone.PlaybackPitch;
         var resource=Resources.Load<TextAsset>("Chapter3Voice/catalog");
         if(resource){var data=JsonUtility.FromJson<Bank>(resource.text);if(data?.entries!=null)foreach(var entry in data.entries)if(!string.IsNullOrEmpty(entry.chinese))bank[entry.chinese]=entry;}
     }
@@ -52,12 +53,18 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
         if(bank.TryGetValue(line,out var entry)&&!string.IsNullOrEmpty(entry.resource))
         {
             var clip=Resources.Load<AudioClip>(entry.resource);
-            if(clip){LastTranslation=entry.seediq;translations[line]=entry.seediq;cache[line]=clip;Play(clip);return;}
+            if(clip){LastTranslation=entry.seediq;translations[line]=entry.seediq;clip=Prepare(clip);cache[line]=clip;Play(clip);return;}
         }
         if(!AllowOnline||Time.realtimeSinceStartup<unavailableUntil)return;
         Busy=true;pending=StartCoroutine(Generate(line));
     }
     void Play(AudioClip clip){Busy=true;output.clip=clip;output.Play();}
+    AudioClip Prepare(AudioClip source)
+    {
+        var prepared=Chapter3VoiceTone.Prepare(source);
+        if(prepared!=source)downloaded.Add(prepared);
+        return prepared;
+    }
     void Update(){if(Busy&&pending==null&&!Speaking){Busy=false;if(voiceActor)voiceActor.speaking=false;}}
     void LateUpdate()
     {
@@ -114,7 +121,7 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
                 if(download.result!=UnityWebRequest.Result.Success){Fail("官方音檔下載失敗："+download.error);yield break;}
                 clip=DownloadHandlerAudioClip.GetContent(download);
             }
-            downloaded.Add(clip);if(chunks.Count==1){cache[line]=clip;translations[line]=LastTranslation;}
+            downloaded.Add(clip);clip=Prepare(clip);if(chunks.Count==1){cache[line]=clip;translations[line]=LastTranslation;}
             output.clip=clip;output.Play();while(output.isPlaying)yield return null;
         }
         LastError=null;pending=null;Busy=false;

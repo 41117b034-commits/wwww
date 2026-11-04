@@ -1,0 +1,58 @@
+[
+  {
+    "path": "_CodexBackups/chapter3_voice_style_20261104/chapter1-groom.wav",
+    "rate": 32000,
+    "channels": 1,
+    "seconds": 2.448,
+    "peak": 0.365753173828125,
+    "rms": 0.044921006431409886,
+    "activeRms": 0.0645285045162507,
+    "rms90": 0.08294703440735136,
+    "voicedFrames": 27,
+    "f0q10": 81.88659110687696,
+    "f0median": 96.32412201375375,
+    "f0q90": 114.8448001346356
+  },
+  {
+    "path": "_CodexBackups/chapter3_voice_style_20261104/chapter1-male-thanks.wav",
+    "rate": 48000,
+    "channels": 2,
+    "seconds": 2.808,
+    "peak": 0.476837158203125,
+    "rms": 0.06094972554629358,
+    "activeRms": 0.13167886380938587,
+    "rms90": 0.10666777942758154,
+    "voicedFrames": 14,
+    "f0q10": 118.07754681603501,
+    "f0median": 147.81299646564705,
+    "f0q90": 157.46563713053342
+  },
+  {
+    "path": "_CodexBackups/chapter3_voice_style_20261104/chapter1-intervene.wav",
+    "rate": 32000,
+    "channels": 1,
+    "seconds": 2.268,
+    "peak": 0.64471435546875,
+    "rms": 0.09255333776845819,
+    "activeRms": 0.12497229321904622,
+    "rms90": 0.1640757893604028,
+    "voicedFrames": 30,
+    "f0q10": 130.50523425189039,
+    "f0median": 220.43422854019258,
+    "f0q90": 298.05311865375535
+  },
+  {
+    "path": "Assets/Resources/Chapter3Voice/Audio/b2a4a9a44732f43d0664.wav",
+    "rate": 24000,
+    "channels": 1,
+    "seconds": 7.381333333333333,
+    "peak": 0.999969482421875,
+    "rms": 0.0986643294579612,
+    "activeRms": 0.1325246210740019,
+    "rms90": 0.18058842054280796,
+    "voicedFrames": 113,
+    "f0q10": 138.61758375385077,
+    "f0median": 155.5751941642575,
+    "f0q90": 230.00973410014845
+  }
+]
