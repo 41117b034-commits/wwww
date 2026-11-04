@@ -28,9 +28,12 @@ public sealed class Chapter3Flow : MonoBehaviour
     Text shortcutLegend;
     bool stationStarted;
     public Chapter3StationLink StationLink {get;private set;}
+    public Chapter3DialogueView DialogueView {get;private set;}
     void Awake()
     {
         activeFlow=this;
+        DialogueView=gameObject.AddComponent<Chapter3DialogueView>();DialogueView.Configure(this);ui.dialogueView=DialogueView;
+        ui.voice=gameObject.AddComponent<Chapter3SeediqVoice>();ui.voice.Flow=this;
         if(village)village.flow=this;station.flow=this;combat.flow=this;
         if(villageRegion)villageRegion.SetActive(!startAtStation);
         stationRegion.SetActive(startAtStation);combatRegion.SetActive(false);
@@ -149,7 +152,7 @@ public sealed class Chapter3Flow : MonoBehaviour
     public static IEnumerator WaitForLine(float seconds)
     {
         float elapsed=0;
-        while(elapsed<seconds)
+        while(elapsed<seconds||(activeFlow&&activeFlow.ui.voice&&activeFlow.ui.voice.Busy))
         {
             // Before school Space belongs to the region shortcut, never to an
             // outgoing dialogue coroutine. At school it only advances a line,

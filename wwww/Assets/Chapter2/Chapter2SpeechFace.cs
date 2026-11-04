@@ -39,6 +39,11 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
             if(source.name=="Chapter2 Character Voice"){voice=source;break;}
         recorded=voice&&voice.isPlaying;
     }
+    public void BeginRecordedLine(string text,AudioSource source)
+    {
+        BeginLine(text,source&&source.clip?source.clip.length:.1f,null);
+        voice=source;recorded=voice&&voice.isPlaying;
+    }
     void LateUpdate()
     {
         if(!actor)return;

@@ -1,0 +1,24 @@
+{
+  "completed": true,
+  "checkedFiles": 59,
+  "originalChineseLiterals": 853,
+  "removed": [],
+  "newChinese": [
+    {
+      "file": "Chapter3ConversationHistory.cs",
+      "text": "\"你\""
+    },
+    {
+      "file": "Chapter3ConversationHistory.cs",
+      "text": "\"玩家\""
+    },
+    {
+      "file": "Chapter3Rescue.cs",
+      "text": "\"正沿出口趕來（距離 \""
+    },
+    {
+      "file": "Chapter3Rescue.cs",
+      "text": "\" 公尺），三人會一起走入林路。\""
+    }
+  ]
+}

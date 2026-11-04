@@ -50,8 +50,10 @@ public sealed class Chapter3PathMotor
 
     public void Move(Chapter3SchoolCrowdActor actor,Vector3 target,float speed,float stoppingDistance=.08f)
     {MoveRoot(actor?actor.transform:null,null,actor,target,speed,stoppingDistance);}
+    public void Patrol(Chapter3SchoolCrowdActor actor,Vector3 target,float speed,float stoppingDistance=.08f)
+    {MoveRoot(actor?actor.transform:null,null,actor,target,speed,stoppingDistance,true);}
 
-    void MoveRoot(Transform root,Chapter2Actor actor,Chapter3SchoolCrowdActor crowd,Vector3 target,float speed,float stoppingDistance)
+    void MoveRoot(Transform root,Chapter2Actor actor,Chapter3SchoolCrowdActor crowd,Vector3 target,float speed,float stoppingDistance,bool patrol=false)
     {
         using var sample=MoveMarker.Auto();
         if(!root||!root.gameObject.activeInHierarchy){Reset();return;}
@@ -68,7 +70,7 @@ public sealed class Chapter3PathMotor
         // A moving guest can enter a follower's capsule after a path was
         // planned. A half-metre search cell may then have no valid first edge.
         // Separate by one normal walking step before resuming that search.
-        if(crowd&&SeparateCrowdOverlap(crowd,start,target,speed,groundedY))
+        if(crowd&&SeparateCrowdOverlap(crowd,start,target,speed,groundedY,patrol))
         {path.Clear();CancelSearch();nextPlan=0;return;}
 
         // Explicit retargeting/repositioning cannot publish an old search.
@@ -115,7 +117,7 @@ public sealed class Chapter3PathMotor
         // Actor.Update has grounded the rig. Keep that root-height correction.
         Vector3 direction=step-start;
         step.y=groundedY;
-        if(crowd){crowd.StepAlongWithdrawal(step);return;}
+        if(crowd){if(patrol)crowd.StepAlongPath(step);else crowd.StepAlongWithdrawal(step);return;}
         root.position=step;actor.GroundHeight=0;
         if(direction.sqrMagnitude>.000001f)actor.Face(step+direction.normalized);
     }
@@ -129,7 +131,7 @@ public sealed class Chapter3PathMotor
         path[path.Count-1]=target;goal=target;return true;
     }
 
-    bool SeparateCrowdOverlap(Chapter3SchoolCrowdActor actor,Vector3 start,Vector3 target,float speed,float groundedY)
+    bool SeparateCrowdOverlap(Chapter3SchoolCrowdActor actor,Vector3 start,Vector3 target,float speed,float groundedY,bool patrol)
     {
         var people=new List<Transform>();
         foreach(var c in Physics.OverlapCapsule(start+Vector3.up*.42f,start+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
@@ -152,7 +154,7 @@ public sealed class Chapter3PathMotor
             if(value>score){score=value;best=step;}
         }
         if(float.IsNegativeInfinity(score))return false;
-        best.y=groundedY;return actor.StepAlongWithdrawal(best);
+        best.y=groundedY;return patrol?actor.StepAlongPath(best):actor.StepAlongWithdrawal(best);
     }
 
     static bool Obstacle(Collider collider)

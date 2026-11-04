@@ -1,0 +1,27 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter",
+        "natural station briefing reaches weapon choice",
+        "choose rifle",
+        "walked actual controller to (-26.80, 0.94, -103.20)",
+        "single rifle acquired",
+        "ready answer submitted",
+        "station walks into continuous mountain encounter",
+        "rifle fired",
+        "actual shot defeats officer",
+        "reload accepted",
+        "rifle fired",
+        "actual shot defeats officer",
+        "reload accepted",
+        "rifle fired",
+        "actual shot defeats officer"
+    ],
+    "observations": [
+        "Formal start through station, weapon pickup, continuous mountain and school approach. Controller-driven walking; mountain weapon tests use explicitly positioned aim fixtures with enemy HoldFire. School clearing fixture remains direct damage. No scene skip.",
+        "Readiness timeout fixture uses deterministic fallback to avoid local LLM dependency."
+    ],
+    "errors": [
+        "System.Exception: School approach stuck player=(-0.90, 0.13, -19.60) B=(0.00, 0.06, -18.00)\r\n  at Chapter3ForestVerify+<BeforeSchool>d__34.MoveNext () [0x007af] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ForestVerify.Full.cs:51 \r\n  at Chapter3ForestVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ForestVerify.cs:49 "
+    ]
+}

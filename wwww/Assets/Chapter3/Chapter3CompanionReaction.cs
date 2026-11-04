@@ -7,6 +7,7 @@ public sealed class Chapter3CompanionReaction : MonoBehaviour
     public Chapter2Actor actor;
     public Vector3 AimPoint=>transform.position+Vector3.up*1.05f;
     public int KnifeReactions {get;private set;}
+    public bool HasPoseHitZones {get;private set;}
     public const string WarningLine="嘿，我們是打日本警察，不要攻擊我。";
     float hitAt=-10,until;
     public void ResetReaction(){hitAt=-10;until=0;KnifeReactions=0;if(actor)actor.speaking=false;}
@@ -26,6 +27,7 @@ public sealed class Chapter3CompanionReaction : MonoBehaviour
     }
     void LateUpdate()
     {
+        if(!HasPoseHitZones)HasPoseHitZones=Chapter3CompanionHitZone.Install(this);
         if(until<=0)return;
         if(!combat.Fighting||Time.time>=until){until=0;actor.speaking=false;return;}
         actor.Face(combat.player.transform.position);

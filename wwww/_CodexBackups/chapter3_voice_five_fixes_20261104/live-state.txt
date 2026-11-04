@@ -1,0 +1,1 @@
+2026/11/4 下午 02:37:14 mode=leave region=School station=Arrival player=(12.77, 0.01, 105.86) line=這場戰鬥還沒有結束。先退入山林，守住身邊的人。 busy=True speaking=True error= battle=Complete rescue=Complete B=(8.42, 0.05, 104.05) P=(-3.46, 0.03, 93.08) T=(14.00, 0.02, 104.93) indices=3,3,4 school indices=14,9,14

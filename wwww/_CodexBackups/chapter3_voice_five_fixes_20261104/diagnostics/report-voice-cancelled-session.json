@@ -1,0 +1,22 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter",
+        "official cached voice plays with exact Chinese subtitle",
+        "official clip has audible samples",
+        "audio follows speaker mouth",
+        "recorded audio drives actual mouth shape",
+        "line duration extends to complete audio",
+        "shortcut stops old station voice",
+        "uncached dialogue produces official speech",
+        "Chinese subtitle remains unchanged",
+        "clearing subtitle stops audio and request"
+    ],
+    "observations": [
+        "Mouth peak=0.9",
+        "Live translated text=msange ta hini han ma, soopo ta mosa deno. clip=4.384 seconds; no linguistic certification."
+    ],
+    "errors": [
+        "System.Exception: FAILED: replacing in-flight speech keeps latest line\r\n  at Chapter3ForestVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ForestVerify.cs:164 \r\n  at Chapter3ForestVerify+<Voice>d__36.MoveNext () [0x00665] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ForestVerify.Full.cs:95 \r\n  at Chapter3ForestVerify+<Run>d__11.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ForestVerify.cs:50 "
+    ]
+}

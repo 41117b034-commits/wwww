@@ -147,6 +147,7 @@ public sealed class Chapter3ReadinessConversation : MonoBehaviour
         if(decision==Decision.Unclear)
         {WaitingForReply=false;ui.input.interactable=ui.send.interactable=true;StartCoroutine(Refocus());yield break;}
         yield return new WaitForSecondsRealtime(Mathf.Clamp(spoken.Length*.09f,2.5f,5));
+        while(ui.VoiceBusy)yield return null;
         WaitingForReply=false;Active=false;ui.input.DeactivateInputField();ui.chat.SetActive(false);station.bawan.speaking=false;
         var callback=complete;complete=null;callback?.Invoke(decision);
     }

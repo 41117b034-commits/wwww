@@ -404,7 +404,11 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     // people at each proposed step. Never choose a new side every frame.
     internal bool StepAlongWithdrawal(Vector3 next)
     {
-        if(!FollowingWithdrawal||!Clear(next))return false;
+        return FollowingWithdrawal&&StepAlongPath(next);
+    }
+    internal bool StepAlongPath(Vector3 next)
+    {
+        if(IsFallen||!isActiveAndEnabled||!Clear(next))return false;
         Vector3 delta=next-transform.position;float distance=delta.magnitude;
         if(distance<.00001f)return true;
         transform.position=next;Face(next+delta.normalized);lastMovement=Time.time;

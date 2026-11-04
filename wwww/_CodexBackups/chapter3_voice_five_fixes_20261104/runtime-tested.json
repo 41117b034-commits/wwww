@@ -1,0 +1,327 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "54D655E091A16A1C8F16EFBC1A25B3DEE3D794ADF04D56521250D36AF081EA66",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ApproachAudio.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "02D8428C945F91989A8BBAD71A818C2FB0A5C2BFCE4811A9B3D579E84DA4B53E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ApproachEnvironment.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D83A4FA0F588B7BF46A821DF7E0C70A68800D8A35EB5830E59ABD40BC1256250",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3BawanCooperationPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F494803170DE64791EC191101D079D8280F0E5B875F9E02E516CE9D78E6EDA3E",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Bystander.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "59985AD88D1CDA88F90E15D04AB63B1FB0725A1B7D8D544AFFF7A3C4F6355B00",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Combat.Cover.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9636522CBCB8307EC8721D5EBCFFD74FF930F4358B1F87F2AB0A2BC94FECC796",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Combat.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "81039E7AA4F104D236C53BBB808B46FD2689DADADCF989A3F39139AF3EA12A10",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CompanionGesture.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "34015E3D0B915C4CBB81D0926E102B5FCA63FB9703A5A0292EE0EA6865C6F295",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CompanionHitZone.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "80F72940925354F30D55E31C4BF266638BB072003F4E735254D16C7E441F4E15",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CompanionReaction.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "945691F612EE6D9ACC7D80C3C65744718AF9D841EC3F3193CDDF42B40588F8E4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Controller.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9C4F901EE984498D43FE1EBF48BEE1EC87AEAF5EB26A66604B5222906375F989",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ConversationHistory.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "51C5840405FF230D888B52A184DCF4CFE1EF23896DE7181C9CC702F9E0EB7ABC",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CrowdDetail.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "A571E588AF8D4CE03DC167274C862A518722DA9D21CFED26B857D9D2AC6EF895",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3CrowdDetailCatalog.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F98546A9194BF1CD8DBBD9B25B9B166DC05E11DB1C2484EC6A6F71DCB97D3610",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3DialogueFrameBudget.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "553D95C5A1C9A88FA7992E4E0058B3F9E2C8ABE9467454D65B2B73424B8AC2E9",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3DialogueGrounding.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "27AD49451572FFC01930C67FA07FB3559E224C0FE6592EBECBD108186209FCBE",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3DialogueView.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "FA34C08A2E3ED0D75EC374A03FC81B9A83AF6352453AD0B3FE2871E0836F8900",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Ending.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "7129ACA792AE5BB9B55CB89F2B190D71F96861519A3E40D6A73B6151F39B03AB",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3EndingConversation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "ADCEF636F58B1A99910F48C1043AF41B815D1CBF7F295F52DD1BE512F7FF4647",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Enemy.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9396FB4F2BDB2C8D3E651F6B28B83DD3875ED917C4A8381EC0FE1798A2C5D7AF",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3EnemyHitZone.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "4837FB16C786EDC48681D51D3D400D520478A3AC57A89A68C935EB58DD467E31",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3EnemyWoundPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "DD454D3AA3C477852CC492825354E44553C5F1CDE6F2B4502BF2A114611DD09C",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "AA266BE88DD1CDA7E9894C7C0925B7401526563D6229A8877E4892F1ED2FE1C1",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3HandPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D659FF2182C49F172C442367A462F7A2FAF9F9F7BCE3E8668D23DA1593321E58",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3InjuryPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "2323FB7775D2A2DE8F1F3823CA35DDC3E5AD0FA6D94B388D89E195AED4D2F5F3",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3MissionUI.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "88FD8F0250CA916906A8EAE85CBF0B3870C0763852B7A36E3A5C079FB60F6A46",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3MonaRebuke.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "6FC811CE84318AFB586B7F0624CAB9D8A8271E8FD0C78330C5C9C7A5DB4480D9",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3OpeningConversation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "E78C4B1103E80B8AD81F4A34ADA9F90A81BFEDD2CAC6704CAC6F37B1E0301135",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3PathMotor.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "323877B26BC4CAADE89F0CFBD511403BFE73B4ED96EFB641E1B98647794A7A7B",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3PickupArrow.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "85372769BEAD5F8DB555BE1EA5F40405BBA11AF71B4E88F2D4045F52EE14C124",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Player.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "170FBB4EE156CA6DCF0717F9BAA3616F4D2B18751EA4C18CE23379B4BE8FA0E7",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3PoliceMelee.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "BB7BF9C390401C7D5FEC8B44325CC1DAC9825B3DF7FBF2769F3B9887376F89B1",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Presentation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "5D0A8BBB760D3A848524DF00FF2A224D08FC3BCF4D6E126A625A4406724E5858",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ReadinessConversation.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "297DC23B8ACE00A36592E429E00B6C7C7F18F27810A260493538403941EDF3C0",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Rescue.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C5DA543F67E79CCB384B40FEBFC3F4E8D1ADB9B930995BAA3A934F9978DE3685",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ResultStore.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "523B0BD894744752B371E4A592C4B35CACD17DB71E3D21A4A80352B02F75FE15",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3RoadBoundary.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "3C35743E3BEFCEA914CAA8F26235BAA9705D82D185DF0F20AC993F9F41F5E626",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3RouteGuide.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "BAF101550122B274FB092768931F0F7A416BC48E2FF684A486EC19BEC48B930A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.Ambush.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "63EA748AD623979765477BC06D1CA79D3B09D9A5971B350107674784A75CE089",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.CivilianEscort.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "64B339C9D2D80133157F9CB620B885274B7B02F996A7E9038B5C97D9F0A9765A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "7B1E3EC782205518D9886A05442422C3056833159F18375F732D96F7D09F00D8",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.Police.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "6F09F4942412AE0ADFF4EB694842E71D190A29C5A508A0F0AA4AF6139652F542",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.Population.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "7FB39AD9C946EC07855D7ED7FE78FC07FE560678F4CEA172A589270E71B21D93",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.Shelter.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "98F49AD782EDAF0475ABBD0D87943C5E94F8B11125E494C4DE26172AA7D4E169",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.Withdrawal.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C74DF94DDD2DE8F885F68FD5C1A0EB260D58297DDF257F0297AF959896C1D833",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolApproach.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "A90DE706D17041CDEEB6BEBE288953A8BB431500E2E85EDE55922079E44D4EB5",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Assault.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "996DE75241D978BE2CB096C0991D0516CFE1D26D30FD8F1EDA0D610727607CAD",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Breakthrough.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "04FD1C4385AF3C1B5B27102E91C83E86FAE0B445B099401A99A6BA2311906DD0",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Campus.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "EB4CF45E7304D731384DF8B29DC27E1175971C8CD5202695C3FDDF658C3ED101",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Cover.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1622408DD29D256DDDD39F17D36B58C5806FD260FCCEC8DB98F37EA5791B4EB7",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "CD898B8430918A72A015F3676A0428F649ADCDB93630C0FF142AB72976F2E5D4",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.Staging.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "47F20E66CA50FFA73F0402AA4B8E1CCE3C653C25D10DC11D6602FCBA92BE4A59",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolCompanionPose.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C4C9AE5650FB4AF68486C234D5B888544DEC66B538585F3673474D34C091BA4D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "CF39DA86955A02ABE8411463BC6D21578162CE2725DB90173113EC4482CB5A43",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolCrowdActor.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "52CDA8123A7D01D853081C18B185067673A972216B831F42EE1841C2C63F1F60",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolSigns.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "F05C8908F687AFABC3BF90D8ADB464819FDAB6C640FC4DD5DD044F29BFB08742",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SeediqVoice.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "29B01919CCBE11B39230A7DD067B995D6E24A2829023CF0787BCEE72BE336EC2",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3StationController.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "2984CEE8DCA03FCAC3365852D22CA4398A5B19CF6BE1767B7DC07459B8C91D1C",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3StationLink.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "6D2CC827A88C5742C08A5505BC8C81B453B4AEB6D21B55FABA86679C5240EA4A",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3StationRoadBoundary.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "92669A1868DA88155247F9A9910398AE4FB8EBB7E7A10AA511ADD54F4B2C0471",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3ViewArm.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "C1B0956CB1AD93E69B8FB976DF9C2633F3B4E3CCF310E7D2309DD9C5D53B6E7C",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3WeaponChoiceUI.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "385DBCD45E14896804C3E4334542E2CD5BA76ECD433155C5E39967F4FB0201AC",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Weapons.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "EB0E351AE93D63616C9F84824B7A85AEB0093EE1203CBF0C1078E1D93368070D",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3YellowArrow.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "FCC8DF4D3B8DFF66B6DAC979BC87A155FF922E916127E73F5AA7F2E12FB818DD",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2SpeechFace.cs"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "E495CBB6CB0A5E2A2068C680B60320956E473B80850FB80764E8DE15E4D203AA",
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Resources\\Chapter3Voice\\catalog.json"
+  }
+]

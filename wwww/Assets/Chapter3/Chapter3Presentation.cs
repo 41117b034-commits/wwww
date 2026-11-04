@@ -9,6 +9,9 @@ public sealed class Chapter3Presentation : MonoBehaviour
     public InputField input;
     public Button send, depart, replay, menu;
     public Image fade;
+    [System.NonSerialized] public Chapter3DialogueView dialogueView;
+    [System.NonSerialized] public Chapter3SeediqVoice voice;
+    public bool VoiceBusy=>voice&&voice.Busy;
     bool vr;
     Transform desktopParent;
     int desktopSiblingIndex;
@@ -56,6 +59,8 @@ public sealed class Chapter3Presentation : MonoBehaviour
     }
     public void Say(string name, string line)
     {
+        if(dialogueView)dialogueView.Speak(name,line);
+        if(voice)voice.Speak(name,line);
         RestoreSubtitlePanel();
         subtitlePanel.SetActive(!string.IsNullOrEmpty(line)); speaker.text = name; subtitle.text = line;
         FitMultilineSubtitle();

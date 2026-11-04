@@ -99,7 +99,7 @@ public sealed partial class Chapter3SchoolAmbient
         if(!policeAssigned[index])return false;
         var enemy=policeOpponents[index];var battle=GetComponentInParent<Chapter3SchoolController>().Battle;
         if(!battle||!battle.Fighting||!enemy||enemy.Defeated)
-        {actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);return true;}
+        {actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);if(enemy&&enemy.Defeated)WatchCampus(index,actor,groupCentres[policeGroups[index]]);return true;}
         actor.HoldAtNeck(null,false);actor.SetAfraid(false);
         Vector3 current=actor.transform.position,direction=Vector3.ProjectOnPlane(current-enemy.transform.position,Vector3.up).normalized;
         if(direction.sqrMagnitude<.1f)direction=Vector3.left;

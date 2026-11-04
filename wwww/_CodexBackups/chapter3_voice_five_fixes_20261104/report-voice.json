@@ -1,0 +1,23 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "official cached voice plays with exact Chinese subtitle",
+        "official clip has audible samples",
+        "audio follows speaker mouth",
+        "recorded audio drives actual mouth shape",
+        "line duration extends to complete audio",
+        "shortcut stops old station voice",
+        "uncached dialogue produces official speech",
+        "Chinese subtitle remains unchanged",
+        "clearing subtitle stops audio and request",
+        "replacing in-flight speech keeps latest line",
+        "queue response parser"
+    ],
+    "observations": [
+        "Mouth peak=0.9",
+        "Live translated text=msange ta hini han ma, soopo ta mosa deno. clip=4.384 seconds; no linguistic certification.",
+        "Replacement line=大家一起走，別停在這裡。 translation=spuwe ta musa kana, iya sangay hini. error="
+    ],
+    "errors": []
+}

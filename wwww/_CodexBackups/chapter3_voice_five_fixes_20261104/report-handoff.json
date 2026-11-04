@@ -1,0 +1,16 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "old slope handoff reproduces blocked flat motor",
+        "slope-aware walk reaches flat apron without teleport",
+        "school motor proceeds from flat apron"
+    ],
+    "observations": [
+        "Isolated fixture restores the observed continuous-handoff Pihu position. No production position is changed.",
+        "flat clear=False actual slope height=0.1795",
+        "overlap=連續緩坡與林路 Center: (-4.80, 0.43, -33.12), Extents: (11.74, 0.48, 19.09)",
+        "Pihu slope exit largest frame step=0.131787 final=(2.60, 0.03, -13.69)"
+    ],
+    "errors": []
+}

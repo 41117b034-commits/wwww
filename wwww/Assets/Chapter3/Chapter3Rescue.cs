@@ -37,6 +37,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     readonly Chapter3PathMotor bawanMotor=new Chapter3PathMotor(),pihuMotor=new Chapter3PathMotor(),tadoMotor=new Chapter3PathMotor();
     readonly Dictionary<Chapter2Actor,Vector3> bypasses=new Dictionary<Chapter2Actor,Vector3>();
     int bawanIndex,pihuIndex,tadoIndex;
+    bool forestPartyReady;
     float hurtAt=-10,noticeUntil;
     Vector3 supportRight=Vector3.right,lastPlayerPosition;
     Collider[] pihuColliders;
@@ -55,7 +56,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         pihuColliders=school.pihu.GetComponentsInChildren<Collider>(true);colliderEnabled=new bool[pihuColliders.Length];
         for(int i=0;i<pihuColliders.Length;i++)colliderEnabled[i]=pihuColliders[i].enabled;
         if(!choicePanel)BuildChoice();choicePanel.SetActive(false);battle.Menu.Hide();
-        bawanIndex=pihuIndex=tadoIndex=0;bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();
+        bawanIndex=pihuIndex=tadoIndex=0;forestPartyReady=false;bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();
         combat.weapons.Suspend();combat.hud.SetActive(false);ui.Say("",null);
         CurrentStage=Stage.Advancing;player.speed=2.8f;player.canMove=player.canLook=true;
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
@@ -75,7 +76,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         }
         if(CurrentStage==Stage.Down){if(Keyboard.current?.rKey.wasPressedThisFrame==true)Retry();return;}
         if(!CombatActive)return;
-        if(noticeUntil>0&&Time.time>=noticeUntil){noticeUntil=0;ui.Say("",null);}
+        if(noticeUntil>0&&Time.time>=noticeUntil&&!ui.VoiceBusy){noticeUntil=0;ui.Say("",null);}
         combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         MoveAlong(school.tado,tadoMotor,exit,ref tadoIndex,3.2f,false,Vector3.right*1.1f);
         if(Selected==Decision.Leave)
@@ -114,6 +115,22 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     void AdvanceTogether()
     {
+        // Finish each real campus route before two leaders leave the third
+        // behind. The player can still reach the rear early; no actor warps.
+        if(!forestPartyReady)
+        {
+            bool bawanReady=battle.ContinueToAssembly(school.bawan);
+            bool pihuReady=battle.ContinueToAssembly(school.pihu);
+            bool tadoReady=battle.ContinueToAssembly(school.tado);
+            forestPartyReady=bawanReady&&pihuReady&&tadoReady;
+            if(!forestPartyReady)
+            {
+                string pending=!tadoReady?school.tado.DisplayName:!bawanReady?school.bawan.DisplayName:school.pihu.DisplayName;
+                var late=!tadoReady?school.tado:!bawanReady?school.bawan:school.pihu;
+                ui.hint.text=pending+"正沿出口趕來（距離 "+Mathf.CeilToInt(Flat(late.transform.position,player.transform.position))+" 公尺），三人會一起走入林路。";
+                CompanionsWaiting=true;return;
+            }
+        }
         // Everyone walks the same established rear route before the fixed event.
         CompanionsWaiting=false;
         if(battle.ContinueToAssembly(school.bawan))MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,2.1f,true,Vector3.left*1.15f);

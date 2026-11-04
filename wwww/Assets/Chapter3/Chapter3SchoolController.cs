@@ -131,7 +131,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         if(!Exploring)return;
         ui.ConfigureVR(player.IsVR);
         if(Battle&&Battle.OwnsFlow){if(ArrivalGuide&&ArrivalGuide.VisibleMarks>0)ArrivalGuide.Hide();return;}
-        if(lineUntil>0&&(Time.time>lineUntil||(Time.time>lineBegan+.25f&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)))
+        if(lineUntil>0&&((Time.time>lineUntil&&!ui.VoiceBusy)||(Time.time>lineBegan+.25f&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)))
         {lineUntil=0;ui.Say("",null);bawan.speaking=pihu.speaking=tado.speaking=false;}
         var position=player.transform.position;
         if(Time.time>=nextTrail&&Flat(position,trail[trail.Count-1])>.9f)

@@ -1,0 +1,41 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "whistle fixture"
+    ],
+    "observations": [
+        "Bawan root=(-3.69, 0.05, -78.83) head=(-3.64, 1.09, -78.61) height=1.503945",
+        "Bawan collider 巴萬·拿威(Clone) Center: (-3.68, 0.93, -78.82), Extents: (0.32, 0.86, 0.32)",
+        "officer=巡警 1  aim=(0.00, 1.20, -74.22)",
+        "officer=巡警 2  aim=(-1.99, 1.20, -61.08)",
+        "officer=巡警 3  aim=(2.00, 1.20, -54.08)",
+        "aim trace=Hit zone · Torso point=(-0.06, 1.21, -74.34)",
+        "guest=日籍女教師與家屬 1 move=0 phase=Restrained",
+        "guest=日籍女教師與家屬 2 move=0 phase=Restrained",
+        "guest=日籍女教師與家屬 3 move=0 phase=Fallen",
+        "guest=日籍女教師與家屬 4 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 5 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 6 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 7 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 8 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 9 move=0 phase=Fleeing",
+        "guest=日籍女教師與家屬 10 move=0 phase=Fleeing",
+        "guest=日籍學童 1 move=0 phase=Fallen",
+        "guest=日籍學童 2 move=0 phase=Fleeing",
+        "guest=日籍學童 3 move=0 phase=Fleeing",
+        "guest=日籍學童 4 move=0 phase=Fleeing",
+        "guest=日籍學童 5 move=0 phase=Fleeing",
+        "guest=日籍學童 6 move=0 phase=Fleeing",
+        "guest=日籍學童 7 move=0 phase=Fleeing",
+        "guest=日籍學童 8 move=0 phase=Fleeing",
+        "guest=日籍學童 9 move=0 phase=Fleeing",
+        "guest=日籍學童 10 move=0 phase=Fleeing",
+        "battle=Complete rescue=Advancing B=(-26.57, 0.05, 56.15) P=(9.99, 0.03, 74.76) T=(16.79, 0.02, 41.68) indices=0,0,0 school indices=8,6,13",
+        "battle=Complete rescue=Advancing B=(-8.35, 0.05, 75.18) P=(-2.43, 0.03, 90.63) T=(22.53, 0.02, 64.75) indices=0,3,0 school indices=11,8,14",
+        "battle=Complete rescue=Advancing B=(-4.15, 0.05, 91.77) P=(-2.43, 0.03, 90.63) T=(0.58, 0.02, 78.50) indices=3,3,0 school indices=14,9,14",
+        "battle=Complete rescue=Injury B=(-4.15, 0.05, 91.77) P=(-2.43, 0.03, 90.63) T=(-1.68, 0.02, 91.82) indices=3,3,3 school indices=14,9,14",
+        "ending approach=Injury"
+    ],
+    "errors": []
+}

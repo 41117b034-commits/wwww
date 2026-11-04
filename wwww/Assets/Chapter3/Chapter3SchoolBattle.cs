@@ -187,7 +187,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             return;
         }
         if(!Fighting)return;
-        if(noticeUntil>0&&Time.time>=noticeUntil){noticeUntil=0;ui.Say("",null);}
+        if(noticeUntil>0&&Time.time>=noticeUntil&&!ui.VoiceBusy){noticeUntil=0;ui.Say("",null);}
         combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         if(Selected==Mission.Tado)UpdateAssault();else if(Selected==Mission.Bawan)UpdateBreakthrough();else UpdateCover();
         if(!Fighting)return;
@@ -262,6 +262,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
         if(actor==guide)
         {
+            if(Selected==Mission.Tado&&guideIndex<activeRoute.Length-1)
+            {
+                var corner=Chapter3SchoolAmbient.OpenWithdrawalCorner(activeRoute[guideIndex],activeRoute[guideIndex+1]);
+                if((corner-activeRoute[guideIndex]).sqrMagnitude>.001f){activeRoute[guideIndex]=corner;guideMotor.Reset();}
+            }
             MoveRoute(actor,guideMotor,activeRoute,ref guideIndex,false,Selected==Mission.Bawan?Vector3.left*1.15f:Vector3.zero);
             return guideIndex>=activeRoute.Length;
         }
@@ -366,7 +371,25 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         yield return Chapter3Flow.WaitForLine(seconds);actor.speaking=false;ui.Say("",null);
     }
     void MoveAmmo()
-    {Ammo.position=Selected==Mission.Bawan?P(-29,Step==0?9:38):P(Step==0?33:32,Step==0?4:21);}
+    {PlaceAmmo(Selected==Mission.Bawan?P(-29,Step==0?9:38):P(Step==0?33:32,Step==0?4:21));}
+    void PlaceAmmo(Vector3 desired)
+    {
+        // Outbreak actors already walk before the encounter starts. Never
+        // move a solid crate into a living actor at the next checkpoint.
+        for(int ring=0;ring<=3;ring++)
+        for(int direction=0;direction<(ring==0?1:8);direction++)
+        {
+            Vector3 candidate=desired+Quaternion.Euler(0,direction*45,0)*Vector3.forward*(ring*1.2f);
+            bool free=true;
+            foreach(var c in Physics.OverlapBox(candidate+Vector3.up*.325f,new Vector3(.75f,.55f,.7f),Quaternion.identity,~0,QueryTriggerInteraction.Ignore))
+            {
+                if(c.transform.IsChildOf(Ammo)||c.bounds.max.y<.28f)continue;
+                free=false;break;
+            }
+            if(free){Ammo.position=candidate;return;}
+        }
+        // Keep the existing box when every nearby placement is occupied.
+    }
     void ClearEnemies()
     {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();ClearOfficerStaging();}
     public void Suspend()

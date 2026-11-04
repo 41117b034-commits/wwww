@@ -14,6 +14,7 @@ public sealed class Chapter3Player : MonoBehaviour
     public Chapter3Combat combat;
     public Chapter3SchoolController school;
     public bool canMove, canLook;
+    public bool DialogueFraming {get;set;}
     public float speed = 2.8f;
     public bool IsVR { get; private set; }
     public bool ActionPressed { get; private set; }
@@ -35,13 +36,13 @@ public sealed class Chapter3Player : MonoBehaviour
         right.TryGetFeatureValue(CommonUsages.triggerButton, out bool trigger);
         ActionPressed = Keyboard.current?.eKey.wasPressedThisFrame == true || (trigger && !previousTrigger);
         previousTrigger = trigger;
-        if (!IsVR && canLook && (Mouse.current?.rightButton.isPressed == true || ((combat || (school&&school.Battle&&school.Battle.CombatActive)) && Cursor.lockState==CursorLockMode.Locked)))
+        if (!IsVR && !DialogueFraming && canLook && (Mouse.current?.rightButton.isPressed == true || ((combat || (school&&school.Battle&&school.Battle.CombatActive)) && Cursor.lockState==CursorLockMode.Locked)))
         {
             var d = Mouse.current.delta.ReadValue() * .08f;
             transform.Rotate(0, d.x, 0); pitch = Mathf.Clamp(pitch - d.y, -70, 70);
             view.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
         }
-        if (!canMove) return;
+        if (!canMove || DialogueFraming) return;
         Vector2 move = Vector2.zero;
         var k = Keyboard.current;
         if (k != null) move = new Vector2((k.dKey.isPressed?1:0)-(k.aKey.isPressed?1:0), (k.wKey.isPressed?1:0)-(k.sKey.isPressed?1:0));
@@ -56,7 +57,7 @@ public sealed class Chapter3Player : MonoBehaviour
     }
     public void Move(Vector3 motion)
     {
-        if (!canMove || !motor || !motor.enabled) return;
+        if (!canMove || DialogueFraming || !motor || !motor.enabled) return;
         Vector3 next = transform.position + motion;
         if (chapter) next = chapter.Constrain(transform.position, next);
         else if (station) next = station.Constrain(transform.position, next);

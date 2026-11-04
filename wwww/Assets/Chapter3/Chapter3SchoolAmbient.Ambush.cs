@@ -50,6 +50,9 @@ public sealed partial class Chapter3SchoolAmbient
     {
         ClearPoliceOpposition();
         skirmishActive=false;AmbushSignalFrame=-1;SkirmishPairsReady=0;
+        shelterLeg=null;shelterChanged=null;System.Array.Clear(watchLeg,0,watchLeg.Length);
+        System.Array.Clear(watchChanged,0,watchChanged.Length);
+        foreach(var motor in watchMotors)motor?.Reset();
         for(int i=0;i<AmbusherCount;i++){assaultVictim[i]=i;strikeBegan[i]=-1;}
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
     }
@@ -75,12 +78,16 @@ public sealed partial class Chapter3SchoolAmbient
                 // Disperse instead of repeatedly swinging at a body or forming
                 // ten identical hostage-like pairs.
                 Vector3 watch=concealment[attacker]+new Vector3(attacker%2==0?2:-2,0,attacker%3-1);
-                if(actor.MoveTowards(watch,1.6f))actor.Face(new Vector3(0,0,29),60);
+                WatchCampus(attacker,actor,watch);
                 continue;
             }
             var guest=crowd[index];if(!guest)continue;
             if(attacker<2)
             {
+                // Brief restraint, then release into the nearby shelter. Do
+                // not freeze two living pairs in the same pose until whistle.
+                if(elapsed>12)
+                {actor.HoldAtNeck(null,false);assaultVictim[attacker]=-1;crowdPhases[index]=CrowdPhase.Fleeing;continue;}
                 Vector3 forward=HoldForward(index),right=Vector3.Cross(Vector3.up,forward);
                 actor.HoldAtNeck(guest,false);
                 Vector3 behind=guest.transform.position-forward*.48f-right*.15f;
@@ -124,15 +131,17 @@ public sealed partial class Chapter3SchoolAmbient
             return true;
         }
         if(Withdrawing)return true; // The escort motor owns every living guest.
-        if(index>=14||(index<policeAssigned.Length&&policeAssigned[index]))
+        if(index>=10||(index<policeAssigned.Length&&policeAssigned[index]))
         {
             // Reach nearby shelter, not the distant exit. Nobody disappears
             // or leaves the school ahead of the player's withdrawal signal.
             Vector3 shelter=index<14?refuges[index]:new Vector3(-10+(index-14)*3.3f,0,38.5f);
             crowdPhases[index]=CrowdPhase.Fleeing;
-            guest.MoveTowards(shelter,2.2f+(index%3)*.23f);
+            if(Vector3.ProjectOnPlane(guest.transform.position-shelter,Vector3.up).sqrMagnitude<5||guest.WaitingAtObstacle)MoveWithinShelter(index,shelter);
+            else guest.MoveTowards(shelter,2.2f+(index%3)*.23f);
             return true;
         }
+        if(index<2&&AssaultElapsed>12){crowdPhases[index]=CrowdPhase.Fleeing;MoveWithinShelter(index,refuges[index]);return true;}
         if(index<2&&crowdPhases[index]==CrowdPhase.Restrained)
         {
             guest.Face(guest.transform.position+HoldForward(index),150);

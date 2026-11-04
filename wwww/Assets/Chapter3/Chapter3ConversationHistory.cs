@@ -6,11 +6,12 @@ public sealed class Chapter3ConversationHistory : MonoBehaviour
 {
     public ScrollRect Scroll { get; private set; }
     Text transcript;
+    Chapter3Presentation ui;
     public static Chapter3ConversationHistory Get(Chapter3Presentation ui)
     {
         var history=ui.chat.GetComponent<Chapter3ConversationHistory>();
         if(history)return history;
-        history=ui.chat.AddComponent<Chapter3ConversationHistory>();
+        history=ui.chat.AddComponent<Chapter3ConversationHistory>();history.ui=ui;
         var viewport=new GameObject("可捲動問答紀錄",typeof(RectTransform),typeof(Image),typeof(RectMask2D));
         var rect=(RectTransform)viewport.transform;rect.SetParent(ui.chat.transform,false);
         rect.anchorMin=new Vector2(.035f,.37f);rect.anchorMax=new Vector2(.965f,.81f);rect.offsetMin=rect.offsetMax=Vector2.zero;
@@ -30,6 +31,8 @@ public sealed class Chapter3ConversationHistory : MonoBehaviour
     public void Begin(string speaker,string line){transcript.text="";Append(speaker,line);}
     public void Append(string speaker,string line)
     {
+        if(ui&&ui.dialogueView&&speaker!="你"&&speaker!="玩家")ui.dialogueView.Speak(speaker,line);
+        if(ui&&ui.voice&&speaker!="你"&&speaker!="玩家")ui.voice.Speak(speaker,line);
         transcript.text+=(transcript.text.Length>0?"\n\n":"")+speaker+"："+line;
         Canvas.ForceUpdateCanvases();Scroll.StopMovement();Scroll.verticalNormalizedPosition=0;
     }

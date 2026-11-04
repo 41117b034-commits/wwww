@@ -100,7 +100,7 @@ public sealed partial class Chapter3SchoolBattle
 
     void PrepareAssaultStage()
     {
-        Ammo.position = Step == 0 ? P(-8,7) : Step == 1 ? P(8,29) : Step == 2 ? P(-7,32) : P(10,36);
+        PlaceAmmo(Step == 0 ? P(-8,7) : Step == 1 ? P(8,29) : Step == 2 ? P(-7,32) : P(10,36));
         if (!AssaultGuide) AssaultGuide = gameObject.AddComponent<Chapter3RouteGuide>();
         if (Step == AssaultCombatStages && ambient)
         {

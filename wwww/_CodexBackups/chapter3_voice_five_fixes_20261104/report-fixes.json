@@ -1,0 +1,38 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "dialogue camera active",
+        "opening fixed camera distance",
+        "fixed close dialogue 巴萬·拿威",
+        "camera uses current region's actor 巴萬·拿威",
+        "camera does not teleport player 巴萬·拿威",
+        "dialogue blocks movement input",
+        "eye restored",
+        "fixed close dialogue 比胡·帖木",
+        "camera uses current region's actor 比胡·帖木",
+        "camera does not teleport player 比胡·帖木",
+        "dialogue blocks movement input",
+        "eye restored",
+        "fixed close dialogue 莫那·魯道",
+        "camera uses current region's actor 莫那·魯道",
+        "camera does not teleport player 莫那·魯道",
+        "dialogue blocks movement input",
+        "eye restored",
+        "pose shot zones installed",
+        "crouched empty space no longer hits friend",
+        "visible friend body still protected",
+        "combat callout preserves aim camera",
+        "SSE success parser",
+        "SSE failure parser",
+        "cancelled SSE result cannot replace current speech",
+        "TTS chunks retain every word",
+        "F8 clears shot zones from previous region"
+    ],
+    "observations": [
+        "巴萬·拿威 framing=True distance=2.599998 player=(-22.00, 0.11, -116.60) camera=(-21.99, 1.27, -118.61)",
+        "比胡·帖木 framing=True distance=2.599998 player=(-20.40, 0.09, -118.60) camera=(-20.40, 1.26, -120.61)",
+        "莫那·魯道 framing=True distance=2.599998 player=(-22.00, 0.10, -100.20) camera=(-21.98, 1.26, -102.19)"
+    ],
+    "errors": []
+}

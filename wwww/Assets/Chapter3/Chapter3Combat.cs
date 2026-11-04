@@ -118,7 +118,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     void Update()
     {
         if(CurrentStage==Stage.Inactive)return;
-        if(warningUntil>0&&Time.time>=warningUntil){warningUntil=0;ui.Say("",null);}
+        if(warningUntil>0&&Time.time>=warningUntil&&!ui.VoiceBusy){warningUntil=0;ui.Say("",null);}
         playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         healthText.text="生命值  "+Health+" / 100";
         if(CurrentStage==Stage.Down)
@@ -248,11 +248,15 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     }
     public bool Trace(Vector3 origin,Vector3 direction,float distance,out RaycastHit result)
     {
-        var hits=Physics.RaycastAll(origin,direction,distance,~0,QueryTriggerInteraction.Ignore);
+        var hits=Physics.RaycastAll(origin,direction,distance,~0,QueryTriggerInteraction.Collide);
         System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
         foreach(var hit in hits)
         {
             if(hit.collider.transform.IsChildOf(player.transform)||hit.collider.transform.IsChildOf(weapons.transform))continue;
+            var posed=hit.collider.GetComponent<Chapter3CompanionHitZone>();
+            if(hit.collider.isTrigger&&!posed)continue;
+            var companion=hit.collider.GetComponentInParent<Chapter3CompanionReaction>();
+            if(companion&&companion.HasPoseHitZones&&!posed)continue;
             result=hit;return true;
         }
         result=default;return false;

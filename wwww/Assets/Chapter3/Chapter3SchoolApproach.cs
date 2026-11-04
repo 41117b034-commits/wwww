@@ -27,6 +27,8 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     AudioSource schoolForest;
     float forestVolume, began, lineUntil;
     bool prepared,schoolSunEnabled,heardLine,revealLine,gathering,openingReply;
+    bool rearArrivalChosen;
+    Vector3 rearArrival;
     int rearIndex,handoffFrame=-1;
     Vector3 leadFacing,rearFacing,rally;
 
@@ -45,7 +47,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     }
     public void Prepare()
     {
-        Active=Completed=Waiting=SchoolRevealed=false;heardLine=revealLine=openingReply=false;
+        Active=Completed=Waiting=SchoolRevealed=false;heardLine=revealLine=openingReply=rearArrivalChosen=false;
         CurrentWaypoint=0;rearIndex=0;trail.Clear();rallyLeader.Reset();rallyRear.Reset();
         environment.SetVisible(true);
         flow.schoolRegion.SetActive(true);
@@ -83,7 +85,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     {
         if(!Active)return;
         var player=flow.player;
-        if(lineUntil>0&&Time.time>=lineUntil)
+        if(lineUntil>0&&Time.time>=lineUntil&&!flow.ui.VoiceBusy)
         {
             lineUntil=0;flow.ui.Say("",null);LeadActor.speaking=RearActor.speaking=false;
             if(!heardLine&&!openingReply)
@@ -116,7 +118,23 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         while(end>0&&Flat(trail[end],LeadActor.transform.position)<2.2f)end--;
         rearIndex=Mathf.Min(rearIndex,end);
         if(Flat(RearActor.transform.position,trail[rearIndex])<.35f&&rearIndex<end)rearIndex++;
-        if(rearGap>2.4f)
+        // The school motor uses flat-ground collision. Finish the rear actor's
+        // slope walk before transferring ownership, otherwise resetting his
+        // ground height can leave him embedded in the connector mesh forever.
+        bool atSchoolEntrance=!gathering&&CurrentWaypoint==points.Length-1&&Flat(LeadActor.transform.position,points[points.Length-1])<.5f;
+        if(atSchoolEntrance)
+        {
+            if(rearArrivalChosen&&Flat(player.transform.position,rearArrival)<1.05f)rearArrivalChosen=false;
+            if(!rearArrivalChosen)
+                foreach(float side in new[]{-1.4f,1.4f})
+                {
+                    Vector3 candidate=points[points.Length-1]+new Vector3(side,0,.2f);
+                    if(Flat(player.transform.position,candidate)<=1.1f||!environment.Walkable(candidate)||!Chapter3PathMotor.Clear(candidate,candidate))continue;
+                    rearArrival=candidate;rearArrivalChosen=true;break;
+                }
+            if(rearArrivalChosen)MoveActor(RearActor,rearArrival,2.4f,rallyRear);
+        }
+        else if(rearGap>2.4f)
         {
             Vector3 rearTarget=trail[rearIndex];
             if(end==0&&Flat(RearActor.transform.position,rearTarget)<.4f)
@@ -141,8 +159,9 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         }
         flow.ui.objective.text=SchoolRevealed?"走到校門旁，與達多會合":heardLine?"沿林路緩坡前進，循聲接近學校":"跟隨巴萬穿過林路，前往學校";
         flow.ui.hint.text=Waiting?"同伴停下等你，走近後繼續 · WASD 移動 · 右鍵環視":"跟上巴萬 · WASD 移動 · 右鍵環視";
-        if(CurrentWaypoint==points.Length-1&&player.transform.position.z>=points[points.Length-1].z-1&&environment.Walkable(player.transform.position)&&
-            Flat(LeadActor.transform.position,points[points.Length-1])<.5f&&Flat(RearActor.transform.position,points[points.Length-1])<4)
+        if(atSchoolEntrance&&rearArrivalChosen&&Flat(RearActor.transform.position,rearArrival)<.25f&&
+            Chapter3PathMotor.Clear(RearActor.transform.position,RearActor.transform.position)&&
+            player.transform.position.z>=points[points.Length-1].z-1&&environment.Walkable(player.transform.position))
             flow.CompleteSchoolApproach();
     }
     void LateUpdate()

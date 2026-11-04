@@ -1,0 +1,1393 @@
+{
+  "completed": true,
+  "count": 198,
+  "seconds": 1500.2766666666673,
+  "clips": [
+    {
+      "chinese": "前面有巡警。靠著岩石走，別站在路中央。",
+      "seconds": 7.381333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b2a4a9a44732f43d0664",
+      "reviewed": false
+    },
+    {
+      "chinese": "靠著掩體接近，再用刀。別迎著槍口衝。",
+      "seconds": 4.48,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/054c70e7b9fb9bf11c7f",
+      "reviewed": false
+    },
+    {
+      "chinese": "槍打完一發，就要再裝一發。裝填時躲好。",
+      "seconds": 6.474666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/52ceab4b6cc98bd149ca",
+      "reviewed": false
+    },
+    {
+      "chinese": "警察正在瞄準，移到岩石或木箱後！",
+      "seconds": 5.674666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/463ca8251281eec5bf38",
+      "reviewed": false
+    },
+    {
+      "chinese": "前面的路通了。比胡，看看大家有沒有跟上。",
+      "seconds": 4.981333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5f3c03835e4d9b379535",
+      "reviewed": false
+    },
+    {
+      "chinese": "我在。走吧，到學校外和達多會合。",
+      "seconds": 5.8773333333333335,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/3f25818da11f55181624",
+      "reviewed": false
+    },
+    {
+      "chinese": "巴萬正在前方集合，比胡會跟上。",
+      "seconds": 4.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/61c99249424c081dd14a",
+      "reviewed": false
+    },
+    {
+      "chinese": "巡警已退下，巴萬在前方帶路。",
+      "seconds": 5.376,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/aa223d0704e8315e9e8c",
+      "reviewed": false
+    },
+    {
+      "chinese": "巴萬與比胡在前方等你，走近後繼續。",
+      "seconds": 7.274666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d2de46f22b8e618a7ac7",
+      "reviewed": false
+    },
+    {
+      "chinese": "嘿，我們是打日本警察，不要攻擊我。",
+      "seconds": 6.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8bfd76192665c6bc35d5",
+      "reviewed": false
+    },
+    {
+      "chinese": "你還沒告訴過我你的名字。你希望我怎麼叫你？",
+      "seconds": 5.578666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/1b6f740b96e7485dcfc4",
+      "reviewed": false
+    },
+    {
+      "chinese": "我是巴萬·拿威，和你一起行動的同伴。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6dc3c7d1fc02380de778",
+      "reviewed": false
+    },
+    {
+      "chinese": "這裡是馬赫坡駐在所。我們先聽莫那的安排，再沿山路去霧社學校外和達多會合。",
+      "seconds": 11.477333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/0c74d84b3c7c93e6efa4",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡·帖木是我們的同伴，他會和我們一起走。",
+      "seconds": 4.682666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/66d93de919811740e757",
+      "reviewed": false
+    },
+    {
+      "chinese": "莫那·魯道在前面建築旁，等一下我們一起去聽他的安排。",
+      "seconds": 8.576,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/11e54b05a9f441f3693c",
+      "reviewed": false
+    },
+    {
+      "chinese": "莫那會讓你選獵刀或村田十八年式步槍，只能帶一種。",
+      "seconds": 9.973333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/c730e391712720009910",
+      "reviewed": false
+    },
+    {
+      "chinese": "族人長期受勞役與欺壓，才決定起事。眼前先聽莫那安排，大家彼此照應。",
+      "seconds": 13.866666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fda461032b455fddbd80",
+      "reviewed": false
+    },
+    {
+      "chinese": "我也會緊張。跟緊我們，有事就叫我。",
+      "seconds": 6.08,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d10781d38412c5bdde0d",
+      "reviewed": false
+    },
+    {
+      "chinese": "好，保持間距，別烙單了!",
+      "seconds": 3.1786666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8636a062c42dd4733255",
+      "reviewed": false
+    },
+    {
+      "chinese": "這個問題我現在答不上來。先去見莫那，聽聽他的安排。",
+      "seconds": 8.48,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7d21c432b38dc33c655b",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡還活著。先讓他坐著休息，我會照看他。",
+      "seconds": 6.677333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ad2a7bf7bb4769e41441",
+      "reviewed": false
+    },
+    {
+      "chinese": "我還在……謝謝你沒有把我留在那裡。",
+      "seconds": 5.28,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/eb334bd29bc31519f9eb",
+      "reviewed": false
+    },
+    {
+      "chinese": "人帶回來了。先把大家清點清楚。",
+      "seconds": 7.082666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/04651651ae98334ae454",
+      "reviewed": false
+    },
+    {
+      "chinese": "我回去找他。你們在這裡等。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8198378b7c41d4e78179",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡……我回來了。",
+      "seconds": 2.2826666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d5a9347ad11d03d1a3ff",
+      "reviewed": false
+    },
+    {
+      "chinese": "我找到比胡了。他已經死了。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6965f27db4e471599665",
+      "reviewed": false
+    },
+    {
+      "chinese": "……記住他。我們一起出發，卻沒能一起回來。",
+      "seconds": 7.573333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a965425db2473cbcb204",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟達多進入會場，我打通左側通路，比胡照應右側。大家在校後匯合，才一起撤退。",
+      "seconds": 18.165333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fe16bd88305b8c8b9fd7",
+      "reviewed": false
+    },
+    {
+      "chinese": "你和我打通左側通路，達多進入會場，比胡照應右側。大家在校後匯合，才一起撤退。",
+      "seconds": 17.365333333333332,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/01d7ea5e2a15bd116973",
+      "reviewed": false
+    },
+    {
+      "chinese": "你照應比胡穿過右側，我打通左側通路，達多進入會場。大家在校後匯合，才一起撤退。",
+      "seconds": 15.573333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/113222ae0705244e53ff",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們這一隊四個人都到了。比胡受了傷，接下來需要照應。",
+      "seconds": 9.472,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/043efba7fa0271d80e11",
+      "reviewed": false
+    },
+    {
+      "chinese": "到這裡的只有你、巴萬和我。四個人出發，三個人回來。",
+      "seconds": 8.277333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/54b1ff8a436e48f9a771",
+      "reviewed": false
+    },
+    {
+      "chinese": "人都到齊了嗎？把你們的情況告訴我。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/68400b0c63ca2092493d",
+      "reviewed": false
+    },
+    {
+      "chinese": "他和我移開門閂、打開側門。中央和右側的經過，是在校後匯合時聽達多、比胡回報的。",
+      "seconds": 16.373333333333335,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9bbeea8c96a73cb868de",
+      "reviewed": false
+    },
+    {
+      "chinese": "我打開左側通路的便門和側門。中央和右側的經過，是在校後匯合時聽他們回報的。",
+      "seconds": 14.474666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/161b87bfd858897063ee",
+      "reviewed": false
+    },
+    {
+      "chinese": "他跟我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。",
+      "seconds": 15.168,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d6869500011b707bacb5",
+      "reviewed": false
+    },
+    {
+      "chinese": "我從中央進入會場；他照應比胡穿過右側。大家在校後匯合，才一起撤進林路。",
+      "seconds": 18.272,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/be4f2d7736abd889e63f",
+      "reviewed": false
+    },
+    {
+      "chinese": "我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。",
+      "seconds": 13.973333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fda0634906458cc9431d",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們四個都到了。比胡在撤離時受傷，是他扶著比胡走回來的。",
+      "seconds": 10.378666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b0031ad7d93744ed7b03",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們回來三個人。比胡受傷後留在林路，達多回去確認，他已經死了。",
+      "seconds": 12.768,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/476d0e607bd8374e56d0",
+      "reviewed": false
+    },
+    {
+      "chinese": "把同伴帶回來，就繼續照看好他。接下來，誰都不能落單。",
+      "seconds": 11.370666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/39e62db276432bbd8163",
+      "reviewed": false
+    },
+    {
+      "chinese": "我記住了。留下的人已經回不來，還在的人要彼此照應。",
+      "seconds": 1.28,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/67ef766fca44418bd9c9",
+      "reviewed": false
+    },
+    {
+      "chinese": "這場戰鬥還沒有結束。先退入山林，守住身邊的人。",
+      "seconds": 8.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7477dd6a0387ef7dc95d",
+      "reviewed": false
+    },
+    {
+      "chinese": "你與達多完成中央攻入。",
+      "seconds": 5.781333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/0c2648d0c7a9a686f893",
+      "reviewed": false
+    },
+    {
+      "chinese": "你與巴萬完成左側突破。",
+      "seconds": 5.184,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/60c734e9b3c5c36868be",
+      "reviewed": false
+    },
+    {
+      "chinese": "你掩護比胡完成右側穿越。",
+      "seconds": 4.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/edc57f03ca6540ac7e0b",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟達多進入會場，帶同伴一起撤出。",
+      "seconds": 8.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e0a898f2d35317c087ce",
+      "reviewed": false
+    },
+    {
+      "chinese": "你和巴萬打通側門，照應同伴通過。",
+      "seconds": 6.08,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/0701f5ce9bf04acaac3e",
+      "reviewed": false
+    },
+    {
+      "chinese": "你照應比胡穿過右側，一起撤出。",
+      "seconds": 4.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/2eb127605ec30bc333ae",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡生還，四人抵達接應處。",
+      "seconds": 6.378666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/eca277e5cf3308f3ebdc",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡死亡，三人抵達接應處。",
+      "seconds": 5.8773333333333335,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/01d2f8a3e23ab93a7896",
+      "reviewed": false
+    },
+    {
+      "chinese": "結果已保存。戰鬥還沒有結束……",
+      "seconds": 4.778666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b5cf64be1347e9522a4e",
+      "reviewed": false
+    },
+    {
+      "chinese": "結果尚未保存，請按「重試保存」。",
+      "seconds": 4.085333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/402e23238ad04fb4cc21",
+      "reviewed": false
+    },
+    {
+      "chinese": "戰鬥還沒有結束……",
+      "seconds": 2.88,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/0af3f80def8da82e3dd7",
+      "reviewed": false
+    },
+    {
+      "chinese": "可以談剛才的經過，或告訴巴萬你的感受。",
+      "seconds": 6.08,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ec04c55ffd4d28b4190f",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡已經接應下來，還活著。走到這裡，你有什麼想對我說的？",
+      "seconds": 7.477333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/83a1ca37320ad0f69e19",
+      "reviewed": false
+    },
+    {
+      "chinese": "達多回去確認，比胡已經死了。這件事很沉重；你有什麼想對我說的？",
+      "seconds": 10.378666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a650792eae194c0f501e",
+      "reviewed": false
+    },
+    {
+      "chinese": "巴萬正在回應……",
+      "seconds": 2.1866666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ba350311e668a1fd8db2",
+      "reviewed": false
+    },
+    {
+      "chinese": "已接續符合目前經過的預寫回應。",
+      "seconds": 5.781333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a784a0e99fff3a01751f",
+      "reviewed": false
+    },
+    {
+      "chinese": "讀完巴萬的話，再告訴他你的想法。",
+      "seconds": 5.984,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6dcaf006bc33fcba3a96",
+      "reviewed": false
+    },
+    {
+      "chinese": "讀完後，按「聽莫那說話」。",
+      "seconds": 3.68,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e2032c98a23564940ea0",
+      "reviewed": false
+    },
+    {
+      "chinese": "你選擇救援，把比胡帶到接應處；他還活著。",
+      "seconds": 2.1866666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/dd6e5f8cd0bf8b61fa95",
+      "reviewed": false
+    },
+    {
+      "chinese": "你選擇留下比胡。達多回去確認，比胡已經死了；這是他回來告訴我的。",
+      "seconds": 10.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5dd8b329a3eeab7cef8a",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟我走左側，拆橫木、開側門；比胡和達多走右側。右側的經過，我是在匯合後聽他們說的。",
+      "seconds": 14.570666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a5630e21c93af78fe25c",
+      "reviewed": false
+    },
+    {
+      "chinese": "你和比胡走右側，我與達多走左側。你掩護比胡穿越的經過，我是在匯合後聽你們說的。",
+      "seconds": 13.269333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8fc7e8ab56079e3c503b",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟達多從中央進入會場；我打通左側通路，比胡照應右側。中央和右側的經過，我是在校後匯合時聽回報的。",
+      "seconds": 16.970666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/87dec7bdef0598ad6d80",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟我走左側，移開門閂、協力開門；達多從中央進入會場，比胡照應右側。另兩路的經過，我是在校後匯合時聽回報的。",
+      "seconds": 14.474666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d2ddd5332875ef77be1f",
+      "reviewed": false
+    },
+    {
+      "chinese": "你照應比胡穿過右側；我打通左側通路，達多從中央進入會場。中央和右側的經過，我是在校後匯合時聽回報的。",
+      "seconds": 16.469333333333335,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a6517294e4d405a61e7c",
+      "reviewed": false
+    },
+    {
+      "chinese": "原來小隊的你、我、比胡和達多都活著，共四人。莫那不算原來的小隊成員。",
+      "seconds": 12.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/3448c77280cd49fea5bf",
+      "reviewed": false
+    },
+    {
+      "chinese": "原來小隊如今是你、我和達多活著，共三人。達多已確認比胡死亡；莫那不算原來的小隊成員。",
+      "seconds": 14.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f772451fb170c3960261",
+      "reviewed": false
+    },
+    {
+      "chinese": "我就是巴萬，還活著，沒有受傷，現在和你在接應處。",
+      "seconds": 7.082666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8dd35be321656725b1a3",
+      "reviewed": false
+    },
+    {
+      "chinese": "達多還活著，沒有受傷，現在和我們在接應處。",
+      "seconds": 5.482666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b4d3fb7cb0c3e4650768",
+      "reviewed": false
+    },
+    {
+      "chinese": "學校分隊時，他從中央進入會場，沒有跟我或比胡走側路。",
+      "seconds": 11.370666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/1823ca19b51cf3bce788",
+      "reviewed": false
+    },
+    {
+      "chinese": "你是跟他一起走的。",
+      "seconds": 2.485333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/4beddbe5b478295a95eb",
+      "reviewed": false
+    },
+    {
+      "chinese": "中央的經過，我是匯合時聽他回報的。",
+      "seconds": 6.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fc8859d12c66842df3df",
+      "reviewed": false
+    },
+    {
+      "chinese": "學校分隊時，他和比胡走右側；你跟我走左側。",
+      "seconds": 10.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/65ea22abdfc6d4735c08",
+      "reviewed": false
+    },
+    {
+      "chinese": "學校分隊時，他和我走左側；你和比胡走右側。",
+      "seconds": 9.173333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d9ee0b9b8dda2a04bc98",
+      "reviewed": false
+    },
+    {
+      "chinese": "學校分隊時，比胡負責右側；三路在校後會合後，他才在林路受傷。",
+      "seconds": 13.674666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/24652d85763838d83660",
+      "reviewed": false
+    },
+    {
+      "chinese": "莫那還活著，沒有跟我們到學校，現在尚未到接應處。學校與林路的經過，要等稍後向他報告，他才會知道。",
+      "seconds": 17.770666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a80768fe3fc4d1406116",
+      "reviewed": false
+    },
+    {
+      "chinese": "你這次只帶村田十八年式步槍，沒有另外帶獵刀。",
+      "seconds": 6.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/48ccf9b12f6aa2caafc9",
+      "reviewed": false
+    },
+    {
+      "chinese": "你這次只帶獵刀，沒有另外帶步槍。",
+      "seconds": 5.578666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/56d18854f15c76182024",
+      "reviewed": false
+    },
+    {
+      "chinese": "我是巴萬·拿威，和你一同來到這裡的同伴。",
+      "seconds": 4.981333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5b83121bf613608c660f",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們在林間接應處，已經清點小隊。先把眼前的事說清楚，再聽莫那安排；後面的事，我不能預知。",
+      "seconds": 18.100666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9f46f41c78e64704b1ff",
+      "reviewed": false
+    },
+    {
+      "chinese": "第一輪，可簡短回應感受。",
+      "seconds": 5.184,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/54ab1e334c299f778a88",
+      "reviewed": false
+    },
+    {
+      "chinese": "最後一輪，簡短收束，不反問，不代替莫那說話。",
+      "seconds": 7.68,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/764dfedf7124da25682e",
+      "reviewed": false
+    },
+    {
+      "chinese": "我聽見你害怕，先在這裡緩一口氣。",
+      "seconds": 5.184,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a2ae38944b877d032bcb",
+      "reviewed": false
+    },
+    {
+      "chinese": "我聽見你的難受，這些話我會記著。",
+      "seconds": 2.3786666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8271f11e253f53d9a757",
+      "reviewed": false
+    },
+    {
+      "chinese": "我聽見你的想法了。",
+      "seconds": 3.584,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/88777468d02e7e1ff9d1",
+      "reviewed": false
+    },
+    {
+      "chinese": "眼前的經過已經清點清楚；等你讀完，我們一起聽莫那說話。",
+      "seconds": 9.173333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a93ae87eaa0908c9d7fb",
+      "reviewed": false
+    },
+    {
+      "chinese": "剛才左側的路，我是和你一起走過的。",
+      "seconds": 5.28,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/690d598974611af275bc",
+      "reviewed": false
+    },
+    {
+      "chinese": "你跟達多進入會場的經過，我是匯合後聽回報的。",
+      "seconds": 8.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/203581d9ba93c617ca78",
+      "reviewed": false
+    },
+    {
+      "chinese": "右側的經過，我是匯合後聽你們說的。",
+      "seconds": 4.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7f6c5440440a0157c76a",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡已經接應下來，還活著。",
+      "seconds": 4.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/da37ffc82c931a7643dd",
+      "reviewed": false
+    },
+    {
+      "chinese": "達多回去確認，比胡已經死了。",
+      "seconds": 4.085333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5aec1096b52579f98398",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們到駐在所了。莫那在前面；見他之前，你有什麼想說的？",
+      "seconds": 8.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6f2cd913bf906283efc1",
+      "reviewed": false
+    },
+    {
+      "chinese": "連線暫時無法回應，已接續預寫對話。",
+      "seconds": 8.981333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a86cbc2c5fc33d030383",
+      "reviewed": false
+    },
+    {
+      "chinese": "聽完巴萬的話，再告訴他你的想法。",
+      "seconds": 5.376,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/bbca2034cff6130089c7",
+      "reviewed": false
+    },
+    {
+      "chinese": "讀完後，巴萬會帶你去見莫那。",
+      "seconds": 4.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/821cad7170078a1afcba",
+      "reviewed": false
+    },
+    {
+      "chinese": "手握獵刀，接下來就要與日本決戰了，你準備好了嗎？",
+      "seconds": 8.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6d95bd586ba1c71bebf6",
+      "reviewed": false
+    },
+    {
+      "chinese": "拿穩步槍，接下來就要與日本決戰了，你準備好了嗎？",
+      "seconds": 8.778666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b774e98f663b8852408f",
+      "reviewed": false
+    },
+    {
+      "chinese": "巴萬正在聽你的回答……",
+      "seconds": 3.3813333333333335,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f77a7a5440ddc114439f",
+      "reviewed": false
+    },
+    {
+      "chinese": "，只能帶這一種。",
+      "seconds": 2.08,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/36a6fd5d12293d74ec1c",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們從馬赫坡駐在所出發，沿山路到霧社學校外和達多會合。",
+      "seconds": 11.477333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6c6530b9701dd553b879",
+      "reviewed": false
+    },
+    {
+      "chinese": "你準備好現在出發了嗎？",
+      "seconds": 3.082666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6a672f87ac2ba6a41936",
+      "reviewed": false
+    },
+    {
+      "chinese": "好，我聽清楚了。我們彼此照應。",
+      "seconds": 2.485333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fbac15bd363125050650",
+      "reviewed": false
+    },
+    {
+      "chinese": "我聽見了。你現在還沒準備好。",
+      "seconds": 4.576,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ef097d4218edc409f757",
+      "reviewed": false
+    },
+    {
+      "chinese": "你是準備好現在出發，還是還沒準備好？告訴我你的決定。",
+      "seconds": 8.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/45781438207f7f5fa85f",
+      "reviewed": false
+    },
+    {
+      "chinese": "連線暫時無法回應，已使用預寫回應。",
+      "seconds": 8.277333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/74c5ef7ac7fef176cae8",
+      "reviewed": false
+    },
+    {
+      "chinese": "請說明你現在是否準備好出發。",
+      "seconds": 4.778666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/90b35de2d6ad0001bd8d",
+      "reviewed": false
+    },
+    {
+      "chinese": "退後半步，站到比胡身旁再按住 E 扶起。",
+      "seconds": 5.077333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/04dc8213db7ae468105a",
+      "reviewed": false
+    },
+    {
+      "chinese": " 公尺），三人會一起走入林路。",
+      "seconds": 5.077333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/4062fd998057c330f49b",
+      "reviewed": false
+    },
+    {
+      "chinese": "同伴在前方等你，沿黃色箭頭走近後繼續。",
+      "seconds": 4.085333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/bd792eea261a8fc5bce0",
+      "reviewed": false
+    },
+    {
+      "chinese": "啊……我的腿！我走不動了……",
+      "seconds": 3.8826666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5b1f86a088b396e5d8c9",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡！前面還有警察。你扶他，我替你看著路！",
+      "seconds": 7.381333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/5377680b13524ffc01fa",
+      "reviewed": false
+    },
+    {
+      "chinese": "我先到前面的接應棚。把他帶過來！",
+      "seconds": 4.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e95437312a8db5565380",
+      "reviewed": false
+    },
+    {
+      "chinese": "扶住他，別急。我跟著你們。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e1837af322022d037c74",
+      "reviewed": false
+    },
+    {
+      "chinese": "……跟上。別再有人落在後面。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/c9723bb2a6cf45dffef3",
+      "reviewed": false
+    },
+    {
+      "chinese": "我在這裡等你……",
+      "seconds": 2.5813333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/43802ff0320387e3905e",
+      "reviewed": false
+    },
+    {
+      "chinese": "回到比胡受傷處。\n救援選擇與攜帶的武器會保留。\n先處理警察，再扶比胡走向接應處。",
+      "seconds": 13.472,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/c2e2077f1fa98dfde70c",
+      "reviewed": false
+    },
+    {
+      "chinese": "回到林路檢查點。\n留下比胡的選擇與攜帶的武器會保留。",
+      "seconds": 6.773333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e51d0b441ca99c56c19b",
+      "reviewed": false
+    },
+    {
+      "chinese": "到了，我接住他。你先喘口氣。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b2a0ed61ebdcf55d66c8",
+      "reviewed": false
+    },
+    {
+      "chinese": "謝謝……我還撐得住。",
+      "seconds": 1.4826666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f68329268836638b9bc4",
+      "reviewed": false
+    },
+    {
+      "chinese": "你們到了……比胡呢？",
+      "seconds": 2.1866666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6eb757b19692a3a6918a",
+      "reviewed": false
+    },
+    {
+      "chinese": "他還留在後面的林路上。",
+      "seconds": 4.277333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9d2ede7d30a5054b6e47",
+      "reviewed": false
+    },
+    {
+      "chinese": "\n警察正在瞄準！",
+      "seconds": 2.784,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/4ad6d627cd58ac2f9d90",
+      "reviewed": false
+    },
+    {
+      "chinese": "靠近後按住 E 扶起，帶他到接應處。\n若途中倒下，重試仍保留救援選擇。",
+      "seconds": 10.272,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a862488ab854e388687a",
+      "reviewed": false
+    },
+    {
+      "chinese": "讓比胡留在受傷處，\n跟巴萬走向接應棚。",
+      "seconds": 6.773333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/86449a4d3ea0262c7c13",
+      "reviewed": false
+    },
+    {
+      "chinese": "前面的路通了，跟我沿林路走。比胡，照看後面的人。",
+      "seconds": 7.381333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/1d5c19c641824faf3cf4",
+      "reviewed": false
+    },
+    {
+      "chinese": "我跟在後面。走吧，到校門旁和達多會合。",
+      "seconds": 7.68,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e0c3d9889b89754e076e",
+      "reviewed": false
+    },
+    {
+      "chinese": "聽，前面是運動會的哨聲。沿這條路繼續走。",
+      "seconds": 6.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b0c46a5e41d60c4b75dc",
+      "reviewed": false
+    },
+    {
+      "chinese": "看見操場了。從前面的校門過去。",
+      "seconds": 5.482666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a797de47eff6e5335779",
+      "reviewed": false
+    },
+    {
+      "chinese": "從這裡繼續，前一段已經通過了。",
+      "seconds": 4.576,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a1417ca93d34e64c8725",
+      "reviewed": false
+    },
+    {
+      "chinese": "吹哨叫大家撤退！把會場裡的人都帶走，我們從校舍旁退出去。",
+      "seconds": 6.88,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fb12d255c9d1a5fdfe04",
+      "reviewed": false
+    },
+    {
+      "chinese": "（口哨聲）大家撤退！跟上我們，到校後集合！",
+      "seconds": 7.274666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/2e57dc5b2d5d33527307",
+      "reviewed": false
+    },
+    {
+      "chinese": "西邊還有人被警察追著，跟我過去幫忙！",
+      "seconds": 7.274666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/abff08cb012594015227",
+      "reviewed": false
+    },
+    {
+      "chinese": "東邊的族人還在跟警察交戰，跟我過去幫他們！",
+      "seconds": 8.277333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/8df2703fc7c963255b6e",
+      "reviewed": false
+    },
+    {
+      "chinese": "這邊打通了！校舍前還有人被壓住，過去支援！",
+      "seconds": 7.573333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d985fc98fdbd40ef4978",
+      "reviewed": false
+    },
+    {
+      "chinese": "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",
+      "seconds": 9.674666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f8a7c74083fa116bc6b0",
+      "reviewed": false
+    },
+    {
+      "chinese": "門閂移開了，跟上！後面的側門我來推，你照應通道。",
+      "seconds": 7.1786666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/2c3b9e267ba881b50db0",
+      "reviewed": false
+    },
+    {
+      "chinese": "我來照應！小心前面的警察，別離我太遠！",
+      "seconds": 6.176,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/4405745afcd6391e1ba9",
+      "reviewed": false
+    },
+    {
+      "chinese": "小心，警察抬槍了！我先停一下，幫我看著通道！",
+      "seconds": 8.778666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/be17a728466f2828f6c3",
+      "reviewed": false
+    },
+    {
+      "chinese": "這扇門我來推。幫我看著通道，開了就一起走！",
+      "seconds": 7.978666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/aa7adc80dc1a38bcc56b",
+      "reviewed": false
+    },
+    {
+      "chinese": "這一段到了，先在掩體後等！前面還有警察。",
+      "seconds": 6.773333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/cd5866d1c75e013862ab",
+      "reviewed": false
+    },
+    {
+      "chinese": "前面的警察正往通路移動，先看清楚再走。",
+      "seconds": 7.573333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6485a85ab947e0e8ccd6",
+      "reviewed": false
+    },
+    {
+      "chinese": "他停下來了！先看清他的動作，我等你的信號。",
+      "seconds": 6.282666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7a1993426dc8579314fe",
+      "reviewed": false
+    },
+    {
+      "chinese": "退回來了，等你重新下令。",
+      "seconds": 4.874666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9356581dbf42a9742748",
+      "reviewed": false
+    },
+    {
+      "chinese": "我到掩體了，這一段安全了！",
+      "seconds": 3.68,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d818cd2f50987f071f80",
+      "reviewed": false
+    },
+    {
+      "chinese": "我到掩體了！警察還在，先處理他再走！",
+      "seconds": 5.674666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/858f11c3a527756493c6",
+      "reviewed": false
+    },
+    {
+      "chinese": "警察正在抬槍！",
+      "seconds": 2.88,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/72fcb3bad0d454d368c1",
+      "reviewed": false
+    },
+    {
+      "chinese": "他開過槍了！看住前方，等你的信號！",
+      "seconds": 5.674666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d02213cde50bd3549446",
+      "reviewed": false
+    },
+    {
+      "chinese": "警察抬槍了！掩護我，必要時叫我撤回！",
+      "seconds": 6.474666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/52bf1f036e1c90bb0f93",
+      "reviewed": false
+    },
+    {
+      "chinese": "先壓低身體，他正在瞄準！",
+      "seconds": 3.1786666666666665,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/68c03a676f30e03b9ce2",
+      "reviewed": false
+    },
+    {
+      "chinese": "離得太遠了，回到能照應我的位置！",
+      "seconds": 4.181333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f69bd4d9e1820617f73f",
+      "reviewed": false
+    },
+    {
+      "chinese": "收到，我退回剛才的掩體！",
+      "seconds": 5.482666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b7de76bfffded3c79631",
+      "reviewed": false
+    },
+    {
+      "chinese": "收到！我先往前，你看住警察！",
+      "seconds": 5.184,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/c7b4ebd7b978345c1ecd",
+      "reviewed": false
+    },
+    {
+      "chinese": "火力太強！掩護我，先撤回去！",
+      "seconds": 5.482666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6bf3b2f367265ed2d8d0",
+      "reviewed": false
+    },
+    {
+      "chinese": "從第二段掩體重整。\n第一段已完成，任務與武器選擇保留。",
+      "seconds": 10.570666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7fb85add4e74af6eb0ba",
+      "reviewed": false
+    },
+    {
+      "chinese": "從第一段出發點重整。\n先觀察警察，再下令前進。任務與武器選擇保留。",
+      "seconds": 14.176,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/3dd82f021aef403bc2ad",
+      "reviewed": false
+    },
+    {
+      "chinese": "前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。",
+      "seconds": 9.376,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/4ca50fe31741508f7890",
+      "reviewed": false
+    },
+    {
+      "chinese": "等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",
+      "seconds": 15.968,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9f07aaf3d40bdb09d41d",
+      "reviewed": false
+    },
+    {
+      "chinese": "跟緊各自的領隊，別落單。最後在校後空地集合。",
+      "seconds": 8.981333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/81d1949964716be76014",
+      "reviewed": false
+    },
+    {
+      "chinese": "會場遭到襲擊，日本平民也遭到殺害。人群在槍聲與呼喊中四散。",
+      "seconds": 12.576,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/0adb8041ca793ce2ca4e",
+      "reviewed": false
+    },
+    {
+      "chinese": "各隊照分工走！我進會場，巴萬走左邊，比胡走右邊。校後會合！",
+      "seconds": 12.576,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/1059d3db13b95839bc84",
+      "reviewed": false
+    },
+    {
+      "chinese": "跟緊我，從校門進去！別讓同伴落單，留意會場裡的動靜。",
+      "seconds": 11.072,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9f7f8c1e0a14e953a4fa",
+      "reviewed": false
+    },
+    {
+      "chinese": "跟我來，打開側邊通路，讓同伴能從那邊撤出！",
+      "seconds": 8.373333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ace1044f96f2802bb7f9",
+      "reviewed": false
+    },
+    {
+      "chinese": "跟我走右側。我聽你的信號前進，必要時叫我撤回！",
+      "seconds": 3.8826666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ee7b17d1199bfdf3f5af",
+      "reviewed": false
+    },
+    {
+      "chinese": " 段安全位置重試。\n已完成段落、任務與武器選擇保留。",
+      "seconds": 5.28,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/198fd44f5f1f45a746ff",
+      "reviewed": false
+    },
+    {
+      "chinese": "從目前任務起點重試。\n任務與武器選擇保留。",
+      "seconds": 3.8826666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/77f93d055fb1d94927da",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們把左邊打通了，側門已經打開。你們都到了嗎？",
+      "seconds": 9.077333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/82cf70b539895a79e98f",
+      "reviewed": false
+    },
+    {
+      "chinese": "左邊的通道打通了，側門已經打開。我們在這裡接應。",
+      "seconds": 7.381333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/ba682d66379319b64809",
+      "reviewed": false
+    },
+    {
+      "chinese": "到了！剛才他替我看住警察，我才能穿過右邊。",
+      "seconds": 6.976,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/349e3ba6dc078c24a5ec",
+      "reviewed": false
+    },
+    {
+      "chinese": "右邊的族人也通過了，我從那邊撤過來。",
+      "seconds": 6.581333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fc2b78e8bf8567723244",
+      "reviewed": false
+    },
+    {
+      "chinese": "大家正往校後撤，後面的人會跟上。先離開學校，沿林路走！",
+      "seconds": 13.472,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/d47993859b8ee46126eb",
+      "reviewed": false
+    },
+    {
+      "chinese": "我帶的人正從會場撤出。先離開學校，沿後面那條林路走！",
+      "seconds": 10.378666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/9b853253461a74fbfa65",
+      "reviewed": false
+    },
+    {
+      "chinese": "，請依黃色箭頭領取；只能持有一種武器。",
+      "seconds": 6.282666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/69bb4034370b65b01a67",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們到馬赫坡駐在所了。莫那在前面，我帶你過去，聽他安排。跟我來。",
+      "seconds": 11.978666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/97f8e90cee395895c26e",
+      "reviewed": false
+    },
+    {
+      "chinese": "莫那，我們到了。",
+      "seconds": 1.8773333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/82dee4e742a7cc931c84",
+      "reviewed": false
+    },
+    {
+      "chinese": "你來了。歡迎你加入我們，一起反抗日本警察的壓迫。這條路不好走，記住，要和同伴彼此照應。",
+      "seconds": 15.573333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/afbf3f89d99f32d391a8",
+      "reviewed": false
+    },
+    {
+      "chinese": "我們已經攻下這裡，打倒了駐在所的日本警察。",
+      "seconds": 11.274666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/6b781a1d7e63429d2402",
+      "reviewed": false
+    },
+    {
+      "chinese": "選一個趁手的武器吧，帶著你的武器與達多會合，接下來還有一場硬仗。",
+      "seconds": 17.664,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/10703d5af3e6623d1eeb",
+      "reviewed": false
+    },
+    {
+      "chinese": "同行的人要把性命交在彼此手上。你連自己的心都沒定下來，憑什麼要他們放心把背後交給你！",
+      "seconds": 7.082666666666666,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/87e58c49443190408480",
+      "reviewed": false
+    },
+    {
+      "chinese": "你沒有隨隊出發，莫那讓你回家休息。",
+      "seconds": 4.384,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/e5ef9a7395cb6ed10f0c",
+      "reviewed": false
+    },
+    {
+      "chinese": "你尚未準備好出發。\n莫那讓你留下，回家休息。",
+      "seconds": 6.773333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/eeeb230fc84f06f70777",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡，跟上。我們到霧社去。",
+      "seconds": 2.986666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7c650192c56418e7236d",
+      "reviewed": false
+    },
+    {
+      "chinese": "往前就是霧社。到學校外面，再和達多會合。",
+      "seconds": 7.573333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/536c3b9ecf1f8290186c",
+      "reviewed": false
+    },
+    {
+      "chinese": "前面山路有日本警察擋著。先突破他們，再去學校外和達多會合。",
+      "seconds": 13.173333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f785819a24dcebb56ce0",
+      "reviewed": false
+    },
+    {
+      "chinese": "巴萬與比胡正在等你，走近他們。",
+      "seconds": 5.077333333333334,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/37bd4f20d894ffb2c825",
+      "reviewed": false
+    },
+    {
+      "chinese": "同伴在前方等你，走近後繼續。",
+      "seconds": 6.08,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/fa07655ec435a613bce4",
+      "reviewed": false
+    },
+    {
+      "chinese": "刀都拿了，現在才說沒準備好？抬起頭，看著我！",
+      "seconds": 7.68,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/2f90eb4e784537651fe2",
+      "reviewed": false
+    },
+    {
+      "chinese": "今天你不准跟來。把刀留下，回家休息！想清楚自己能承擔什麼，再來見我。",
+      "seconds": 13.472,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/b7805bf39b584a69dde0",
+      "reviewed": false
+    },
+    {
+      "chinese": "槍都拿了，現在才說沒準備好？抬起頭，看著我！",
+      "seconds": 8.672,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/448c7a54d92297abb352",
+      "reviewed": false
+    },
+    {
+      "chinese": "今天你不准跟來。把槍留下，回家休息！想清楚自己能承擔什麼，再來見我。",
+      "seconds": 6.677333333333333,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/86d96a215a381e31a550",
+      "reviewed": false
+    },
+    {
+      "chinese": "你的獵刀還在。先收好，這裡讓傷者和同伴歇一歇。",
+      "seconds": 9.578666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/893d7b87bceadbf29d6b",
+      "reviewed": false
+    },
+    {
+      "chinese": "你的村田十八年式步槍還在。先收好，這裡讓傷者和同伴歇一歇。",
+      "seconds": 11.178666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/304d9805f71aff3c0dab",
+      "reviewed": false
+    },
+    {
+      "chinese": "去吧。",
+      "seconds": 2.3146666666666667,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/f7c45131444475f33ff7",
+      "reviewed": false
+    },
+    {
+      "chinese": "比胡……",
+      "seconds": 1.984,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/a8af4062f63d6da881bb",
+      "reviewed": false
+    },
+    {
+      "chinese": "到了。達多就在校門旁，我們過去。",
+      "seconds": 5.984,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/04f5c955528646d4547d",
+      "reviewed": false
+    },
+    {
+      "chinese": "學校就在前面，達多在校門旁等我們。",
+      "seconds": 7.776,
+      "peak": 32767,
+      "resource": "Chapter3Voice/Audio/7d8a88601848e85a3bd9",
+      "reviewed": false
+    }
+  ]
+}
