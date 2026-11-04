@@ -1,0 +1,70 @@
+{
+    "completed": true,
+    "checks": [
+        "fresh default is Chinese voice",
+        "fresh default volume 10",
+        "default master gain 1",
+        "reading defaults does not create a saved selection",
+        "old automatic level 5 migrates to 10",
+        "explicit level 5 remains 5",
+        "zero really mutes",
+        "Chinese subtitles for Chinese",
+        "Chinese subtitles for Seediq",
+        "Chinese subtitles for Japanese",
+        "Chinese subtitles for None",
+        "only supported voice options visible",
+        "language menu explains fixed Chinese subtitles",
+        "Seediq button saves voice selection",
+        "settings shows volume 10",
+        "Chinese button saves voice selection",
+        "first chapter loaded",
+        "first chapter Chinese recording plays",
+        "first chapter subtitle remains exact",
+        "first chapter voiced scene waits for complete Chinese audio",
+        "first chapter original recording path retained",
+        "first chapter original mode subtitle remains Chinese",
+        "female Chinese character voice exists",
+        "second chapter loaded",
+        "all serialized chapter 2 lines have offline Chinese audio",
+        "all assigned chapter 2 originals retained",
+        "third chapter Chinese voice selected",
+        "third chapter Chinese subtitle exact",
+        "Chinese audio drives third chapter mouth",
+        "third chapter waits for Chinese recording",
+        "third chapter original Seediq tone retained",
+        "Seediq voice still shows Chinese only",
+        "language switch stops old voice",
+        "uncached Chinese dialogue synthesizes locally",
+        "dynamic Chinese keeps subtitle",
+        "cancel synthesis and replace with cached Chinese",
+        "voice clear stops all Chinese playback",
+        "original preference keys restored"
+    ],
+    "errors": [],
+    "observations": [
+        "chapter 2 Chinese=59 original=28",
+        "dynamic Chinese duration=6.378"
+    ],
+    "originalPreferences": [
+        {
+            "key": "WusheEvent.MasterVolume",
+            "exists": true,
+            "value": 10
+        },
+        {
+            "key": "WusheEvent.MasterVolumeChosen",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.VoiceLanguage",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.SubtitleLanguage",
+            "exists": true,
+            "value": 0
+        }
+    ]
+}

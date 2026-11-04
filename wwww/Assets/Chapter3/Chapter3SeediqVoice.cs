@@ -25,13 +25,15 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     string session;
     bool translationReady,speechReady;
     AudioSource output;
+    GameChineseVoice chinese;
     Chapter2Actor voiceActor;
     AudioClip faceClip;
     string speakerName;
     Coroutine pending;
     UnityWebRequest activeRequest;
     float unavailableUntil;
-    public bool Busy {get;private set;}
+    bool seediqBusy;
+    public bool Busy {get=>seediqBusy||(chinese&&chinese.Busy);private set=>seediqBusy=value;}
     public bool Speaking=>output&&output.isPlaying;
     public string LastError {get;private set;}
     public string LastTranslation {get;private set;}
@@ -42,6 +44,8 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     {
         output=gameObject.AddComponent<AudioSource>();output.playOnAwake=false;output.spatialBlend=0;
         output.volume=Chapter3VoiceTone.PlaybackVolume;output.pitch=Chapter3VoiceTone.PlaybackPitch;
+        chinese=gameObject.AddComponent<GameChineseVoice>();chinese.Configure(output);
+        GameLanguageSettings.Changed+=Stop;
         var resource=Resources.Load<TextAsset>("Chapter3Voice/catalog");
         if(resource){var data=JsonUtility.FromJson<Bank>(resource.text);if(data?.entries!=null)foreach(var entry in data.entries)if(!string.IsNullOrEmpty(entry.chinese))bank[entry.chinese]=entry;}
     }
@@ -49,6 +53,8 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     {
         Stop();CurrentLine=line;speakerName=speaker;LastError=null;LastTranslation=null;
         if(string.IsNullOrEmpty(line)||string.IsNullOrEmpty(speaker)||speaker=="你"||speaker=="玩家")return;
+        if(GameLanguageSettings.ChineseVoice){chinese.Speak(speaker,line);return;}
+        output.pitch=Chapter3VoiceTone.PlaybackPitch;output.volume=Chapter3VoiceTone.PlaybackVolume;
         if(cache.TryGetValue(line,out var existing)){translations.TryGetValue(line,out string translated);LastTranslation=translated;Play(existing);return;}
         if(bank.TryGetValue(line,out var entry)&&!string.IsNullOrEmpty(entry.resource))
         {
@@ -73,7 +79,7 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
         if(!voiceActor)return;voiceActor.speaking=true;
         if(faceClip!=output.clip){faceClip=output.clip;voiceActor.GetComponent<Chapter2SpeechFace>()?.BeginRecordedLine(CurrentLine,output);}
     }
-    public void Stop(){if(pending!=null)StopCoroutine(pending);pending=null;if(activeRequest!=null){activeRequest.Abort();activeRequest.Dispose();activeRequest=null;}if(output)output.Stop();if(voiceActor)voiceActor.speaking=false;voiceActor=null;faceClip=null;Busy=false;CurrentLine=null;}
+    public void Stop(){if(chinese)chinese.Stop();if(pending!=null)StopCoroutine(pending);pending=null;if(activeRequest!=null){activeRequest.Abort();activeRequest.Dispose();activeRequest=null;}if(output)output.Stop();if(voiceActor)voiceActor.speaking=false;voiceActor=null;faceClip=null;Busy=false;CurrentLine=null;}
     IEnumerator Generate(string line)
     {
         // Gradio closes a queue stream when its client cancels. A fresh line
@@ -202,5 +208,5 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     }
     void Fail(string error){LastError=error;unavailableUntil=Time.realtimeSinceStartup+120;pending=null;Busy=false;}
     void OnDisable(){Stop();}
-    void OnDestroy(){foreach(var clip in downloaded)if(clip)Destroy(clip);}
+    void OnDestroy(){GameLanguageSettings.Changed-=Stop;foreach(var clip in downloaded)if(clip)Destroy(clip);}
 }

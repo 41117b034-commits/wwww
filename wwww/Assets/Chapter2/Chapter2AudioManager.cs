@@ -94,13 +94,14 @@ public sealed class Chapter2AudioManager : MonoBehaviour
     public AudioMixerGroup musicOutput, narrationOutput, characterOutput;
     AudioSource music, narration, character;
     Chapter2VoiceGain narrationGain, characterGain;
+    GameChineseVoice chineseVoice;
     VoiceLine activeLine;
     Role activeRole;
     Coroutine musicFade;
     float envelope, duck = 1;
     AudioClip requestedMusic;
-    public bool VoicePlaying => (narration && narration.isPlaying) || (character && character.isPlaying);
-    void Awake() { EnsureSources(); }
+    public bool VoicePlaying => (chineseVoice && chineseVoice.Busy) || (narration && narration.isPlaying) || (character && character.isPlaying);
+    void Awake() { EnsureSources(); chineseVoice=gameObject.AddComponent<GameChineseVoice>(); GameLanguageSettings.Changed+=StopVoice; }
     void EnsureSources()
     {
         if (!music) music = MakeSource("Chapter2 BGM", true);
@@ -172,6 +173,12 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         StopVoice();
         if (!isActiveAndEnabled) return originalSeconds;
         EnsureSources();
+        if(GameLanguageSettings.ChineseVoice)
+        {
+            chineseVoice.Configure(role==Role.Narrator?narration:character);
+            chineseVoice.Speak(role.ToString(),chinese);
+            return Mathf.Max(originalSeconds,chineseVoice.Remaining+voiceTailSeconds);
+        }
         VoiceLine found = null;
         if (lines != null) foreach (var line in lines)
                 if (line != null && line.role == role && (line.chinese ?? "").Trim() == chinese.Trim()) { found = line; break; }
@@ -189,6 +196,7 @@ public sealed class Chapter2AudioManager : MonoBehaviour
     }
     public void StopVoice()
     {
+        if(chineseVoice)chineseVoice.Stop();
         if (narration) narration.Stop(); if (character) character.Stop();
         activeLine = null;
         if (narrationGain) narrationGain.Gain = 1f;
@@ -209,4 +217,5 @@ public sealed class Chapter2AudioManager : MonoBehaviour
     public void SetNarrationVolume(float value) { narrationVolume = Mathf.Clamp01(value); }
     public void SetCharacterVolume(float value) { characterVolume = Mathf.Clamp01(value); }
     void OnDisable() { StopAllAudio(); }
+    void OnDestroy() { GameLanguageSettings.Changed-=StopVoice; }
 }

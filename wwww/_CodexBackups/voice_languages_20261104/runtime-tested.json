@@ -1,0 +1,42 @@
+[
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\場景切換\\GameLanguageSettings.cs",
+    "Hash": "FFE5987FC9BD9101031AFA976D6E559B6DC9FCCF6F56521DD7877C44804AB851"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\場景切換\\GameAudioSettings.cs",
+    "Hash": "3824EFCC29BA51B1AD9C770D675CD850223586AE17BDE4825B6EED5DC5DF4A87"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\場景切換\\GameChineseVoice.cs",
+    "Hash": "06A06A6E3E4CC1DB387DCED2230B084AFFF6F53E3CEF929ABA3BA0FEBD088D66"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\場景切換\\MenuPresentationController.cs",
+    "Hash": "A709ECB3E10F6B24804B3A09C0468FD4DB1A4F2E05DE30264B460EE67F61A6AE"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\第一章演出\\Chapter1PerformanceController.cs",
+    "Hash": "E3452C4E44B3728270F20692D0A857E7A19B122B4725F92B00771EF583C13BBC"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\腳本\\第一章演出\\Chapter1PerformanceController.ChineseVoice.cs",
+    "Hash": "57CA9ED61D21BD2E24F970463F484EF19443BD1F6BF49FFC5E77476030977FB1"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter2\\Chapter2AudioManager.cs",
+    "Hash": "8267E7F42F8B968D07926A503FA728CBFD45F4D6395934F66EC7D67C571C0637"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SeediqVoice.cs",
+    "Hash": "4264B8DCD3B1FAAC19025C8A9D9D269FD3989F561AC3072BF4E448C7FA9F3604"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Resources\\ChineseVoice\\catalog.json",
+    "Hash": "C8B42C0E3DAD50B33F48436359A9E7ECB74EB6AAB0609C0161EE4C3082295BBF"
+  },
+  {
+    "Path": "C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\StreamingAssets\\ChineseVoice\\synthesize.ps1",
+    "Hash": "C4F1A6E2E89125D475ED3E275801D8320E26EAA7F9021E2CFBB8B4D9FDD17B7D"
+  }
+]

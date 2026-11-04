@@ -1446,6 +1446,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void OnDisable()
     {
+        if(chineseSpeech)chineseSpeech.Stop();
         if (doorwayWatchActive) StopAllCoroutines();
         CleanupDoorwayWatch();
         RestoreIncidentSideGuests();
@@ -1775,6 +1776,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     {
         float duration = clip != null ? Mathf.Max(0.1f, clip.length) : Mathf.Max(0.1f, fallbackSeconds);
         ShowLine(speaker, line, duration + 0.1f);
+        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield break;}
 
         if (clip == null)
         {
@@ -4898,6 +4900,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         bool isFemale =
             IsFemaleThankYouReceiver(receiverTarget);
 
+        if(GameLanguageSettings.ChineseVoice)
+            ShowLine(isFemale?"女性族人":"族人",isWine?"謝謝你，這杯我收下了。願祖靈庇佑新人。":"謝謝你。今晚能這樣相聚，已經很難得。",3f);
+
         AudioClip selectedClip = null;
 
         // 優先：男女專屬語音。
@@ -4925,7 +4930,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             selectedClip = receiverThanksVoice;
         }
 
-        if (selectedClip != null)
+        if (selectedClip != null && !GameLanguageSettings.ChineseVoice)
         {
             Transform receiverRoot =
                 GetDeliveryActorRoot(receiverTarget);
@@ -5106,6 +5111,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator PlayReceiverThanks2D(AudioClip clip, float volume)
     {
+        if(GameLanguageSettings.ChineseVoice)yield break;
         if (clip == null)
         {
             yield break;
@@ -15327,6 +15333,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             : Mathf.Max(0.1f, fallbackSeconds);
 
         ShowLine(speaker, line, duration + 0.1f);
+        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield break;}
 
         if (voiceClip == null)
         {
@@ -15440,6 +15447,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void ShowLine(string speaker, string line, float seconds)
     {
+        seconds=BeginChineseLine(speaker,line,seconds);
         // 直接由真正的劇情 ShowLine 同步顯示 VR 字幕。
         // 劇情走到哪一句，VR 字幕就同一時間出現。
         if (Chapter1StorySubtitleBridge.Instance != null)

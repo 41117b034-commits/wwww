@@ -541,6 +541,11 @@ public sealed class MenuPresentationController : MonoBehaviour
         {
             Button button = buttons[i];
             TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if(label!=null&&(Compact(label.text)=="日文"||Compact(label.text)=="無字幕"))
+            {
+                button.gameObject.SetActive(false);
+                continue;
+            }
             if (label == null || !TryGetLanguage(label.text, out GameSubtitleLanguage language))
             {
                 continue;
@@ -554,7 +559,13 @@ public sealed class MenuPresentationController : MonoBehaviour
 
             GameSubtitleLanguage capturedLanguage = language;
             button.onClick.AddListener(() => SelectLanguage(capturedLanguage));
+            var rect=button.transform as RectTransform;
+            if(rect)rect.anchoredPosition=new Vector2(0,language==GameSubtitleLanguage.Chinese?10:-12);
+            if(language==GameSubtitleLanguage.Chinese&&!button.transform.parent.Find("VoiceLanguageHint"))
+                CreateDialogText("VoiceLanguageHint",button.transform.parent,label,"字幕固定中文",new Vector2(0,-34),new Vector2(90,12),7,Color.white);
         }
+        foreach(var label in FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+            if(Compact(label.text)=="語言")label.text="配音語言（字幕固定中文）";
     }
 
     private static bool TryGetLanguage(string label, out GameSubtitleLanguage language)
@@ -648,7 +659,7 @@ public sealed class MenuPresentationController : MonoBehaviour
             }
 
             string compact = Compact(label.text);
-            bool isMainSettingsOption = compact == "語言"
+            bool isMainSettingsOption = compact == "語言" || compact == "配音語言"
                 || compact == "返回"
                 || compact.StartsWith("音量", System.StringComparison.Ordinal);
             if (!isMainSettingsOption)

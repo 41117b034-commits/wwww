@@ -1,0 +1,20 @@
+{
+  "completed": true,
+  "files": [
+    {
+      "file": "Assets/腳本/第一章演出/Chapter1PerformanceController.cs",
+      "missing": 0,
+      "checked": 640
+    },
+    {
+      "file": "Assets/Chapter2/Chapter2AudioManager.cs",
+      "missing": 0,
+      "checked": 129
+    },
+    {
+      "file": "Assets/Chapter3/Chapter3SeediqVoice.cs",
+      "missing": 0,
+      "checked": 66
+    }
+  ]
+}
