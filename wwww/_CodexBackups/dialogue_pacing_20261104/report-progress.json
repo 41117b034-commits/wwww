@@ -1,0 +1,48 @@
+{
+    "completed": false,
+    "checks": [
+        "performance fixture starts in formal third chapter",
+        "all camera states restored after diagnostic"
+    ],
+    "errors": [],
+    "observations": [
+        "foreground rendering frames=32 focused=32 medianMs=126.4225 p95Ms=133.394",
+        "PlayerLoop valid=True meanMs=115.79669375",
+        "Update.ScriptRunBehaviourUpdate valid=True meanMs=1.051653125",
+        "BehaviourUpdate valid=True meanMs=1.04763125",
+        "WaitForTargetFPS valid=True meanMs=0",
+        "Chapter3.PathMotor.Move valid=True meanMs=0.34274375",
+        "Chapter3.PathMotor.Plan valid=True meanMs=0",
+        "Camera.Render valid=True meanMs=0.060715625",
+        "cameras disabled frames=64 focused=64 medianMs=63.1995 p95Ms=68.76321",
+        "PlayerLoop valid=True meanMs=56.3391765625",
+        "Update.ScriptRunBehaviourUpdate valid=True meanMs=0.71385625",
+        "BehaviourUpdate valid=True meanMs=0.7109984375",
+        "WaitForTargetFPS valid=True meanMs=0",
+        "Chapter3.PathMotor.Move valid=True meanMs=0.1679421875",
+        "Chapter3.PathMotor.Plan valid=True meanMs=0",
+        "Camera.Render valid=True meanMs=0"
+    ],
+    "originalPreferences": [
+        {
+            "key": "WusheEvent.MasterVolume",
+            "exists": true,
+            "value": 10
+        },
+        {
+            "key": "WusheEvent.MasterVolumeChosen",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.VoiceLanguage",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.SubtitleLanguage",
+            "exists": true,
+            "value": 0
+        }
+    ]
+}

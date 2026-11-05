@@ -1776,7 +1776,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     {
         float duration = clip != null ? Mathf.Max(0.1f, clip.length) : Mathf.Max(0.1f, fallbackSeconds);
         ShowLine(speaker, line, duration + 0.1f);
-        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield break;}
+        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield return new WaitForSeconds(ChineseSpeech.HasAudio ? .12f : duration);yield break;}
 
         if (clip == null)
         {
@@ -15333,7 +15333,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             : Mathf.Max(0.1f, fallbackSeconds);
 
         ShowLine(speaker, line, duration + 0.1f);
-        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield break;}
+        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield return new WaitForSeconds(ChineseSpeech.HasAudio ? .12f : duration);yield break;}
 
         if (voiceClip == null)
         {

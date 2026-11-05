@@ -383,7 +383,8 @@ public partial class Chapter1PerformanceController
         leaderRig.conversationTarget = officer;
         SetWeddingDramaBeat("leader-question");
         ShowLine("族人", "我們只是辦婚禮，為什麼要這樣對待我們？", leaderQuestionSeconds);
-        for (float elapsed = 0f; elapsed < leaderQuestionSeconds; elapsed += Time.deltaTime)
+        float spokenSeconds=GameLanguageSettings.ChineseVoice&&ChineseSpeech.HasAudio ? ChineseSpeech.Remaining+.12f : leaderQuestionSeconds;
+        for (float elapsed = 0f; elapsed < spokenSeconds || (GameLanguageSettings.ChineseVoice&&ChineseSpeech.Busy); elapsed += Time.deltaTime)
         {
             leaderRig.speakingWeight = Mathf.SmoothStep(0f, 1f, elapsed / 0.35f);
             yield return null;

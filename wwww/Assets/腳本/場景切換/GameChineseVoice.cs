@@ -17,6 +17,7 @@ public sealed class GameChineseVoice:MonoBehaviour
     [Serializable] sealed class Request {public Job[] jobs;}
     static Dictionary<string,Entry> bank;
     readonly Dictionary<string,AudioClip> cache=new Dictionary<string,AudioClip>();
+    readonly Dictionary<AudioClip,AudioClip> paced=new Dictionary<AudioClip,AudioClip>();
     readonly List<AudioClip> owned=new List<AudioClip>();
     AudioSource output;
     Coroutine pending;
@@ -24,6 +25,7 @@ public sealed class GameChineseVoice:MonoBehaviour
     System.Diagnostics.Process process;
     string requestPath,wavePath;
     bool ownsPlayback;
+    public bool HasAudio=>ownsPlayback&&output&&output.clip;
     public bool Busy=>pending!=null||(ownsPlayback&&output&&output.isPlaying);
     public string LastError {get;private set;}
     public string CurrentLine {get;private set;}
@@ -70,7 +72,15 @@ public sealed class GameChineseVoice:MonoBehaviour
         if(speaker.Contains("巴萬")||speaker=="Bawan")return "bawan";
         return "default";
     }
-    void Play(AudioClip clip){ownsPlayback=true;output.clip=clip;output.Play();}
+    void Play(AudioClip clip)
+    {
+        if(!paced.TryGetValue(clip,out var ready))
+        {
+            ready=ChineseSpeechPacing.Prepare(clip);paced[clip]=ready;
+            if(ready!=clip)owned.Add(ready);
+        }
+        ownsPlayback=true;output.clip=ready;output.Play();
+    }
     IEnumerator Generate(string text,bool female,string role,string key)
     {
         // Yield once so the coroutine handle is assigned before any early exit.

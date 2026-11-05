@@ -1,0 +1,37 @@
+[
+  {
+    "file": "Assets\\Chapter2\\Chapter2AudioManager.cs",
+    "chineseLiterals": 64,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\Chapter3\\Chapter3Flow.cs",
+    "chineseLiterals": 4,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\Chapter3\\Chapter3SeediqVoice.cs",
+    "chineseLiterals": 25,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\腳本\\場景切換\\GameChineseVoice.cs",
+    "chineseLiterals": 10,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.ChineseVoice.cs",
+    "chineseLiterals": 4,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.Confrontation.cs",
+    "chineseLiterals": 9,
+    "unchanged": true
+  },
+  {
+    "file": "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.cs",
+    "chineseLiterals": 473,
+    "unchanged": true
+  }
+]

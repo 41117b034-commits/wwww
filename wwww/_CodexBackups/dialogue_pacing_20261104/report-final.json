@@ -1,0 +1,82 @@
+{
+    "completed": true,
+    "checks": [
+        "long silences shortened with stereo alignment",
+        "all audible samples preserved in exact order",
+        "all-silent input returned unchanged",
+        "chapter 1 full voiced line uses trimmed audio at original pitch",
+        "chapter 1 subtitle unchanged",
+        "chapter 1 waits through recording and short tail",
+        "female voice retained",
+        "chapter 2 short line no longer waits old eight seconds",
+        "chapter 2 actual wait follows recording",
+        "original chapter 2 voice clip retained and old timer removed",
+        "correct offline role and unshifted pitch bawan",
+        "short subtitle follows complete voice instead of six seconds bawan",
+        "Chinese text unchanged bawan",
+        "correct offline role and unshifted pitch mona",
+        "short subtitle follows complete voice instead of six seconds mona",
+        "Chinese text unchanged mona",
+        "correct offline role and unshifted pitch tado",
+        "short subtitle follows complete voice instead of six seconds tado",
+        "Chinese text unchanged tado",
+        "correct offline role and unshifted pitch pihu",
+        "short subtitle follows complete voice instead of six seconds pihu",
+        "Chinese text unchanged pihu",
+        "four voices remain distinct clips",
+        "internal long silence shortened",
+        "recorded speech still drives mouth",
+        "long speech is never cut to short subtitle estimate",
+        "replay reuses paced clip",
+        "cancel clears recording ownership",
+        "unvoiced line retains subtitle fallback",
+        "original Seediq voice and tone retained",
+        "dialogue handoff enables selected knife",
+        "ready knife starts in same call",
+        "immediate second click is rejected by existing cooldown",
+        "rejected click is not buffered",
+        "next ready knife attack succeeds",
+        "ready rifle fires immediately",
+        "reload during recoil is also rejected",
+        "empty chamber cannot fire",
+        "ready reload starts",
+        "click during reload is rejected",
+        "single shot reload is about 2.6 seconds",
+        "ready synthetic left click is received by weapon Update",
+        "F8 equivalent transition stops weapon and old speech",
+        "original preferences restored"
+    ],
+    "errors": [],
+    "observations": [
+        "chapter1 line=2.72 wait=3.070389",
+        "chapter2 line=0.88 wait=1.147621",
+        "bawan short clip=1.05 wait=1.268852",
+        "mona short clip=0.65 wait=0.872509",
+        "tado short clip=0.73 wait=0.8719711",
+        "pihu short clip=0.56 wait=0.7173347",
+        "reload seconds=2.622101",
+        "mountain Editor frame milliseconds median=145.9209 p95=157.6768 max=158.4246 target=-1 vsync=0"
+    ],
+    "originalPreferences": [
+        {
+            "key": "WusheEvent.MasterVolume",
+            "exists": true,
+            "value": 10
+        },
+        {
+            "key": "WusheEvent.MasterVolumeChosen",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.VoiceLanguage",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.SubtitleLanguage",
+            "exists": true,
+            "value": 0
+        }
+    ]
+}

@@ -177,7 +177,7 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         {
             chineseVoice.Configure(role==Role.Narrator?narration:character);
             chineseVoice.Speak(role.ToString(),chinese);
-            return Mathf.Max(originalSeconds,chineseVoice.Remaining+voiceTailSeconds);
+            return chineseVoice.HasAudio ? chineseVoice.Remaining+Mathf.Min(voiceTailSeconds,.12f) : originalSeconds;
         }
         VoiceLine found = null;
         if (lines != null) foreach (var line in lines)
@@ -192,7 +192,7 @@ public sealed class Chapter2AudioManager : MonoBehaviour
         source.clip = found.clip; source.volume = role == Role.Narrator ? narrationVolume : characterVolume;
         source.outputAudioMixerGroup = role == Role.Narrator ? narrationOutput : characterOutput;
         source.Play();
-        return Mathf.Max(originalSeconds, found.clip.length + voiceTailSeconds);
+        return found.clip.length + Mathf.Min(voiceTailSeconds,.12f);
     }
     public void StopVoice()
     {

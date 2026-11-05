@@ -1,0 +1,19 @@
+{
+  "runtimeSHA256": {
+    "Assets\\Chapter2\\Chapter2AudioManager.cs": "dff2c32e117f02d3e4665dd048b316822322172fbc0ad60193d8150b43df8c0d",
+    "Assets\\Chapter3\\Chapter3Flow.cs": "dcf86483e727000ecd7bed8682f128b6b91d22cbead9285b4756a5463af4025b",
+    "Assets\\Chapter3\\Chapter3SeediqVoice.cs": "60880c84ce59598d602485ec2a50198108af5af93123c70d373766b0f4f5b7ca",
+    "Assets\\腳本\\場景切換\\GameChineseVoice.cs": "50819e38af42ccbabcf8e59333392410c9c9efafe57afeb7b72567f1b16aa525",
+    "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.ChineseVoice.cs": "7b80a9074ada72cfe738cf14b780c7ed6ca580dc99732246d13f19875b9d8b3c",
+    "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.Confrontation.cs": "09e2d334958b15e27dab8bc85624d6e62506c0c541fc26685634372c9b22abda",
+    "Assets\\腳本\\第一章演出\\Chapter1PerformanceController.cs": "966ed266f690a1b1bc46054b7787e28e5397c6c55853273f8a3e75bdde9bf392",
+    "Assets\\腳本\\場景切換\\ChineseSpeechPacing.cs": "f27d41d7a8aafecb7e4866ff8c6f8cb212c67729c6e273a64e7ffa2c9e7778ed"
+  },
+  "protectedUnchanged": true,
+  "textUnchanged": true,
+  "probeAbsentFromAssets": true,
+  "probeAbsentFromAssembly": true,
+  "editorState": "playing=False dirty=False compileFailed=False",
+  "functionalReport": true,
+  "performanceDiagnostic": true
+}

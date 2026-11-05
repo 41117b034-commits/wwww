@@ -151,8 +151,12 @@ public sealed class Chapter3Flow : MonoBehaviour
     void OnDestroy(){if(activeFlow==this)activeFlow=null;}
     public static IEnumerator WaitForLine(float seconds)
     {
-        float elapsed=0;
-        while(elapsed<seconds||(activeFlow&&activeFlow.ui.voice&&activeFlow.ui.voice.Busy))
+        float elapsed=0,voiceTail=0;
+        var voice=activeFlow&&activeFlow.ui ? activeFlow.ui.voice : null;
+        // A recorded line ends with its audio. The old subtitle estimate is
+        // only a fallback for lines without a recording, never extra silence.
+        bool voiced=voice&&(voice.Busy||voice.HasAudio);
+        while(true)
         {
             // Before school Space belongs to the region shortcut, never to an
             // outgoing dialogue coroutine. At school it only advances a line,
@@ -160,6 +164,13 @@ public sealed class Chapter3Flow : MonoBehaviour
             bool canSkip=!activeFlow||(activeFlow.Region=="School"&&
                 activeFlow.schoolEnteredFrame!=Time.frameCount&&!activeFlow.TextInputOwnsSpace());
             if(elapsed>.25f&&canSkip&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)break;
+            bool busy=voice&&voice.Busy;
+            if(voiced&&voice&&voice.HasAudio)
+            {
+                voiceTail=busy?0:voiceTail+Time.deltaTime;
+                if(!busy&&voiceTail>=.12f)break;
+            }
+            else if(!busy&&elapsed>=seconds)break;
             elapsed+=Time.deltaTime;yield return null;
         }
     }

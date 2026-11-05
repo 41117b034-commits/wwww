@@ -1,0 +1,63 @@
+{
+    "completed": false,
+    "checks": [
+        "long silences shortened with stereo alignment",
+        "all audible samples preserved in exact order",
+        "all-silent input returned unchanged",
+        "chapter 1 full voiced line uses trimmed audio at original pitch",
+        "chapter 1 subtitle unchanged",
+        "chapter 1 waits through recording and short tail",
+        "female voice retained",
+        "chapter 2 short line no longer waits old eight seconds",
+        "chapter 2 actual wait follows recording",
+        "original chapter 2 voice clip retained and old timer removed",
+        "correct offline role and unshifted pitch bawan",
+        "short subtitle follows complete voice instead of six seconds bawan",
+        "Chinese text unchanged bawan",
+        "correct offline role and unshifted pitch mona",
+        "short subtitle follows complete voice instead of six seconds mona",
+        "Chinese text unchanged mona",
+        "correct offline role and unshifted pitch tado",
+        "short subtitle follows complete voice instead of six seconds tado",
+        "Chinese text unchanged tado",
+        "correct offline role and unshifted pitch pihu",
+        "short subtitle follows complete voice instead of six seconds pihu",
+        "Chinese text unchanged pihu",
+        "four voices remain distinct clips",
+        "internal long silence shortened",
+        "original preferences restored"
+    ],
+    "errors": [
+        "System.Exception: recorded speech still drives mouth\r\n  at DialoguePacingVerify.Check (System.String label, System.Boolean valid) [0x0001f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialoguePacingVerify.cs:42 \r\n  at DialoguePacingVerify+<Scenario>d__17.MoveNext () [0x00bcb] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialoguePacingVerify.cs:125 \r\n  at DialoguePacingVerify+<Run>d__16.MoveNext () [0x000c4] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialoguePacingVerify.cs:56 "
+    ],
+    "observations": [
+        "chapter1 line=2.72 wait=2.99766",
+        "chapter2 line=0.88 wait=1.049377",
+        "bawan short clip=1.05 wait=1.200302",
+        "mona short clip=0.65 wait=0.8383827",
+        "tado short clip=0.73 wait=0.8558197",
+        "pihu short clip=0.56 wait=0.6760483"
+    ],
+    "originalPreferences": [
+        {
+            "key": "WusheEvent.MasterVolume",
+            "exists": true,
+            "value": 10
+        },
+        {
+            "key": "WusheEvent.MasterVolumeChosen",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.VoiceLanguage",
+            "exists": false,
+            "value": 0
+        },
+        {
+            "key": "WusheEvent.SubtitleLanguage",
+            "exists": true,
+            "value": 0
+        }
+    ]
+}

@@ -32,7 +32,8 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
     Coroutine pending;
     UnityWebRequest activeRequest;
     float unavailableUntil;
-    bool seediqBusy;
+    bool seediqBusy,hasRecording;
+    public bool HasAudio=>GameLanguageSettings.ChineseVoice ? chinese&&chinese.HasAudio : hasRecording;
     public bool Busy {get=>seediqBusy||(chinese&&chinese.Busy);private set=>seediqBusy=value;}
     public bool Speaking=>output&&output.isPlaying;
     public string LastError {get;private set;}
@@ -64,7 +65,7 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
         if(!AllowOnline||Time.realtimeSinceStartup<unavailableUntil)return;
         Busy=true;pending=StartCoroutine(Generate(line));
     }
-    void Play(AudioClip clip){Busy=true;output.clip=clip;output.Play();}
+    void Play(AudioClip clip){hasRecording=true;Busy=true;output.clip=clip;output.Play();}
     AudioClip Prepare(AudioClip source)
     {
         var prepared=Chapter3VoiceTone.Prepare(source);
@@ -79,7 +80,7 @@ public sealed class Chapter3SeediqVoice : MonoBehaviour
         if(!voiceActor)return;voiceActor.speaking=true;
         if(faceClip!=output.clip){faceClip=output.clip;voiceActor.GetComponent<Chapter2SpeechFace>()?.BeginRecordedLine(CurrentLine,output);}
     }
-    public void Stop(){if(chinese)chinese.Stop();if(pending!=null)StopCoroutine(pending);pending=null;if(activeRequest!=null){activeRequest.Abort();activeRequest.Dispose();activeRequest=null;}if(output)output.Stop();if(voiceActor)voiceActor.speaking=false;voiceActor=null;faceClip=null;Busy=false;CurrentLine=null;}
+    public void Stop(){hasRecording=false;if(chinese)chinese.Stop();if(pending!=null)StopCoroutine(pending);pending=null;if(activeRequest!=null){activeRequest.Abort();activeRequest.Dispose();activeRequest=null;}if(output)output.Stop();if(voiceActor)voiceActor.speaking=false;voiceActor=null;faceClip=null;Busy=false;CurrentLine=null;}
     IEnumerator Generate(string line)
     {
         // Gradio closes a queue stream when its client cancels. A fresh line
