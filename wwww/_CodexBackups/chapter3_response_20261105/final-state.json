@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-05T06:50:37.312965+00:00",
+  "reports": {
+    "functional": {
+      "completed": true,
+      "checks": 51,
+      "errors": [],
+      "samples": 0
+    },
+    "combat-pose": {
+      "completed": true,
+      "checks": 22,
+      "errors": [],
+      "samples": 0
+    },
+    "final-perf": {
+      "completed": true,
+      "checks": 2,
+      "errors": [],
+      "samples": 6
+    }
+  },
+  "protected": {
+    "Assets/Scenes/第一章新版警察.unity": {
+      "before": "8901760af24cabc1049cc98b2eb031f34771496a93fc912b21316d0bd578caf2",
+      "after": "8901760af24cabc1049cc98b2eb031f34771496a93fc912b21316d0bd578caf2",
+      "same": true
+    },
+    "Assets/Scenes/第二章.unity": {
+      "before": "e0abc7016cc78c78f05b11463d00afc4878580b59f296a169facdd34b2587e0d",
+      "after": "e0abc7016cc78c78f05b11463d00afc4878580b59f296a169facdd34b2587e0d",
+      "same": true
+    },
+    "Assets/Scenes/第三章.unity": {
+      "before": "a99a0e61c9b0b621ed09345c59c3fc361a3206f54d437f9c692b67ff7d257254",
+      "after": "a99a0e61c9b0b621ed09345c59c3fc361a3206f54d437f9c692b67ff7d257254",
+      "same": true
+    },
+    "ProjectSettings/EditorBuildSettings.asset": {
+      "before": "604e4f021ab9d3da74d4e35011c00a33f9375b5d82f54130caecb025e17bfc3e",
+      "after": "604e4f021ab9d3da74d4e35011c00a33f9375b5d82f54130caecb025e17bfc3e",
+      "same": true
+    }
+  },
+  "runtimeAndAssets": {
+    "Assets/Chapter3/Chapter3SchoolController.cs": "7a5dd763d97532d59dd02dff5416825860f7ee77c98c45394f3db14fc1dfdc37",
+    "Assets/Chapter3/Chapter3StationLink.cs": "c803c59d8bfea24ef0d6a10e15e195bfa51f830e9a569424ed4d17eb18a66de6",
+    "Assets/Chapter3/Chapter3ViewArm.cs": "eb3562cbdb46e7c6ed86a4d721729d4e923856d470d869feefbe64ff3c2ddcf3",
+    "Assets/Chapter3/Chapter3Weapons.cs": "a330af6bfebfc6b4a1d690a2546293662576674fe5a0a060655934a8a945a448",
+    "Assets/Chapter3/Chapter3ActorDetail.cs": "bd0b7491dfa4e15139acdc546e9369d4941af6a66a9c9c0ef9603a58184d0a31",
+    "Assets/Chapter3/Chapter3ObjectiveIndicator.cs": "5598831b7a7209a7e31f88a7aa992c858781b4de41b487466968c34a38679c80",
+    "Assets/腳本/第一章演出/Chapter1IncidentRig.cs": "13d182c28a449a789cf1c1f215e3905e1341195298e02a14d8c2952eb41f0bc2",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailCatalog.asset": "23d9fb0c748ff4c774353ce7ba561a2ba032ba8db530f85023d5dd0890cc360d",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/04a74717488d6ae488d8cef381fb8b28_215812804378155711.asset": "663c560bace0cecafc8ab85e76034ddd637be99e87d9cb38e3635e16eeafcb0a",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/4e3eb271119974a48936b1c632085f95_6728425135894765629.asset": "ec8b1154611916024442ae8e7c7186b04aa82d9fc286b93d628536f38f7fb07e",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/77a533fa78bb9ad40be5d2f81b151c5a_-49170492560104606.asset": "d84e93cb1630ba7b38942a9ace62cd0ab856c7c8ffffd84425441329ec060efb",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/d244d618d418038419da25dfbf8b7210_-3596327221792061937.asset": "2982578c3d71d6fbb4766f973f14603829aff1275ce171f74e34b637379ad27f",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/e09d2108b7ed0394e89c55b572884218_-2682002590510626901.asset": "dde450c4e264e43b47d601f1a34a6dcd1f4f59b3fd4bea82a7c4e16992a6e660",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/NpcRifle.asset": "11bd8798ec9966c73500fd7d5c40801148c5c4aeab5965e4e7d6e9c5e2b6cf40",
+    "Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes/PoliceGrip.asset": "80c495c00230ff3bf97329044e7497f3288c8aec3161181508f1bcc6b27fc35a"
+  },
+  "temporaryToolsInAssets": [],
+  "cleanup": {
+    "compileSucceeded": true,
+    "compileSeconds": 3.3,
+    "editorAssemblyContainsTemporaryTypes": false,
+    "protectedScenesUnchanged": true,
+    "gitDiffCheckPassed": true,
+    "observedPlayStopped": true,
+    "observedSceneUnsavedMarker": false,
+    "observedPreviewScale": "0.23x",
+    "missingScripts": 0,
+    "lastEditorAudit": "playing=False paused=False dirty=False compileFailed=False"
+  }
+}

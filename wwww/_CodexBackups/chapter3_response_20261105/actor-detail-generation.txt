@@ -1,0 +1,15 @@
+tripo_node_f32c0c9b vertices=997340 -> 211898 triangles=1915715 -> 344829 bones=41 submeshes=1 blendshapes=0
+tripo_node_9c8dfc1a vertices=1010947 -> 211481 triangles=1949916 -> 350984 bones=41 submeshes=1 blendshapes=0
+tripo_node_e2dbffa6 vertices=1014730 -> 203860 triangles=1977730 -> 355990 bones=41 submeshes=1 blendshapes=0
+tripo_node_4931ae9c vertices=992033 -> 202799 triangles=1924960 -> 346492 bones=41 submeshes=1 blendshapes=0
+tripo_node_b2cbe21f vertices=767047 -> 157242 triangles=1487341 -> 267721 bones=39 submeshes=1 blendshapes=0
+tripo_node_3a511942 vertices=1029551 -> 213897 triangles=1989402 -> 358092 bones=41 submeshes=1 blendshapes=0
+tripo_node_33432f6c vertices=341158 -> 69659 triangles=662192 -> 119194 bones=39 submeshes=1 blendshapes=0
+completed=true
+tripo_node_b2cbe21f incident grip vertices=767047 -> 157242 blendshapes=3
+tripo_node_f23edb27 vertices=1334410 -> 0 blendshapes=0
+appended grip and rifle completed=true
+tripo_node_f23edb27 vertices=1334410 -> 747377 blendshapes=0
+edit-mode rifle completed=true
+tripo_node_f23edb27 vertices=1334410 -> 129209 blendshapes=0
+edit-mode rifle completed=true

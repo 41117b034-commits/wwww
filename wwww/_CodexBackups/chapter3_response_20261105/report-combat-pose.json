@@ -1,0 +1,35 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter loaded",
+        "rifle test active enemy is damageable",
+        "clear actual rifle ray to police",
+        "police uses compatible grip LOD",
+        "NPC rifle reduced at shooting distance",
+        "standing police grip provenance",
+        "standing police silhouette bounds preserved",
+        "actual distant rifle shot accepted",
+        "actual distant police hit and defeated",
+        "fallen police grip provenance",
+        "fallen police silhouette bounds preserved",
+        "fallen police visible with intact skeleton",
+        "fall disables colliders through normal defeat",
+        "clear actual knife ray",
+        "melee restores original police mesh",
+        "actual knife starts",
+        "actual knife applies one hit",
+        "knife ready for second cut",
+        "second actual knife cut defeats",
+        "crouched Tado silhouette bounds preserved",
+        "repeated shortcuts do not accumulate actor bindings",
+        "F8 clears weapon buffers and hides weapon"
+    ],
+    "errors": [],
+    "notes": [
+        "standing police conservative world bound error=0.001200856",
+        "fallen police conservative world bound error=0.0005899342",
+        "crouched Tado conservative world bound error=0.0005465074",
+        "Real collision traces and public weapon requests, with explicit camera Warp and enemy HoldFire/AttackEnabled=false fixtures. No enemy health or damage result was assigned by the probe."
+    ],
+    "samples": []
+}

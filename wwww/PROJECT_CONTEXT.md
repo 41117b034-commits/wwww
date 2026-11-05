@@ -1,6 +1,16 @@
 # Unity 霧社事件專案交接
 
-更新日期：2026-11-04。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+更新日期：2026-11-05。這份文件用來讓新的 Codex 對話辨識同一個 Unity 專案，避免使用者反覆說明背景。內容是截至本次整理的紀錄，後續狀態以實際檔案和使用者當次要求為準。
+
+最新第三章路牌／會合指引／操作效能（2026-11-05）：依兩張截圖將駐在所出口「霧社 →」對齊新道路並移到路邊；原地面箭頭保留，新增始終限制在畫面內的達多方向箭頭與距離，會合、換區及 F8 正常隱藏／重置。槍刀加入 0.25 秒末段輸入緩衝，射擊後 R 等復位再裝填，刀可按住連揮、放開停止；Esc／失焦／扶行／換區清除緩衝。單一武器、刀 0.68 秒／槍 0.48 秒／裝填 2.6 秒與傷害規則保留。下方「沒有緩衝／不排隊補射」為歷史版本，已由本次短緩衝規則取代。
+
+第一人稱前臂改為姿勢變動才更新、解析法線；第三章原生人物與 NPC 步槍加入 5 m 外簡化／3.5 m 內恢復的網格細節切換，近景原模型、臉部、材質、骨架、碰撞及實體走路保留。警察另涵蓋執行時三個握持／鞋底 blendshape；共用 Chapter1IncidentRig 僅增加唯讀來源查詢。新衍生資產在 Assets/Chapter3/Resources/Chapter3/ActorDetailMeshes，目錄 ActorDetailCatalog；既有背景 LOD 繼續獨立管理。NPC 步槍約 133 萬 → 13 萬頂點。GPU 蒙皮與陰影修改只有診斷，最終還原，全域品質與 ProjectSettings 不變。
+
+本輪正式第三章 Editor 前景 1920×1080、固定視角同次切換 LOD：山路中位數由 135.98 ms（7.4 FPS）降至 43.34／48.65 ms（23.1／20.6 FPS），校門由 63.91 ms（15.6 FPS）降至 34.10／34.61 ms（29.3／28.9 FPS）。兩側皆有前臂優化；山路敵人暫停射擊、人物／物理仍運作。不是全章平均或 Standalone 數據，山路仍未達穩定 30 FPS，不能宣稱卡頓完全消失或電腦故障。
+
+73 項 Editor 操作／畫面／命中專項通過（51 + 22），兩份報告 completed=true、errors=[]；六段最終效能樣本另有 completed=true、errors=[]。涵蓋合成 Input System 按鍵、實際警察射線與兩刀傷害、倒地、近遠網格／骨架／材質／輪廓、箭頭與 F8，實際引擎截圖已看。測試有相機 Warp、敵人停火等明示 fixture，未做整章真人鍵鼠、救援兩分支、VR 或新 exe。詳見 Documentation/Chapter3-sign-guide-response.md，備份與證據 _CodexBackups/chapter3_response_20261105/，以 report-functional.json、report-combat-pose.json、report-final-perf.json、final-audit.txt 及 final-state.json 為準；舊 exe 不含這些變更，未 commit／push。
+
+本輪收尾：停止 Play、dirty=false、compileFailed=false、missingScripts=0；三章場景及 Build Settings 的四份保護雜湊不變。臨時生成／驗證來源與 meta 已移至證據目錄 verification-tools，移除後重新編譯成功（3.30 秒），Editor DLL 不含本輪臨時類別，git diff --check 通過。Unity 畫面確認停止 Play、無未存場景標記，Game 預覽保持本輪原有 0.23x。
 
 最新第一至第三章語句停頓修訂與武器診斷（2026-11-04，晚於下方成熟中文配音）：依使用者要求縮短說話空檔。共用 ChineseSpeechPacing 僅縮短近乎靜音的開頭／句尾與過長句中空白，首次播放處理後快取，保留原音色、pitch、非靜音聲音樣本及原音檔；第一章中文顯示與族人質問跟隨配音，第二、三章有配音時不再被舊字幕秒數拖長，完整播完後約 0.12 秒接句。未改台詞、人物動作、場景或武器規則。詳見 `Documentation/Dialogue-pacing-and-weapon-input.md`。
 

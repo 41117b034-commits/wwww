@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f093ae1920ee8c24cb8cf1e5928d89e9, type: 3}
+  m_Name: ActorDetailCatalog
+  m_EditorClassIdentifier: 
+  automatic: 1
+  enterDistance: 5
+  leaveDistance: 3.5
+  simplifierCommit: 53fdb3122645bcd3ad2c258235200dff3dfbaa9b
+  entries:
+  - source: {fileID: 3808560406325459795, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
+    distant: {fileID: 4300000, guid: 016241440fc277342b9a77ee0488fffe, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 997340
+    sourceBones: 41
+  - source: {fileID: 215812804378155711, guid: 04a74717488d6ae488d8cef381fb8b28, type: 3}
+    distant: {fileID: 4300000, guid: bc0cdf37524096546b5efe4434a3a23d, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1010947
+    sourceBones: 41
+  - source: {fileID: -2682002590510626901, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    distant: {fileID: 4300000, guid: cd5a8b3f1f444e840a66bde8e9ae3048, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1014730
+    sourceBones: 41
+  - source: {fileID: -49170492560104606, guid: 77a533fa78bb9ad40be5d2f81b151c5a, type: 3}
+    distant: {fileID: 4300000, guid: ee6f967d9572e144b97efb60ce620bc8, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 992033
+    sourceBones: 41
+  - source: {fileID: -3596327221792061937, guid: d244d618d418038419da25dfbf8b7210, type: 3}
+    distant: {fileID: 4300000, guid: ad338314ffeb08b45a74401ba440a7ef, type: 2}
+    posedDistant: {fileID: 4300000, guid: cacb98c5bbe831149bc30544a390df43, type: 2}
+    sourceVertices: 767047
+    sourceBones: 39
+  - source: {fileID: 6728425135894765629, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
+    distant: {fileID: 4300000, guid: 2441add4eee4fde4ba8aa7d8ef071ad8, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1029551
+    sourceBones: 41
+  - source: {fileID: -5494604749815585516, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
+    distant: {fileID: 4300000, guid: b6c14cb1059bb2540a0901ebbebcfde1, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 341158
+    sourceBones: 39
+  - source: {fileID: 8745902178195871633, guid: 3cd6d4d618f563044bc92c18b934777a, type: 3}
+    distant: {fileID: 4300000, guid: d9af791ff6e16bf4fb295a0dd62e5099, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1334410
+    sourceBones: 0

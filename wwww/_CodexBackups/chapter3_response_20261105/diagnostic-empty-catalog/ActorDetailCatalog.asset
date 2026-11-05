@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f093ae1920ee8c24cb8cf1e5928d89e9, type: 3}
+  m_Name: ActorDetailCatalog
+  m_EditorClassIdentifier: 
+  automatic: 1
+  enterDistance: 5
+  leaveDistance: 3.5
+  simplifierCommit: 53fdb3122645bcd3ad2c258235200dff3dfbaa9b
+  entries: []

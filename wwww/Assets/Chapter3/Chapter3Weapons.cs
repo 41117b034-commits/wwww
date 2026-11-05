@@ -24,13 +24,18 @@ public sealed class Chapter3Weapons : MonoBehaviour
     public string Feedback { get; private set; }
     public float ReloadProgress { get; private set; }
     float busyUntil, firedAt=-10, swingAt=-10, feedbackUntil, aimWeight;
+    const float InputBufferSeconds=.25f;
+    float queuedAttackUntil;
+    bool queuedReload;
+    public bool AttackQueued=>queuedAttackUntil>Time.time;
+    public bool ReloadQueued=>queuedReload;
     Vector3 boltHome;
     bool initialized;
     void Awake(){Initialize();}
     void Initialize(){if(initialized)return;initialized=true;if(bolt)boltHome=bolt.localPosition;}
     public void ResetEquipment()
     {
-        Initialize();StopAllCoroutines();Loaded=true;Reserve=8;Reloading=false;Aiming=false;aimWeight=0;
+        Initialize();StopAllCoroutines();ClearInputBuffer();Loaded=true;Reserve=8;Reloading=false;Aiming=false;aimWeight=0;
         // Debug jumps choose a rifle only when no story choice has been made.
         if(combat.flow&&!combat.flow.CarriedWeapon.HasValue)combat.flow.Carry(Weapon.Rifle);
         Selected=combat.flow?combat.flow.CarriedWeapon.Value:Weapon.Rifle;busyUntil=0;firedAt=swingAt=-10;Feedback="";ReloadProgress=0;
@@ -39,29 +44,55 @@ public sealed class Chapter3Weapons : MonoBehaviour
         if(cartridge)cartridge.gameObject.SetActive(false);if(spentCase)spentCase.gameObject.SetActive(false);
     }
     public void Suspend()
-    {StopAllCoroutines();Reloading=Aiming=false;if(flash)flash.SetActive(false);if(cartridge)cartridge.gameObject.SetActive(false);if(spentCase)spentCase.gameObject.SetActive(false);gameObject.SetActive(false);}
+    {StopAllCoroutines();ClearInputBuffer();Reloading=Aiming=false;if(flash)flash.SetActive(false);if(cartridge)cartridge.gameObject.SetActive(false);if(spentCase)spentCase.gameObject.SetActive(false);gameObject.SetActive(false);}
     void Update()
     {
-        if(!combat||!combat.Fighting){Aiming=false;return;}
+        if(!combat||!combat.Fighting||!Application.isFocused||Supporting()){ClearInputBuffer();Aiming=false;return;}
         var k=Keyboard.current;var m=Mouse.current;
-        if(k?.escapeKey.wasPressedThisFrame==true){Cursor.lockState=CursorLockMode.None;Cursor.visible=true;return;}
+        if(k?.escapeKey.wasPressedThisFrame==true){ClearInputBuffer();Cursor.lockState=CursorLockMode.None;Cursor.visible=true;return;}
         bool captured=Cursor.lockState==CursorLockMode.Locked;
         if(k?.digit1Key.wasPressedThisFrame==true)Select(Weapon.Knife);
         if(k?.digit2Key.wasPressedThisFrame==true)Select(Weapon.Rifle);
         Aiming=Selected==Weapon.Rifle&&!Reloading&&m?.rightButton.isPressed==true;
-        if(k?.rKey.wasPressedThisFrame==true)Reload();
+        if(k?.rKey.wasPressedThisFrame==true)RequestReload();
         if(m?.leftButton.wasPressedThisFrame==true)
         {
             if(!captured){Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;}
-            Attack();
+            RequestAttack();
         }
+        if(queuedAttackUntil>0&&Time.time>queuedAttackUntil)queuedAttackUntil=0;
+        if(queuedReload&&Ready){queuedReload=false;Reload();}
+        if(AttackQueued&&Ready){queuedAttackUntil=0;Attack();}
+        // Holding the knife trigger keeps swinging at its normal animation
+        // cadence; rifles remain one shot per deliberate trigger pull.
+        if(captured&&Selected==Weapon.Knife&&m?.leftButton.isPressed==true&&Ready)Attack();
     }
+    bool Supporting()=>combat&&combat.SchoolEncounter&&combat.SchoolEncounter.Rescue&&combat.SchoolEncounter.Rescue.Supporting;
+    public bool RequestAttack()
+    {
+        if(Ready){queuedAttackUntil=0;return Attack();}
+        if(!combat||!combat.Fighting||Supporting())return false;
+        float remaining=Reloading?(1-ReloadProgress)*2.6f:busyUntil-Time.time;
+        if(remaining>0&&remaining<=InputBufferSeconds)
+        {queuedAttackUntil=Time.time+InputBufferSeconds;Notice("已準備攻擊，動作完成後接續。",1);return true;}
+        NoticeNotReady();return false;
+    }
+    public bool RequestReload()
+    {
+        if(Ready)return Reload();
+        if(!combat||!combat.Fighting||Supporting()||Reloading||Selected!=Weapon.Rifle||Loaded||Reserve<=0)return false;
+        // R immediately after a shot waits only for the current recoil.
+        queuedReload=true;Notice("已準備裝填，槍械復位後開始。",1);return true;
+    }
+    void ClearInputBuffer(){queuedAttackUntil=0;queuedReload=false;}
+    void OnApplicationFocus(bool focus){if(!focus)ClearInputBuffer();}
+    void OnDisable(){ClearInputBuffer();}
     public bool Select(Weapon weapon)
     {
         if(!Ready)return false;
         if(combat.flow&&combat.flow.CarriedWeapon.HasValue&&weapon!=combat.flow.CarriedWeapon.Value)
         {Notice("只能持有一種武器，你沒有攜帶這把武器。",3);return false;}
-        Selected=weapon;Aiming=false;busyUntil=Time.time+.22f;return true;
+        ClearInputBuffer();Selected=weapon;Aiming=false;busyUntil=Time.time+.22f;return true;
     }
     public bool Attack()
     {
@@ -151,7 +182,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
     }
     public bool Refill()
     {if(!combat.Fighting||Selected!=Weapon.Rifle||Reloading||Reserve>=8)return false;Reserve=8;Notice("取得備用彈藥，按 R 裝填。");return true;}
-    public string Controls => Selected==Weapon.Knife ? "左鍵揮刀 · Esc 放開滑鼠" : "左鍵射擊 · 右鍵瞄準 · R 單發裝填 · Esc 放開滑鼠";
+    public string Controls => Selected==Weapon.Knife ? "左鍵揮刀（可按住連揮） · Esc 放開滑鼠" : "左鍵射擊 · 右鍵瞄準 · R 單發裝填 · Esc 放開滑鼠";
     void Notice(string text,float seconds=1.6f){Feedback=text;feedbackUntil=Time.time+seconds;}
     void LateUpdate(){Present();}
     // Also called on the combat transition, before its first rendered frame.

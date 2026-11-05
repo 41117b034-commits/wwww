@@ -1,0 +1,11 @@
+playing=False paused=False dirty=False compileFailed=False
+missingScripts=0
+tripo_node_f32c0c9b source=997340 distant=211898 submeshes=1 bones=41 posed=0
+tripo_node_9c8dfc1a source=1010947 distant=211481 submeshes=1 bones=41 posed=0
+tripo_node_e2dbffa6 source=1014730 distant=203860 submeshes=1 bones=41 posed=0
+tripo_node_4931ae9c source=992033 distant=202799 submeshes=1 bones=41 posed=0
+tripo_node_b2cbe21f source=767047 distant=157242 submeshes=1 bones=39 posed=3
+tripo_node_3a511942 source=1029551 distant=213897 submeshes=1 bones=41 posed=0
+tripo_node_33432f6c source=341158 distant=69659 submeshes=1 bones=39 posed=0
+tripo_node_f23edb27 source=1334410 distant=129209 submeshes=1 bones=0 posed=0
+completed=True

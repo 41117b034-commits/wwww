@@ -17,6 +17,7 @@ public sealed class Chapter3StationLink : MonoBehaviour
             new Vector3(8.5f,0,3),new Vector3(13,0,3),new Vector3(18,0,6),new Vector3(22,0,10)};
         station.departurePath=new Vector3[local.Length];
         for(int i=0;i<local.Length;i++)station.departurePath[i]=Origin+local[i];
+        AlignRoadSign(root,station.departurePath);
         Material road=null;
         foreach(var t in root.GetComponentsInChildren<Transform>(true))
         {
@@ -37,6 +38,27 @@ public sealed class Chapter3StationLink : MonoBehaviour
         {
             if(t.name=="交戰山谷地形"||t.name=="山路地面")Trim(t.GetComponent<MeshFilter>(),-93,true);
             if(t.name.StartsWith("交戰道路林木 ")&&t.position.z<-92)t.gameObject.SetActive(false);
+        }
+    }
+    static void AlignRoadSign(Transform root,Vector3[] route)
+    {
+        foreach(var sign in root.GetComponentsInChildren<Transform>(true))
+        {
+            if(sign.name!="往霧社的路標")continue;
+            Vector3 nearest=sign.position,direction=Vector3.right;float best=float.MaxValue;
+            for(int i=1;i<route.Length;i++)
+            {
+                Vector3 delta=route[i]-route[i-1];
+                float along=Mathf.Clamp01(Vector3.Dot(sign.position-route[i-1],delta)/delta.sqrMagnitude);
+                Vector3 point=route[i-1]+delta*along;float distance=(point-sign.position).sqrMagnitude;
+                if(distance>=best)continue;best=distance;nearest=point;direction=delta.normalized;
+            }
+            Vector3 side=Vector3.ProjectOnPlane(sign.position-nearest,Vector3.up).normalized;
+            if(side.sqrMagnitude<.01f)side=Vector3.Cross(direction,Vector3.up);
+            // The printed arrow is local +X. Point it along the actual new
+            // road, and put the original post/collider outside the 4.2 m lane.
+            sign.position=nearest+side*3.1f;
+            sign.rotation=Quaternion.LookRotation(Vector3.Cross(direction,Vector3.up),Vector3.up);
         }
     }
     void Road(Transform parent,Vector3 a,Vector3 b,Material material,int index)

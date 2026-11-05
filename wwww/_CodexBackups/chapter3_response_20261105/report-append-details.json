@@ -1,0 +1,28 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter loaded"
+    ],
+    "errors": [
+        "Not allowed to access vertices on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access normals on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access tangents on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access colors on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv2 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv3 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv4 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv5 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv6 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv7 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access uv8 on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)",
+        "Not allowed to access triangles/indices on mesh 'tripo_node_f23edb27' (isReadable is false; Read/Write must be enabled in import settings)"
+    ],
+    "notes": [
+        "GPU=Intel(R) Iris(R) Xe Graphics CPU=12th Gen Intel(R) Core(TM) i5-1235U RAM=16088 graphicsMemory=8044 deformation=CPU",
+        "screen=1920x1080 camera=1920x1080 target=-1 vsync=0",
+        "sign position=(-9.80, 0.00, -94.90) rotation=(0.00, 0.00, 0.00) right=(1.00, 0.00, 0.00) text=霧社 →",
+        "departure path=(-22.00, 0.00, -102.50) / (-16.50, 0.00, -104.00) / (-13.50, 0.00, -102.00) / (-13.50, 0.00, -98.00) / (-9.00, 0.00, -98.00) / (-4.00, 0.00, -95.00) / (0.00, 0.00, -91.00)"
+    ],
+    "samples": []
+}

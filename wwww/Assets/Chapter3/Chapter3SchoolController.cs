@@ -54,6 +54,8 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     {
         StopAllCoroutines();Exploring=false;MetTado=false;Area="校門前";lineUntil=0;
         if(!ArrivalGuide)ArrivalGuide=gameObject.AddComponent<Chapter3RouteGuide>();
+        var indicator=GetComponent<Chapter3ObjectiveIndicator>()??gameObject.AddComponent<Chapter3ObjectiveIndicator>();
+        indicator.Configure(this);
         ArrivalGuide.Hide();
         Visited=new bool[landmarks.Length];trail.Clear();trail.Add(walking?rear:spawn);
         if(walking){trail.Add(leader);trail.Add(player.transform.position);}
