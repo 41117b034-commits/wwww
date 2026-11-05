@@ -157,7 +157,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         if(Selected==Mission.Pihu&&Step>0){AtCrossing=true;safePihu=checkpointPihu;}
         // The other squad takes its own side of the same school, without teleporting.
         combat.SchoolEncounter=this;combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
-        player.chapter=null;player.station=null;player.combat=null;player.school=school;player.speed=2.8f;
+        player.chapter=null;player.station=null;player.combat=null;player.school=school;player.speed=Chapter3Player.WalkSpeed;
         if(!preserveArrival)player.Warp(Step==0?new Vector3(-2,.06f,-6):checkpointPlayer,
             Step==0?new Vector3(Selected==Mission.Bawan?-23:25,1.2f,-4):Selected==Mission.Bawan?new Vector3(-27,1.2f,43):new Vector3(29,1.2f,37));
         if(!preserveArrival)ResetOfficersForCheckpoint();
@@ -195,7 +195,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         bool supply=combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2;
         if(supply&&player.ActionPressed)combat.weapons.Refill();
         if(supply)ui.hint.text="E 補充備彈   ·   R 單發裝填";
-        player.speed=combat.weapons.Aiming?1.7f:2.8f;
+        player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
         combat.healthText.text="生命值  "+Health+" / 100";
         var w=combat.weapons;combat.ammoText.text=w.Selected==Chapter3Weapons.Weapon.Rifle?"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve:"獵刀";
         combat.crosshair.text=w.Aiming?"·":"+";
@@ -229,7 +229,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         StopBreakthrough();ClearSchoolPoses();
         CurrentStage=Stage.Regroup;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
         foreach(var e in Enemies)if(e)e.escortTarget=null;
-        player.view.fieldOfView=60;player.speed=2.8f;ui.Say("",null);
+        player.view.fieldOfView=60;player.speed=Chapter3Player.WalkSpeed;ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         // Tado may still be inside the school when the player reaches the rear.
         // Preserve his remaining exit corners instead of cutting through a wall.
@@ -301,7 +301,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             // a player who is standing at the rear meeting point.
             if(Flat(actor.transform.position,bypass)<.2f||Flat(player.transform.position,bypass)>3.5f||Flat(player.transform.position,bypass)<.95f)
                 routeBypasses.Remove(actor);
-            else {motor.Move(actor,bypass,Mathf.Min(3.1f,maxSpeed));return;}
+            else {motor.Move(actor,bypass,Mathf.Min(Chapter3Player.WalkSpeed,maxSpeed));return;}
         }
         var target=route[index]+offset;
         // Give a player standing on a waypoint room instead of walking a face
@@ -319,15 +319,15 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         {
             var side=Vector3.Cross(Vector3.up,direction)*1.25f;
             var right=player.transform.position+side;right.y=0;var left=player.transform.position-side;left.y=0;
-            if(Chapter3PathMotor.Clear(actor.transform.position,right)){routeBypasses[actor]=right;motor.Move(actor,right,Mathf.Min(3.1f,maxSpeed));return;}
-            if(Chapter3PathMotor.Clear(actor.transform.position,left)){routeBypasses[actor]=left;motor.Move(actor,left,Mathf.Min(3.1f,maxSpeed));return;}
+            if(Chapter3PathMotor.Clear(actor.transform.position,right)){routeBypasses[actor]=right;motor.Move(actor,right,Mathf.Min(Chapter3Player.WalkSpeed,maxSpeed));return;}
+            if(Chapter3PathMotor.Clear(actor.transform.position,left)){routeBypasses[actor]=left;motor.Move(actor,left,Mathf.Min(Chapter3Player.WalkSpeed,maxSpeed));return;}
             return;
         }
         bool playerAhead=Vector3.Dot(toPlayer,target-actor.transform.position)>0;
         if(Selected==Mission.Tado&&RetreatCalled&&Step==AssaultCombatStages&&actor==school.tado)
             playerAhead=player.transform.position.z>=actor.transform.position.z-1.5f;
         if(waitForPlayer&&toPlayer.magnitude>8&&!playerAhead){actor.Face(player.transform.position);return;}
-        float speed=waitForPlayer?(playerAhead&&toPlayer.magnitude>5?3.1f:2.1f):2.9f;
+        float speed=Chapter3Player.WalkSpeed;
         motor.Move(actor,target,Mathf.Min(speed,maxSpeed));
         if(Flat(actor.transform.position,target)<.23f)index++;
     }

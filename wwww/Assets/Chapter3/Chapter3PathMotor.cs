@@ -177,6 +177,22 @@ public sealed class Chapter3PathMotor
     public static bool ClearCrowdPoint(Vector3 point,Chapter3SchoolCrowdActor walker)
     {return Clear(point,point,walker?walker.transform:null);}
 
+    // A moving queue member only occupies a corner temporarily. Keep that
+    // authored goal and wait for a safe step instead of repeatedly displacing
+    // the corner around each passing person. Settled people and scenery still
+    // require a detour. This exception never applies to actual movement.
+    public static bool ClearWithdrawalCorner(Vector3 point,Chapter3SchoolCrowdActor walker)
+    {
+        point.y=0;
+        foreach(var collider in Physics.OverlapCapsule(point+Vector3.up*.42f,point+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
+        {
+            var moving=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
+            if(moving&&moving.FollowingWithdrawal&&!moving.IsFallen)continue;
+            if(Blocks(collider,point,point,walker?walker.transform:null))return false;
+        }
+        return true;
+    }
+
     bool ClearForActor(Vector3 from,Vector3 to)
     {return Clear(from,to,boundCrowd?boundActor:null);}
 
@@ -200,7 +216,12 @@ public sealed class Chapter3PathMotor
                 var other=collider.GetComponentInParent<Chapter2Actor>();
                 var crowd=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
                 Vector3 centre=Vector3.ProjectOnPlane(crowd?crowd.transform.position:other?other.transform.position:bystander?bystander.transform.position:collider.transform.position,Vector3.up);
-                if((to-centre).sqrMagnitude>(from-centre).sqrMagnitude+.00001f)return false;
+                // The whole edge must start away from the person. Merely
+                // ending farther away also accepted a diagonal that first
+                // cut through them; the real short step then rejected it and
+                // replanned that same unusable edge forever.
+                if(Vector3.Dot(to-from,from-centre)>=0f&&
+                    (to-centre).sqrMagnitude>(from-centre).sqrMagnitude+.00001f)return false;
             }
         }
         return true;

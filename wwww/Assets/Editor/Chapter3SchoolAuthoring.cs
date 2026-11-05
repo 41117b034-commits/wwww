@@ -466,6 +466,7 @@ public static class Chapter3SchoolAuthoring
         var trees=flow.stationRegion.GetComponentsInChildren<Transform>(true).Where(t=>t.name.StartsWith("駐在所林木 ")).Take(12).ToArray();
         var shrubs=flow.stationRegion.GetComponentsInChildren<Transform>(true).Where(t=>t.name.StartsWith("路側蕨草 ")).Take(10).ToArray();
         var rock=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Rock_pack/prefab/Rock_03.prefab");
+        var rockMaterial=Mat("School rock",new Color(.53f,.55f,.49f),"Assets/Rock_pack/Rock_03/rock_03_diffuse.jpg",Vector2.one);
         var random=new System.Random(331013);
         for(int i=0;i<210;i++)
         {
@@ -496,7 +497,7 @@ public static class Chapter3SchoolAuthoring
             var b=BoundsOf(t);t.localScale*= (i<4?2.6f:1.2f+(float)random.NextDouble()*1.9f)/Mathf.Max(b.size.x,b.size.z);
             GroundObject(t,p);foreach(var c in t.GetComponentsInChildren<Collider>(true))Object.DestroyImmediate(c);
             foreach(var m in t.GetComponentsInChildren<MeshFilter>(true))if(m.sharedMesh)m.gameObject.AddComponent<MeshCollider>().sharedMesh=m.sharedMesh;
-            foreach(var r in t.GetComponentsInChildren<Renderer>(true))r.sharedMaterial=stone;
+            foreach(var r in t.GetComponentsInChildren<Renderer>(true))r.sharedMaterial=rockMaterial;
         }
         for(int i=0;i<440&&shrubs.Length>0;i++)
         {

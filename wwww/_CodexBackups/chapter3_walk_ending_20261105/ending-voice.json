@@ -1,0 +1,77 @@
+{
+  "completed": true,
+  "clips": [
+    {
+      "role": "bawan",
+      "text": "人帶回來了。先讓比胡休息，等莫那過來。",
+      "resource": "ChineseVoice/Audio/114c2020e8716503c8aa_ending_bawan",
+      "seconds": 5.784
+    },
+    {
+      "role": "mona",
+      "text": "左側、右側和進入會場的人，各有幾個？把人數和情況告訴我。",
+      "resource": "ChineseVoice/Audio/e30baae56429cfef60e9_ending_mona",
+      "seconds": 7.872
+    },
+    {
+      "role": "bawan",
+      "text": "左側通路2人，他和我一起打通側門，都回來了。",
+      "resource": "ChineseVoice/Audio/016365ae4001bc417900_ending_bawan",
+      "seconds": 5.088
+    },
+    {
+      "role": "bawan",
+      "text": "左側通路1人，由我打通側門，我已回來。",
+      "resource": "ChineseVoice/Audio/618889d2eefa4c205439_ending_bawan",
+      "seconds": 4.752
+    },
+    {
+      "role": "tado",
+      "text": "進入會場的有12人，包括他、我和一起進入會場的同伴。",
+      "resource": "ChineseVoice/Audio/45a717dbb492757ee0da_ending_tado",
+      "seconds": 5.784
+    },
+    {
+      "role": "tado",
+      "text": "進入會場的有11人，是我和一起進入會場的同伴。",
+      "resource": "ChineseVoice/Audio/086d1e16addceb3a0f8d_ending_tado",
+      "seconds": 4.992
+    },
+    {
+      "role": "tado",
+      "text": "右側通路原有2人，他和比胡都回來了，比胡受傷，由他扶回接應處。",
+      "resource": "ChineseVoice/Audio/f1593a7a091539bf9f53_ending_tado",
+      "seconds": 7.272
+    },
+    {
+      "role": "tado",
+      "text": "右側通路原有1人，比胡受傷，由他扶回接應處，已經回來了。",
+      "resource": "ChineseVoice/Audio/98c9209c2e0faa319c83_ending_tado",
+      "seconds": 6.864
+    },
+    {
+      "role": "tado",
+      "text": "右側通路原有2人，他回來了，比胡留在林路。我回去確認，比胡已經死了。",
+      "resource": "ChineseVoice/Audio/62509aba131d68214888_ending_tado",
+      "seconds": 8.088
+    },
+    {
+      "role": "tado",
+      "text": "右側通路原有1人，比胡留在林路。我回去確認，他已經死了，右側沒有人回來。",
+      "resource": "ChineseVoice/Audio/2006cf4d2e0fb3f1098a_ending_tado",
+      "seconds": 8.424
+    },
+    {
+      "role": "bawan",
+      "text": "他的村田十八年式步槍也帶回來了。",
+      "resource": "ChineseVoice/Audio/e73e28df5cf8c970e687_ending_bawan",
+      "seconds": 3.816
+    },
+    {
+      "role": "bawan",
+      "text": "他的獵刀也帶回來了。",
+      "resource": "ChineseVoice/Audio/30f4d868a3e1a81bb561_ending_bawan",
+      "seconds": 2.808
+    }
+  ]
+}

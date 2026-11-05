@@ -1,0 +1,1 @@
+renderers=36 texture=Assets/Rock_pack/Rock_03/rock_03_diffuse.jpg

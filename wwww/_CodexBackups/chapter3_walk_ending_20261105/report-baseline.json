@@ -1,0 +1,13 @@
+{
+    "completed": true,
+    "checks": [
+        "support fixture entered"
+    ],
+    "observations": [
+        "rock=可碰撞岩石 0 material=Assets/Chapter3/School/School masonry.mat texture=Assets/Chapter2/Environment/RichForest/Textures/6d259800_rock_01_diffuse.jpg",
+        "rock=可碰撞岩石 2 material=Assets/Chapter3/School/School masonry.mat texture=Assets/Chapter2/Environment/RichForest/Textures/6d259800_rock_01_diffuse.jpg",
+        "Bawan support head range=0 largest frame jump=0 walk/idle switches=190 smooth=True",
+        "Position fixtures initialize support. Measurement uses actual rescue Update, CharacterController.Move, actor grounding and rig LateUpdate. Not human keyboard input."
+    ],
+    "errors": []
+}

@@ -217,9 +217,9 @@ public sealed class Chapter3Controller : MonoBehaviour
             if(!CompanionsWaiting)
             {
                 Vector3 forward=Vector3.ProjectOnPlane(target-bawan.transform.position,Vector3.up).normalized;
-                MoveActor(bawan,target,1.8f);
+                MoveActor(bawan,target,Chapter3Player.WalkSpeed);
                 Vector3 beside=bawan.transform.position-forward*1.65f+Vector3.Cross(Vector3.up,forward)*1.15f;
-                MoveActor(pihu,beside,2.05f);
+                MoveActor(pihu,beside,Chapter3Player.WalkSpeed);
             }
             else{bawan.Face(player.transform.position);pihu.Face(player.transform.position);}
             yield return null;

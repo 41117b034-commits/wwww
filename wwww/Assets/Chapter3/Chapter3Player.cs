@@ -15,13 +15,14 @@ public sealed class Chapter3Player : MonoBehaviour
     public Chapter3SchoolController school;
     public bool canMove, canLook;
     public bool DialogueFraming {get;set;}
-    public float speed = 2.8f;
+    public const float WalkSpeed = 2.4f;
+    public float speed = WalkSpeed;
     public bool IsVR { get; private set; }
     public bool ActionPressed { get; private set; }
     CharacterController motor;
     float pitch, gravity, nextSnap;
     bool previousTrigger;
-    void Awake() { motor = GetComponent<CharacterController>(); }
+    void Awake() { motor = GetComponent<CharacterController>(); speed = WalkSpeed; }
     void Update()
     {
         var head = InputDevices.GetDeviceAtXRNode(XRNode.Head);

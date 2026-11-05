@@ -65,7 +65,7 @@ public sealed partial class Chapter3SchoolBattle
         otherEscortIndex = Step == 0 ? 0 : checkpointOtherEscortIndex;
 
         combat.SchoolEncounter = this;
-        player.chapter = null; player.station = null; player.combat = null; player.school = school; player.speed = 2.8f;
+        player.chapter = null; player.station = null; player.combat = null; player.school = school; player.speed = Chapter3Player.WalkSpeed;
         if(!preserveArrival)player.Warp(Step == 0 ? new Vector3(-2,.06f,-6) : checkpointPlayer,
             Step == 0 ? new Vector3(0,1.2f,12) : Step == 1 ? new Vector3(4,1.2f,32) : new Vector3(12,1.2f,32));
         combat.playerTarget.position = player.view.transform.position - Vector3.up * .38f;
@@ -170,7 +170,7 @@ public sealed partial class Chapter3SchoolBattle
         if(!ambient.CanFollowWithdrawal(current,ref target,1.8f))return;
         // The guide must use the limited target too; MoveRoute's normal mode
         // deliberately leads the player and would undo the following rule.
-        guideMotor.Move(school.tado,target,3.1f);
+        guideMotor.Move(school.tado,target,Chapter3Player.WalkSpeed);
     }
 
     public bool CallStraggler()=>CallRetreat();

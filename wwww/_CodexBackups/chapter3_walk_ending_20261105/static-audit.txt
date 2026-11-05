@@ -1,0 +1,4 @@
+Scene differences consist only of 36 rock material GUID references.
+Collider, mesh, object transforms and unrelated scene objects are unchanged.
+Ending contains one active Mona rollcall.
+No call to prepare or begin the removed ending conversation.

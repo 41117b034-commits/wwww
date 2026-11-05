@@ -82,7 +82,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
             foreach(var collider in actor.GetComponentsInChildren<Collider>())
                 Physics.IgnoreCollision(body,collider,false);
         if(!walking)player.Warp(spawn,new Vector3(0,2,28));
-        player.speed=2.8f;player.canMove=player.canLook=walking;
+        player.speed=Chapter3Player.WalkSpeed;player.canMove=player.canLook=walking;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
         ui.objective.text="霧社公學校 · 運動會";
         previousFogDensity=RenderSettings.fogDensity;previousSun=RenderSettings.sun;lightingSet=true;
@@ -182,7 +182,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         // made companions reverse direction repeatedly beside the gate.
         if(trailIndex[index]==end&&Chapter3PathMotor.Clear(current,position))
             target=Vector3.MoveTowards(position,current,gap-.1f);
-        motors[index].Move(actor,target,3.35f);
+        motors[index].Move(actor,target,Chapter3Player.WalkSpeed);
     }
     void Speak(Chapter2Actor actor,string line,float seconds)
     {

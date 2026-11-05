@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-// The authored outcome owns the facts. The conversation can only respond to them.
+// Authored outcomes lead directly to Mona's single roll call and closing.
 public sealed class Chapter3Ending : MonoBehaviour
 {
     public enum Stage { Inactive, Outcome, RollCall, Conversation, MonaClosing, Complete }
@@ -36,12 +36,9 @@ public sealed class Chapter3Ending : MonoBehaviour
     {
         Suspend();school=owner;rescue=branch;player=owner.player;ui=owner.ui;
         Result=Chapter3ResultStore.Build(owner.Battle.Selected,branch.Selected,
-            owner.flow.CarriedWeapon??Chapter3Weapons.Weapon.Rifle);
+            owner.flow.CarriedWeapon??Chapter3Weapons.Weapon.Rifle,CentralNpcCount(owner));
         if(Result==null)return;
         Saved=DeathConfirmed=RollCallCompleted=false;
-        if(!Conversation)Conversation=gameObject.GetComponent<Chapter3EndingConversation>();
-        if(!Conversation)Conversation=gameObject.AddComponent<Chapter3EndingConversation>();
-        Conversation.PrepareService();
         player.canMove=false;player.canLook=true;player.view.fieldOfView=60;
         school.flow.combat.weapons.Suspend();school.flow.combat.hud.SetActive(false);
         owner.Battle.Menu.Hide();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
@@ -58,7 +55,7 @@ public sealed class Chapter3Ending : MonoBehaviour
             player.FocusOn(school.pihu.transform.position+Vector3.up*.8f);
             yield return Say(school.tado,"比胡還活著。先讓他坐著休息，我會照看他。",4.8f);
             yield return Say(school.pihu,"我還在……謝謝你沒有把我留在那裡。",4.8f);
-            yield return Say(school.bawan,"人帶回來了。先把大家清點清楚。",3.8f);
+            yield return Say(school.bawan,"人帶回來了。先讓比胡休息，等莫那過來。",3.8f);
         }
         else
         {
@@ -94,22 +91,7 @@ public sealed class Chapter3Ending : MonoBehaviour
             yield return Say(school.tado,"我找到比胡了。他已經死了。",4.8f);
             yield return Say(school.bawan,"……記住他。我們一起出發，卻沒能一起回來。",4.8f);
         }
-        CurrentStage=Stage.RollCall;ui.objective.text="清點同行的小隊";
-        yield return Say(school.bawan,Result.mission==Chapter3SchoolBattle.Mission.Tado
-            ?"你跟達多進入會場，我打通左側通路，比胡照應右側。大家在校後匯合，才一起撤退。"
-            :Result.mission==Chapter3SchoolBattle.Mission.Bawan
-                ?"你和我打通左側通路，達多進入會場，比胡照應右側。大家在校後匯合，才一起撤退。"
-                :"你照應比胡穿過右側，我打通左側通路，達多進入會場。大家在校後匯合，才一起撤退。",5.8f);
-        yield return Say(school.tado,Result.pihuSurvived
-            ?"我們這一隊四個人都到了。比胡受了傷，接下來需要照應。"
-            :"到這裡的只有你、巴萬和我。四個人出發，三個人回來。",5.2f);
-        string weapon=Result.weapon==Chapter3Weapons.Weapon.Knife?"獵刀":"村田十八年式步槍";
-        yield return Say(school.bawan,"你的"+weapon+"還在。先收好，這裡讓傷者和同伴歇一歇。",4.6f);
-        RollCallCompleted=true;CurrentStage=Stage.Conversation;
-        ui.objective.text="林間暫歇 · 與巴萬交談";ui.hint.text="輸入想說的話，按 Enter 或「送出」";
-        player.FocusOn(school.bawan.transform.position+Vector3.up*1.25f);
-        Conversation.Begin(school,Result,()=>
-        {if(CurrentStage==Stage.Conversation)StartCoroutine(CloseWithMona());});
+        yield return CloseWithMona();
     }
     IEnumerator CloseWithMona()
     {
@@ -126,31 +108,43 @@ public sealed class Chapter3Ending : MonoBehaviour
         yield return Fade(false,.8f);
         if(Mona)
         {
-            yield return Walk(Mona,monaMotor,new[]{P(16.5f,102),P(15.3f,104)},1.8f);
-            yield return Say(Mona,"人都到齊了嗎？把你們的情況告訴我。",4.5f);
-            yield return Say(school.bawan,Result.mission==Chapter3SchoolBattle.Mission.Bawan
-                ?"他和我移開門閂、打開側門。中央和右側的經過，是在校後匯合時聽達多、比胡回報的。"
-                :"我打開左側通路的便門和側門。中央和右側的經過，是在校後匯合時聽他們回報的。",5.7f);
-            yield return Say(school.tado,Result.mission==Chapter3SchoolBattle.Mission.Tado
-                ?"他跟我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。"
-                :Result.mission==Chapter3SchoolBattle.Mission.Pihu
-                    ?"我從中央進入會場；他照應比胡穿過右側。大家在校後匯合，才一起撤進林路。"
-                    :"我從中央進入會場；比胡照應右側。大家在校後匯合，才一起撤進林路。",5.7f);
-            yield return Say(school.bawan,Result.pihuSurvived
-                ?"我們四個都到了。比胡在撤離時受傷，是他扶著比胡走回來的。"
-                :"我們回來三個人。比胡受傷後留在林路，達多回去確認，他已經死了。",5.7f);
+            yield return Walk(Mona,monaMotor,new[]{P(16.5f,102),P(15.3f,104)},Chapter3Player.WalkSpeed);
+            CurrentStage=Stage.RollCall;ui.objective.text="莫那清點三路人數";
+            yield return Say(Mona,"左側、右側和進入會場的人，各有幾個？把人數和情況告訴我。",5.4f);
+            yield return Say(school.bawan,LeftReport,4.8f);
+            yield return Say(school.tado,CentralReport,4.8f);
+            yield return Say(school.tado,RightReport,5.4f);
+            string weapon=Result.weapon==Chapter3Weapons.Weapon.Knife?"獵刀":"村田十八年式步槍";
+            yield return Say(school.bawan,"他的"+weapon+"也帶回來了。",3.6f);
+            RollCallCompleted=true;CurrentStage=Stage.MonaClosing;
             yield return Say(Mona,Result.pihuSurvived
                 ?"把同伴帶回來，就繼續照看好他。接下來，誰都不能落單。"
                 :"我記住了。留下的人已經回不來，還在的人要彼此照應。",5.5f);
             yield return Say(Mona,"這場戰鬥還沒有結束。先退入山林，守住身邊的人。",5.2f);
         }
         yield return Fade(true,1.1f);
-        // No earlier phase, chat answer, retry or shortcut commits a result.
+        // Only the completed outcome and Mona's report commit a result.
         CommitResult();
         CurrentStage=Stage.Complete;player.canMove=player.canLook=false;
         ShowEnding();ui.hint.text="";ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
+    static int CentralNpcCount(Chapter3SchoolController owner)
+    {
+        var ambient=owner.GetComponentInChildren<Chapter3SchoolAmbient>();
+        return (owner.tado&&owner.tado.gameObject.activeInHierarchy?1:0)+(ambient?ambient.VisibleAssailants:0);
+    }
+    // These are deployment counts. The right-side report separately records
+    // Pihu's outcome, so a death cannot silently change the original assignment.
+    public string LeftReport=>"左側通路"+Result.LeftCount+"人，"+
+        (Result.mission==Chapter3SchoolBattle.Mission.Bawan?"他和我一起打通側門，都回來了。":"由我打通側門，我已回來。");
+    public string CentralReport=>"進入會場的有"+Result.CentralCount+"人，"+
+        (Result.mission==Chapter3SchoolBattle.Mission.Tado?"包括他、我和一起進入會場的同伴。":"是我和一起進入會場的同伴。");
+    public string RightReport=>"右側通路原有"+Result.RightCount+"人，"+
+        (Result.pihuSurvived
+            ?(Result.mission==Chapter3SchoolBattle.Mission.Pihu?"他和比胡都回來了，比胡受傷，由他扶回接應處。":"比胡受傷，由他扶回接應處，已經回來了。")
+            :(Result.mission==Chapter3SchoolBattle.Mission.Pihu?"他回來了，比胡留在林路。我回去確認，比胡已經死了。":"比胡留在林路。我回去確認，他已經死了，右側沒有人回來。"));
+
     void BorrowMona()
     {
         Mona=school.flow.station.mona;if(!Mona)return;
@@ -218,9 +212,10 @@ public sealed class Chapter3Ending : MonoBehaviour
             if(Result.version>=2)
                 missionSummary=Result.mission==Chapter3SchoolBattle.Mission.Tado?"你跟達多進入會場，帶同伴一起撤出。":
                     Result.mission==Chapter3SchoolBattle.Mission.Bawan?"你和巴萬打通側門，照應同伴通過。":"你照應比胡穿過右側，一起撤出。";
-            endBody.text=(Result.pihuSurvived?"比胡生還，四人抵達接應處。":"比胡死亡，三人抵達接應處。")+
+            endBody.text=(Result.pihuSurvived?"比胡獲救生還。":"達多確認比胡已死亡。")+
+                "\n分隊人數：左側 "+Result.LeftCount+" 人、右側 "+Result.RightCount+" 人、會場 "+Result.CentralCount+" 人。"+
                 "\n"+missionSummary+
-                "\n\n"+(Saved?"結果已保存。戰鬥還沒有結束……":PersistResult?"結果尚未保存，請按「重試保存」。":"戰鬥還沒有結束……");
+                "\n"+(Saved?"結果已保存。戰鬥還沒有結束……":PersistResult?"結果尚未保存，請按「重試保存」。":"戰鬥還沒有結束……");
             ui.replay.GetComponentInChildren<Text>().text="重玩第三章";
         }
         if(PersistResult&&!Saved)

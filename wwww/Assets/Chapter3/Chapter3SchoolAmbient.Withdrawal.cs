@@ -159,7 +159,9 @@ public sealed partial class Chapter3SchoolAmbient
             // A fighter approaching from the east can already be beyond the
             // open merge point. Do not send him south into the northbound queue.
             bool passedMerge=fieldMerge&&current.z>=34&&current.x>=15&&current.x<=19.5f;
-            if(Horizontal(current,target)<arrival||passedMerge)
+            bool canTurn=withdrawalLeg[i]<route.Length-1&&Horizontal(current,target)<1.2f&&
+                Chapter3PathMotor.Clear(current,route[withdrawalLeg[i]+1]);
+            if(Horizontal(current,target)<arrival||canTurn||passedMerge)
             {
                 withdrawalLeg[i]++;
                 // A settled participant is now a standing obstacle. Later
@@ -178,7 +180,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     public static Vector3 OpenWithdrawalCorner(Vector3 target,Vector3 next,Chapter3SchoolCrowdActor walker=null)
     {
-        bool Free(Vector3 point)=>walker?Chapter3PathMotor.ClearCrowdPoint(point,walker):Chapter3PathMotor.Clear(point,point);
+        bool Free(Vector3 point)=>walker?Chapter3PathMotor.ClearWithdrawalCorner(point,walker):Chapter3PathMotor.Clear(point,point);
         if(Free(target))return target;
         Vector3 forward=Vector3.ProjectOnPlane(next-target,Vector3.up).normalized;
         foreach(float radius in new[]{.8f,1.25f,1.75f})

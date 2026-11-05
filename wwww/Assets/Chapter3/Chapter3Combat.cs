@@ -97,7 +97,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
             var go=Instantiate(template,runtimeEnemies);go.name=template.name.Replace("範本","");go.SetActive(true);
             var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=this;Enemies.Add(enemy);
         }
-        player.chapter=null;player.station=null;player.combat=this;player.speed=2.8f;
+        player.chapter=null;player.station=null;player.combat=this;player.speed=Chapter3Player.WalkSpeed;
         if(relocate)player.Warp(WorldPoint(spawn),WorldPoint(new Vector3(0,1.55f,8)));player.view.fieldOfView=60;
         weapons.ResetEquipment();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.fade.color=Color.clear;
         hud.SetActive(true);downPanel.SetActive(false);hurtOverlay.color=Color.clear;
@@ -130,7 +130,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         if(Fighting)
         {
             UpdateCompanionCover();
-            player.speed=weapons.Aiming?1.7f:2.8f;
+            player.speed=weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
             bool near=weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Vector3.Distance(player.transform.position,ammoPoint.position)<2.2f;
             if(near&&player.ActionPressed)weapons.Refill();
             string warning=Enemies.Exists(e=>e&&!e.Defeated&&e.Telegraphing)?"警察正在瞄準，移到岩石或木箱後！":"利用掩體接近敵人";
@@ -191,12 +191,12 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         if(flow&&flow.Approach)
         {
             CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();
-            hud.SetActive(false);player.speed=2.8f;player.view.fieldOfView=60;
+            hud.SetActive(false);player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
             player.canMove=player.canLook=true;
             flow.Approach.BeginWalk();
             yield break;
         }
-        CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=2.8f;player.view.fieldOfView=60;
+        CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
         hud.SetActive(false);
         yield return new WaitForSeconds(2);
         yield return Say(bawan,"前面的路通了。比胡，看看大家有沒有跟上。",lineSeconds);
@@ -210,7 +210,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         Vector3 rally=new Vector3(0,0,Mathf.Clamp(player.transform.position.z+3,-3,25));
         Vector3 rear=rally+new Vector3(1.2f,0,-1.7f);
         while(Flat(bawan.transform.position,rally)>.18f||Flat(pihu.transform.position,rear)>.18f)
-        {leaderMotor.Move(bawan,rally,3.2f);rearMotor.Move(pihu,rear,3.4f);yield return null;}
+        {leaderMotor.Move(bawan,rally,Chapter3Player.WalkSpeed);rearMotor.Move(pihu,rear,Chapter3Player.WalkSpeed);yield return null;}
         bawan.Face(exitPoint.position);pihu.Face(exitPoint.position);
         leaderFacing=bawan.facing.normalized;rearFacing=pihu.facing.normalized;escortFacingActive=true;
         if(bawan.Rig)bawan.Rig.smoothLocomotion=true;if(pihu.Rig)pihu.Rig.smoothLocomotion=true;
@@ -225,8 +225,8 @@ public sealed partial class Chapter3Combat : MonoBehaviour
             ui.hint.text=EscortWaiting?"巴萬與比胡在前方等你，走近後繼續。":"跟上巴萬 · WASD 移動 · 按住滑鼠右鍵環視";
             if(!EscortWaiting)
             {
-                leaderMotor.Move(bawan,exitPoint.position,1.85f);
-                rearMotor.Move(pihu,bawan.transform.position+new Vector3(1.2f,0,-1.7f),2.3f);
+                leaderMotor.Move(bawan,exitPoint.position,Chapter3Player.WalkSpeed);
+                rearMotor.Move(pihu,bawan.transform.position+new Vector3(1.2f,0,-1.7f),Chapter3Player.WalkSpeed);
             }
             yield return null;
         }

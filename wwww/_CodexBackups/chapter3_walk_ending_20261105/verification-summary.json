@@ -1,0 +1,26 @@
+{
+  "completed": true,
+  "checks": 123,
+  "reports": [
+    {
+      "mode": "motion",
+      "checks": 28
+    },
+    {
+      "mode": "speed",
+      "checks": 8
+    },
+    {
+      "mode": "separation",
+      "checks": 1
+    },
+    {
+      "mode": "rescue",
+      "checks": 44
+    },
+    {
+      "mode": "leave",
+      "checks": 42
+    }
+  ]
+}

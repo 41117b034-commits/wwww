@@ -50,7 +50,13 @@ public sealed partial class Chapter3SchoolAmbient
             }
             bool merge=Horizontal(target,new Vector3(17,0,34))<.01f;
             float radius=escort.leg==escort.route.Length-1?.25f:merge?1.2f:.5f;
-            if(Horizontal(current,target)<radius||(merge&&current.z>=34&&current.x>=15&&current.x<=19.5f))
+            // Once the next segment is reachable, turn through the corner
+            // instead of competing with another walker for its exact centre.
+            // A capsule cast keeps the building/fence corner solid; final
+            // assembly positions still require their original close arrival.
+            bool canTurn=escort.leg<escort.route.Length-1&&Horizontal(current,target)<1.2f&&
+                Chapter3PathMotor.Clear(current,escort.route[escort.leg+1]);
+            if(Horizontal(current,target)<radius||canTurn||(merge&&current.z>=34&&current.x>=15&&current.x<=19.5f))
             {
                 escort.leg++;
                 if(escort.leg>=escort.route.Length)actor.FollowingWithdrawal=false;

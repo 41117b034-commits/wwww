@@ -1,0 +1,31 @@
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+AssetDatabase: script compilation time: 0.000852s
+Preloading 0 native plugins for Editor in 0.00 ms.
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=1 ms, other=0 ms
+		CompileScripts: 0.892ms
+		ReloadNativeAssets: 0.247ms
+	Hotreload: 24.926ms
+ExitCode: 4 Duration: 0s337ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\Tools\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.0.58f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+ExitCode: 0 Duration: 3s763ms
+      Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 129 defines and 343 references
+ExitCode: 0 Duration: 8s342ms
+Finished compiling graph: 1250 nodes, 23297 flattened edges (18671 ToBuild, 206 ToUse), maximum node priority 1361
+[ 647/1246  0s] WriteText Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.rsp
+[1242/1246  5s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[1243/1246  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 129 defines and 343 references
+[1244/1246  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1245/1246  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+Reloading assemblies after finishing script compilation.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+Mono: successfully reloaded assembly
+Domain Reload Profiling: 4504ms
+	BeginReloadAssembly (1208ms)
+	initialDomainReloadingComplete (71ms)
+	FinalizeReload (2629ms)
+Asset Pipeline Refresh (id=f6f1edcb38c8fd84194ed5f9fea72986): Total: 4.763 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+		Scripting: domain reloads=1, domain reload time=1896 ms, compile time=2 ms, other=0 ms
+		CompileScripts: 1.549ms
+		ReloadNativeAssets: 1.181ms

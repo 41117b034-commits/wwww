@@ -98,7 +98,7 @@ public sealed class Chapter3Flow : MonoBehaviour
         if(villageRegion)villageRegion.SetActive(false);stationRegion.SetActive(false);combatRegion.SetActive(false);
         if(schoolRegion)schoolRegion.SetActive(false);
         player.chapter=null;player.station=null;player.combat=null;player.school=null;
-        player.view.fieldOfView=60;player.speed=2.8f;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+        player.view.fieldOfView=60;player.speed=Chapter3Player.WalkSpeed;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public void EnterStation()
     {

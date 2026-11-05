@@ -120,7 +120,7 @@ public sealed partial class Chapter3SchoolBattle
         {
             Vector3 latchPosition = Barricades[0].position + Vector3.back * .95f;
             if (Flat(player.transform.position, latchPosition) < 1.05f) return false;
-            gateWorkMotor.Move(school.bawan, latchPosition, 1.9f);
+            gateWorkMotor.Move(school.bawan, latchPosition, Chapter3Player.WalkSpeed);
             if (Flat(school.bawan.transform.position, latchPosition) > .28f) return false;
             school.bawan.Face(Barricades[0].position);
             SetFirstPassageCollisions(false);
@@ -134,7 +134,7 @@ public sealed partial class Chapter3SchoolBattle
         {
             Vector3 workPosition = GateWorkPosition; workPosition.y = 0;
             if (Flat(player.transform.position, workPosition) < 1.05f) return false;
-            gateWorkMotor.Move(school.bawan, workPosition, 1.9f);
+            gateWorkMotor.Move(school.bawan, workPosition, Chapter3Player.WalkSpeed);
             if (Flat(school.bawan.transform.position, workPosition) > .28f) return false;
             school.bawan.Face(sideGateLeaf.TransformPoint(new Vector3(-1.1f, 0, .4f)));
             EnsureBawanCooperationPose();
@@ -201,7 +201,7 @@ public sealed partial class Chapter3SchoolBattle
         bool arrived = guideIndex >= activeRoute.Length;
         Vector3 workPosition = GateWorkPosition; workPosition.y = 0;
         bool playerBlocking = Flat(player.transform.position, workPosition) < 1.05f;
-        if (arrived && !playerBlocking) gateWorkMotor.Move(school.bawan, workPosition, 1.9f);
+        if (arrived && !playerBlocking) gateWorkMotor.Move(school.bawan, workPosition, Chapter3Player.WalkSpeed);
         bool atHandle = arrived && !playerBlocking && Flat(school.bawan.transform.position, workPosition) < .28f;
         if (atHandle) school.bawan.Face(sideGateLeaf.TransformPoint(new Vector3(-1.1f, 0, .4f)));
         if (player.ActionPressed && Flat(player.transform.position, Ammo.position) >= 2) CommandSideGate();

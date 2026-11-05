@@ -8,7 +8,7 @@ using UnityEngine;
 public static class Chapter3ResultStore
 {
     public const string SaveKey="WusheEvent.Chapter3.Result";
-    public const int CurrentVersion=2;
+    public const int CurrentVersion=3;
     public enum KnowledgeSource { None, Direct, Reported }
 
     [Serializable]
@@ -36,29 +36,36 @@ public static class Chapter3ResultStore
         public bool pihuSurvived;
         // Includes the player, Bawan, Tado and (when rescued) Pihu. Excludes Mona.
         public int squadSurvivors;
+        // Version 3 snapshots the actual central party, including Tado and
+        // excluding the player. Earlier saves never recorded this number.
+        public int centralNpcCount;
+        public int LeftCount=>version>=3?1+(mission==Chapter3SchoolBattle.Mission.Bawan?1:0):0;
+        public int RightCount=>version>=3?1+(mission==Chapter3SchoolBattle.Mission.Pihu?1:0):0;
+        public int CentralCount=>version>=3?centralNpcCount+(mission==Chapter3SchoolBattle.Mission.Tado?1:0):0;
         public ActorKnowledge[] actors;
     }
 
     // A proposed ending snapshot, not a save or a source of pre-report knowledge.
     // Mona's Reported facts may be used only after the reception report occurs.
     public static Record Build(Chapter3SchoolBattle.Mission mission,
-        Chapter3Rescue.Decision decision,Chapter3Weapons.Weapon weapon)
+        Chapter3Rescue.Decision decision,Chapter3Weapons.Weapon weapon,int centralNpcCount=1)
     {
-        return BuildVersion(CurrentVersion,mission,decision,weapon);
+        return BuildVersion(CurrentVersion,mission,decision,weapon,centralNpcCount);
     }
 
     // Version 1 belongs to the earlier two-route story. Reading or copying it
     // must not move Tado into a mission that did not exist in that completed run.
     static Record BuildVersion(int version,Chapter3SchoolBattle.Mission mission,
-        Chapter3Rescue.Decision decision,Chapter3Weapons.Weapon weapon)
+        Chapter3Rescue.Decision decision,Chapter3Weapons.Weapon weapon,int centralNpcCount=0)
     {
-        if((version!=1&&version!=CurrentVersion)||!ValidChoices(mission,decision,weapon,version))return null;
+        if(version<1||version>CurrentVersion||!ValidChoices(mission,decision,weapon,version))return null;
+        if(version>=3&&(centralNpcCount<1||centralNpcCount>1024))return null;
         bool rescued=decision==Chapter3Rescue.Decision.Rescue;
         var outcome=rescued?KnowledgeSource.Direct:KnowledgeSource.Reported;
         return new Record
         {
             version=version,completed=false,mission=mission,decision=decision,weapon=weapon,
-            pihuSurvived=rescued,squadSurvivors=rescued?4:3,
+            pihuSurvived=rescued,squadSurvivors=rescued?4:3,centralNpcCount=version>=3?centralNpcCount:0,
             actors=new[]
             {
                 Companion("bawan","west",true,outcome,version),
@@ -99,12 +106,12 @@ public static class Chapter3ResultStore
 
     public static bool IsValid(Record record,bool requireCompleted=false)
     {
-        if(record==null||(record.version!=1&&record.version!=CurrentVersion)||(requireCompleted&&!record.completed)||
+        if(record==null||(record.version<1||record.version>CurrentVersion)||(requireCompleted&&!record.completed)||
             !ValidChoices(record.mission,record.decision,record.weapon,record.version)||
             record.actors==null||record.actors.Length!=4)return false;
-        var expected=BuildVersion(record.version,record.mission,record.decision,record.weapon);
-        if(record.pihuSurvived!=expected.pihuSurvived||record.squadSurvivors!=expected.squadSurvivors)return false;
-        // Both versions preserve actor order and reject duplicate or altered facts.
+        var expected=BuildVersion(record.version,record.mission,record.decision,record.weapon,record.centralNpcCount);
+        if(expected==null||record.centralNpcCount!=expected.centralNpcCount||record.pihuSurvived!=expected.pihuSurvived||record.squadSurvivors!=expected.squadSurvivors)return false;
+        // All versions preserve actor order and reject duplicate or altered facts.
         for(int i=0;i<expected.actors.Length;i++)
         {
             var actual=record.actors[i];var canonical=expected.actors[i];
@@ -120,7 +127,7 @@ public static class Chapter3ResultStore
     public static Record Copy(Record record)
     {
         if(!IsValid(record))return null;
-        var copy=BuildVersion(record.version,record.mission,record.decision,record.weapon);
+        var copy=BuildVersion(record.version,record.mission,record.decision,record.weapon,record.centralNpcCount);
         copy.completed=record.completed;return copy;
     }
 
@@ -129,6 +136,7 @@ public static class Chapter3ResultStore
         var payload=JObject.Parse(JsonUtility.ToJson(record));
         // Do not require a newly added field in real version-1 saves, or add it
         // when deliberately re-saving one. Unknown fields still fail validation.
+        if(record.version<3)payload.Remove("centralNpcCount");
         if(record.version==1)
             foreach(var actor in (JArray)payload["actors"])((JObject)actor).Remove("centralSchool");
         return payload;

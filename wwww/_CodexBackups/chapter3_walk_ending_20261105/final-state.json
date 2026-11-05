@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "pre_cleanup_editor_state": "playing=False dirty=False compileFailed=False",
+  "temporary_sources_remaining": 0,
+  "temporary_types_in_editor_assembly": false,
+  "runtime_navigation_change_compiled": true,
+  "compile_errors": [],
+  "scene_only_36_rock_material_changes": true,
+  "editor_assembly_sha256": "a9085417002e15de184b172e6ec5776f4bdd39a4c310c06f1d26c94d0d513acd"
+}

@@ -98,7 +98,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         Vector3 target=gathering?rally:points[CurrentWaypoint];
         if(!Waiting)
         {
-            MoveActor(LeadActor,target,1.9f,rallyLeader);
+            MoveActor(LeadActor,target,Chapter3Player.WalkSpeed,rallyLeader);
             if(Flat(LeadActor.transform.position,target)<.25f)
             {
                 if(gathering)
@@ -132,14 +132,14 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
                     if(Flat(player.transform.position,candidate)<=1.1f||!environment.Walkable(candidate)||!Chapter3PathMotor.Clear(candidate,candidate))continue;
                     rearArrival=candidate;rearArrivalChosen=true;break;
                 }
-            if(rearArrivalChosen)MoveActor(RearActor,rearArrival,2.4f,rallyRear);
+            if(rearArrivalChosen)MoveActor(RearActor,rearArrival,Chapter3Player.WalkSpeed,rallyRear);
         }
         else if(rearGap>2.4f)
         {
             Vector3 rearTarget=trail[rearIndex];
             if(end==0&&Flat(RearActor.transform.position,rearTarget)<.4f)
                 rearTarget=Vector3.MoveTowards(LeadActor.transform.position,RearActor.transform.position,2.3f);
-            MoveActor(RearActor,rearTarget,2.4f,rallyRear);
+            MoveActor(RearActor,rearTarget,Chapter3Player.WalkSpeed,rallyRear);
         }
         else if(!RearActor.speaking)RearActor.Face(player.transform.position);
 
@@ -201,7 +201,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         }
         Vector3 delta=Vector3.ProjectOnPlane(target-current,Vector3.up);
         if(delta.sqrMagnitude<.008f)return;
-        Vector3 next=Vector3.MoveTowards(current,current+delta,speed*Mathf.Min(Time.deltaTime,.1f));
+        Vector3 next=Vector3.MoveTowards(current,current+delta,speed*Time.deltaTime);
         next.y=environment.GroundHeight(next);
         Vector3 motion=next-current;
         foreach(var hit in Physics.CapsuleCastAll(current+Vector3.up*.48f,current+Vector3.up*1.3f,.32f,

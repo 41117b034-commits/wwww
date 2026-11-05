@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // Authored rescue branch. Choice is retained on retry; the ending commits the
-// chapter result only after the outcome, roll call, conversation and Mona's close.
+// chapter result only after the outcome and Mona's roll call and close.
 public sealed class Chapter3Rescue : MonoBehaviour
 {
     public enum Stage { Inactive, Advancing, Injury, Choice, AwaitingLift, Supporting, Leaving, Handoff, Down, Complete }
@@ -58,7 +58,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         if(!choicePanel)BuildChoice();choicePanel.SetActive(false);battle.Menu.Hide();
         bawanIndex=pihuIndex=tadoIndex=0;forestPartyReady=false;bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();
         combat.weapons.Suspend();combat.hud.SetActive(false);ui.Say("",null);
-        CurrentStage=Stage.Advancing;player.speed=2.8f;player.canMove=player.canLook=true;
+        CurrentStage=Stage.Advancing;player.speed=Chapter3Player.WalkSpeed;player.canMove=player.canLook=true;
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.objective.text="與巴萬、比胡、達多沿林路離開學校";
         if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
@@ -80,12 +80,18 @@ public sealed class Chapter3Rescue : MonoBehaviour
         combat.playerTarget.position=player.view.transform.position-Vector3.up*.38f;
         MoveAlong(school.tado,tadoMotor,exit,ref tadoIndex,3.2f,false,Vector3.right*1.1f);
         if(Selected==Decision.Leave)
-            MoveAlong(school.bawan,bawanMotor,exit,ref bawanIndex,2.25f,true,Vector3.left*1.1f);
+            MoveAlong(school.bawan,bawanMotor,exit,ref bawanIndex,Chapter3Player.WalkSpeed,true,Vector3.left*1.1f);
         else
         {
             Vector3 escort=player.transform.position+Vector3.left*1.8f+Vector3.forward*2;
-            if(Flat(school.bawan.transform.position,escort)>1)bawanMotor.Move(school.bawan,escort,2.4f);
-            else school.bawan.Face(school.pihu.transform.position);
+            // Follow the moving formation slot continuously. A one-metre gate
+            // made Bawan alternate full-speed strides and idle every few frames
+            // while the supported player moved at 1.15 m/s.
+            float gap=Flat(school.bawan.transform.position,escort);
+            float pace=Supporting?Mathf.Min(Chapter3Player.WalkSpeed,1.15f+gap*.8f):Chapter3Player.WalkSpeed;
+            if(school.bawan.Rig)school.bawan.Rig.smoothLocomotion=true;
+            bawanMotor.Move(school.bawan,escort,pace,.01f);
+            if(gap<.02f)school.bawan.Face(school.pihu.transform.position);
         }
         if(CurrentStage==Stage.AwaitingLift)
         {
@@ -93,7 +99,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
             WorkLift(Keyboard.current?.eKey.isPressed==true,Time.deltaTime);
             if(!Supporting)
             {
-                player.speed=combat.weapons.Aiming?1.7f:2.8f;
+                player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
                 ui.objective.text="救援比胡 · 靠近並扶起他";
                 ui.hint.text=Flat(player.transform.position,school.pihu.transform.position)<.65f?"退後半步，站到比胡身旁再按住 E 扶起。":near?"按住 E 扶起比胡 · 放開會中止 · "+combat.weapons.Controls:"靠近比胡 · 先處理前方警察，再扶他離開";
             }
@@ -106,7 +112,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
             ui.hint.text="WASD 扶行 · 按住右鍵環視 · E 放下比胡後可使用武器";
         }
         else
-        {player.speed=combat.weapons.Aiming?1.7f:2.8f;ui.objective.text="跟上巴萬，前往林間接應處";ui.hint.text="比胡留在林路轉折處 · "+combat.weapons.Controls;}
+        {player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;ui.objective.text="跟上巴萬，前往林間接應處";ui.hint.text="比胡留在林路轉折處 · "+combat.weapons.Controls;}
         UpdateHud();
         bool playerArrived=Flat(player.transform.position,ReceptionPosition)<2.6f;
         bool pihuArrived=Selected==Decision.Leave||(Supporting&&Flat(school.pihu.transform.position,ReceptionPosition)<3.5f);
@@ -133,9 +139,9 @@ public sealed class Chapter3Rescue : MonoBehaviour
         }
         // Everyone walks the same established rear route before the fixed event.
         CompanionsWaiting=false;
-        if(battle.ContinueToAssembly(school.bawan))MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,2.1f,true,Vector3.left*1.15f);
-        if(battle.ContinueToAssembly(school.pihu))MoveAlong(school.pihu,pihuMotor,approach,ref pihuIndex,2.05f,true,Vector3.zero);
-        if(battle.ContinueToAssembly(school.tado))MoveAlong(school.tado,tadoMotor,approach,ref tadoIndex,2.2f,true,Vector3.right*1.15f);
+        if(battle.ContinueToAssembly(school.bawan))MoveAlong(school.bawan,bawanMotor,approach,ref bawanIndex,Chapter3Player.WalkSpeed,true,Vector3.left*1.15f);
+        if(battle.ContinueToAssembly(school.pihu))MoveAlong(school.pihu,pihuMotor,approach,ref pihuIndex,Chapter3Player.WalkSpeed,true,Vector3.zero);
+        if(battle.ContinueToAssembly(school.tado))MoveAlong(school.tado,tadoMotor,approach,ref tadoIndex,Chapter3Player.WalkSpeed,true,Vector3.right*1.15f);
         ui.hint.text=CompanionsWaiting?"同伴在前方等你，沿黃色箭頭走近後繼續。":"沿黃色箭頭前進，同伴會跟上 · WASD 移動 · 按住右鍵環視";
         if(bawanIndex>=approach.Length&&pihuIndex>=approach.Length&&tadoIndex>=approach.Length&&Flat(player.transform.position,InjuryPosition)<5)
         {
@@ -182,7 +188,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         battle.Enemies.Add(enemy);go.SetActive(true);
         CurrentStage=Selected==Decision.Rescue?Stage.AwaitingLift:Stage.Leaving;
         battle.Menu.Hide();combat.weapons.ResetEquipment();combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;
-        player.canMove=player.canLook=true;player.speed=2.8f;player.view.fieldOfView=60;
+        player.canMove=player.canLook=true;player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
         ui.Say("",null);ui.fade.color=Color.clear;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
         if(Selected==Decision.Rescue)Notice(school.bawan.DisplayName,"扶住他，別急。我跟著你們。",3.5f);
         else Notice(school.bawan.DisplayName,"……跟上。別再有人落在後面。",3.5f);
@@ -221,7 +227,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public bool PutDown()
     {
         if(!Supporting)return false;
-        CurrentStage=Stage.AwaitingLift;LiftProgress=0;Pose.SetSupported(0,player.transform);combat.weapons.gameObject.SetActive(true);player.speed=2.8f;
+        CurrentStage=Stage.AwaitingLift;LiftProgress=0;Pose.SetSupported(0,player.transform);combat.weapons.gameObject.SetActive(true);player.speed=Chapter3Player.WalkSpeed;
         FollowGuide.Hide();
         Notice(school.pihu.DisplayName,"我在這裡等你……",2.5f);return true;
     }
@@ -246,7 +252,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     IEnumerator Handoff()
     {
         FollowGuide.Hide();
-        CurrentStage=Stage.Handoff;player.canMove=false;player.canLook=true;player.speed=2.8f;
+        CurrentStage=Stage.Handoff;player.canMove=false;player.canLook=true;player.speed=Chapter3Player.WalkSpeed;
         combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;ui.hint.text="";ui.Say("",null);
         if(Selected==Decision.Rescue)
         {
@@ -377,7 +383,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         StopAllCoroutines();bypasses.Clear();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
         if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);if(shot)shot.Stop();
         if(school){school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;}
-        if(player){player.speed=2.8f;player.view.fieldOfView=60;}
+        if(player){player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;}
     }
     void OnDestroy(){if(choicePanel)Destroy(choicePanel);}
     void BuildChoice()

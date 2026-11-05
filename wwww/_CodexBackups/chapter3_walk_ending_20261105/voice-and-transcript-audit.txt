@@ -1,0 +1,15 @@
+All existing voice entries preserved exactly.
+New fixed ending recordings: 12
+bawan | 人帶回來了。先讓比胡休息，等莫那過來。 | 5.784s | 234e4a75ab978a6269b4ccadced83b7dd261476ea0f3b3b41c72047985393341
+mona | 左側、右側和進入會場的人，各有幾個？把人數和情況告訴我。 | 7.872s | 7e03b5edd2714ee233385c22ace5d2a78b8a1fde783a75223f661ba7df6b8421
+bawan | 左側通路2人，他和我一起打通側門，都回來了。 | 5.088s | 557961c57eb58ca43c9c2cd9df9a964fba1d33f756619f0a57145b5b484ef492
+bawan | 左側通路1人，由我打通側門，我已回來。 | 4.752s | d24087f5e549255fcf6429b176b3e3481e383b73e2867e8044298dcac36295a5
+tado | 進入會場的有12人，包括他、我和一起進入會場的同伴。 | 5.784s | 6dddda529dae7431a2a0a232eebf6e69c3ec4a111fca8d41054b7231d7c9f8db
+tado | 進入會場的有11人，是我和一起進入會場的同伴。 | 4.992s | f8291e0513d715476a31bc9c150ccc449a4c931b6b10b6c7b1cf33013a2bc3df
+tado | 右側通路原有2人，他和比胡都回來了，比胡受傷，由他扶回接應處。 | 7.272s | b8e761240eafd3c8a0d9590034dd7c6dfedaf90f263a2a642ca5d294e7410d5a
+tado | 右側通路原有1人，比胡受傷，由他扶回接應處，已經回來了。 | 6.864s | 97bc2c76b7b7ac73945a8097fba5f5c6f09aee521870e652997e67b630290f1c
+tado | 右側通路原有2人，他回來了，比胡留在林路。我回去確認，比胡已經死了。 | 8.088s | c23f94bd3c4ed22fceecad5d781d3a855984ffb4cebb16d2f4b421b074e56bbe
+tado | 右側通路原有1人，比胡留在林路。我回去確認，他已經死了，右側沒有人回來。 | 8.424s | 9f3280e4fc9ac085d94f36a5dc4ac895c4f0145b65a81e13bb0d3a35fa66e868
+bawan | 他的村田十八年式步槍也帶回來了。 | 3.816s | 6612a3a3f7c8a299e63d34b09e0d6527fbe1a142809198f5c198180357c00081
+bawan | 他的獵刀也帶回來了。 | 2.808s | f3f430a2e267dc28eedd53d83657820a0f2bb09f32ea7cc6d729886eee0708f0
+Active ending does not prepare or begin ending LLM service.

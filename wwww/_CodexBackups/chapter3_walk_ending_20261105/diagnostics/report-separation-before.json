@@ -1,0 +1,39 @@
+{
+    "completed": false,
+    "checks": [],
+    "observations": [
+        "walker=(0.81, 0.00, 65.60) target=(-3.40, 0.00, 64.80) path= search=False iterations=0",
+        "target clear=True direct=False",
+        "grid 0.5,65 clear=True",
+        "grid 0.5,65.5 clear=False",
+        "grid 0.5,66 clear=False",
+        "grid 1,65 clear=True",
+        "grid 1,65.5 clear=True",
+        "grid 1,66 clear=True",
+        "grid 1.5,65 clear=True",
+        "grid 1.5,65.5 clear=True",
+        "grid 1.5,66 clear=True",
+        "near 日籍女教師與家屬 4 root=(0.81, 0.00, 65.60) bounds=Center: (0.81, 0.85, 65.60), Extents: (0.27, 0.85, 0.27)",
+        "near 日籍女教師與家屬 5 root=(0.17, 0.00, 65.70) bounds=Center: (0.17, 0.85, 65.70), Extents: (0.27, 0.85, 0.27)",
+        "near School mountain terrain root=(0.00, 0.00, 0.00) bounds=Center: (0.00, 27.04, 56.00), Extents: (126.00, 27.06, 126.00)",
+        "step=0.07 angle=0 motor=True body=True",
+        "step=0.07 angle=45 motor=True body=True",
+        "step=0.07 angle=90 motor=True body=True",
+        "step=0.07 angle=135 motor=True body=True",
+        "step=0.07 angle=180 motor=True body=True",
+        "step=0.07 angle=225 motor=False body=True",
+        "step=0.07 angle=270 motor=False body=True",
+        "step=0.07 angle=315 motor=False body=True",
+        "step=0.5 angle=0 motor=True body=True",
+        "step=0.5 angle=45 motor=True body=True",
+        "step=0.5 angle=90 motor=True body=True",
+        "step=0.5 angle=135 motor=True body=True",
+        "step=0.5 angle=180 motor=True body=True",
+        "step=0.5 angle=225 motor=False body=True",
+        "step=0.5 angle=270 motor=False body=False",
+        "step=0.5 angle=315 motor=False body=False"
+    ],
+    "errors": [
+        "System.Exception: FAILED: nearby standing person can be physically walked around\r\n  at Chapter3WalkVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3WalkVerify.cs:76 \r\n  at Chapter3WalkVerify+<Separation>d__33.MoveNext () [0x006c8] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3WalkVerify.Motion.cs:161 \r\n  at Chapter3WalkVerify+<Run>d__10.MoveNext () [0x000e0] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3WalkVerify.cs:51 "
+    ]
+}

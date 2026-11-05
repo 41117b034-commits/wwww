@@ -1,0 +1,40 @@
+{
+    "completed": true,
+    "checks": [
+        "existing user save loads before tests",
+        "Bawan Rescue single player added to chosen lane",
+        "Bawan Rescue saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "Bawan Leave single player added to chosen lane",
+        "Bawan Leave saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "Pihu Rescue single player added to chosen lane",
+        "Pihu Rescue saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "Pihu Leave single player added to chosen lane",
+        "Pihu Leave saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "Tado Rescue single player added to chosen lane",
+        "Tado Rescue saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "Tado Leave single player added to chosen lane",
+        "Tado Leave saves new count snapshot",
+        "v3 roundtrip retains actual party",
+        "count is runtime snapshot, not hardcoded ten extras",
+        "legacy version 1 saves",
+        "legacy version 1 loads without invented crowd count",
+        "legacy version 2 saves",
+        "legacy version 2 loads without invented crowd count",
+        "invalid central party rejected",
+        "user completed save restored exactly",
+        "support fixture entered",
+        "continuous support escort without repeated walk-idle switches"
+    ],
+    "observations": [
+        "rock=可碰撞岩石 0 material=Assets/Chapter3/School/School rock.mat texture=Assets/Rock_pack/Rock_03/rock_03_diffuse.jpg",
+        "rock=可碰撞岩石 2 material=Assets/Chapter3/School/School rock.mat texture=Assets/Rock_pack/Rock_03/rock_03_diffuse.jpg",
+        "Bawan support head range=0 largest frame jump=0 walk/idle switches=1 smooth=True",
+        "Position fixtures initialize support. Measurement uses actual rescue Update, CharacterController.Move, actor grounding and rig LateUpdate. Not human keyboard input."
+    ],
+    "errors": []
+}

@@ -130,7 +130,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         // Step aside so the player can see Mona during the handoff.
         Vector3 left=WorldPoint(new Vector3(-1.9f,0,-.4f)),right=WorldPoint(new Vector3(1.9f,0,-1));
         while(Flat(bawan.transform.position,left)>.1f||Flat(pihu.transform.position,right)>.1f)
-        {MoveActor(bawan,left,1.75f);MoveActor(pihu,right,2.05f);yield return null;}
+        {MoveActor(bawan,left,Chapter3Player.WalkSpeed);MoveActor(pihu,right,Chapter3Player.WalkSpeed);yield return null;}
         yield return Say(bawan,"莫那，我們到了。",lineSeconds);
         // Authored character dialogue, not a quotation from a historical record.
         yield return Say(mona,"你來了。歡迎你加入我們，一起反抗日本警察的壓迫。這條路不好走，記住，要和同伴彼此照應。",lineSeconds+4);
@@ -195,7 +195,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         // Step around the companion and courtyard props; never warp through them.
         float approachDeadline=Time.time+8;
         while(Flat(mona.transform.position,target)>.15f&&Time.time<approachDeadline)
-        {monaMotor.Move(mona,target,1.65f);player.FocusOn(mona.transform.position+Vector3.up*1.25f);yield return null;}
+        {monaMotor.Move(mona,target,Chapter3Player.WalkSpeed);player.FocusOn(mona.transform.position+Vector3.up*1.25f);yield return null;}
         rebuke.Rebuking=true;
         yield return Say(mona,(HasKnife?"刀":"槍")+"都拿了，現在才說沒準備好？抬起頭，看著我！",lineSeconds+1);
         yield return Say(mona,"同行的人要把性命交在彼此手上。你連自己的心都沒定下來，憑什麼要他們放心把背後交給你！",lineSeconds+4);
@@ -245,7 +245,7 @@ public sealed class Chapter3StationController : MonoBehaviour
                 ui.hint.text=CompanionsWaiting?"巴萬與比胡正在等你，走近他們。":HasWeapon?WeaponName+"已攜帶 · 跟上同伴":"跟上巴萬，先去見莫那";
                 if(!CompanionsWaiting)
                 {
-                    MoveActor(bawan,route[i],HasWeapon?2.4f:1.75f);
+                    MoveActor(bawan,route[i],Chapter3Player.WalkSpeed);
                     leaderProgress=Mathf.Max(leaderProgress,RouteGuide.Project(bawan.transform.position,leaderProgress+2));
                     float rearProgress=Mathf.Max(0,leaderProgress-1.6f);
                     if(rearProgress>=pihuStart)
@@ -254,7 +254,7 @@ public sealed class Chapter3StationController : MonoBehaviour
                         // This target moves every frame. A normal arrival
                         // deadzone repeatedly toggled walking and turned him
                         // back toward the player between tiny forward steps.
-                        pihuMotor.Move(pihu,target,HasWeapon?2.7f:2.05f,.005f);
+                        pihuMotor.Move(pihu,target,Chapter3Player.WalkSpeed,.005f);
                     }
                 }
                 else {FacePlayer(bawan);FacePlayer(pihu);}
@@ -287,7 +287,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         attendingPlayer=false;CompanionsWaiting=false;
         // Let the rear companion finish arriving before starting the dialogue.
         Vector3 target=bawan.transform.position+new Vector3(1.5f,0,-1.3f);
-        while(Flat(pihu.transform.position,target)>.15f){MoveActor(pihu,target,2.05f);yield return null;}
+        while(Flat(pihu.transform.position,target)>.15f){MoveActor(pihu,target,Chapter3Player.WalkSpeed);yield return null;}
         CompanionsWaiting=false;attendingPlayer=true;RouteGuide.Hide();
     }
     void FacePlayer(Chapter2Actor actor)
