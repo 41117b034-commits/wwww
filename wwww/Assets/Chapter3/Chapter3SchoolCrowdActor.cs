@@ -32,6 +32,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         public SkinnedMeshRenderer posed;
         public MeshKey key;
         public SharedPose shared;
+        public MeshKey detailKey;
+        public SharedPose detail;
     }
     struct CapsuleState
     {
@@ -308,6 +310,22 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         int count=Mathf.Min(vertices.Length,1536);var samples=new Vector3[count];var sampleWeights=new BoneWeight[count];
         for(int i=0;i<count;i++){int index=i*(vertices.Length-1)/Mathf.Max(1,count-1);samples[i]=vertices[index];sampleWeights[i]=weights[index];}
         return new SharedPose{mesh=mesh,samples=samples,sampleWeights=sampleWeights};
+    }
+    internal Mesh PoseSource(SkinnedMeshRenderer skin)
+    {foreach(var part in parts)if(part.posed==skin)return part.key.source;return null;}
+    internal Mesh DistantPose(SkinnedMeshRenderer skin,Mesh source)
+    {
+        if(!source||!source.isReadable)return null;
+        foreach(var part in parts)if(part.posed==skin)
+        {
+            if(part.detail!=null)return part.detailKey.source==source?part.detail.mesh:null;
+            // Bind to this actor's original body bounds and local orientation.
+            // Shared once per geometry/rig, never reweighted during movement.
+            var key=new MeshKey{source=source,local=part.key.local,body=part.key.body};
+            if(!meshes.TryGetValue(key,out var shared)){shared=WeightMesh(key);meshes.Add(key,shared);}
+            shared.users++;part.detailKey=key;part.detail=shared;return shared.mesh;
+        }
+        return null;
     }
     BoneWeight Weight(Vector3 point)
     {
@@ -586,6 +604,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(part.original)part.original.enabled=part.originalEnabled;
             if(part.posed)Destroy(part.posed.gameObject);
             if(--part.shared.users==0){meshes.Remove(part.key);if(part.shared.mesh)Destroy(part.shared.mesh);}
+            if(part.detail!=null&&--part.detail.users==0){meshes.Remove(part.detailKey);if(part.detail.mesh)Destroy(part.detail.mesh);}
         }
         if(boneRoot)Destroy(boneRoot.gameObject);
     }

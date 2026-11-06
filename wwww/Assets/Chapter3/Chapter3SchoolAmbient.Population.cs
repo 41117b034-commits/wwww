@@ -6,6 +6,8 @@ public sealed partial class Chapter3SchoolAmbient
     readonly List<GameObject> populationObjects=new List<GameObject>();
     readonly List<Mesh> clothingMeshes=new List<Mesh>();
     readonly List<Material> clothingMaterials=new List<Material>();
+    readonly Dictionary<Mesh,Mesh> clothingDetail=new Dictionary<Mesh,Mesh>();
+    internal Mesh DistantClothing(Mesh source)=>source&&clothingDetail.TryGetValue(source,out var distant)?distant:null;
     Transform[] authoredSpectators;
     bool[] authoredActive;
 
@@ -70,7 +72,6 @@ public sealed partial class Chapter3SchoolAmbient
             part.localRotation=Quaternion.Inverse(source.rotation)*filter.transform.rotation;part.localScale=filter.transform.localScale;
             var original=filter.sharedMesh;
             if(!original.isReadable){part.GetComponent<MeshFilter>().sharedMesh=original;part.GetComponent<MeshRenderer>().sharedMaterials=renderer.sharedMaterials;continue;}
-            var mesh=Instantiate(original);mesh.name=label+" shared clothing";clothingMeshes.Add(mesh);
             var materials=new List<Material>(renderer.sharedMaterials);
             var upper=new Material(materials[0]);upper.name=label+"上衣";
             var lower=new Material(materials[0]);lower.name=label+"褲裝";
@@ -83,25 +84,39 @@ public sealed partial class Chapter3SchoolAmbient
             }
             upper.color=shirt;lower.color=trousers;
             int upperSlot=materials.Count;materials.Add(upper);materials.Add(lower);
-            var triangles=new List<int>[materials.Count];for(int i=0;i<triangles.Length;i++)triangles[i]=new List<int>();
-            var vertices=mesh.vertices;
-            for(int sub=0;sub<original.subMeshCount;sub++)
-            {
-                var indices=original.GetTriangles(sub);
-                for(int n=0;n<indices.Length;n+=3)
+            var mesh=ClotheMesh(original,label+" shared clothing",body,upperSlot);
+            var catalog=Resources.Load<Chapter3CrowdDetailCatalog>("Chapter3/CrowdDetailCatalog");
+            if(catalog)foreach(var entry in catalog.entries)
+                if(entry.source==original&&entry.distant&&entry.distant.isReadable)
                 {
-                    Vector3 center=(vertices[indices[n]]+vertices[indices[n+1]]+vertices[indices[n+2]])/3;
-                    float y=(center.y-body.min.y)/Mathf.Max(.01f,body.size.y),x=Mathf.Abs(center.x-body.center.x)/Mathf.Max(.01f,body.size.y);
-                    int slot=y>.43f&&y<.77f&&x<.23f?upperSlot:y>.22f&&y<=.43f&&x<.17f?upperSlot+1:sub;
-                    triangles[slot].Add(indices[n]);triangles[slot].Add(indices[n+1]);triangles[slot].Add(indices[n+2]);
+                    // The derivative uses the same clothing slots and colours.
+                    // Keep an explicit source mapping; cloning changes identity.
+                    clothingDetail.Add(mesh,ClotheMesh(entry.distant,label+" distant clothing",body,upperSlot));break;
                 }
-            }
-            mesh.subMeshCount=triangles.Length;for(int i=0;i<triangles.Length;i++)mesh.SetTriangles(triangles[i],i);
             part.GetComponent<MeshFilter>().sharedMesh=mesh;part.GetComponent<MeshRenderer>().sharedMaterials=materials.ToArray();
         }
         var capsule=source.GetComponent<CapsuleCollider>();if(capsule)
         {var copy=root.gameObject.AddComponent<CapsuleCollider>();copy.center=capsule.center;copy.height=capsule.height;copy.radius=capsule.radius;}
         root.gameObject.SetActive(false);return root;
+    }
+    Mesh ClotheMesh(Mesh source,string label,Bounds body,int upperSlot)
+    {
+        var mesh=Instantiate(source);mesh.name=label;clothingMeshes.Add(mesh);
+        var triangles=new List<int>[upperSlot+2];for(int i=0;i<triangles.Length;i++)triangles[i]=new List<int>();
+        var vertices=mesh.vertices;
+        for(int sub=0;sub<source.subMeshCount;sub++)
+        {
+            var indices=source.GetTriangles(sub);
+            for(int n=0;n<indices.Length;n+=3)
+            {
+                Vector3 center=(vertices[indices[n]]+vertices[indices[n+1]]+vertices[indices[n+2]])/3;
+                float y=(center.y-body.min.y)/Mathf.Max(.01f,body.size.y),x=Mathf.Abs(center.x-body.center.x)/Mathf.Max(.01f,body.size.y);
+                int slot=y>.43f&&y<.77f&&x<.23f?upperSlot:y>.22f&&y<=.43f&&x<.17f?upperSlot+1:sub;
+                triangles[slot].Add(indices[n]);triangles[slot].Add(indices[n+1]);triangles[slot].Add(indices[n+2]);
+            }
+        }
+        mesh.subMeshCount=triangles.Length;for(int i=0;i<triangles.Length;i++)mesh.SetTriangles(triangles[i],i);
+        return mesh;
     }
     static void AddKnife(Chapter3SchoolCrowdActor actor,Chapter3SchoolController school)
     {
@@ -127,6 +142,7 @@ public sealed partial class Chapter3SchoolAmbient
         foreach(var obj in populationObjects)if(obj)Destroy(obj);
         foreach(var mesh in clothingMeshes)if(mesh)Destroy(mesh);
         foreach(var mat in clothingMaterials)if(mat)Destroy(mat);
+        clothingDetail.Clear();
         if(authoredSpectators!=null)for(int i=0;i<authoredSpectators.Length;i++)if(authoredSpectators[i])authoredSpectators[i].gameObject.SetActive(authoredActive[i]);
     }
 }

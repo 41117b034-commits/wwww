@@ -213,6 +213,9 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
         canvas.renderMode = RenderMode.WorldSpace;
         canvas.worldCamera = vrCamera;
         canvas.sortingOrder = 5000;
+        GameDialogueOverlay.Ensure(canvas);
+        Transform policeCanvas = vrCamera.transform.Find("PoliceSubtitleCanvas_Auto");
+        if (policeCanvas != null) GameDialogueOverlay.Ensure(policeCanvas.GetComponent<Canvas>());
 
         canvasGroup = canvasObject.GetComponent<CanvasGroup>();
         canvasGroup.interactable = false;

@@ -22,7 +22,7 @@ public sealed class Chapter3Presentation : MonoBehaviour
     RectTransform expandedSubtitlePanel;
     Vector2 subtitlePanelSize;
     Vector3 subtitlePanelPosition;
-    void Awake(){if(progress)progress.gameObject.SetActive(false);}
+    void Awake(){GameDialogueOverlay.Ensure(canvas?canvas:GetComponent<Canvas>());if(progress)progress.gameObject.SetActive(false);}
     public void ConfigureVR(bool enabled)
     {
         if (vr == enabled || !canvas || (enabled && !canvas.worldCamera)) return;
@@ -127,6 +127,7 @@ public sealed class Chapter3Presentation : MonoBehaviour
         ui.menu = Button(end,"返回章節選擇",font,new Vector2(.54f,.09f),new Vector2(.93f,.25f));
         ui.chat.SetActive(false); ui.depart.gameObject.SetActive(false); ui.subtitlePanel.SetActive(false); ui.ending.SetActive(false);
         ui.fade.color = Color.clear;
+        GameDialogueOverlay.Ensure(ui.canvas);
         return ui;
     }
     static RectTransform Panel(Transform parent,string name,Vector2 min,Vector2 max,Color color)

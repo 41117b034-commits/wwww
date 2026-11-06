@@ -1,0 +1,22 @@
+{
+    "completed": true,
+    "checks": [
+        "第三章 text remains visible through nearer opaque geometry",
+        "第三章 every shown graphic has overlay material",
+        "third chapter world UI retains readable material",
+        "third chapter desktop layout restores",
+        "第二章 text remains visible through nearer opaque geometry",
+        "第二章 every shown graphic has overlay material",
+        "第一章新版警察 text remains visible through nearer opaque geometry",
+        "第一章新版警察 every shown graphic has overlay material"
+    ],
+    "notes": [
+        "第三章 canvases=第三章字幕與交談 mode=ScreenSpaceCamera guard=True",
+        "第三章 white text pixels through foreground geometry=0 -> 1102",
+        "第二章 canvases=Chapter2_HUD mode=ScreenSpaceCamera guard=True",
+        "第二章 white text pixels through foreground geometry=0 -> 75445",
+        "第一章新版警察 canvases=StorySubtitleCanvas_Auto mode=WorldSpace guard=True;PoliceSubtitleCanvas_Auto mode=WorldSpace guard=False;XR Device Simulator UI(Clone) mode=ScreenSpaceOverlay guard=False;Chapter1FadeCanvas_Auto mode=ScreenSpaceOverlay guard=False;SimulatorUIPanel mode=WorldSpace guard=False;EyeOpenCanvas mode=ScreenSpaceCamera guard=False",
+        "第一章新版警察 white text pixels through foreground geometry=0 -> 988"
+    ],
+    "errors": []
+}

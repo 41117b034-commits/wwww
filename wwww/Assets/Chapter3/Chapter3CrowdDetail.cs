@@ -16,7 +16,8 @@ public sealed class Chapter3CrowdDetail : MonoBehaviour
         public Transform owner;
         public bool far;
         public Mesh Current=>skin?skin.sharedMesh:filter?filter.sharedMesh:null;
-        public void Set(Mesh value){if(skin)skin.sharedMesh=value;else if(filter)filter.sharedMesh=value;}
+        public void Set(Mesh value)
+        {if(skin){Bounds bounds=skin.localBounds;skin.sharedMesh=value;skin.localBounds=bounds;}else if(filter)filter.sharedMesh=value;}
     }
     readonly List<Binding> bindings=new List<Binding>();
     readonly HashSet<int> known=new HashSet<int>();
@@ -95,9 +96,11 @@ public sealed class Chapter3CrowdDetail : MonoBehaviour
         foreach(var filter in ambient.GetComponentsInChildren<MeshFilter>(true))
         {
             if(known.Contains(filter.GetInstanceID())||!filter.sharedMesh)continue;
-            var crowd=filter.GetComponentInParent<Chapter3SchoolCrowdActor>();
+            var crowd=filter.GetComponentInParent<Chapter3SchoolCrowdActor>(true);
             // Never replace a template before its native/fallback pose exists.
             if(!crowd||!crowd.HasPoseGeometry||crowd.IsRouteCompanion)continue;
+            Mesh clothing=ambient.DistantClothing(filter.sharedMesh);
+            if(clothing){Add(filter,null,filter.sharedMesh,clothing,crowd,crowd.transform);continue;}
             foreach(var entry in catalog.entries)
                 if(entry.source==filter.sharedMesh&&entry.distant)
                 {Add(filter,null,filter.sharedMesh,entry.distant,crowd,crowd.transform);break;}
@@ -105,24 +108,26 @@ public sealed class Chapter3CrowdDetail : MonoBehaviour
         foreach(var skin in ambient.GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             if(known.Contains(skin.GetInstanceID())||!skin.sharedMesh)continue;
-            var crowd=skin.GetComponentInParent<Chapter3SchoolCrowdActor>();
+            // Ambushers and two substitute pupils start inactive. Discover
+            // their owner now, before the bounded startup scan finishes.
+            var crowd=skin.GetComponentInParent<Chapter3SchoolCrowdActor>(true);
             if(crowd&&(!crowd.HasPoseGeometry||crowd.IsRouteCompanion))continue;
-            var runner=skin.GetComponentInParent<Chapter2Actor>();
+            var runner=skin.GetComponentInParent<Chapter2Actor>(true);
             bool isRunner=false;
             if(runner&&ambient.runners!=null)foreach(var candidate in ambient.runners)if(runner==candidate){isRunner=true;break;}
             if(!crowd&&!isRunner)continue;
+            Mesh source=crowd?crowd.PoseSource(skin):null;
+            if(source)
+            {
+                Mesh distant=ambient.DistantClothing(source);
+                if(!distant)foreach(var entry in catalog.entries)if(entry.source==source&&entry.distant){distant=entry.distant;break;}
+                Mesh posed=crowd.DistantPose(skin,distant);
+                if(posed){Add(null,skin,skin.sharedMesh,posed,crowd,crowd.transform);continue;}
+            }
             foreach(var entry in catalog.entries)
             {
                 Mesh replacement=null;
                 if(entry.source==skin.sharedMesh&&entry.distant&&entry.sourceBones==skin.bones.Length)replacement=entry.distant;
-                else if(crowd&&entry.posedDistant&&skin.bones.Length==15&&skin.sharedMesh.vertexCount==entry.sourceVertices
-                    &&skin.sharedMesh.name==entry.source.name+" · shared crowd pose")
-                {
-                    // Match the authored source reference as well as the
-                    // generated pose name; names alone are not an allowlist.
-                    foreach(var original in crowd.GetComponentsInChildren<MeshFilter>(true))
-                        if(original.sharedMesh==entry.source||original.sharedMesh==entry.distant){replacement=entry.posedDistant;break;}
-                }
                 if(replacement){Add(null,skin,skin.sharedMesh,replacement,crowd,crowd?crowd.transform:runner.transform);break;}
             }
         }

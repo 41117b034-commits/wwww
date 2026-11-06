@@ -1,0 +1,14 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "diagnostic recorded"
+    ],
+    "notes": [
+        "Input update mode=ProcessEventsInDynamicUpdate vSync=0 targetFPS=-1",
+        "school-live n=57 medianMs=109.203699976206 p95Ms=118.968900002073 PlayerLoop=92.30; BehaviourUpdate=3.18; BehaviourLateUpdate=0.00; Camera.Render=0.01; Physics.Simulate=17.58; Animator.Update=0.00; UpdateRendererBoundingVolumes=0.43; RenderLoop.Draw=0.18; GC.Alloc=0.06",
+        "school-no-render n=243 medianMs=11.3611000124365 p95Ms=16.5055000106804 PlayerLoop=5.39; BehaviourUpdate=1.05; BehaviourLateUpdate=0.00; Camera.Render=0.00; Physics.Simulate=0.28; Animator.Update=0.00; UpdateRendererBoundingVolumes=0.17; RenderLoop.Draw=0.00; GC.Alloc=0.04",
+        "native raw=0 polled=0 shots=0"
+    ],
+    "errors": []
+}

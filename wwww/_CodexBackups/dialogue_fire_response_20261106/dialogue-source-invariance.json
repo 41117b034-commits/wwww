@@ -1,0 +1,34 @@
+[
+  {
+    "path": "Assets/Chapter2/Chapter2Presentation.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Presentation.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3CrowdDetail.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Population.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1ChoiceUI.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1DialogueUI.cs",
+    "ChineseAndPunctuationUnchanged": true
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1StorySubtitleBridge.cs",
+    "ChineseAndPunctuationUnchanged": true
+  }
+]

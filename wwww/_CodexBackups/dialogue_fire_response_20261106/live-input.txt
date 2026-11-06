@@ -1,0 +1,24 @@
+raw press #1 frame=3210 eventTime=140.950225299981
+polled #1 frame=3210 ready=True loaded=True reload=False focused=True fighting=True inputMs=7.92789997649379 shots=0
+SHOT frame=3210 count=1 rawToShotMs=88.4650999796577
+raw press #2 frame=3302 eventTime=145.051338099991
+polled #2 frame=3302 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.192900013644248 shots=1
+SHOT frame=3302 count=2 rawToShotMs=3.45190000371076
+raw press #3 frame=3397 eventTime=149.101362599991
+polled #3 frame=3397 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.221900001633912 shots=2
+SHOT frame=3397 count=3 rawToShotMs=4.90820000413805
+raw press #4 frame=3494 eventTime=153.227400100004
+polled #4 frame=3494 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.159100018208846 shots=3
+SHOT frame=3494 count=4 rawToShotMs=4.33960001100786
+raw press #5 frame=3591 eventTime=157.326237800007
+polled #5 frame=3591 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.166199984960258 shots=4
+SHOT frame=3591 count=5 rawToShotMs=3.6291999858804
+raw press #6 frame=3687 eventTime=161.397902800003
+polled #6 frame=3687 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.230000005103648 shots=5
+SHOT frame=3687 count=6 rawToShotMs=4.47529999655671
+raw press #7 frame=3784 eventTime=165.483203099982
+polled #7 frame=3784 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.165100005688146 shots=6
+SHOT frame=3784 count=7 rawToShotMs=3.51280000177212
+raw press #8 frame=3878 eventTime=169.5508806
+polled #8 frame=3878 ready=True loaded=True reload=False focused=True fighting=True inputMs=0.233300001127645 shots=7
+SHOT frame=3878 count=8 rawToShotMs=6.04300000122748

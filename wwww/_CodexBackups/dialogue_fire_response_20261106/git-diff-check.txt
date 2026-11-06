@@ -1,0 +1,8 @@
+warning: in the working copy of 'wwww/Assets/Chapter2/Chapter2Presentation.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3CrowdDetail.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3Presentation.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.Population.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolCrowdActor.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Resources/Chapter3/CrowdDetailCatalog.asset', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/腳本/第一章演出/Chapter1ChoiceUI.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/腳本/第一章演出/Chapter1DialogueUI.cs', LF will be replaced by CRLF the next time Git touches it

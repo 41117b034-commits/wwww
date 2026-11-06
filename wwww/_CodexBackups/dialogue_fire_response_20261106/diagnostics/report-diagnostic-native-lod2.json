@@ -1,0 +1,41 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter"
+    ],
+    "notes": [
+        "Input update mode=ProcessEventsInDynamicUpdate vSync=0 targetFPS=-1",
+        "skin=Crowd pose · tripo_node_53d52c46 vertices=736993 distance=8.960124 crowd=日籍女教師與家屬 1 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.15862 crowd=日籍學童 7 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=22.46231 crowd=日籍學童 4 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=25.37933 crowd=日籍學童 10 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=24.69287 crowd=日籍學童 9 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=6.805309 crowd=日籍學童 1 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=18.57787 crowd=日籍學童 2 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.37439 crowd=日籍學童 6 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=19.14749 crowd=日籍學童 3 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.76575 crowd=日籍學童 8 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.34269 crowd=日籍學童 5 visible=True",
+        "skin=tripo_node_3a511942 vertices=213897 distance=24.65334 crowd= visible=False",
+        "skin=tripo_node_3a511942 vertices=213897 distance=26.57102 crowd=校內埋伏的族人 6 visible=True",
+        "skin=tripo_node_3a511942 vertices=213897 distance=24.09429 crowd=校內埋伏的族人 9 visible=True",
+        "skin=tripo_node_3a511942 vertices=213897 distance=8.298583 crowd=校內埋伏的族人 3 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=16.35052 crowd=校內埋伏的族人 4 visible=True",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=27.92892 crowd= visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=11.50687 crowd=校內埋伏的族人 10 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=17.72715 crowd=校內埋伏的族人 7 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=7.767925 crowd=校內埋伏的族人 1 visible=False",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=14.83252 crowd=校內埋伏的族人 8 visible=True",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=30.94788 crowd= visible=False",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=14.26474 crowd=校內埋伏的族人 5 visible=True",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=22.91811 crowd=校內埋伏的族人 2 visible=True",
+        "skin=tripo_node_b2cbe21f vertices=157242 distance=12.4702 crowd= visible=False",
+        "active skins=60 vertices=9579252",
+        "crowd bindings=22 far=18 enabled=True",
+        "fallback 日籍學童 9 skin=日籍學童服裝 shared clothing · shared crowd pose bones=15 original=日籍學童服裝 shared clothing ;日籍學童服裝 shared clothing  matching=",
+        "fallback 日籍學童 2 skin=日籍學童服裝 shared clothing · shared crowd pose bones=15 original=日籍學童服裝 shared clothing ;日籍學童服裝 shared clothing  matching="
+    ],
+    "errors": [
+        "System.NullReferenceException: Object reference not set to an instance of an object.\r\n  at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x00018] in <25ce29052dfe4e49a635a42f7798806b>:0 \r\n  at UnityEngine.Mesh.get_bindposes () [0x00006] in <25ce29052dfe4e49a635a42f7798806b>:0 \r\n  at DialogueFireVerify+<>c.<Inventory>b__29_6 (Chapter3CrowdDetailCatalog+Entry e) [0x00000] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.Diagnostic.cs:81 \r\n  at System.Linq.Enumerable+WhereSelectArrayIterator`2[TSource,TResult].MoveNext () [0x0003a] in <9f5692804bed4122b102b53a993bfd3f>:0 \r\n  at System.String.Join (System.String separator, System.Collections.Generic.IEnumerable`1[T] values) [0x0002c] in <152439c387994a8da523328132967f8d>:0 \r\n  at DialogueFireVerify.Inventory () [0x00287] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.Diagnostic.cs:81 \r\n  at DialogueFireVerify+<Investigate>d__27.MoveNext () [0x002ca] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.Diagnostic.cs:44 \r\n  at DialogueFireVerify+<Run>d__15.MoveNext () [0x00080] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.cs:53 "
+    ]
+}

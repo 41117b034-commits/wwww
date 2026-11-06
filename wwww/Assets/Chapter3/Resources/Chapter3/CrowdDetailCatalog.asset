@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CrowdDetailCatalog
   m_EditorClassIdentifier: 
   automatic: 1
-  enterDistance: 12
-  leaveDistance: 9
+  enterDistance: 5
+  leaveDistance: 3.5
   simplifierCommit: 53fdb3122645bcd3ad2c258235200dff3dfbaa9b
   entries:
   - source: {fileID: 1, guid: 6639f2a9c27e5ac4b9687b80f1e67554, type: 2}
@@ -37,13 +37,23 @@ MonoBehaviour:
     posedDistant: {fileID: 4300000, guid: dce67281c7f2e3a459246ef3d0244996, type: 2}
     sourceVertices: 341158
     sourceBones: 0
-  - source: {fileID: 3808560406325459795, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
-    distant: {fileID: 4300000, guid: 016241440fc277342b9a77ee0488fffe, type: 2}
-    posedDistant: {fileID: 0}
-    sourceVertices: 997340
-    sourceBones: 41
   - source: {fileID: -5494604749815585516, guid: 4599037f8b4b606428611d1bda378ce4, type: 3}
     distant: {fileID: 4300000, guid: b6c14cb1059bb2540a0901ebbebcfde1, type: 2}
     posedDistant: {fileID: 0}
     sourceVertices: 341158
     sourceBones: 39
+  - source: {fileID: 3808560406325459795, guid: 8f52cf137c01269468711855767ba7d6, type: 3}
+    distant: {fileID: 4300000, guid: 5288dabd41fdf8345bacca024df6207a, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 997340
+    sourceBones: 41
+  - source: {fileID: 215812804378155711, guid: 04a74717488d6ae488d8cef381fb8b28, type: 3}
+    distant: {fileID: 4300000, guid: 772b2f34759bd6a48ac0a8670fa572cf, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1010947
+    sourceBones: 41
+  - source: {fileID: 6728425135894765629, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
+    distant: {fileID: 4300000, guid: 4e6c004f60d352b49a826df1938626f7, type: 2}
+    posedDistant: {fileID: 0}
+    sourceVertices: 1029551
+    sourceBones: 41

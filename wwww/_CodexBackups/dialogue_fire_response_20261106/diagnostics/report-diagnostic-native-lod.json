@@ -1,0 +1,40 @@
+{
+    "completed": true,
+    "checks": [
+        "formal third chapter",
+        "diagnostic recorded"
+    ],
+    "notes": [
+        "Input update mode=ProcessEventsInDynamicUpdate vSync=0 targetFPS=-1",
+        "skin=Crowd pose · tripo_node_53d52c46 vertices=736993 distance=8.937569 crowd=日籍女教師與家屬 1 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=6.81696 crowd=日籍學童 1 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.47104 crowd=日籍學童 6 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=18.92449 crowd=日籍學童 3 visible=False",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.33489 crowd=日籍學童 5 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=25.41887 crowd=日籍學童 10 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=18.73037 crowd=日籍學童 2 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=24.68767 crowd=日籍學童 9 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.13617 crowd=日籍學童 7 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=22.46489 crowd=日籍學童 4 visible=True",
+        "skin=Crowd pose · tripo_node_33432f6c vertices=341158 distance=23.76264 crowd=日籍學童 8 visible=True",
+        "skin=tripo_node_3a511942 vertices=213897 distance=6.211329 crowd=校內埋伏的族人 3 visible=False",
+        "skin=tripo_node_3a511942 vertices=213897 distance=24.12309 crowd=校內埋伏的族人 9 visible=True",
+        "skin=tripo_node_3a511942 vertices=213897 distance=24.60103 crowd= visible=False",
+        "skin=tripo_node_3a511942 vertices=213897 distance=26.5879 crowd=校內埋伏的族人 6 visible=True",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=16.79937 crowd=校內埋伏的族人 7 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=7.772444 crowd=校內埋伏的族人 1 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=11.51663 crowd=校內埋伏的族人 10 visible=False",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=16.34588 crowd=校內埋伏的族人 4 visible=True",
+        "skin=tripo_node_f32c0c9b vertices=211898 distance=27.93144 crowd= visible=False",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=30.95693 crowd= visible=False",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=14.27094 crowd=校內埋伏的族人 5 visible=True",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=22.88488 crowd=校內埋伏的族人 2 visible=True",
+        "skin=tripo_node_9c8dfc1a vertices=211481 distance=14.84475 crowd=校內埋伏的族人 8 visible=True",
+        "skin=tripo_node_b2cbe21f vertices=157242 distance=16.83133 crowd= visible=True",
+        "active skins=60 vertices=9579252",
+        "school-live n=101 medianMs=60.742300003767 p95Ms=68.4631000040099 PlayerLoop=46.83; BehaviourUpdate=2.58; PreLateUpdate.ScriptRunBehaviourLateUpdate=2.78; MeshSkinning.Skin=426.65; Physics.Simulate=5.86; Animator.Update=0.00; UpdateRendererBoundingVolumes=0.23; RenderLoop.Draw=0.17; GC.Alloc=0.05",
+        "school-no-render n=240 medianMs=11.6811000043526 p95Ms=16.7799000046216 PlayerLoop=5.35; BehaviourUpdate=1.08; PreLateUpdate.ScriptRunBehaviourLateUpdate=1.71; MeshSkinning.Skin=91.19; Physics.Simulate=0.24; Animator.Update=0.00; UpdateRendererBoundingVolumes=0.18; RenderLoop.Draw=0.00; GC.Alloc=0.04",
+        "native raw=0 polled=0 shots=0"
+    ],
+    "errors": []
+}

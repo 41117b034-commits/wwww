@@ -1,0 +1,22 @@
+[
+  {
+    "path": "Assets/Scenes/第一章新版警察.unity",
+    "sha256": "8901760AF24CABC1049CC98B2EB031F34771496A93FC912B21316D0BD578CAF2"
+  },
+  {
+    "path": "Assets/Scenes/第二章.unity",
+    "sha256": "E0ABC7016CC78C78F05B11463D00AFC4878580B59F296A169FACDD34B2587E0D"
+  },
+  {
+    "path": "Assets/Scenes/第三章.unity",
+    "sha256": "E47C5CEDD2733205D30529E0FA2A62DB9687B1FD7566961BEB5E7C309868F7D9"
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "sha256": "604E4F021AB9D3DA74D4E35011C00A33F9375B5D82F54130CAECB025E17BFC3E"
+  },
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "sha256": "3C027A7F48F924A0002D8DD9CFE023A9B997230BF61D59927B0AE7BC739A4F51"
+  }
+]

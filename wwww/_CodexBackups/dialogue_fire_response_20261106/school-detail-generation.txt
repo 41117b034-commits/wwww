@@ -1,0 +1,4 @@
+tripo_node_f32c0c9b source=8f52cf137c01269468711855767ba7d6 vertices=997340 -> 87453 bones=41 submeshes=1 blendshapes=0
+tripo_node_9c8dfc1a source=04a74717488d6ae488d8cef381fb8b28 vertices=1010947 -> 80074 bones=41 submeshes=1 blendshapes=0
+tripo_node_3a511942 source=4e3eb271119974a48936b1c632085f95 vertices=1029551 -> 77300 bones=41 submeshes=1 blendshapes=0
+completed=true

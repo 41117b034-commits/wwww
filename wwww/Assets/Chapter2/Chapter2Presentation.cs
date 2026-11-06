@@ -15,6 +15,7 @@ public sealed class Chapter2Presentation : MonoBehaviour
     bool inVR;
     Text locationCaption;
     CanvasGroup locationCaptionGroup;
+    void Awake(){GameDialogueOverlay.Ensure(canvas?canvas:GetComponent<Canvas>());}
     public void ShowLocationCaption(string text, float alpha = 1)
     {
         if (!locationCaption)
@@ -66,6 +67,7 @@ public sealed class Chapter2Presentation : MonoBehaviour
         var go=new GameObject("Chapter2_HUD",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
         var ui=go.AddComponent<Chapter2Presentation>(); ui.font=font;ui.view=camera;ui.canvas=go.GetComponent<Canvas>();
         ui.canvas.renderMode=RenderMode.ScreenSpaceCamera;ui.canvas.worldCamera=camera;ui.canvas.planeDistance=0.5f;ui.canvas.sortingOrder=100;
+        GameDialogueOverlay.Ensure(ui.canvas);
         var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.matchWidthOrHeight=0.5f;
         var header=ui.Panel(go.transform,"Chapter heading",new Vector2(.025f,.84f),new Vector2(.42f,.975f),new Color(.025f,.045f,.04f,.85f));
         ui.chapter=ui.Label(header,"第二章  /  新規定與秘密會議",24,new Vector2(.045f,.54f),new Vector2(.96f,.96f),new Color(.83f,.73f,.5f));

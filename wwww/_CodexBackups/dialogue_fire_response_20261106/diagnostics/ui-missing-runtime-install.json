@@ -1,0 +1,11 @@
+{
+    "completed": false,
+    "checks": [],
+    "notes": [
+        "第三章 canvases=第三章字幕與交談 mode=ScreenSpaceCamera guard=False",
+        "第三章 white text pixels through foreground geometry=0 -> 0"
+    ],
+    "errors": [
+        "System.Exception: FAILED: 第三章 text remains visible through nearer opaque geometry\r\n  at DialogueFireVerify.Check (System.String label, System.Boolean ok) [0x00029] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.cs:46 \r\n  at DialogueFireVerify+<UIAudit>d__31.MoveNext () [0x00583] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.UI.cs:53 \r\n  at DialogueFireVerify+<Run>d__15.MoveNext () [0x00080] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\DialogueFireVerify.cs:53 "
+    ]
+}

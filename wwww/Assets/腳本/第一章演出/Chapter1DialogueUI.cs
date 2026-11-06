@@ -12,6 +12,7 @@ public class Chapter1DialogueUI : MonoBehaviour
 
     private void Awake()
     {
+        GameDialogueOverlay.Ensure(GetComponentInParent<Canvas>());
         HideInstant();
     }
 

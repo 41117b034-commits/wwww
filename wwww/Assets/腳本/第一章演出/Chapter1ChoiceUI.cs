@@ -15,6 +15,7 @@ public class Chapter1ChoiceUI : MonoBehaviour
 
     private void Awake()
     {
+        GameDialogueOverlay.Ensure(GetComponentInParent<Canvas>());
         HideInstant();
     }
 

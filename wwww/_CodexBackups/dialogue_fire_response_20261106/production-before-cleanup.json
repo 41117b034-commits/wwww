@@ -1,0 +1,66 @@
+[
+  {
+    "path": "Assets/SharedUI/GameDialogueOverlay.cs",
+    "sha256": "65270BE8A947320877727B8D3A842D6F6DEE70906A71DE1E6253D246A553B1EB"
+  },
+  {
+    "path": "Assets/SharedUI/GameDialogueOverlayGraphic.cs",
+    "sha256": "ADFE8CEB2B1103000E2EAEDE83EBE78D56D05C6F884CE7BB410582DF5AE96D33"
+  },
+  {
+    "path": "Assets/Resources/DialogueUI/ReadableUI.shader",
+    "sha256": "C6F7E6B2469CD8FCA01F03EB3B8E3879628A381E2307A718C5BAD32E911ED296"
+  },
+  {
+    "path": "Assets/Resources/DialogueUI/ReadableTMP.shader",
+    "sha256": "AF22B1C7E5EDA109B25C3E52B9D4E1040453FB03A18256894AEB4D4528387FE2"
+  },
+  {
+    "path": "Assets/Chapter2/Chapter2Presentation.cs",
+    "sha256": "9ECB83CC9945D61AC5AA76369A654C350EA1BB9CDC6099ADA5EDE4400A2A1E70"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3Presentation.cs",
+    "sha256": "5D7EE1D640AA39DE9A80EC3C04EB8D25ECAA5C793BC43DAC0774C0F1D8EE49D7"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3CrowdDetail.cs",
+    "sha256": "9B49EB0A10AED32A66A26A52DBB1BD4D3226CB5631BD9E52B218A8E5404AA756"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolAmbient.Population.cs",
+    "sha256": "EDF0926D66ADC4649A26636A9EA737299D7684796AAD5CE430EA902A3528FC7C"
+  },
+  {
+    "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+    "sha256": "943237EE5E80C9444141CFD79D7ED0E1AF022E782744C85BA2B6B808AD3AE00F"
+  },
+  {
+    "path": "Assets/Chapter3/Resources/Chapter3/CrowdDetailCatalog.asset",
+    "sha256": "4D3410768232E10B6C91B71F8865E876627877B58F2EE9D6600DCCCDC6A9CCD6"
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1ChoiceUI.cs",
+    "sha256": "9D8EFA1A0F984AA432AB8661FE696A1AED433BEE6E0D4279010D2EF6991FDE4A"
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1DialogueUI.cs",
+    "sha256": "2A6AD2D2E78C567D6A3B8DA7ABE16145F483CDE472F75D081A337CA724943738"
+  },
+  {
+    "path": "Assets/腳本/第一章演出/Chapter1StorySubtitleBridge.cs",
+    "sha256": "641629EC7CCD117E8B53D0A009CAD2181C06B4C057EC35438B3B702D116ED0BC"
+  },
+  {
+    "path": "Assets\\Chapter3\\Resources\\Chapter3\\SchoolNativeDetail\\04a74717488d6ae488d8cef381fb8b28.asset",
+    "sha256": "F7E31911B3F762FBDF0A42FD3BFA74E2AEA2BEEB08A487BAD2423DA2BFCC73A0"
+  },
+  {
+    "path": "Assets\\Chapter3\\Resources\\Chapter3\\SchoolNativeDetail\\4e3eb271119974a48936b1c632085f95.asset",
+    "sha256": "3626CD455453E6A878F8BED55C677B878DF56177635525928DC8FC520E7B4F85"
+  },
+  {
+    "path": "Assets\\Chapter3\\Resources\\Chapter3\\SchoolNativeDetail\\8f52cf137c01269468711855767ba7d6.asset",
+    "sha256": "B6B800BC735EC988C4EC5F3AEA42871FD6F5D5CE8FB063266710136888662491"
+  }
+]
