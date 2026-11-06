@@ -10,6 +10,14 @@ public sealed partial class Chapter3SchoolAmbient
     readonly Chapter3PathMotor[] withdrawalMotors=new Chapter3PathMotor[AmbusherCount];
     readonly Vector3[] withdrawalHomes=new Vector3[AmbusherCount];
     readonly Quaternion[] withdrawalRotations=new Quaternion[AmbusherCount];
+    readonly bool[] withdrawalReached=new bool[AmbusherCount];
+    readonly int[] forestOrder=new int[AmbusherCount];
+    bool forestFollowing;
+    int nextForestOrder;
+    Vector3 forestFollowPosition;
+    static readonly Vector3[] forestSpine={new Vector3(0,0,76),new Vector3(0,0,82),new Vector3(0,0,85),new Vector3(-3,0,92),new Vector3(-3,0,94),new Vector3(0,0,98),new Vector3(8,0,103),new Vector3(13,0,106)};
+    public bool FollowingIntoForest=>forestFollowing;
+    public int ForestFollowerCount {get{int count=0;for(int i=0;i<AmbusherCount;i++)if(forestOrder[i]>=0&&forestFollowing)count++;return count;}}
     // A route coordinate, independent of camera yaw, keeps the player ahead
     // through the two right-angle corners as well as on straight ground.
     static readonly Vector3[] withdrawalSpine={new Vector3(13,0,33),new Vector3(17,0,34),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(24.2f,0,61),new Vector3(22,0,66),new Vector3(12,0,70),new Vector3(0,0,76)};
@@ -59,7 +67,7 @@ public sealed partial class Chapter3SchoolAmbient
             int count=0;if(!Withdrawing)return count;
             for(int i=0;i<AmbusherCount;i++)
                 if(assailants[i]&&assailants[i].gameObject.activeInHierarchy&&withdrawalRoutes[i]!=null
-                    &&withdrawalLeg[i]>=withdrawalRoutes[i].Length&&Horizontal(assailants[i].transform.position,WithdrawalDestination(i))<.6f)count++;
+                    &&withdrawalReached[i])count++;
             return count;
         }
     }
@@ -75,7 +83,7 @@ public sealed partial class Chapter3SchoolAmbient
     {
         if(!Panicking||Withdrawing||!player)return false;
         foreach(var actor in assailants)if(!actor||!actor.gameObject.activeInHierarchy)return false;
-        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;WithdrawalSignalFrame=Time.frameCount;
+        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;forestFollowing=false;nextForestOrder=0;WithdrawalSignalFrame=Time.frameCount;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];withdrawalHomes[i]=actor.transform.position;withdrawalRotations[i]=actor.transform.rotation;
@@ -83,7 +91,7 @@ public sealed partial class Chapter3SchoolAmbient
             if(withdrawalMotors[i]==null)withdrawalMotors[i]=new Chapter3PathMotor();
             withdrawalMotors[i].Reset();
             actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
-            withdrawalRoutes[i]=BuildWithdrawalRoute(actor.transform.position,i);withdrawalLeg[i]=0;
+            withdrawalRoutes[i]=BuildWithdrawalRoute(actor.transform.position,i);withdrawalLeg[i]=0;withdrawalReached[i]=false;forestOrder[i]=-1;
         }
         // Releasing the two holds must not leave their former partners frozen
         // in a restraint pose. Any unfinished encounter also becomes flight.
@@ -91,6 +99,53 @@ public sealed partial class Chapter3SchoolAmbient
         {crowdPhases[i]=CrowdPhase.Fleeing;crowd[i].SetAfraid(true);crowd[i].SetStartled(0);if(i<14)escapeLeg[i]=0;}
         BeginCivilianWithdrawal();
         return true;
+    }
+    public void FollowIntoForest(Transform player)
+    {
+        if(!Withdrawing&&!BeginWithdrawal(player))return;
+        withdrawalPlayer=player;withdrawalReleased=true;forestFollowing=true;forestFollowPosition=player.position;
+        // Existing participants finish their remaining campus corners. Each
+        // physically arriving walker then joins the same party, in arrival order.
+        for(int i=0;i<AmbusherCount;i++)if(assailants[i])assailants[i].FollowingWithdrawal=true;
+    }
+    static float ForestProgress(Vector3 point,out int segment)
+    {
+        float best=float.PositiveInfinity,result=0,length=0;segment=0;point.y=0;
+        for(int i=1;i<forestSpine.Length;i++)
+        {
+            Vector3 a=forestSpine[i-1],d=forestSpine[i]-a;
+            float t=Mathf.Clamp01(Vector3.Dot(point-a,d)/d.sqrMagnitude),distance=(point-a-d*t).sqrMagnitude;
+            if(distance<best){best=distance;result=length+d.magnitude*t;segment=i-1;}length+=d.magnitude;
+        }
+        return result;
+    }
+    static Vector3 ForestSample(float distance,out Vector3 forward)
+    {
+        forward=Vector3.forward;
+        if(distance<0)return forestSpine[0]+forward*distance;
+        for(int i=1;i<forestSpine.Length;i++)
+        {
+            Vector3 delta=forestSpine[i]-forestSpine[i-1];forward=delta.normalized;
+            if(distance<=delta.magnitude)return forestSpine[i-1]+forward*distance;
+            distance-=delta.magnitude;
+        }
+        return forestSpine[forestSpine.Length-1];
+    }
+    void UpdateForestFollower(int index,Chapter3SchoolCrowdActor actor)
+    {
+        if(forestOrder[index]<0){forestOrder[index]=nextForestOrder++;withdrawalMotors[index].Reset();}
+        int rank=forestOrder[index];float gap=3.4f+(rank/2)*1.8f;
+        float limit=ForestProgress(forestFollowPosition,out _)-gap;
+        Vector3 target=ForestSample(limit,out var forward);
+        ForestProgress(actor.transform.position,out int segment);
+        float corner=ForestProgress(forestSpine[segment+1],out _);
+        if(limit>corner&&Horizontal(actor.transform.position,forestSpine[segment+1])>1)
+            target=forestSpine[segment+1];
+        Vector3 side=Vector3.Cross(Vector3.up,forward)*((rank%2==0?-1:1)*.65f);
+        target+=side;
+        if(Horizontal(actor.transform.position,target)<.25f){actor.Face(forestFollowPosition,65);return;}
+        actor.FollowingWithdrawal=true;actor.SetWaiting(false);
+        withdrawalMotors[index].Move(actor,target,Chapter3Player.WalkSpeed,.12f);
     }
     static Vector3[] BuildWithdrawalRoute(Vector3 start,int index)
     {
@@ -124,19 +179,24 @@ public sealed partial class Chapter3SchoolAmbient
                 assailants[i].ResetPose();assailants[i].transform.SetPositionAndRotation(withdrawalHomes[i],withdrawalRotations[i]);
                 assailants[i].SetAnimated(true);
             }
-        Withdrawing=false;withdrawalReleased=false;WithdrawalSignalFrame=-1;withdrawalPlayer=null;
-        for(int i=0;i<AmbusherCount;i++){if(assailants[i])assailants[i].FollowingWithdrawal=false;withdrawalMotors[i]?.Reset();withdrawalRoutes[i]=null;withdrawalLeg[i]=0;}
+        Withdrawing=false;withdrawalReleased=false;forestFollowing=false;nextForestOrder=0;forestFollowPosition=Vector3.zero;WithdrawalSignalFrame=-1;withdrawalPlayer=null;
+        for(int i=0;i<AmbusherCount;i++){if(assailants[i])assailants[i].FollowingWithdrawal=false;withdrawalMotors[i]?.Reset();withdrawalRoutes[i]=null;withdrawalLeg[i]=0;withdrawalReached[i]=false;forestOrder[i]=-1;}
     }
     void UpdateWithdrawal()
     {
         if(!Withdrawing||!withdrawalPlayer)return;
         var school=GetComponentInParent<Chapter3SchoolController>();
-        if(school&&school.Battle&&school.Battle.CurrentStage==Chapter3SchoolBattle.Stage.Down)return;
+        if(school&&school.Battle&&(school.Battle.CurrentStage==Chapter3SchoolBattle.Stage.Down||
+            (school.Battle.Rescue&&school.Battle.Rescue.CurrentStage==Chapter3Rescue.Stage.Down)))return;
+        // The leave ending temporarily moves the desktop viewing body back to
+        // Pihu. Followers retain the last player-controlled position throughout
+        // dialogue/cutaways and keep walking toward the reception, not the cut.
+        if(forestFollowing&&(!school||!school.player||school.player.canMove))forestFollowPosition=withdrawalPlayer.position;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];var route=withdrawalRoutes[i];if(!actor||route==null)continue;
             if(withdrawalLeg[i]>=route.Length)
-            {actor.SetWaiting(false);actor.Face(withdrawalPlayer.position,65);continue;}
+            {if(forestFollowing)UpdateForestFollower(i,actor);else{actor.SetWaiting(false);actor.Face(withdrawalPlayer.position,65);}continue;}
             Vector3 current=actor.transform.position,target=route[withdrawalLeg[i]],toPlayer=withdrawalPlayer.position-current;
             // A fleeing guest can stop on an authored corner. A* cannot
             // solve an occupied goal, even when the aisle beside it is open.
@@ -166,7 +226,7 @@ public sealed partial class Chapter3SchoolAmbient
                 withdrawalLeg[i]++;
                 // A settled participant is now a standing obstacle. Later
                 // arrivals must plan around them to reach the rear row.
-                if(withdrawalLeg[i]>=route.Length)actor.FollowingWithdrawal=false;
+                if(withdrawalLeg[i]>=route.Length){withdrawalReached[i]=true;actor.FollowingWithdrawal=forestFollowing;}
                 continue;
             }
             // Join the exit from the authored safe aisle, then follow behind
@@ -174,7 +234,7 @@ public sealed partial class Chapter3SchoolAmbient
             bool onSpine=target.x>=17||target.z>=44;
             if(onSpine&&!CanFollowWithdrawal(current,ref target,3.4f)){actor.SetWaiting(false);continue;}
             actor.SetWaiting(false);
-            withdrawalMotors[i].Move(actor,target,3.2f);
+            withdrawalMotors[i].Move(actor,target,Chapter3Player.WalkSpeed);
         }
         UpdateCivilianWithdrawal();
     }

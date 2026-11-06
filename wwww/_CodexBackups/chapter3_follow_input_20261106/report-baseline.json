@@ -1,0 +1,11 @@
+{
+    "completed": true,
+    "checks": [
+        "formal scene loaded"
+    ],
+    "notes": [
+        "terrain 山路地面 pos=(0.00, -0.12, -66.00) colliders=1",
+        "terrain 交戰山谷地形 pos=(0.00, 0.00, -75.00) colliders=0"
+    ],
+    "errors": []
+}

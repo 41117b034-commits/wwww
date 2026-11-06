@@ -1,0 +1,30 @@
+battle=Complete rescue=Complete B=(8.46, 0.05, 103.98) P=(-3.33, 0.03, 93.00) T=(13.98, 0.02, 104.93) indices=3,3,4 school indices=14,9,14
+player=(11.80, 0.01, 105.28) arrived=9 forest=9 maxSpeed=2.702715
+校內埋伏的族人 1 (2.43, 0.00, 100.28) leg=13/13 next=forest
+校內埋伏的族人 2 (0.89, 0.00, 82.02) leg=8/8 next=forest
+校內埋伏的族人 3 (5.34, 0.00, 102.01) leg=13/13 next=forest
+校內埋伏的族人 4 (-2.81, 0.00, 91.03) leg=9/9 next=forest
+校內埋伏的族人 5 (-2.16, 0.00, 91.08) leg=8/8 next=forest
+校內埋伏的族人 6 (12.23, 0.00, 37.83) leg=0/8 next=(17.62, 0.00, 34.51)
+校內埋伏的族人 7 (0.17, 0.00, 84.05) leg=12/12 next=forest
+校內埋伏的族人 8 (6.84, 0.00, 103.03) leg=9/9 next=forest
+校內埋伏的族人 9 (-1.90, 0.00, 90.49) leg=8/8 next=forest
+校內埋伏的族人 10 (3.92, 0.00, 101.21) leg=12/12 next=forest
+日籍女教師與家屬 1 position=(-10.12, 0.00, 65.73) leg=13/13 target=arrived
+日籍女教師與家屬 2 position=(-6.77, 0.00, 65.78) leg=8/8 target=arrived
+日籍女教師與家屬 4 position=(-3.19, 0.00, 65.68) leg=10/10 target=arrived
+日籍女教師與家屬 5 position=(0.12, 0.00, 65.74) leg=11/11 target=arrived
+日籍女教師與家屬 6 position=(3.44, 0.00, 65.79) leg=8/8 target=arrived
+日籍女教師與家屬 7 position=(6.87, 0.00, 65.76) leg=11/11 target=arrived
+日籍女教師與家屬 8 position=(10.24, 0.00, 65.79) leg=13/13 target=arrived
+日籍女教師與家屬 9 position=(-10.19, 0.00, 67.88) leg=8/8 target=arrived
+日籍女教師與家屬 10 position=(-6.80, 0.00, 67.90) leg=12/12 target=arrived
+日籍學童 2 position=(-3.40, 0.00, 67.89) leg=9/9 target=arrived
+日籍學童 3 position=(0.06, 0.00, 67.74) leg=11/11 target=arrived
+日籍學童 4 position=(3.42, 0.00, 67.85) leg=8/8 target=arrived
+日籍學童 5 position=(6.86, 0.00, 67.73) leg=11/11 target=arrived
+日籍學童 6 position=(10.22, 0.00, 67.75) leg=11/11 target=arrived
+日籍學童 7 position=(-10.17, 0.00, 69.92) leg=11/11 target=arrived
+日籍學童 8 position=(-6.78, 0.00, 69.91) leg=11/11 target=arrived
+日籍學童 9 position=(-3.35, 0.04, 69.86) leg=11/11 target=arrived
+日籍學童 10 position=(0.00, 0.04, 69.99) leg=8/8 target=arrived

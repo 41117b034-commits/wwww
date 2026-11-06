@@ -25,9 +25,10 @@ public sealed class Chapter3Weapons : MonoBehaviour
     public float ReloadProgress { get; private set; }
     float busyUntil, firedAt=-10, swingAt=-10, feedbackUntil, aimWeight;
     const float InputBufferSeconds=.25f;
-    float queuedAttackUntil;
-    bool queuedReload;
-    public bool AttackQueued=>queuedAttackUntil>Time.time;
+    const float ReloadSeconds=2.6f;
+    float reloadEndsAt;
+    bool queuedAttack,queuedReload;
+    public bool AttackQueued=>queuedAttack;
     public bool ReloadQueued=>queuedReload;
     Vector3 boltHome;
     bool initialized;
@@ -48,6 +49,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
     void Update()
     {
         if(!combat||!combat.Fighting||!Application.isFocused||Supporting()){ClearInputBuffer();Aiming=false;return;}
+        AdvanceReload();
         var k=Keyboard.current;var m=Mouse.current;
         if(k?.escapeKey.wasPressedThisFrame==true){ClearInputBuffer();Cursor.lockState=CursorLockMode.None;Cursor.visible=true;return;}
         bool captured=Cursor.lockState==CursorLockMode.Locked;
@@ -60,9 +62,8 @@ public sealed class Chapter3Weapons : MonoBehaviour
             if(!captured){Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;}
             RequestAttack();
         }
-        if(queuedAttackUntil>0&&Time.time>queuedAttackUntil)queuedAttackUntil=0;
         if(queuedReload&&Ready){queuedReload=false;Reload();}
-        if(AttackQueued&&Ready){queuedAttackUntil=0;Attack();}
+        if(AttackQueued&&Ready){queuedAttack=false;Attack();}
         // Holding the knife trigger keeps swinging at its normal animation
         // cadence; rifles remain one shot per deliberate trigger pull.
         if(captured&&Selected==Weapon.Knife&&m?.leftButton.isPressed==true&&Ready)Attack();
@@ -70,21 +71,26 @@ public sealed class Chapter3Weapons : MonoBehaviour
     bool Supporting()=>combat&&combat.SchoolEncounter&&combat.SchoolEncounter.Rescue&&combat.SchoolEncounter.Rescue.Supporting;
     public bool RequestAttack()
     {
-        if(Ready){queuedAttackUntil=0;return Attack();}
+        AdvanceReload();
+        if(Ready){queuedAttack=false;return Attack();}
         if(!combat||!combat.Fighting||Supporting())return false;
-        float remaining=Reloading?(1-ReloadProgress)*2.6f:busyUntil-Time.time;
+        float remaining=Reloading?reloadEndsAt-Time.time:busyUntil-Time.time;
         if(remaining>0&&remaining<=InputBufferSeconds)
-        {queuedAttackUntil=Time.time+InputBufferSeconds;Notice("已準備攻擊，動作完成後接續。",1);return true;}
+        {queuedAttack=true;Notice("已準備攻擊，動作完成後接續。",1);return true;}
         NoticeNotReady();return false;
     }
     public bool RequestReload()
     {
+        AdvanceReload();
         if(Ready)return Reload();
         if(!combat||!combat.Fighting||Supporting()||Reloading||Selected!=Weapon.Rifle||Loaded||Reserve<=0)return false;
         // R immediately after a shot waits only for the current recoil.
         queuedReload=true;Notice("已準備裝填，槍械復位後開始。",1);return true;
     }
-    void ClearInputBuffer(){queuedAttackUntil=0;queuedReload=false;}
+    // Once a late press is accepted, retain it until that action completes.
+    // Expiring it on a later frame dropped clicks when the crowded campus
+    // skipped across the entire buffer window. All interruption paths cancel it.
+    void ClearInputBuffer(){queuedAttack=false;queuedReload=false;}
     void OnApplicationFocus(bool focus){if(!focus)ClearInputBuffer();}
     void OnDisable(){ClearInputBuffer();}
     public bool Select(Weapon weapon)
@@ -170,13 +176,15 @@ public sealed class Chapter3Weapons : MonoBehaviour
     {
         if(!Ready){NoticeNotReady();return false;}
         if(Selected!=Weapon.Rifle||Loaded||Reserve<=0)return false;
-        Reloading=true;Aiming=false;StartCoroutine(LoadOne());return true;
+        Reloading=true;Aiming=false;ReloadProgress=0;reloadEndsAt=Time.time+ReloadSeconds;return true;
     }
-    IEnumerator LoadOne()
+    void AdvanceReload()
     {
-        // Open bolt, eject, insert exactly one cartridge, close. Ammo commits at completion.
-        float duration=2.6f;
-        for(float t=0;t<duration;t+=Time.deltaTime){ReloadProgress=t/duration;yield return null;}
+        if(!Reloading)return;
+        ReloadProgress=Mathf.Clamp01(1-(reloadEndsAt-Time.time)/ReloadSeconds);
+        if(Time.time<reloadEndsAt)return;
+        // Commit before reading this frame's input, using the same clock as
+        // recoil and buffering. Coroutine resumption used to add another frame.
         if(combat.Fighting){Reserve--;Loaded=true;Reloads++;Notice("已裝入一發");}
         Reloading=false;ReloadProgress=0;if(bolt)bolt.localPosition=boltHome;
     }

@@ -15,7 +15,7 @@ public sealed class Chapter3Player : MonoBehaviour
     public Chapter3SchoolController school;
     public bool canMove, canLook;
     public bool DialogueFraming {get;set;}
-    public const float WalkSpeed = 2.4f;
+    public const float WalkSpeed = 2.7f;
     public float speed = WalkSpeed;
     public bool IsVR { get; private set; }
     public bool ActionPressed { get; private set; }

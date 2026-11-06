@@ -134,7 +134,7 @@ public sealed class Chapter3PathMotor
     bool SeparateCrowdOverlap(Chapter3SchoolCrowdActor actor,Vector3 start,Vector3 target,float speed,float groundedY,bool patrol)
     {
         var people=new List<Transform>();
-        foreach(var c in Physics.OverlapCapsule(start+Vector3.up*.42f,start+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
+        foreach(var c in Physics.OverlapCapsule(start+Vector3.up*Chapter3SchoolCrowdActor.MovementBottom,start+Vector3.up*Chapter3SchoolCrowdActor.MovementTop,Chapter3SchoolCrowdActor.MovementRadius,~0,QueryTriggerInteraction.Ignore))
         {
             if(c.transform.IsChildOf(actor.transform))continue;
             var crowd=c.GetComponentInParent<Chapter3SchoolCrowdActor>();var leader=c.GetComponentInParent<Chapter2Actor>();
@@ -184,7 +184,7 @@ public sealed class Chapter3PathMotor
     public static bool ClearWithdrawalCorner(Vector3 point,Chapter3SchoolCrowdActor walker)
     {
         point.y=0;
-        foreach(var collider in Physics.OverlapCapsule(point+Vector3.up*.42f,point+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
+        foreach(var collider in Physics.OverlapCapsule(point+Vector3.up*Chapter3SchoolCrowdActor.MovementBottom,point+Vector3.up*Chapter3SchoolCrowdActor.MovementTop,Chapter3SchoolCrowdActor.MovementRadius,~0,QueryTriggerInteraction.Ignore))
         {
             var moving=collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
             if(moving&&moving.FollowingWithdrawal&&!moving.IsFallen)continue;
@@ -229,10 +229,17 @@ public sealed class Chapter3PathMotor
     static bool Clear(Vector3 from,Vector3 to,Transform separating)
     {
         from.y=to.y=0;Vector3 delta=to-from;
-        foreach(var c in Physics.OverlapCapsule(to+Vector3.up*.42f,to+Vector3.up*1.25f,Radius,~0,QueryTriggerInteraction.Ignore))
+        // A crowd member can legitimately stop 0.25 m from a table while
+        // patrolling with its 0.23 m capsule. Planning its withdrawal with the
+        // leader's 0.36 m capsule then starts inside that table and has no exit.
+        // Match the actual crowd sweep, including its lower capsule endpoint.
+        float radius=separating?Chapter3SchoolCrowdActor.MovementRadius:Radius;
+        float bottom=separating?Chapter3SchoolCrowdActor.MovementBottom:.42f;
+        float top=separating?Chapter3SchoolCrowdActor.MovementTop:1.25f;
+        foreach(var c in Physics.OverlapCapsule(to+Vector3.up*bottom,to+Vector3.up*top,radius,~0,QueryTriggerInteraction.Ignore))
             if(Blocks(c,from,to,separating))return false;
         if(delta.sqrMagnitude<.000001f)return true;
-        foreach(var h in Physics.CapsuleCastAll(from+Vector3.up*.42f,from+Vector3.up*1.25f,Radius,delta.normalized,delta.magnitude,~0,QueryTriggerInteraction.Ignore))
+        foreach(var h in Physics.CapsuleCastAll(from+Vector3.up*bottom,from+Vector3.up*top,radius,delta.normalized,delta.magnitude,~0,QueryTriggerInteraction.Ignore))
             if(Blocks(h.collider,from,to,separating))return false;
         return true;
     }

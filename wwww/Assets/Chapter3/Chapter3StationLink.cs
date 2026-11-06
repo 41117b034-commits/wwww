@@ -25,7 +25,10 @@ public sealed class Chapter3StationLink : MonoBehaviour
             {road=t.GetComponent<Renderer>().sharedMaterial;t.gameObject.SetActive(false);}
             // Remove the old path's far scenery, and stones inside the new
             // physical connector. Keep the courtyard and building intact.
-            if(t.name.StartsWith("駐在所林木 ")&&t.position.z>-93)t.gameObject.SetActive(false);
+            // This side of the old station hillside is cut away below. Its
+            // ferns must leave with the trees: the continuous combat handoff
+            // keeps the station visible, exposing plants at the old hill height.
+            if((t.name.StartsWith("駐在所林木 ")||t.name.StartsWith("路側蕨草 "))&&t.position.z>-93)t.gameObject.SetActive(false);
             // The shorter connector crosses this old roadside trunk.
             // Move the existing tree, including its colliders, onto the verge.
             if(t.name=="駐在所林木 83")t.position+=new Vector3(3,0,-3);

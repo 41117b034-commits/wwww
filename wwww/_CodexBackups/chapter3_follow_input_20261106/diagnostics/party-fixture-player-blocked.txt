@@ -1,0 +1,73 @@
+battle=Fighting rescue=none B=(0.00, 0.05, 78.00) P=(1.60, 0.03, 78.00) T=(12.97, 0.02, 32.87) school indices=8,9,14
+player=(11.72, 0.01, 32.50) anchor=(0.00, 0.00, 0.00) arrived=0 forest=0 maxSpeed=2.700165
+校內埋伏的族人 1 (-12.65, 0.00, 16.53) leg=0/13 next=(-10.00, 0.00, 20.00)
+校內埋伏的族人 2 (13.90, 0.00, 29.80) leg=0/8 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 3 (1.09, 0.00, 34.97) leg=4/13 next=(8.00, 0.00, 33.00)
+校內埋伏的族人 4 (13.23, 0.00, 26.41) leg=1/9 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 5 (12.80, 0.00, 34.05) leg=0/8 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 6 (12.28, 0.00, 32.33) leg=0/8 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 7 (8.50, 0.00, 31.50) leg=3/12 next=(8.00, 0.00, 33.00)
+校內埋伏的族人 8 (13.55, 0.00, 25.94) leg=1/9 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 9 (12.09, 0.00, 33.44) leg=0/8 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 10 (7.90, 0.00, 31.94) leg=3/11 next=(17.00, 0.00, 34.00)
+校內埋伏的族人 1 goal=(-10.00, 0.00, 20.00) path=(-10.00, 0.00, 20.00) search=False iterations=0 motorClear=True bodyClear=True
+校內埋伏的族人 2 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=False bodyClear=True
+校內埋伏的族人 3 goal=(8.00, 0.00, 33.00) path= search=True iterations=192 motorClear=True bodyClear=True
+ step overlap=日籍女教師與家屬 8 (0.95, 0.00, 34.47)
+校內埋伏的族人 4 goal=(14.00, 0.00, 27.00) path=(14.00, 0.00, 27.00) search=False iterations=0 motorClear=True bodyClear=True
+ step overlap=日籍女教師與家屬 4 (13.26, 0.00, 27.00)
+ step overlap=校內埋伏的族人 8 (13.55, 0.00, 25.94)
+校內埋伏的族人 5 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+校內埋伏的族人 6 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+校內埋伏的族人 7 goal=(8.00, 0.00, 33.00) path= search=False iterations=0 motorClear=True bodyClear=True
+校內埋伏的族人 8 goal=(14.00, 0.00, 27.00) path=(14.00, 0.00, 27.00) search=False iterations=0 motorClear=False bodyClear=False
+ step overlap=日籍學童 2 (14.06, 0.00, 26.07)
+ step overlap=校內埋伏的族人 4 (13.23, 0.00, 26.41)
+校內埋伏的族人 9 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+校內埋伏的族人 10 goal=(8.00, 0.00, 33.00) path=(8.00, 0.00, 32.00);(8.00, 0.00, 32.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+ step overlap=日籍女教師與家屬 1 (8.48, 0.00, 32.29)
+日籍女教師與家屬 1 position=(8.48, 0.00, 32.29) leg=4/12 target=(17.00, 0.00, 34.00)
+  path=(8.50, 0.00, 32.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 2 position=(11.60, 0.00, 31.93) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 4 position=(13.26, 0.00, 27.00) leg=2/10 target=(17.00, 0.00, 34.00)
+  path=(14.00, 0.00, 27.00) search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 5 position=(7.04, 0.00, 33.26) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍學童 6 (7.29, 0.00, 33.77) bounds=Center: (7.29, 0.58, 33.77), Extents: (0.27, 0.58, 0.27) blocks=True
+日籍女教師與家屬 6 position=(13.49, 0.00, 36.03) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 7 position=(7.08, 0.00, 32.64) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(7.50, 0.00, 32.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=False bodyClear=False
+  overlap 日籍學童 7 (7.36, 0.00, 32.22) bounds=Center: (7.36, 0.58, 32.22), Extents: (0.27, 0.58, 0.27) blocks=True
+日籍女教師與家屬 8 position=(0.95, 0.00, 34.47) leg=4/13 target=(8.00, 0.00, 33.00)
+  path= search=True iterations=256 motorClear=True bodyClear=True
+  overlap 校內埋伏的族人 3 (1.09, 0.00, 34.97) bounds=Center: (1.09, 0.85, 34.97), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍女教師與家屬 9 position=(11.04, 0.00, 27.60) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 10 position=(8.91, 0.00, 33.12) leg=4/12 target=(17.00, 0.00, 34.00)
+  path=(8.50, 0.00, 33.00);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍學童 3 (8.96, 0.00, 33.67) bounds=Center: (8.96, 0.58, 33.67), Extents: (0.27, 0.58, 0.27) blocks=False
+日籍學童 2 position=(14.06, 0.00, 26.07) leg=1/9 target=(17.00, 0.00, 34.00)
+  path=(14.00, 0.00, 27.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 校內埋伏的族人 8 (13.55, 0.00, 25.94) bounds=Center: (13.55, 0.85, 25.94), Extents: (0.27, 0.85, 0.27) blocks=False
+日籍學童 3 position=(8.96, 0.00, 33.67) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(9.00, 0.00, 33.50);(8.50, 0.00, 33.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=False bodyClear=False
+  overlap 日籍女教師與家屬 10 (8.91, 0.00, 33.12) bounds=Center: (8.91, 0.85, 33.12), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 4 position=(5.92, 0.00, 35.93) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 5 position=(8.35, 0.00, 34.01) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(8.50, 0.00, 33.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 6 position=(7.29, 0.00, 33.77) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍女教師與家屬 5 (7.04, 0.00, 33.26) bounds=Center: (7.04, 0.85, 33.26), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 7 position=(7.36, 0.00, 32.22) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(8.00, 0.00, 32.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍女教師與家屬 7 (7.08, 0.00, 32.64) bounds=Center: (7.08, 0.85, 32.64), Extents: (0.27, 0.85, 0.27) blocks=False
+日籍學童 8 position=(7.81, 0.00, 34.10) leg=3/11 target=(17.00, 0.00, 34.00)
+  path=(8.00, 0.00, 34.00);(8.00, 0.00, 33.50);(8.00, 0.00, 33.00) search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍學童 5 (8.35, 0.00, 34.01) bounds=Center: (8.35, 0.58, 34.01), Extents: (0.27, 0.58, 0.27) blocks=True
+日籍學童 9 position=(4.35, 0.04, 39.00) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 10 position=(6.26, 0.04, 38.90) leg=0/8 target=(17.00, 0.00, 34.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True

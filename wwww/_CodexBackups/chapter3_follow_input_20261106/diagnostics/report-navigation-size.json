@@ -1,0 +1,13 @@
+{
+    "completed": false,
+    "checks": [
+        "formal scene loaded"
+    ],
+    "notes": [
+        "corner reproduction position=(12.23, 0.00, 37.83) goal=(17.62, 0.00, 34.51) path= search=False iterations=0",
+        "overlap at (12.23, 0.00, 37.83) collider=桌面 pos=(13.00, 0.82, 38.50) bounds=Center: (13.00, 0.82, 38.50), Extents: (2.50, 0.06, 0.42)"
+    ],
+    "errors": [
+        "System.Exception: FAILED: recorded corner traversable\r\n  at Chapter3FollowInputVerify.Check (System.String label, System.Boolean ok) [0x00029] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FollowInputVerify.cs:46 \r\n  at Chapter3FollowInputVerify+<NavigationChecks>d__23.MoveNext () [0x004d5] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FollowInputVerify.Navigation.cs:22 \r\n  at Chapter3FollowInputVerify+<Run>d__15.MoveNext () [0x00080] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3FollowInputVerify.cs:53 "
+    ]
+}

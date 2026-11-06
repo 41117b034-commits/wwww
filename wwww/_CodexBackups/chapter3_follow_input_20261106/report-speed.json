@@ -1,0 +1,20 @@
+{
+    "completed": true,
+    "checks": [
+        "normal player speed is 2.7 after scene handoff",
+        "actual controller and path motor travel at matching pace",
+        "moving queue does not displace authored corner",
+        "moving queue still blocks actual movement",
+        "stationary occupant still gets collision-clear detour",
+        "new rollcall recording plays offline: 莫那 · 魯道",
+        "new rollcall recording plays offline: 達多 · 莫那",
+        "new rollcall recording plays offline: 巴萬 · 拿威"
+    ],
+    "observations": [
+        "Over 2.007357 seconds: player=2.700001 m/s; Bawan=2.700001 m/s; real collision-aware Move methods on an unobstructed school approach.",
+        "Voice mona provider=recorded-neural seconds=6.65",
+        "Voice tado provider=recorded-neural seconds=4.88",
+        "Voice bawan provider=recorded-neural seconds=4.38"
+    ],
+    "errors": []
+}

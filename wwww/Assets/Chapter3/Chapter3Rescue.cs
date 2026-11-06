@@ -59,6 +59,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         bawanIndex=pihuIndex=tadoIndex=0;forestPartyReady=false;bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();
         combat.weapons.Suspend();combat.hud.SetActive(false);ui.Say("",null);
         CurrentStage=Stage.Advancing;player.speed=Chapter3Player.WalkSpeed;player.canMove=player.canLook=true;
+        school.GetComponentInChildren<Chapter3SchoolAmbient>()?.FollowIntoForest(player.transform);
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.objective.text="與巴萬、比胡、達多沿林路離開學校";
         if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();

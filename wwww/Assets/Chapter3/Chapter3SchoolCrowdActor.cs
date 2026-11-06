@@ -8,6 +8,7 @@ using UnityEngine;
 [DefaultExecutionOrder(4600)]
 public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
 {
+    internal const float MovementRadius=.23f,MovementBottom=.35f,MovementTop=1.25f;
     struct MeshKey : IEquatable<MeshKey>
     {
         public Mesh source;
@@ -417,12 +418,12 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     }
     bool Clear(Vector3 next)
     {
-        int count=Physics.OverlapCapsuleNonAlloc(next+Vector3.up*.35f,next+Vector3.up*1.25f,.23f,overlaps,~0,QueryTriggerInteraction.Ignore);
+        int count=Physics.OverlapCapsuleNonAlloc(next+Vector3.up*MovementBottom,next+Vector3.up*MovementTop,MovementRadius,overlaps,~0,QueryTriggerInteraction.Ignore);
         if(count==overlaps.Length)return false;
         for(int i=0;i<count;i++)if(Obstacle(overlaps[i],next))return false;
         Vector3 delta=next-transform.position;
         if(delta.sqrMagnitude<.000001f)return true;
-        count=Physics.CapsuleCastNonAlloc(transform.position+Vector3.up*.35f,transform.position+Vector3.up*1.25f,.23f,
+        count=Physics.CapsuleCastNonAlloc(transform.position+Vector3.up*MovementBottom,transform.position+Vector3.up*MovementTop,MovementRadius,
             delta.normalized,sweepHits,delta.magnitude,~0,QueryTriggerInteraction.Ignore);
         if(count==sweepHits.Length)return false;
         for(int i=0;i<count;i++)if(Obstacle(sweepHits[i].collider,next))return false;

@@ -1,0 +1,18 @@
+{
+    "completed": true,
+    "checks": [
+        "formal scene loaded",
+        "recorded corner traversable",
+        "table remains a solid obstacle"
+    ],
+    "notes": [
+        "actor active=True fallen=False following=True planner direct=True body direct=True",
+        "direction (0.00, 0.00, -1.00) planner=True body=True",
+        "direction (0.00, 0.00, 1.00) planner=False body=False",
+        "  sweep 桌面 distance=0.06390639 bounds=Center: (13.00, 0.82, 38.50), Extents: (2.50, 0.06, 0.42)",
+        "direction (-1.00, 0.00, 0.00) planner=True body=True",
+        "direction (1.00, 0.00, 0.00) planner=True body=True",
+        "corner reproduction position=(17.41, 0.00, 34.64) goal=(17.62, 0.00, 34.51) path=(17.62, 0.00, 34.51) search=False iterations=0"
+    ],
+    "errors": []
+}

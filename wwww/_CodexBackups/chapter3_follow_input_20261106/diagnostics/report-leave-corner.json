@@ -1,0 +1,53 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter",
+        "station tree moved off connector",
+        "Tado looks at player's camera while speaking",
+        "briefing keeps crouch and relaxed hands",
+        "women and children do not disappear before whistle",
+        "all four clear without returning to old rally",
+        "Tado advances on foot after four defeated",
+        "E whistle starts retreat",
+        "all surviving guests join withdrawal",
+        "walked actual controller to (12.00, 0.00, 31.00)",
+        "walked actual controller to (17.00, 0.00, 31.00)",
+        "walked actual controller to (17.00, 0.00, 34.00)",
+        "walked actual controller to (18.00, 0.00, 44.80)",
+        "walked actual controller to (24.20, 0.00, 45.40)",
+        "walked actual controller to (24.20, 0.00, 61.00)",
+        "walked actual controller to (22.00, 0.00, 66.00)",
+        "walked actual controller to (12.00, 0.00, 72.00)",
+        "walked actual controller to (0.00, 0.00, 78.00)",
+        "reunion begins before all NPCs arrive",
+        "survivors remain visible during withdrawal",
+        "walked actual controller to (0.00, 0.00, 82.00)",
+        "walked actual controller to (0.00, 0.00, 85.00)",
+        "walked actual controller to (-3.00, 0.00, 92.00)",
+        "player occupies old blocked injury point",
+        "forest reaches injury naturally",
+        "Pihu arrives beside occupied marker without teleport",
+        "keyboard rescue choice",
+        "walked actual controller to (0.00, 0.00, 98.00)",
+        "walked actual controller to (8.00, 0.00, 103.00)",
+        "walked actual controller to (13.00, 0.00, 106.00)",
+        "choice preserves physical Pihu outcome",
+        "Mona rollcall completes without ending chat",
+        "branch outcome preserved",
+        "actual central party counted",
+        "chapter ending is playable to completion",
+        "all surviving civilians physically reach final assembly slots"
+    ],
+    "observations": [
+        "Tado head=(-10.18, 1.10, -13.97) camera=(-9.67, 0.95, -16.52)",
+        "No player movement input after clearing: (12.00, 0.06, 34.00) -> (12.00, 0.01, 34.00) step=4",
+        "Tado before=(-5.38, 0.02, -9.50) after=(-1.39, 0.02, -4.68)",
+        "Physical player arrival=(3.55, 0.01, 76.21) villagers=0/10 Tado=(22.28, 0.02, 45.04)",
+        "Player=(-2.94, 0.01, 91.87) actual injury=(-3.33, 0.00, 93.00) largest Pihu frame step=0.4407075",
+        "左側通路1人，由我打通側門，我已回來。 / 進入會場的有12人，包括他、我和一起進入會場的同伴。 / 右側通路原有1人，比胡留在林路。我回去確認，他已經死了，右側沒有人回來。",
+        "日籍女教師與家屬 1 position=(-10.12, 0.00, 65.73) leg=13/13 target=arrived\n日籍女教師與家屬 2 position=(-6.77, 0.00, 65.78) leg=8/8 target=arrived\n日籍女教師與家屬 4 position=(-3.19, 0.00, 65.68) leg=10/10 target=arrived\n日籍女教師與家屬 5 position=(0.12, 0.00, 65.74) leg=11/11 target=arrived\n日籍女教師與家屬 6 position=(3.44, 0.00, 65.79) leg=8/8 target=arrived\n日籍女教師與家屬 7 position=(6.87, 0.00, 65.76) leg=11/11 target=arrived\n日籍女教師與家屬 8 position=(10.24, 0.00, 65.79) leg=13/13 target=arrived\n日籍女教師與家屬 9 position=(-10.19, 0.00, 67.88) leg=8/8 target=arrived\n日籍女教師與家屬 10 position=(-6.80, 0.00, 67.90) leg=12/12 target=arrived\n日籍學童 2 position=(-3.40, 0.00, 67.89) leg=9/9 target=arrived\n日籍學童 3 position=(0.06, 0.00, 67.74) leg=11/11 target=arrived\n日籍學童 4 position=(3.42, 0.00, 67.85) leg=8/8 target=arrived\n日籍學童 5 position=(6.86, 0.00, 67.73) leg=11/11 target=arrived\n日籍學童 6 position=(10.22, 0.00, 67.75) leg=11/11 target=arrived\n日籍學童 7 position=(-10.17, 0.00, 69.92) leg=11/11 target=arrived\n日籍學童 8 position=(-6.78, 0.00, 69.91) leg=11/11 target=arrived\n日籍學童 9 position=(-3.35, 0.04, 69.86) leg=11/11 target=arrived\n日籍學童 10 position=(0.00, 0.04, 69.99) leg=8/8 target=arrived"
+    ],
+    "errors": [
+        "System.Exception: FAILED: all ten participants physically reach rear before joining forest\r\n  at Chapter3PartyVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3PartyVerify.cs:76 \r\n  at Chapter3PartyVerify+<CurrentScenario>d__22.MoveNext () [0x0138f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3PartyVerify.Current.cs:100 \r\n  at Chapter3PartyVerify+<Run>d__10.MoveNext () [0x000e0] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3PartyVerify.cs:51 "
+    ]
+}

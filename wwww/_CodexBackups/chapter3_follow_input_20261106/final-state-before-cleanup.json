@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-11-06T07:14:06.9339832Z",
+  "validation": "Formal-scene Editor Play Mode with documented fixtures",
+  "beforeCleanup": "playing=False dirty=False compileFailed=False",
+  "reports": [
+    {
+      "file": "report-foliage-continuous-final.json",
+      "completed": true,
+      "checks": 176,
+      "errors": []
+    },
+    {
+      "file": "report-navigation.json",
+      "completed": true,
+      "checks": 3,
+      "errors": []
+    },
+    {
+      "file": "report-input-final.json",
+      "completed": true,
+      "checks": 34,
+      "errors": []
+    },
+    {
+      "file": "report-speed.json",
+      "completed": true,
+      "checks": 8,
+      "errors": []
+    },
+    {
+      "file": "report-leave.json",
+      "completed": true,
+      "checks": 44,
+      "errors": []
+    },
+    {
+      "file": "report-rescue.json",
+      "completed": true,
+      "checks": 46,
+      "errors": []
+    }
+  ],
+  "totalChecks": 311,
+  "sourceHashes": [
+    {
+      "path": "Assets/Chapter3/Chapter3PathMotor.cs",
+      "sha256": "795412E7A9267419359C57E72C8CA995E29F3811B5863623D84253D1F731B376"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Player.cs",
+      "sha256": "206B7B38B9AD38E83F8C62A2B3B1BC56F2F3CC4C6696400A5CEB9A28230AEEAA"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Rescue.cs",
+      "sha256": "FA84B63D1D007B5F687CD1A9FED999DD564540E15ED2636636AF5EC12228C26D"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.Withdrawal.cs",
+      "sha256": "8395920B5ED8F396AC4E71DF02C7D396E7661F319FC59B4FA13EDD52BA8CB1DC"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolBattle.Assault.cs",
+      "sha256": "7A8F489884546C751F342667B72B2DF059033FF1AA19576F25A2B39F6F312977"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+      "sha256": "B1573C6C3FAD31DC8B66A57A8DFFE23D9CB553899D4419CA6CD2BF4887EFECD2"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3StationLink.cs",
+      "sha256": "5B13C68A9A96A7A79D1771F503775ECF3D03FFD5844B851F7C5C32F53C5089B3"
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Weapons.cs",
+      "sha256": "2AC4619E7A1FEBB8B7BC96C0184DC94EAF26EF674FB1F05D974DEBBFC097DFE0"
+    }
+  ],
+  "sceneSha256": "E47C5CEDD2733205D30529E0FA2A62DB9687B1FD7566961BEB5E7C309868F7D9",
+  "sceneUnchanged": true,
+  "archiveFiles": [
+    "Chapter3FollowInputVerify.cs",
+    "Chapter3FollowInputVerify.cs.meta",
+    "Chapter3FollowInputVerify.Foliage.cs",
+    "Chapter3FollowInputVerify.Foliage.cs.meta",
+    "Chapter3FollowInputVerify.Input.cs",
+    "Chapter3FollowInputVerify.Input.cs.meta",
+    "Chapter3FollowInputVerify.Navigation.cs",
+    "Chapter3FollowInputVerify.Navigation.cs.meta",
+    "Chapter3PartyVerify.cs",
+    "Chapter3PartyVerify.cs.meta",
+    "Chapter3PartyVerify.Current.cs",
+    "Chapter3PartyVerify.Current.cs.meta",
+    "Chapter3PartyVerify.Monitor.cs",
+    "Chapter3PartyVerify.Monitor.cs.meta",
+    "Chapter3PartyVerify.Motion.cs",
+    "Chapter3PartyVerify.Motion.cs.meta"
+  ],
+  "editorLogOffset": 3284492,
+  "cleanupStarted": "2026-11-06T07:14:06.9499837Z"
+}

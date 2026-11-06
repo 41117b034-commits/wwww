@@ -1,0 +1,43 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter",
+        "station tree moved off connector"
+    ],
+    "observations": [],
+    "errors": [
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "System.NullReferenceException: Object reference not set to an instance of an object\r\n  at Chapter3SchoolAmbient.ResetCalm () [0x001a3] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolAmbient.cs:152 \r\n  at Chapter3SchoolBattle.Suspend () [0x000ec] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolBattle.cs:402 \r\n  at Chapter3SchoolController.Suspend () [0x00039] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3SchoolController.cs:127 \r\n  at Chapter3Flow.LeaveCurrent () [0x0005e] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs:96 \r\n  at Chapter3Flow.EnterSchool () [0x00034] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Chapter3\\Chapter3Flow.cs:148 \r\n  at Chapter3PartyVerify+<CurrentScenario>d__22.MoveNext () [0x00222] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3PartyVerify.Current.cs:23 \r\n  at Chapter3PartyVerify+<Run>d__10.MoveNext () [0x000e0] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3PartyVerify.cs:51 ",
+        "NullReferenceException: Object reference not set to an instance of an object",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array.",
+        "IndexOutOfRangeException: Index was outside the bounds of the array."
+    ]
+}

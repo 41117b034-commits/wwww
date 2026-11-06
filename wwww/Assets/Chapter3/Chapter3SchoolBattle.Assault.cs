@@ -146,7 +146,7 @@ public sealed partial class Chapter3SchoolBattle
         }
 
         MoveRetreatFollower();
-        ui.hint.text = "你在前方帶路，達多與族人跟在後面 · 沿黃色箭頭前進 · WASD 移動";
+        ui.hint.text = "跟隨領隊撤退，其餘族人跟在你後方 · 沿黃色箭頭前進 · WASD 移動";
         combat.combatText.text = "前往校後集合點，抵達後繼續沿林路撤離";
         if (ambient.PlayerAtWithdrawalAssembly)
         {
@@ -165,12 +165,7 @@ public sealed partial class Chapter3SchoolBattle
             if((corner-activeRoute[guideIndex]).sqrMagnitude>.001f){activeRoute[guideIndex]=corner;guideMotor.Reset();}
         }
         if(ambient.PlayerAtWithdrawalAssembly){MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,false);return;}
-        Vector3 target=activeRoute[guideIndex],current=school.tado.transform.position;
-        if(Flat(current,target)<.45f){guideIndex++;return;}
-        if(!ambient.CanFollowWithdrawal(current,ref target,1.8f))return;
-        // The guide must use the limited target too; MoveRoute's normal mode
-        // deliberately leads the player and would undo the following rule.
-        guideMotor.Move(school.tado,target,Chapter3Player.WalkSpeed);
+        MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
     }
 
     public bool CallStraggler()=>CallRetreat();

@@ -1,0 +1,12 @@
+{
+    "completed": true,
+    "checks": [
+        "formal scene loaded",
+        "continuous station entry retains station scenery",
+        "old station fern remains 1.7 metres above combat road"
+    ],
+    "notes": [
+        "Original fern 6 position=(-2.47, 1.73, -71.76) minY=1.728389 active=True"
+    ],
+    "errors": []
+}
