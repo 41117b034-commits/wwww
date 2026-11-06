@@ -13,12 +13,20 @@ public sealed class Chapter3DialogueView : MonoBehaviour
     bool framed;
     public bool Framing=>framed;
     public float ActualDistance {get;private set;}
+    bool ContinuousEnding
+    {
+        get
+        {
+            if(!flow||flow.Region!="School"||!flow.school)return false;
+            var ending=flow.school.GetComponent<Chapter3Ending>();return ending&&ending.Active;
+        }
+    }
     public void Configure(Chapter3Flow owner){flow=owner;}
     public void Speak(string speaker,string text)
     {
         if(!flow||string.IsNullOrEmpty(text)||string.IsNullOrEmpty(speaker)){Release();return;}
         // Weapon warnings must never pull the crosshair away from a target.
-        if(flow.player.IsVR||flow.combat.Fighting){Release();return;}
+        if(flow.player.IsVR||flow.combat.Fighting||ContinuousEnding){Release();return;}
         Chapter2Actor found=FindSpeaker(flow,speaker);
         if(!found){Release();return;}
         if(!framed){home=flow.player.view.transform.localPosition;homeLook=flow.player.view.transform.localRotation;homeHeading=flow.player.transform.rotation;}
@@ -47,7 +55,7 @@ public sealed class Chapter3DialogueView : MonoBehaviour
     void LateUpdate()
     {
         if(!framed)return;
-        if(!actor||!actor.gameObject.activeInHierarchy||flow.player.IsVR||flow.combat.Fighting||
+        if(!actor||!actor.gameObject.activeInHierarchy||flow.player.IsVR||flow.combat.Fighting||ContinuousEnding||
             (!flow.ui.subtitlePanel.activeInHierarchy&&!flow.ui.chat.activeInHierarchy)) {Release();return;}
         var rig=actor.Rig;
         Vector3 focus=rig&&rig.Head?rig.Head.position-Vector3.up*.15f:actor.transform.position+Vector3.up*1.35f;

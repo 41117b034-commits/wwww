@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Authored outcomes lead directly to Mona's single roll call and closing.
-public sealed class Chapter3Ending : MonoBehaviour
+public sealed partial class Chapter3Ending : MonoBehaviour
 {
     public enum Stage { Inactive, Outcome, RollCall, Conversation, MonaClosing, Complete }
     public Stage CurrentStage {get;private set;}
@@ -23,9 +23,7 @@ public sealed class Chapter3Ending : MonoBehaviour
     Transform monaParent;
     Vector3 monaLocalPosition,monaLocalScale,monaFacing;
     Quaternion monaLocalRotation;
-    bool monaActive,monaBorrowed,cutaway;
-    Vector3 receptionPlayer,viewLocalPosition;
-    Quaternion receptionRotation,viewLocalRotation;
+    bool monaActive,monaBorrowed;
     Text endTitle,endBody;
     Button retrySave;
     string previousTitle,previousBody,previousReplay;
@@ -34,7 +32,9 @@ public sealed class Chapter3Ending : MonoBehaviour
 
     public void Begin(Chapter3SchoolController owner,Chapter3Rescue branch)
     {
-        Suspend();school=owner;rescue=branch;player=owner.player;ui=owner.ui;
+        StopAllCoroutines();if(Conversation)Conversation.Cancel();RestoreEndingLabels();
+        school=owner;rescue=branch;player=owner.player;ui=owner.ui;
+        PrepareEntrance(owner);
         Result=Chapter3ResultStore.Build(owner.Battle.Selected,branch.Selected,
             owner.flow.CarriedWeapon??Chapter3Weapons.Weapon.Rifle,CentralNpcCount(owner));
         if(Result==null)return;
@@ -61,18 +61,8 @@ public sealed class Chapter3Ending : MonoBehaviour
         {
             ui.objective.text="達多返回林路確認比胡的情況";
             yield return Say(school.tado,"我回去找他。你們在這裡等。",3.8f);
-            // This is a cinematic cut, not a gameplay teleport or a new scene.
-            // Keep headset tracking untouched; VR remains at the reception.
-            if(!player.IsVR)
-            {
-                yield return Fade(true,.65f);
-                receptionPlayer=player.transform.position;receptionRotation=player.transform.rotation;
-                viewLocalPosition=player.view.transform.localPosition;viewLocalRotation=player.view.transform.localRotation;
-                cutaway=true;player.canLook=false;
-                player.Warp(P(1.3f,90.1f)+Vector3.up*.06f,rescue.InjuryPosition+Vector3.up*.55f);
-                ui.objective.text="林路 · 稍後";
-                yield return Fade(false,.65f);
-            }
+            // The player stays at the reception, free to look along the path.
+            // Tado makes the entire return journey in this same visible world.
             yield return Walk(school.tado,tadoMotor,new[]{P(8,103),P(0,98),P(-1,94),P(-1.75f,92)},3.2f);
             school.tado.Face(school.pihu.transform.position);
             yield return Say(school.tado,"比胡……我回來了。",3.2f,false,false);
@@ -81,12 +71,7 @@ public sealed class Chapter3Ending : MonoBehaviour
             rescue.Pose.SetDying(1);DeathConfirmed=true;
             yield return new WaitForSeconds(1.4f);
             yield return Say(school.tado,"比胡……",2.8f,false,false);
-            if(cutaway)
-            {
-                yield return Fade(true,.65f);RestoreView();
-                ui.objective.text="林間接應 · 等待達多回報";
-                yield return Fade(false,.65f);
-            }
+            ui.objective.text="林間接應 · 等待達多沿原路回報";
             yield return Walk(school.tado,tadoMotor,new[]{P(-1,94),P(0,98),P(8,103),P(14.2f,105)},3.2f);
             yield return Say(school.tado,"我找到比胡了。他已經死了。",4.8f);
             yield return Say(school.bawan,"……記住他。我們一起出發，卻沒能一起回來。",4.8f);
@@ -96,19 +81,19 @@ public sealed class Chapter3Ending : MonoBehaviour
     IEnumerator CloseWithMona()
     {
         CurrentStage=Stage.MonaClosing;ui.objective.text="莫那抵達接應處";ui.hint.text="空白鍵略過當句台詞";
-        yield return Fade(true,.8f);
-        BorrowMona();
         if(!Mona)
         {
-            yield return Fade(false,.5f);
             ui.objective.text="接應尚未完成";ui.hint.text="莫那尚未到場，結果未保存。按 F8 重進運動會。";
             yield break;
         }
-        ui.objective.text="林間接應處 · 稍後";
-        yield return Fade(false,.8f);
+        ui.objective.text="莫那正從接應棚後方走來";
         if(Mona)
         {
-            yield return Walk(Mona,monaMotor,new[]{P(16.5f,102),P(15.3f,104)},Chapter3Player.WalkSpeed);
+            // Leave the player's view of the entrance clear. Both leaders
+            // move on foot, with the shelter and landscape always visible.
+            yield return Walk(school.tado,tadoMotor,new[]{P(16.5f,108)},Chapter3Player.WalkSpeed);
+            player.FocusOn(P(18.7f,108)+Vector3.up*1.2f);
+            yield return Walk(Mona,monaMotor,new[]{P(18.7f,112),P(18.7f,108),P(17,104.5f),P(16,104)},Chapter3Player.WalkSpeed);
             CurrentStage=Stage.RollCall;ui.objective.text="莫那清點三路人數";
             yield return Say(Mona,"左側、右側和進入會場的人，各有幾個？把人數和情況告訴我。",5.4f);
             yield return Say(school.bawan,LeftReport,4.8f);
@@ -122,7 +107,6 @@ public sealed class Chapter3Ending : MonoBehaviour
                 :"我記住了。留下的人已經回不來，還在的人要彼此照應。",5.5f);
             yield return Say(Mona,"這場戰鬥還沒有結束。先退入山林，守住身邊的人。",5.2f);
         }
-        yield return Fade(true,1.1f);
         // Only the completed outcome and Mona's report commit a result.
         CommitResult();
         CurrentStage=Stage.Complete;player.canMove=player.canLook=false;
@@ -151,7 +135,7 @@ public sealed class Chapter3Ending : MonoBehaviour
         monaParent=Mona.transform.parent;monaLocalPosition=Mona.transform.localPosition;
         monaLocalRotation=Mona.transform.localRotation;monaLocalScale=Mona.transform.localScale;
         monaFacing=Mona.facing;monaActive=Mona.gameObject.activeSelf;monaBorrowed=true;
-        Mona.transform.SetParent(transform,true);Mona.transform.position=P(19,100);
+        Mona.transform.SetParent(transform,true);Mona.transform.position=P(13,112);
         Mona.gameObject.SetActive(true);Mona.speaking=false;Mona.Face(P(15.3f,104));
     }
     void ReturnMona()
@@ -178,21 +162,6 @@ public sealed class Chapter3Ending : MonoBehaviour
         if(focus)player.FocusOn(actor.transform.position+Vector3.up*1.2f);
         ui.Say(actor.DisplayName,line);actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(line,duration,null);
         yield return Chapter3Flow.WaitForLine(duration);actor.speaking=false;ui.Say("",null);
-    }
-    IEnumerator Fade(bool dark,float duration)
-    {
-        float from=ui.fade.color.a,to=dark?1:0;
-        for(float t=0;t<duration;t+=Time.unscaledDeltaTime)
-        {ui.fade.color=new Color(0,0,0,Mathf.Lerp(from,to,t/duration));yield return null;}
-        ui.fade.color=new Color(0,0,0,to);
-    }
-    void RestoreView()
-    {
-        if(!cutaway||!player)return;cutaway=false;
-        player.Warp(receptionPlayer,receptionPlayer+receptionRotation*Vector3.forward*5);
-        player.transform.rotation=receptionRotation;
-        player.view.transform.localPosition=viewLocalPosition;player.view.transform.localRotation=viewLocalRotation;
-        player.canLook=true;
     }
     void ShowEnding()
     {
@@ -254,7 +223,7 @@ public sealed class Chapter3Ending : MonoBehaviour
     }
     public void Suspend()
     {
-        StopAllCoroutines();if(Conversation)Conversation.Cancel();RestoreView();ReturnMona();RestoreEndingLabels();
+        StopAllCoroutines();if(Conversation)Conversation.Cancel();ReturnMona();RestoreEndingLabels();
         CurrentStage=Stage.Inactive;Saved=DeathConfirmed=RollCallCompleted=false;Result=null;
         if(school)school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;
         if(ui){ui.chat.SetActive(false);ui.ending.SetActive(false);ui.fade.color=Color.clear;}

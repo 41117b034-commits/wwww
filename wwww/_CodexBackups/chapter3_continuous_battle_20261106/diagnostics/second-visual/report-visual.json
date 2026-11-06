@@ -1,0 +1,19 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter opens without black",
+        "three native children already present before alarm",
+        "licensed melee crowd audio plays",
+        "three children shelter instead of attacking",
+        "sheltering children stay in their corners",
+        "actual fallen police mesh rests on floor",
+        "one whistle releases entire party"
+    ],
+    "observations": [
+        "Defeated officer actual posed mesh lowest y=0.02500001 root=(-13.19, 0.17, 26.41)",
+        "Stationary-player withdrawal movement=12.07,12.23,13.27,13.74,11.68,11.38,11.41,13.51,12.14,12.50"
+    ],
+    "errors": [
+        "System.Exception: FAILED: all ten start walking with stationary player\r\n  at Chapter3ContinuousVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.cs:76 \r\n  at Chapter3ContinuousVerify+<ContinuousScenario>d__49.MoveNext () [0x008cb] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.Scenario.cs:50 \r\n  at Chapter3ContinuousVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.cs:51 "
+    ]
+}

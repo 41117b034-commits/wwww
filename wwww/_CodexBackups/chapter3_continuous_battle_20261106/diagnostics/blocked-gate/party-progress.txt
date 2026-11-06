@@ -1,0 +1,92 @@
+battle=Fighting rescue=none B=(0.00, 0.05, 78.00) P=(1.70, 0.03, 77.96) T=(24.18, 0.02, 49.97) school indices=9,9,14
+player=(18.14, 0.01, 43.05) anchor=(0.00, 0.00, 0.00) arrived=0 forest=0 maxSpeed=2.700738
+避難的賽德克孩童 1 (19.50, 0.00, 35.06) leg=6/13 next=(18.00, 0.00, 44.80)
+避難的賽德克孩童 2 (19.32, 0.00, 35.54) leg=6/13 next=(18.00, 0.00, 44.80)
+避難的賽德克孩童 3 (18.01, 0.00, 33.55) leg=5/12 next=(18.08, 0.00, 44.00)
+校內戰鬥的族人 4 (16.92, 0.00, 44.38) leg=2/9 next=(18.08, 0.00, 44.00)
+校內戰鬥的族人 5 (17.87, 0.00, 43.62) leg=2/8 next=(24.20, 0.00, 51.00)
+校內戰鬥的族人 6 (22.82, 0.00, 44.70) leg=2/8 next=(24.20, 0.00, 51.00)
+校內戰鬥的族人 7 (15.37, 0.00, 35.89) leg=5/12 next=(18.08, 0.00, 44.00)
+校內戰鬥的族人 8 (16.92, 0.00, 43.38) leg=2/9 next=(18.08, 0.00, 44.00)
+校內戰鬥的族人 9 (22.21, 0.00, 44.41) leg=2/8 next=(24.20, 0.00, 51.00)
+校內戰鬥的族人 10 (17.68, 0.00, 33.14) leg=5/12 next=(18.08, 0.00, 44.00)
+避難的賽德克孩童 1 goal=(18.00, 0.00, 44.80) path= search=True iterations=352 motorClear=False bodyClear=False
+ goal overlap=外廊矮石階 (0.00, 0.07, 45.05)
+ step overlap=避難的賽德克孩童 2 (19.32, 0.00, 35.54)
+避難的賽德克孩童 2 goal=(18.00, 0.00, 44.80) path= search=True iterations=96 motorClear=True bodyClear=True
+ goal overlap=外廊矮石階 (0.00, 0.07, 45.05)
+ step overlap=避難的賽德克孩童 1 (19.50, 0.00, 35.06)
+避難的賽德克孩童 3 goal=(18.08, 0.00, 44.00) path= search=True iterations=160 motorClear=True bodyClear=True
+ goal overlap=日籍學童 10 (18.23, 0.04, 43.97)
+ goal overlap=校內戰鬥的族人 5 (17.87, 0.00, 43.62)
+ step overlap=日籍學童 1 (18.24, 0.00, 34.14)
+ step overlap=校內戰鬥的族人 10 (17.68, 0.00, 33.14)
+校內戰鬥的族人 4 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+ step overlap=日籍學童 2 (17.43, 0.00, 44.52)
+ step overlap=日籍學童 6 (16.38, 0.00, 44.37)
+校內戰鬥的族人 5 goal=(23.20, 0.00, 45.30) path= search=True iterations=256 motorClear=False bodyClear=False
+ goal overlap=日籍女教師與家屬 6 (23.11, 0.00, 45.28)
+ step overlap=日籍女教師與家屬 9 (17.44, 0.00, 43.89)
+ step overlap=日籍學童 10 (18.23, 0.04, 43.97)
+校內戰鬥的族人 6 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+校內戰鬥的族人 7 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+ step overlap=日籍學童 5 (15.13, 0.00, 35.32)
+校內戰鬥的族人 8 goal=(18.08, 0.00, 44.00) path= search=True iterations=64 motorClear=True bodyClear=True
+ goal overlap=日籍學童 10 (18.23, 0.04, 43.97)
+ goal overlap=校內戰鬥的族人 5 (17.87, 0.00, 43.62)
+ step overlap=日籍學童 7 (17.39, 0.00, 43.05)
+校內戰鬥的族人 9 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=True bodyClear=True
+ step overlap=實體柵欄柱 (22.00, 0.65, 44.00)
+校內戰鬥的族人 10 goal=(0.00, 0.00, 0.00) path= search=False iterations=0 motorClear=False bodyClear=False
+ step overlap=日籍學童 8 (17.19, 0.00, 32.93)
+ step overlap=避難的賽德克孩童 3 (18.01, 0.00, 33.55)
+日籍女教師與家屬 1 position=(15.08, 0.00, 36.43) leg=6/13 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=416 motorClear=True bodyClear=True
+  overlap 日籍學童 3 (14.90, 0.00, 36.95) bounds=Center: (14.90, 0.58, 36.95), Extents: (0.27, 0.58, 0.27) blocks=True
+日籍女教師與家屬 2 position=(19.62, 0.00, 43.81) leg=2/8 target=(24.20, 0.00, 51.00)
+  path= search=True iterations=352 motorClear=True bodyClear=True
+日籍女教師與家屬 3 position=(19.46, 0.00, 34.37) leg=6/13 target=(18.00, 0.00, 44.80)
+  path= search=True iterations=160 motorClear=True bodyClear=True
+  overlap 日籍女教師與家屬 10 (18.92, 0.00, 34.57) bounds=Center: (18.92, 0.85, 34.57), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍女教師與家屬 4 position=(16.51, 0.00, 42.90) leg=3/10 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=64 motorClear=True bodyClear=True
+日籍女教師與家屬 5 position=(15.93, 0.00, 33.48) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=352 motorClear=True bodyClear=True
+日籍女教師與家屬 6 position=(23.11, 0.00, 45.28) leg=3/8 target=(24.20, 0.00, 61.00)
+  path=(23.20, 0.00, 45.30) search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 7 position=(15.10, 0.00, 34.75) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=352 motorClear=True bodyClear=True
+  overlap 日籍學童 5 (15.13, 0.00, 35.32) bounds=Center: (15.13, 0.58, 35.32), Extents: (0.27, 0.58, 0.27) blocks=True
+日籍女教師與家屬 8 position=(16.58, 0.00, 32.99) leg=3/10 target=(18.08, 0.00, 44.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍女教師與家屬 9 position=(17.44, 0.00, 43.89) leg=2/8 target=(24.20, 0.00, 51.00)
+  path= search=False iterations=0 motorClear=False bodyClear=False
+  overlap 校內戰鬥的族人 5 (17.87, 0.00, 43.62) bounds=Center: (17.87, 0.85, 43.62), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍女教師與家屬 10 position=(18.92, 0.00, 34.57) leg=5/12 target=(24.89, 0.00, 45.54)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+  overlap 日籍女教師與家屬 3 (19.46, 0.00, 34.37) bounds=Center: (19.46, 0.85, 34.37), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 1 position=(18.24, 0.00, 34.14) leg=6/13 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=128 motorClear=True bodyClear=True
+日籍學童 2 position=(17.43, 0.00, 44.52) leg=3/9 target=(24.20, 0.00, 51.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 3 position=(14.90, 0.00, 36.95) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+日籍學童 4 position=(19.11, 0.00, 44.15) leg=2/8 target=(24.20, 0.00, 51.00)
+  path= search=True iterations=96 motorClear=True bodyClear=True
+日籍學童 5 position=(15.13, 0.00, 35.32) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+  overlap 校內戰鬥的族人 7 (15.37, 0.00, 35.89) bounds=Center: (15.37, 0.85, 35.89), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 6 position=(16.38, 0.00, 44.37) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=160 motorClear=False bodyClear=False
+  overlap 校內戰鬥的族人 4 (16.92, 0.00, 44.38) bounds=Center: (16.92, 0.85, 44.38), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 7 position=(17.39, 0.00, 43.05) leg=5/11 target=(24.20, 0.00, 51.00)
+  path= search=True iterations=224 motorClear=True bodyClear=True
+日籍學童 8 position=(17.19, 0.00, 32.93) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=False iterations=0 motorClear=True bodyClear=True
+  overlap 校內戰鬥的族人 10 (17.68, 0.00, 33.14) bounds=Center: (17.68, 0.85, 33.14), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 9 position=(15.25, 0.04, 34.20) leg=4/11 target=(18.08, 0.00, 44.00)
+  path= search=True iterations=352 motorClear=True bodyClear=True
+  overlap 日籍女教師與家屬 7 (15.10, 0.00, 34.75) bounds=Center: (15.10, 0.85, 34.75), Extents: (0.27, 0.85, 0.27) blocks=True
+日籍學童 10 position=(18.23, 0.04, 43.97) leg=2/8 target=(24.20, 0.00, 51.00)
+  path= search=True iterations=64 motorClear=True bodyClear=True
+  overlap 校內戰鬥的族人 5 (17.87, 0.00, 43.62) bounds=Center: (17.87, 0.85, 43.62), Extents: (0.27, 0.85, 0.27) blocks=False

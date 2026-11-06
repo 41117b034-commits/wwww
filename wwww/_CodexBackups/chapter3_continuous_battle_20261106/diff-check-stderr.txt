@@ -1,0 +1,15 @@
+warning: in the working copy of 'wwww/Assets/Chapter2/Chapter2Actor.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3Combat.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3Controller.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3DialogueView.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3PoliceMelee.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.Ambush.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.CivilianEscort.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.Population.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.Shelter.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.Withdrawal.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolAmbient.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolController.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3SchoolCrowdActor.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/Assets/Chapter3/Chapter3StationController.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'wwww/PROJECT_CONTEXT.md', LF will be replaced by CRLF the next time Git touches it

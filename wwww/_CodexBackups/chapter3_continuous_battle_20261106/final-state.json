@@ -1,0 +1,160 @@
+{
+  "timestamp": "2026-11-06T12:31:57.1026840Z",
+  "editorVersion": "6000.0.58f1",
+  "playing": false,
+  "sceneDirty": false,
+  "compileFailed": false,
+  "editorEvidence": "Before removal: playing=False dirty=False compileFailed=False. After removal: native Unity view has inactive Play and no dirty scene marker; Tundra success 5.20 seconds; verifier absent from rebuilt Editor assembly.",
+  "temporaryToolsInAssets": 0,
+  "verifierInRebuiltAssembly": false,
+  "runtimeSources": [
+    {
+      "path": "Assets/Chapter2/Chapter2Actor.cs",
+      "sha256": "3DD02FEC26BFD87B8F99C1163EC2E00AB7988A214EE3A11F9B4243A325986144",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Combat.cs",
+      "sha256": "E653CFBD050FF01925601F43A715B807D0A32BFD310924F99628F9D0E07509BC",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Controller.cs",
+      "sha256": "074DD7A33610A1C8B7A3E4F18FA59E1B436FC2E7171AAA0F16F81491608C2B1D",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3DialogueView.cs",
+      "sha256": "82F7AF6BC2923E471F88A0EDB835FA2C7F55EB2A4A7920A2CF4F48C65F92FD5C",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Ending.cs",
+      "sha256": "4A78DE50A2F619423DA308C86AC31DC8B3BE1FBABD3DA5AFF0FBCC9F5138C9F6",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3PoliceMelee.cs",
+      "sha256": "1169CD1FE3215690A6CF9CE8D4A42E4D1A1B8FFDDA5C8F4DD99959EA250084A1",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Rescue.cs",
+      "sha256": "CD6520A97262DAA96D29E9685E8EB5EE53048C8CE9D5EA9CAFED42732AD4CC13",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.Ambush.cs",
+      "sha256": "F7DC9955D75038483714899CB5FACE849A37C290D8A76394D02E1EC7496AFE5D",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.CivilianEscort.cs",
+      "sha256": "6571BD01B79F6157759EDF5F064FECE39D8A2E8C08A675F312E86FF596EE520D",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.Population.cs",
+      "sha256": "686B8E244A4C90B9E7C2F4FAE936650786784F62B907A28904AE095AE63F250C",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.Shelter.cs",
+      "sha256": "BFF008CAF697FA698FD56352925B9FF3CBED540D039B340EF9BDBD5E3066733F",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.Withdrawal.cs",
+      "sha256": "42194266B191E94A636E3C977F9548E02284B2BE8398FE2A2C186C0633E44FF3",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolAmbient.cs",
+      "sha256": "AD5100D5EF810FE17636E1FE962149F8D14050DB92943917F248277B905D7E8F",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolBattle.Assault.cs",
+      "sha256": "E8CC4CA101258E19C0C8C1098CF52C9FD7AA26207B36CBDD50F9C94D51304544",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolController.cs",
+      "sha256": "20A4FB8BD895160E4CE0F6AAE4365923BD224260FF64EDED91A993A1603F5703",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolCrowdActor.cs",
+      "sha256": "D0ABE04941DDEE4B44FC7FF28665296DF1E5507513C0B450DA6A79F5C19202AA",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3StationController.cs",
+      "sha256": "617C4F6E6C760116B1E675B23DDB728A6F3E81D67390F1A0F519490F1136914F",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3Ending.Entrance.cs",
+      "sha256": "1FAC93513C884274D4AF63783AB43C58D55DE7EC0E77DB90C746C2E71C758BF0",
+      "unchanged": true
+    },
+    {
+      "path": "Assets/Chapter3/Chapter3SchoolBattleAudio.cs",
+      "sha256": "589BB61DF7B4CA1149B866EC88790D3925006A5C03DC2111370D64419015A4A5",
+      "unchanged": true
+    }
+  ],
+  "protected": [
+    {
+      "path": "wwww/Assets/Scenes/第三章.unity",
+      "gitBlob": "d4b33235947112f17456ece386aaca3bf89b1576",
+      "unchanged": true
+    },
+    {
+      "path": "wwww/ProjectSettings/ProjectVersion.txt",
+      "gitBlob": "0f5d720a32f7875587c0f5df0e37344974031059",
+      "unchanged": true
+    },
+    {
+      "path": "wwww/ProjectSettings/EditorBuildSettings.asset",
+      "gitBlob": "357fac5159283f58a05c17366b314efba6ca4816",
+      "unchanged": true
+    }
+  ],
+  "reports": [
+    {
+      "branch": "rescue",
+      "checks": 41,
+      "completed": true,
+      "errors": [],
+      "observations": [
+        "Defeated officer actual posed mesh lowest y=0.025 root=(-12.78, 0.01, 26.42)",
+        "Fallen hips=(-12.53, 0.19, 26.91) head=(-12.49, 0.23, 27.36) hands=(-12.77, 0.24, 27.20) / (-12.15, 0.21, 26.87)",
+        "No movement keys; player=(12.00, 0.01, 34.00) -> (11.92, 0.01, 33.93) withdrawal movement=12.12,12.28,13.07,12.56,7.20,7.16,12.06,12.63,11.56,12.47",
+        "Player=(-2.98, 0.01, 91.96) actual injury=(-3.36, 0.00, 93.10) largest Pihu frame step=0.1820267",
+        "左側通路1人，由我打通側門，我已回來。 / 進入會場的有12人，包括他、我和一起進入會場的同伴。 / 右側通路原有1人，比胡受傷，由他扶回接應處，已經回來了。",
+        "maxFade=0 playerDrift=0 Mona speed=2.701965 party speed=2.70248"
+      ]
+    },
+    {
+      "branch": "leave",
+      "checks": 39,
+      "completed": true,
+      "errors": [],
+      "observations": [
+        "Defeated officer actual posed mesh lowest y=0.025 root=(-12.71, 0.11, 26.19)",
+        "Fallen hips=(-12.46, 0.30, 26.58) head=(-12.27, 0.27, 27.06) hands=(-12.62, 0.33, 26.80) / (-12.20, 0.35, 26.64)",
+        "No movement keys; player=(12.00, 0.01, 34.00) -> (12.22, 0.01, 34.18) withdrawal movement=11.71,12.22,13.28,13.61,8.80,7.84,9.98,13.14,11.18,10.77",
+        "Player=(-2.96, 0.01, 91.90) actual injury=(-3.34, 0.00, 93.03) largest Pihu frame step=0.1702281",
+        "左側通路1人，由我打通側門，我已回來。 / 進入會場的有12人，包括他、我和一起進入會場的同伴。 / 右側通路原有1人，比胡留在林路。我回去確認，他已經死了，右側沒有人回來。",
+        "maxFade=0 playerDrift=0 Mona speed=2.701832 party speed=2.702438"
+      ]
+    }
+  ],
+  "totalChecks": 80,
+  "diffCheckPassed": true,
+  "physicalVRTested": false,
+  "standaloneBuilt": false,
+  "committed": false,
+  "pushed": false
+}

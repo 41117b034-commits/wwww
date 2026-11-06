@@ -165,7 +165,8 @@ public sealed partial class Chapter3SchoolBattle
             if((corner-activeRoute[guideIndex]).sqrMagnitude>.001f){activeRoute[guideIndex]=corner;guideMotor.Reset();}
         }
         if(ambient.PlayerAtWithdrawalAssembly){MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,false);return;}
-        MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
+        bool pastGate=Chapter3SchoolAmbient.WithdrawalProgress(school.tado.transform.position)>=Chapter3SchoolAmbient.WithdrawalProgress(P(24.2f,45.4f));
+        MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,pastGate);
     }
 
     public bool CallStraggler()=>CallRetreat();

@@ -11,6 +11,8 @@ public sealed partial class Chapter3SchoolAmbient
     readonly Vector3[] withdrawalHomes=new Vector3[AmbusherCount];
     readonly Quaternion[] withdrawalRotations=new Quaternion[AmbusherCount];
     readonly bool[] withdrawalReached=new bool[AmbusherCount];
+    readonly bool[] gateGathering=new bool[AmbusherCount];
+    bool gateReleased;
     readonly int[] forestOrder=new int[AmbusherCount];
     bool forestFollowing;
     int nextForestOrder;
@@ -48,8 +50,9 @@ public sealed partial class Chapter3SchoolAmbient
     public bool CanFollowWithdrawal(Vector3 current,ref Vector3 target,float gap)
     {
         if(withdrawalReleased||PlayerAtWithdrawalAssembly)return true;
-        float limit=WithdrawalProgress(withdrawalPlayer.position)-gap;
         float progress=WithdrawalProgress(current);
+        if(!gateReleased)return true; // Individual assembly slots keep the gate open.
+        float limit=WithdrawalProgress(withdrawalPlayer.position)-gap;
         if(limit<=0||progress>=limit-.15f)return false;
         if(WithdrawalProgress(target)>limit)target=WithdrawalSample(limit);
         return true;
@@ -83,11 +86,13 @@ public sealed partial class Chapter3SchoolAmbient
     {
         if(!Panicking||Withdrawing||!player)return false;
         foreach(var actor in assailants)if(!actor||!actor.gameObject.activeInHierarchy)return false;
-        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;forestFollowing=false;nextForestOrder=0;WithdrawalSignalFrame=Time.frameCount;
+        EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;gateReleased=false;forestFollowing=false;nextForestOrder=0;WithdrawalSignalFrame=Time.frameCount;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];withdrawalHomes[i]=actor.transform.position;withdrawalRotations[i]=actor.transform.rotation;
+            gateGathering[i]=false;
             actor.FollowingWithdrawal=true;
+            actor.SetCowering(false);
             if(withdrawalMotors[i]==null)withdrawalMotors[i]=new Chapter3PathMotor();
             withdrawalMotors[i].Reset();
             actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
@@ -188,13 +193,14 @@ public sealed partial class Chapter3SchoolAmbient
         var school=GetComponentInParent<Chapter3SchoolController>();
         if(school&&school.Battle&&(school.Battle.CurrentStage==Chapter3SchoolBattle.Stage.Down||
             (school.Battle.Rescue&&school.Battle.Rescue.CurrentStage==Chapter3Rescue.Stage.Down)))return;
-        // The leave ending temporarily moves the desktop viewing body back to
-        // Pihu. Followers retain the last player-controlled position throughout
-        // dialogue/cutaways and keep walking toward the reception, not the cut.
+        gateReleased|=withdrawalReleased||WithdrawalProgress(withdrawalPlayer.position)>=WithdrawalProgress(new Vector3(24.2f,0,45.4f))-.3f;
+        // During the ending retain the last player-controlled formation anchor
+        // while the same visible party finishes walking toward reception.
         if(forestFollowing&&(!school||!school.player||school.player.canMove))forestFollowPosition=withdrawalPlayer.position;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];var route=withdrawalRoutes[i];if(!actor||route==null)continue;
+            if(GatherBesideGate(actor,withdrawalMotors[i],i,false,ref gateGathering[i]))continue;
             if(withdrawalLeg[i]>=route.Length)
             {if(forestFollowing)UpdateForestFollower(i,actor);else{actor.SetWaiting(false);actor.Face(withdrawalPlayer.position,65);}continue;}
             Vector3 current=actor.transform.position,target=route[withdrawalLeg[i]],toPlayer=withdrawalPlayer.position-current;
@@ -237,6 +243,21 @@ public sealed partial class Chapter3SchoolAmbient
             withdrawalMotors[i].Move(actor,target,Chapter3Player.WalkSpeed);
         }
         UpdateCivilianWithdrawal();
+    }
+    bool GatherBesideGate(Chapter3SchoolCrowdActor actor,Chapter3PathMotor motor,int index,bool civilian,ref bool gathering)
+    {
+        if(gateReleased||withdrawalReleased)return false;
+        Vector3 current=actor.transform.position;
+        gathering|=current.x>13&&current.z>31;
+        if(!gathering)return false;
+        // Keep x=18 and the two narrow turning points clear for the player.
+        // Each person approaches one stable slot; no triangle patrol or shared
+        // occupied goal. Once the player passes the exit, resume the real route.
+        Vector3 target=civilian
+            ?new Vector3(5.8f+(index%5)*2.15f,0,27.8f+(index/5)*1.45f)
+            :new Vector3(19.4f+(index%2)*1.25f,0,33.5f+(index/2)*2);
+        if(Horizontal(current,target)>.3f)motor.Move(actor,target,Chapter3Player.WalkSpeed,.2f);
+        return true;
     }
     public static Vector3 OpenWithdrawalCorner(Vector3 target,Vector3 next,Chapter3SchoolCrowdActor walker=null)
     {

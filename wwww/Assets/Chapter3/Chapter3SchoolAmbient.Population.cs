@@ -10,6 +10,7 @@ public sealed partial class Chapter3SchoolAmbient
     internal Mesh DistantClothing(Mesh source)=>source&&clothingDetail.TryGetValue(source,out var distant)?distant:null;
     Transform[] authoredSpectators;
     bool[] authoredActive;
+    Transform nativeChildTemplate;
 
     Transform PreparePopulation()
     {
@@ -23,6 +24,7 @@ public sealed partial class Chapter3SchoolAmbient
             if(!native&&t.name.Contains("觀賽族人"))native=t;
         }
         if(!woman||!child||!native)return native;
+        nativeChildTemplate=child; // Preserve the original Seediq tunic and texture.
         // Adults use the actual Japanese civilian model. Recolouring the
         // Indigenous spectator retained its sash/jewellery and misidentified
         // the casualties. Never use that geometry as a Japanese male teacher.

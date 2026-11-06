@@ -50,8 +50,7 @@ public sealed partial class Chapter3SchoolAmbient
     {
         ClearPoliceOpposition();
         skirmishActive=false;AmbushSignalFrame=-1;SkirmishPairsReady=0;
-        shelterLeg=null;shelterChanged=null;System.Array.Clear(watchLeg,0,watchLeg.Length);
-        System.Array.Clear(watchChanged,0,watchChanged.Length);
+        System.Array.Clear(sheltered,0,sheltered.Length);
         foreach(var motor in watchMotors)motor?.Reset();
         for(int i=0;i<AmbusherCount;i++){assaultVictim[i]=i;strikeBegan[i]=-1;}
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
@@ -70,6 +69,7 @@ public sealed partial class Chapter3SchoolAmbient
         for(int attacker=0;attacker<AmbusherCount;attacker++)
         {
             var actor=assailants[attacker];if(!actor||!skirmishActive)continue;
+            if(attacker<3){ShelterNativeChild(attacker,actor);continue;}
             if(UpdatePoliceOpposition(attacker,actor))continue;
             int index=assaultVictim[attacker];
             if(index<0)

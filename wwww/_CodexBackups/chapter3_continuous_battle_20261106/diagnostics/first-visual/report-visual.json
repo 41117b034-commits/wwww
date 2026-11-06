@@ -1,0 +1,16 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter opens without black",
+        "three native children already present before alarm",
+        "licensed melee crowd audio plays",
+        "three children shelter instead of attacking",
+        "sheltering children stay in their corners"
+    ],
+    "observations": [
+        "Defeated officer actual posed mesh lowest y=0.09874467 root=(-12.68, 0.09, 25.11)"
+    ],
+    "errors": [
+        "System.Exception: FAILED: actual fallen police mesh rests on floor\r\n  at Chapter3ContinuousVerify.Check (System.String name, System.Boolean passed) [0x0002f] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.cs:76 \r\n  at Chapter3ContinuousVerify+<ContinuousScenario>d__49.MoveNext () [0x00629] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.Scenario.cs:41 \r\n  at Chapter3ContinuousVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.cs:51 "
+    ]
+}

@@ -49,6 +49,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
         Battle.Begin(this);PlaceTadoInCover();approachPrepared=true;
+        (GetComponent<Chapter3Ending>()??gameObject.AddComponent<Chapter3Ending>()).PrepareShelter(this);
     }
     void BeginCore(bool walking,Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
     {
@@ -90,6 +91,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
         if(!walking||!approachPrepared)Battle.Begin(this);
+        (GetComponent<Chapter3Ending>()??gameObject.AddComponent<Chapter3Ending>()).PrepareShelter(this);
         approachPrepared=false;
         if(walking)
         {
@@ -101,7 +103,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     }
     IEnumerator Arrival()
     {
-        for(float t=0;t<1.3f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,1-t/1.3f);yield return null;}
+        yield return null;
         ui.fade.color=Color.clear;Exploring=true;player.canMove=player.canLook=true;
         ArrivalGuide.Show(spawn,new[]{tado.transform.position},player.transform,tado.transform);
         Speak(bawan,"學校就在前面，達多在校門旁等我們。",4.2f);

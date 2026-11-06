@@ -9,6 +9,7 @@ public sealed partial class Chapter3SchoolAmbient
         public readonly Chapter3PathMotor motor=new Chapter3PathMotor();
         public Vector3[] route;
         public int leg;
+        public bool gathering;
         public Vector3 home;
         public Quaternion rotation;
     }
@@ -32,15 +33,18 @@ public sealed partial class Chapter3SchoolAmbient
             route[route.Length-1]=new Vector3(x,0,z);
             civilianEscorts.Add(new CivilianEscort{actor=actor,route=route,home=actor.transform.position,rotation=actor.transform.rotation});
             actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
+            actor.SetCowering(false);
             actor.FollowingWithdrawal=true;
         }
     }
     void UpdateCivilianWithdrawal()
     {
-        foreach(var escort in civilianEscorts)
+        for(int escortIndex=0;escortIndex<civilianEscorts.Count;escortIndex++)
         {
+            var escort=civilianEscorts[escortIndex];
             var actor=escort.actor;
             if(!actor||!actor.gameObject.activeInHierarchy)continue;
+            if(GatherBesideGate(actor,escort.motor,escortIndex,true,ref escort.gathering))continue;
             if(escort.leg>=escort.route.Length){actor.Face(withdrawalPlayer.position,65);continue;}
             Vector3 current=actor.transform.position,target=escort.route[escort.leg];
             if(escort.leg<escort.route.Length-1)
@@ -63,7 +67,7 @@ public sealed partial class Chapter3SchoolAmbient
                 continue;
             }
             if((target.x>=17||target.z>=44)&&!CanFollowWithdrawal(current,ref target,5.8f))continue;
-            escort.motor.Move(actor,target,2.65f);
+            escort.motor.Move(actor,target,Chapter3Player.WalkSpeed);
         }
     }
     void CancelCivilianWithdrawal(bool restore)

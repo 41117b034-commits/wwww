@@ -109,8 +109,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         CurrentStage=Stage.Arrival;player.canMove=player.canLook=false;
         ui.objective.text="馬赫坡駐在所 · 清晨";
         ui.Say("","馬赫坡駐在所 · 清晨");
-        ui.fade.color=Color.black;
-        yield return Fade(false,1.8f);
+        ui.fade.color=Color.clear;
         // Keep the establishing shot and place/time legible before the introduction.
         yield return new WaitForSecondsRealtime(3);
         CurrentStage=Stage.Conversation;
@@ -201,7 +200,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Say(mona,"同行的人要把性命交在彼此手上。你連自己的心都沒定下來，憑什麼要他們放心把背後交給你！",lineSeconds+4);
         yield return Say(mona,"今天你不准跟來。把"+(HasKnife?"刀":"槍")+"留下，回家休息！想清楚自己能承擔什麼，再來見我。",lineSeconds+3);
         rebuke.Rebuking=false;HasRifle=HasKnife=false;if(flow)flow.ClearEquipment();ui.hint.text="你沒有隨隊出發，莫那讓你回家休息。";
-        yield return new WaitForSeconds(1.5f);yield return Fade(true,1.5f);
+        yield return new WaitForSeconds(1.5f);
         CurrentStage=Stage.Ended;ui.objective.text="此次行動結束";
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying=false;
@@ -308,8 +307,6 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Chapter3Flow.WaitForLine(seconds);
         actor.speaking=false;CurrentLine=null;ui.Say("",null);
     }
-    IEnumerator Fade(bool black,float duration)
-    {for(float t=0;t<duration;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,black?t/duration:1-t/duration);yield return null;}ui.fade.color=black?Color.black:Color.clear;}
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
         Vector3 p=current;p.y=desired.y;

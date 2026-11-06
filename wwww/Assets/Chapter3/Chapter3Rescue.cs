@@ -50,6 +50,8 @@ public sealed class Chapter3Rescue : MonoBehaviour
     public void Begin(Chapter3SchoolController owner,Chapter3SchoolBattle encounter)
     {
         Suspend();school=owner;battle=encounter;player=school.player;combat=school.flow.combat;ui=school.ui;
+        if(!Ending)Ending=GetComponent<Chapter3Ending>()??gameObject.AddComponent<Chapter3Ending>();
+        Ending.PrepareEntrance(owner);
         Selected=Decision.None;Retries=0;Health=100;Delivered=false;LiftProgress=0;injuryPosition=P(-3,92);
         Pose=school.pihu.GetComponent<Chapter3InjuryPose>();if(!Pose)Pose=school.pihu.gameObject.AddComponent<Chapter3InjuryPose>();
         Pose.Configure(school.pihu);Pose.ResetPose();

@@ -68,6 +68,9 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     Bounds body;
     float height,phase,walkWeight,lastMovement=-100,fall,strike,startle,fallSide=1;
     bool initialized,animated,afraid,waiting,finalFallPoseReady,holdingAtNeck;
+    bool cowering;
+    float cowerWeight;
+    public void SetCowering(bool value){cowering=value;}
     Vector3 navigationGoal,detourPoint;
     float bestRemaining,progressAt,nextDetour;
     bool navigationReady,detouring,waitingAtObstacle;
@@ -339,7 +342,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(y<.35f)return Blend(leg+1,leg,Mathf.InverseLerp(.25f,.35f,y));
             return Blend(leg,0,Mathf.InverseLerp(.46f,.53f,y));
         }
-        if(Mathf.Abs(x)>.155f&&y>.37f&&y<.84f)
+        if(Mathf.Abs(x)>(name.Contains("賽德克孩童")?.105f:.155f)&&y>.37f&&y<.84f)
         {
             if(y<.52f)return Blend(arm+2,arm+1,Mathf.InverseLerp(.43f,.53f,y));
             return Blend(arm+1,arm,Mathf.InverseLerp(.60f,.70f,y));
@@ -366,6 +369,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
+        cowering=false;cowerWeight=0;
         navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
         restrainedGuest=null;holdingAtNeck=false;
         foreach(var saved in capsules)if(saved.collider)
@@ -557,6 +561,20 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         if(waiting)
         {bones[6].localRotation=Quaternion.Euler(-105,0,15);bones[7].localRotation=Quaternion.Euler(-25,0,-10);}
+        cowerWeight=Mathf.MoveTowards(cowerWeight,cowering&&!FollowingWithdrawal?1:0,Time.deltaTime*3);
+        if(cowerWeight>0)
+        {
+            bones[0].localPosition+=Vector3.down*(height*.19f*cowerWeight);
+            bones[1].localRotation*=Quaternion.Euler(18*cowerWeight,0,0);
+            for(int side=0;side<2;side++)
+            {
+                int leg=9+side*3,arm=3+side*3;
+                bones[leg].localRotation=Quaternion.Slerp(bones[leg].localRotation,Quaternion.Euler(58,0,0),cowerWeight);
+                bones[leg+1].localRotation=Quaternion.Slerp(bones[leg+1].localRotation,Quaternion.Euler(-100,0,0),cowerWeight);
+                bones[arm].localRotation=Quaternion.Slerp(bones[arm].localRotation,Quaternion.Euler(-135,0,side==0?-10:10),cowerWeight);
+                bones[arm+1].localRotation=Quaternion.Slerp(bones[arm+1].localRotation,Quaternion.Euler(-65,0,0),cowerWeight);
+            }
+        }
         if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
         if(fall>0)PoseFall();

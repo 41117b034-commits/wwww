@@ -124,16 +124,20 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             for(int i=0;i<assailants.Length;i++)
             {
                 var appearance=i%3==0?school.bawan:i%3==1?school.pihu:school.tado;
-                assailants[i]=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內埋伏的族人 "+(i+1),appearance);
-                assaultStarts[i]=AmbusherStart(i);
-                assailants[i].transform.position=assaultStarts[i];AddKnife(assailants[i],school);
-                assailants[i].gameObject.SetActive(false);
+                bool child=i<3&&nativeChildTemplate;
+                assailants[i]=child
+                    ?Chapter3SchoolCrowdActor.CreateFrom(nativeChildTemplate,transform,"避難的賽德克孩童 "+(i+1),bakedYaw:90)
+                    :Chapter3SchoolCrowdActor.CreateFrom(template,transform,"校內戰鬥的族人 "+(i+1),appearance);
+                assaultStarts[i]=child?new Vector3(-12+i*1.4f,0,16):AmbusherStart(i);
+                assailants[i].transform.position=assaultStarts[i];if(!child)AddKnife(assailants[i],school);
+                assailants[i].gameObject.SetActive(child);
             }
             straggler=Chapter3SchoolCrowdActor.CreateFrom(template,transform,"運動場邊落後的族人");
             straggler.IsRouteCompanion=true;
             straggler.gameObject.SetActive(false);
         }
         ConfigureSkirmish();
+        gameObject.AddComponent<Chapter3SchoolBattleAudio>().Configure(this,school);
     }
     public void ResetCalm()
     {
@@ -153,7 +157,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             waypoint[i]=runningTrack.Length>0?i%runningTrack.Length:0;
         }
         for(int i=0;i<assailants.Length;i++)if(assailants[i])
-        {assailants[i].ResetPose();assailants[i].gameObject.SetActive(false);assailants[i].transform.SetPositionAndRotation(assaultStarts[i],Quaternion.identity);}
+        {assailants[i].ResetPose();assailants[i].gameObject.SetActive(i<3);assailants[i].transform.SetPositionAndRotation(assaultStarts[i],Quaternion.identity);}
         HideStraggler();
     }
     public void Panic()

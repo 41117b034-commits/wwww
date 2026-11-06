@@ -78,6 +78,7 @@ public sealed class Chapter3PoliceMelee : MonoBehaviour
             // Fall with the skeleton, then settle the same visible weapon.
             float t=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.25f,1,enemy.actor.FallProgress));
             Vector3 ground=transform.position+rig.Forward*.55f+Vector3.Cross(Vector3.up,rig.Forward)*.38f+Vector3.up*.06f;
+            ground.y=enemy.actor.GroundHeight+.06f;
             weapon.SetPositionAndRotation(Vector3.Lerp(rig.RightHand.position,ground,t),Quaternion.Slerp(rig.RightHand.rotation,Quaternion.LookRotation(Vector3.up,rig.Forward),t));
             return;
         }

@@ -67,8 +67,6 @@ public sealed class Chapter3Controller : MonoBehaviour
         CurrentStage=Stage.Opening;player.canMove=player.canLook=false;
         player.FocusOn(bawan.transform.position+Vector3.up*1.08f);
         ui.objective.text="清晨，部落準備出發";
-        ui.fade.color=Color.black;
-        for(float t=0;t<2;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,1-t/2);yield return null;}
         ui.fade.color=Color.clear;
         yield return Say(bawan,"天快亮了，大家都在等我們。",lineSeconds);
         CurrentStage=Stage.Conversation;ui.Say("",null);ui.chat.SetActive(true);
@@ -202,8 +200,7 @@ public sealed class Chapter3Controller : MonoBehaviour
         yield return Gather();FollowGuide.Hide();player.canMove=false;
         yield return Say(bawan,"前面就是駐在所，壓低聲音。",lineSeconds);
         ui.Say("",null);ui.hint.text="";
-        for(float t=0;t<1.8f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.8f);yield return null;}
-        ui.fade.color=Color.black;CurrentStage=Stage.Arrival;player.canLook=false;
+        ui.fade.color=Color.clear;CurrentStage=Stage.Arrival;player.canLook=false;
         ui.objective.text="隊伍正前往駐在所";
         if(flow) flow.EnterStation();
         else {ui.fade.color=Color.clear;ui.ending.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}

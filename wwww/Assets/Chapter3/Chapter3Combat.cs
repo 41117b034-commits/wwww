@@ -68,8 +68,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     }
     IEnumerator Introduction()
     {
-        ui.fade.color=Color.black;ui.objective.text="前往霧社 · 山路遭遇";
-        for(float t=0;t<1.2f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,1-t/1.2f);yield return null;}ui.fade.color=Color.clear;
+        ui.fade.color=Color.clear;ui.objective.text="前往霧社 · 山路遭遇";
         yield return Say(bawan,"前面有巡警。靠著岩石走，別站在路中央。",lineSeconds);
         yield return Say(pihu,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。",lineSeconds);
         StartFighting();
@@ -232,8 +231,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         }
         EscortWaiting=false;escortFacingActive=false;
         player.canMove=player.canLook=false;
-        for(float t=0;t<1.4f;t+=Time.deltaTime){ui.fade.color=new Color(0,0,0,t/1.4f);yield return null;}
-        ui.fade.color=Color.black;hud.SetActive(false);ui.Say("",null);ui.hint.text="";CurrentStage=Stage.Complete;
+        ui.fade.color=Color.clear;hud.SetActive(false);ui.Say("",null);ui.hint.text="";CurrentStage=Stage.Complete;
         if(flow&&flow.school){flow.EnterSchool();yield break;}
         var texts=ui.ending.GetComponentsInChildren<Text>();texts[0].text="繼續前往霧社";texts[1].text="巴萬與比胡都在隊伍中。\n\n下一段：學校與運動會場";
         ui.replay.GetComponentInChildren<Text>().text="重玩第三章";ui.ending.SetActive(true);

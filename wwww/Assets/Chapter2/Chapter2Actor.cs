@@ -30,9 +30,13 @@ public sealed class Chapter2Actor : MonoBehaviour
     SkinnedMeshRenderer[] skins;
     Mesh fallMesh;
     readonly System.Collections.Generic.List<Vector3> fallVertices=new System.Collections.Generic.List<Vector3>();
-    float finalLift=-1;
+    float finalLift;
+    bool fallSettled;
+    float fallRootY;
+    int fallGeometry;
     Vector3 previous;
     Transform leftThigh,rightThigh,leftKnee,rightKnee,leftFoot,rightFoot;
+    Transform fallLeftArm,fallRightArm,fallLeftElbow,fallRightElbow;
     Transform seatedRoot;
     void Start()
     {
@@ -47,6 +51,10 @@ public sealed class Chapter2Actor : MonoBehaviour
         rightKnee=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerLeg,"R_Calf","RightLeg");
         leftFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftFoot,"L_Foot","LeftFoot");
         rightFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightFoot,"R_Foot","RightFoot");
+        fallLeftArm=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftUpperArm,"L_Upperarm","LeftArm");
+        fallRightArm=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
+        fallLeftElbow=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftLowerArm,"L_Forearm","LeftForeArm");
+        fallRightElbow=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerArm,"R_Forearm","RightForeArm");
         // Some imported humanoids map Hips to Pelvis, while Waist is its sibling
         // under Hip. Lower their shared bone so the torso follows the seated legs.
         seatedRoot=Rig.Hips;
@@ -118,22 +126,30 @@ public sealed class Chapter2Actor : MonoBehaviour
         if(fallen)return;
         fallDirection=Vector3.ProjectOnPlane(transform.position-source,Vector3.up).normalized;
         fallen=true;speaking=false;fallStarted=Time.time;
+        fallRootY=transform.position.y;
         Rig.pointTarget=null;Rig.conversationTarget=null;
         fallMesh=new Mesh();
     }
     void PoseFall()
     {
+        var rootPosition=transform.position;rootPosition.y=fallRootY;transform.position=rootPosition;
         FallProgress=Mathf.Clamp01((Time.time-fallStarted)/1.9f);
         float drop=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,1,FallProgress));
         Vector3 axis=Vector3.Cross(Vector3.up,fallDirection);
         float flinch=Mathf.Sin(Mathf.Clamp01(FallProgress/.24f)*Mathf.PI)*10;
         Rig.Hips.position+=fallDirection*(.48f*drop)+Vector3.down*(.72f*drop);
-        Rig.Hips.rotation=Quaternion.AngleAxis(88*drop+flinch,axis)*Rig.Hips.rotation;
+        Rig.Hips.rotation=Quaternion.AngleAxis(90*drop+flinch,axis)*Rig.Hips.rotation;
         // Bend knees during the collapse, then keep the whole skin above the floor.
         float bend=Mathf.Sin(drop*Mathf.PI);
-        if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(-8*drop-20*bend,axis)*leftKnee.rotation;
-        if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(-16*drop-25*bend,axis)*rightKnee.rotation;
-        if(FallProgress>=1&&finalLift>=0){Rig.Hips.position+=Vector3.up*finalLift;return;}
+        if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(-20*bend,axis)*leftKnee.rotation;
+        if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(-25*bend,axis)*rightKnee.rotation;
+        // Release the standing guard pose. An elbow left underneath the torso
+        // otherwise props the entire rigid body up like a suspended plank.
+        Vector3 side=Vector3.Cross(Vector3.up,fallDirection);
+        RelaxFallenArm(fallLeftArm,fallLeftElbow,Rig.LeftHand,-side,drop);
+        RelaxFallenArm(fallRightArm,fallRightElbow,Rig.RightHand,side,drop);
+        int geometry=0;foreach(var skin in skins)if(skin&&skin.sharedMesh)geometry=unchecked(geometry*31+skin.sharedMesh.GetInstanceID());
+        if(fallSettled&&geometry==fallGeometry){transform.position+=Vector3.up*finalLift;return;}
         if(!fallMesh)fallMesh=new Mesh();
         float low=float.PositiveInfinity;
         foreach(var skin in skins)
@@ -142,10 +158,22 @@ public sealed class Chapter2Actor : MonoBehaviour
             fallMesh.GetVertices(fallVertices);
             foreach(var vertex in fallVertices)low=Mathf.Min(low,skin.transform.TransformPoint(vertex).y);
         }
-        float lift=Mathf.Max(0,.025f-low);
-        Rig.Hips.position+=Vector3.up*lift;
+        if(float.IsPositiveInfinity(low))return;
+        // Settle onto the floor in either direction. Up-only correction left
+        // horizontal bodies hanging above it when their pose was too high.
+        float correction=GroundHeight+.025f-low;
+        float lift=correction>=0?correction:correction*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.7f,1,FallProgress));
+        // Translate the entire imported skeleton, including vertices weighted
+        // to siblings of Hips. Moving Hips alone only partly moved those skins.
+        transform.position+=Vector3.up*lift;
         FallenLowestPoint=low+lift;
-        if(FallProgress>=1)finalLift=lift;
+        if(FallProgress>=1){finalLift=lift;fallSettled=true;fallGeometry=geometry;}
+    }
+    void RelaxFallenArm(Transform upper,Transform elbow,Transform hand,Vector3 side,float weight)
+    {
+        if(!upper||!elbow||!hand)return;
+        Vector3 target=Rig.Hips.position+(fallDirection*.08f+side*.22f+Vector3.up*.04f)*Rig.Height;
+        Chapter1IncidentRig.Solve(upper,elbow,hand,Vector3.Lerp(hand.position,target,weight),Vector3.up);
     }
     void OnDestroy(){if(fallMesh)Destroy(fallMesh);}
 }

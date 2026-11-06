@@ -1,0 +1,24 @@
+{
+    "completed": false,
+    "checks": [
+        "formal third chapter opens without black",
+        "three native children already present before alarm",
+        "licensed melee crowd audio plays",
+        "three children shelter instead of attacking",
+        "sheltering children stay in their corners",
+        "actual fallen police mesh rests on floor",
+        "one whistle releases entire party",
+        "all ten start walking without player movement input",
+        "whistle fades crowd ambience",
+        "walked actual controller to (12.00, 0.00, 35.50)",
+        "walked actual controller to (17.00, 0.00, 35.50)"
+    ],
+    "observations": [
+        "Defeated officer actual posed mesh lowest y=0.025 root=(-11.66, 0.05, 26.29)",
+        "Fallen hips=(-11.34, 0.23, 26.69) head=(-11.18, 0.23, 27.19) hands=(-11.51, 0.29, 26.95) / (-11.04, 0.31, 26.71)",
+        "No movement keys; player=(12.00, 0.01, 34.00) -> (12.16, 0.01, 34.16) withdrawal movement=11.35,12.54,12.82,13.86,9.95,9.34,11.73,13.02,10.25,10.26"
+    ],
+    "errors": [
+        "System.Exception: Story walk blocked (18.61, 0.01, 42.60) -> (18.00, 0.00, 44.80) battle=Fighting rescue=none B=(0.00, 0.05, 78.00) P=(1.70, 0.03, 77.96) T=(24.18, 0.02, 49.97) school indices=9,9,14\r\n  at Chapter3ContinuousVerify+<StoryWalk>d__25.MoveNext () [0x00052] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.Current.cs:142 \r\n  at Chapter3ContinuousVerify+<Run>d__10.MoveNext () [0x00087] in C:\\Users\\jimmy\\畢專_霧社事件\\wwww\\wwww\\Assets\\Editor\\Chapter3ContinuousVerify.cs:51 "
+    ]
+}
