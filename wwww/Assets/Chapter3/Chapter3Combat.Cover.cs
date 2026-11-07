@@ -8,16 +8,16 @@ public sealed partial class Chapter3Combat
     Vector3 pihuTreeCover;
     Transform pihuCoverTree;
     public Transform PihuCoverTree=>pihuCoverTree;
-    public Vector3 CompanionCoverPoint(int index)=>index==0?WorldPoint(new Vector3(-3.65f,0,-3.8f)):pihuTreeCover;
+    public Vector3 CompanionCoverPoint(int index)=>WorldPoint(new Vector3(index==0?-1.7f:1.7f,0,-7.2f));
 
     // The old rectangular collider included empty space above the sloping
     // stone. Use the visible static rock mesh for bullets and physical cover.
     void FitRockColliders()
     {
-        PrepareRightTreeCover();
+        PrepareEncounterCover();PrepareRightTreeCover();
         foreach(var root in GetComponentsInChildren<Transform>(true))
         {
-            if(root.name!="山路岩石掩體")continue;
+            if(root.name!="山路岩石掩體"&&!root.name.StartsWith("山路連續掩體 "))continue;
             bool fitted=false;
             foreach(var filter in root.GetComponentsInChildren<MeshFilter>(true))
             {

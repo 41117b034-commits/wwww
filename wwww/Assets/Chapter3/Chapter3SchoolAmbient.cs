@@ -4,7 +4,7 @@ using UnityEngine;
 // Panic is a visible, non-graphic staged assault, never a damage/score system.
 public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
 {
-    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen, Restrained, Escaped }
+    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen, Restrained, Escaped, Sheltered }
     enum SpectatorKind { Guest, Child, Indigenous, Police }
     public Transform[] spectators;
     public Chapter2Actor[] runners;

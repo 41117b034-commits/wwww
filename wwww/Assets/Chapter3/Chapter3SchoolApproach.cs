@@ -26,7 +26,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     readonly Dictionary<Collider,bool> hiddenBodies=new Dictionary<Collider,bool>();
     AudioSource schoolForest;
     float forestVolume, began, lineUntil;
-    bool prepared,schoolSunEnabled,heardLine,revealLine,gathering,openingReply;
+    bool prepared,heardLine,revealLine,gathering,openingReply;
     bool rearArrivalChosen;
     Vector3 rearArrival;
     int rearIndex,handoffFrame=-1;
@@ -57,7 +57,6 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
             foreach(var r in actor.GetComponentsInChildren<Renderer>(true)){hidden[r]=r.enabled;r.enabled=false;}
             foreach(var c in actor.GetComponentsInChildren<Collider>(true)){hiddenBodies[c]=c.enabled;c.enabled=false;}
         }
-        if(flow.school.sun){schoolSunEnabled=flow.school.sun.enabled;flow.school.sun.enabled=false;}
         schoolForest=flow.schoolRegion.GetComponent<AudioSource>();
         if(schoolForest){forestVolume=schoolForest.volume;schoolForest.volume=0;}
         prepared=true;
@@ -66,9 +65,9 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
     {
         if(!prepared||Active)return;
         Active=true;Completed=false;began=Time.time;
+        flow.school.ApplyApproachLighting(flow.player.transform.position.z);
         gathering=true;
-        rally=flow.combat.WorldPoint(new Vector3(-1,0,Mathf.Clamp(
-            flow.player.transform.position.z-flow.combat.transform.position.z+2,-3,25)));
+        rally=ChooseClearRally();
         flow.player.canMove=flow.player.canLook=true;
         flow.ui.fade.color=Color.clear;
         // Preserve the player's current camera heading and mouse mode.
@@ -81,10 +80,36 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         audioCue.Begin(flow.player.view.transform);
         FollowGuide.Show(flow.player.transform.position,new[]{rally},flow.player.transform,LeadActor.transform);
     }
+    public Vector3 RallyPosition=>rally;
+    Vector3 ChooseClearRally()
+    {
+        Vector3 playerPoint=flow.player.transform.position;
+        Vector3 local=playerPoint-flow.combat.transform.position;
+        // A rifle can clear the encounter from any stone. The old fixed
+        // minimum Z=-3 put the gathering point inside the new opening rock.
+        // Prefer a clear point slightly ahead, with a clear player approach;
+        // the companions still physically navigate to it with their motor.
+        float[] offsets={2,1,.6f,3.5f,5,7};
+        float[] lanes={Mathf.Clamp(local.x,-5.7f,5.7f),-1,1,-2.8f,2.8f,-4.3f,4.3f,-5.7f,5.7f};
+        for(int pass=0;pass<2;pass++)
+            foreach(float ahead in offsets)
+                foreach(float lane in lanes)
+                {
+                    Vector3 candidate=flow.combat.WorldPoint(new Vector3(lane,0,Mathf.Clamp(local.z+ahead,-10,27)));
+                    if(Flat(candidate,playerPoint)<.8f||!Chapter3PathMotor.Clear(candidate,candidate))continue;
+                    if(pass==0&&!Chapter3PathMotor.Clear(playerPoint,candidate))continue;
+                    return candidate;
+                }
+        // If every forward slot is occupied, do not publish an impossible
+        // target. Their current clear position is already physically reached;
+        // the normal collision-aware route then continues around the rocks.
+        return LeadActor.transform.position;
+    }
     void Update()
     {
         if(!Active)return;
         var player=flow.player;
+        flow.school.ApplyApproachLighting(player.transform.position.z);
         if(lineUntil>0&&Time.time>=lineUntil&&!flow.ui.VoiceBusy)
         {
             lineUntil=0;flow.ui.Say("",null);LeadActor.speaking=RearActor.speaking=false;
@@ -195,7 +220,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
             // Flat navigation ignores characters when searching. Reject its
             // tentative step if the player occupies it; do not walk through
             // the camera while gathering beside the cleared encounter.
-            if(Flat(actor.transform.position,flow.player.transform.position)<.66f)
+            if(!FacingStep(actor,actor.transform.position-current)||Flat(actor.transform.position,flow.player.transform.position)<.66f)
                 actor.transform.position=current;
             return;
         }
@@ -211,8 +236,19 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
             if(hit.normal.y>.65f)continue; // Walkable slope, not a wall.
             if(hit.distance>.001f)return;
         }
-        if(Flat(next,flow.player.transform.position)<.66f)return;
+        if(!FacingStep(actor,delta)||Flat(next,flow.player.transform.position)<.66f)return;
         actor.transform.position=next;actor.GroundHeight=next.y;actor.Face(next+delta.normalized);
+    }
+    bool FacingStep(Chapter2Actor actor,Vector3 motion)
+    {
+        Vector3 direction=Vector3.ProjectOnPlane(motion,Vector3.up);
+        if(direction.sqrMagnitude<.000001f)return true;
+        // LateUpdate smoothly turns the visible rig. Wait in place for that
+        // turn before translating, so a reversal never becomes a backward walk.
+        actor.Face(actor.transform.position+direction.normalized);
+        Vector3 heading=actor==LeadActor?leadFacing:rearFacing;
+        if(heading.sqrMagnitude<.000001f)return true;
+        return Vector3.Dot(heading.normalized,direction.normalized)>=Mathf.Cos(50*Mathf.Deg2Rad);
     }
     void Say(Chapter2Actor actor,string line,float duration)
     {
@@ -242,7 +278,6 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         foreach(var pair in hidden)if(pair.Key)pair.Key.enabled=pair.Value;
         foreach(var pair in hiddenBodies)if(pair.Key)pair.Key.enabled=pair.Value;
         hidden.Clear();hiddenBodies.Clear();
-        if(prepared&&flow.school.sun)flow.school.sun.enabled=schoolSunEnabled;
         if(prepared&&schoolForest)schoolForest.volume=forestVolume;
         prepared=false;
     }

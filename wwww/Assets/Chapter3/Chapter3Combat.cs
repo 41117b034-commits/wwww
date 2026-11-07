@@ -43,7 +43,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     {
         FitRockColliders();
         SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
-        player.canMove=player.canLook=false;weapons.gameObject.SetActive(false);
+        player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
         StartCoroutine(Introduction());
     }
     public void BeginFromStation(Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
@@ -55,36 +55,20 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         CurrentStage=Stage.Intro;player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
         StartCoroutine(ContinuousIntroduction());
     }
-    IEnumerator ContinuousIntroduction()
-    {
-        ui.fade.color=Color.clear;ui.objective.text="沿土路前進，準備突破巡警";
-        ui.Say(bawan.DisplayName,"前面有巡警。靠著岩石走，別站在路中央。");
-        // Dialogue completion alone starts combat, even if the player stays
-        // at the station handoff. Cover movement must never wait on that walk.
-        yield return Chapter3Flow.WaitForLine(lineSeconds);
-        ui.Say(pihu.DisplayName,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。");
-        yield return Chapter3Flow.WaitForLine(lineSeconds);
-        StartFighting(false);
-    }
-    IEnumerator Introduction()
-    {
-        ui.fade.color=Color.clear;ui.objective.text="前往霧社 · 山路遭遇";
-        yield return Say(bawan,"前面有巡警。靠著岩石走，別站在路中央。",lineSeconds);
-        yield return Say(pihu,weapons.Selected==Chapter3Weapons.Weapon.Knife?"靠著掩體接近，再用刀。別迎著槍口衝。":"槍打完一發，就要再裝一發。裝填時躲好。",lineSeconds);
-        StartFighting();
-    }
+    IEnumerator ContinuousIntroduction(){yield return CoveredIntroduction();}
+    IEnumerator Introduction(){yield return CoveredIntroduction();}
     void StartFighting(bool focus=true)
     {
         CurrentStage=Stage.Fighting;ui.Say("",null);ui.hint.text="";ui.objective.text="突破前方巡警，與同伴繼續前進";
         player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
-        weapons.Present();UpdateCompanionCover();
+        weapons.Present();UpdateCompanionCover();UpdateCoverGuide();
         if(focus)player.FocusOn(WorldPoint(new Vector3(0,1.3f,10)));
         Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
     }
     void ResetCheckpoint(bool relocate=true)
     {
         ClearCompanionCover();
-        clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
+        HideCoverGuide();OpeningPrepared=false;clearedRoutine=false;Health=100;DefeatedCount=0;hurtAt=-10;
         warningUntil=0;EscortWaiting=false;escortFacingActive=false;leaderMotor.Reset();rearMotor.Reset();
         bawan.transform.position=WorldPoint(new Vector3(-5.1f,0,-5));pihu.transform.position=WorldPoint(new Vector3(5.2f,0,-6));
         bawan.GroundHeight=pihu.GroundHeight=0;
@@ -105,12 +89,12 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     public bool Retry()
     {
         if(CurrentStage!=Stage.Down)return false;
-        StopAllCoroutines();Retries++;ResetCheckpoint();StartFighting();return true;
+        StopAllCoroutines();Retries++;ResetCheckpoint();CurrentStage=Stage.Intro;StartCoroutine(Introduction());return true;
     }
     public void Suspend()
     {
         ClearCompanionCover();
-        SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;EscortWaiting=false;escortFacingActive=false;
+        HideCoverGuide();SchoolEncounter=null;StopAllCoroutines();CurrentStage=Stage.Inactive;EscortWaiting=false;escortFacingActive=false;
         if(weapons)weapons.Suspend();if(hud)hud.SetActive(false);if(downPanel)downPanel.SetActive(false);if(hurtOverlay)hurtOverlay.color=Color.clear;
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;
     }
@@ -128,7 +112,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         string progress="前方巡警  "+DefeatedCount+" / "+enemyTemplates.Length;
         if(Fighting)
         {
-            UpdateCompanionCover();
+            UpdateCompanionCover();UpdateCoverGuide();
             player.speed=weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
             bool near=weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Vector3.Distance(player.transform.position,ammoPoint.position)<2.2f;
             if(near&&player.ActionPressed)weapons.Refill();
@@ -186,7 +170,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     }
     IEnumerator ClearEncounter()
     {
-        ClearCompanionCover();
+        ClearCompanionCover();HideCoverGuide();
         if(flow&&flow.Approach)
         {
             CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();

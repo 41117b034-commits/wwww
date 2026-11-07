@@ -139,6 +139,7 @@ public sealed partial class Chapter3SchoolAmbient
     void UpdateForestFollower(int index,Chapter3SchoolCrowdActor actor)
     {
         if(forestOrder[index]<0){forestOrder[index]=nextForestOrder++;withdrawalMotors[index].Reset();}
+        if(ReceptionClearing){UpdateReceptionWalker(index,actor);return;}
         int rank=forestOrder[index];float gap=3.4f+(rank/2)*1.8f;
         float limit=ForestProgress(forestFollowPosition,out _)-gap;
         Vector3 target=ForestSample(limit,out var forward);
@@ -177,7 +178,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     public void CancelWithdrawal(bool restorePositions=false)
     {
-        CancelCivilianWithdrawal(restorePositions);
+        CancelReceptionClearing();CancelCivilianWithdrawal(restorePositions);
         if(Withdrawing&&restorePositions)
             for(int i=0;i<AmbusherCount;i++)if(assailants[i])
             {

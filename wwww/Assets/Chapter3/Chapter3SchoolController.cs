@@ -25,9 +25,8 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     readonly int[] trailIndex = new int[2];
     readonly bool[] following = new bool[2];
     float lineUntil, lineBegan, nextTrail;
-    float previousFogDensity;
-    Light previousSun;
-    bool lightingSet;
+    Chapter3SchoolLighting lighting;
+    Chapter3SchoolLighting Lighting=>lighting?lighting:lighting=gameObject.AddComponent<Chapter3SchoolLighting>();
     bool approachPrepared;
     Chapter3SchoolCompanionPose tadoCoverPose;
     public Transform TadoCover {get;private set;}
@@ -49,8 +48,10 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
         Battle.Begin(this);PlaceTadoInCover();approachPrepared=true;
+        Lighting.Preview(this);
         (GetComponent<Chapter3Ending>()??gameObject.AddComponent<Chapter3Ending>()).PrepareShelter(this);
     }
+    public void ApplyApproachLighting(float worldZ){Lighting.Approach(this,worldZ);}
     void BeginCore(bool walking,Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
     {
         StopAllCoroutines();Exploring=false;MetTado=false;Area="校門前";lineUntil=0;
@@ -86,8 +87,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         player.speed=Chapter3Player.WalkSpeed;player.canMove=player.canLook=walking;
         ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);ui.hint.text="";
         ui.objective.text="霧社公學校 · 運動會";
-        previousFogDensity=RenderSettings.fogDensity;previousSun=RenderSettings.sun;lightingSet=true;
-        RenderSettings.fogDensity=.0065f;if(sun)RenderSettings.sun=sun;
+        Lighting.Enter(this);
         if(!Battle)Battle=GetComponent<Chapter3SchoolBattle>();
         if(!Battle)Battle=gameObject.AddComponent<Chapter3SchoolBattle>();
         if(!walking||!approachPrepared)Battle.Begin(this);
@@ -127,7 +127,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         approachPrepared=false;
         if(ArrivalGuide)ArrivalGuide.Hide();
         if(Battle)Battle.Suspend();
-        if(lightingSet){RenderSettings.fogDensity=previousFogDensity;RenderSettings.sun=previousSun;lightingSet=false;}
+        if(lighting)lighting.Restore();
         if(bawan)bawan.speaking=false;if(pihu)pihu.speaking=false;if(tado)tado.speaking=false;
     }
     void Update()

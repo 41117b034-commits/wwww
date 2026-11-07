@@ -85,10 +85,10 @@ public sealed class Chapter3Enemy : MonoBehaviour
         }
         float distance=Vector3.Distance(AimPoint,target);
         bool visible=distance<engagementRange&&combat.ClearLine(AimPoint,target,this);
-        if(advances&&!LegWounded&&distance>2.6f&&distance<22&&!Telegraphing)
+        if(advances&&!LegWounded&&visible&&distance>2.6f&&distance<22&&!Telegraphing)
         {
             Vector3 direction=Vector3.ProjectOnPlane(combat.player.transform.position-transform.position,Vector3.up).normalized;
-            // Short advance along the open lane, never walk through the player's cover.
+            // Advance only while the officer can actually see the target. A hidden player does not reveal their position through solid cover.
             if(!AdvanceBlocked(direction))
                 transform.position+=direction*Time.deltaTime*.95f;
         }

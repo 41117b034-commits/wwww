@@ -5,7 +5,7 @@ using UnityEngine;
 // Native participants keep the existing model's real bones and skin weights.
 // Only transforms, shared skins and the gait rig are copied, never an actor's
 // gameplay/voice hierarchy. Other baked guests share a small background rig.
-[DefaultExecutionOrder(4600)]
+[DefaultExecutionOrder(5000)]
 public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
 {
     internal const float MovementRadius=.23f,MovementBottom=.35f,MovementTop=1.25f;
@@ -56,6 +56,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     readonly List<bool> nativeOriginalEnabled=new List<bool>();
     readonly List<SkinnedMeshRenderer> nativeSkins=new List<SkinnedMeshRenderer>();
     Chapter2Actor nativeTemplate;
+    Chapter3SchoolAmbient ambient;
+    bool longGarment;
     Chapter1IncidentRig nativeRig;
     Chapter3SchoolCrowdActor restrainedGuest;
     Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
@@ -70,6 +72,11 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     bool initialized,animated,afraid,waiting,finalFallPoseReady,holdingAtNeck;
     bool cowering;
     float cowerWeight;
+    Mesh groundProbe;
+    readonly List<Vector3> groundProbeVertices=new List<Vector3>();
+    int calibratedGroundMesh,calibratedGroundPose;
+    float calibratedGroundSurface,renderedGroundOffset;
+    bool groundCalibrated;
     public void SetCowering(bool value){cowering=value;}
     Vector3 navigationGoal,detourPoint;
     float bestRemaining,progressAt,nextDetour;
@@ -163,6 +170,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         if(first)return false;
         initialized=true;nativeTemplate=source;height=body.size.y;
+        ambient=GetComponentInParent<Chapter3SchoolAmbient>();
         if(!GetComponent<Chapter3Bystander>())gameObject.AddComponent<Chapter3Bystander>();
 
         // Preserve this authored spectator's height and proportions. The child
@@ -206,7 +214,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         // and hands; it does not create the police grip mesh/material variants.
         nativeRig=nativeRoot.gameObject.AddComponent<Chapter1IncidentRig>();
         nativeRig.Initialize(animator,false);nativeRig.smoothLocomotion=true;
-        nativeRig.batonVisible=false;nativeRig.Face(transform.forward);nativeRig.Ground(0);
+        nativeRig.batonVisible=false;nativeRig.Face(transform.forward);nativeRig.Ground(ambient?ambient.CorridorGroundHeight(transform.position):0);
         Chapter3HandPose.Attach(nativeRig);
         nativeUpperArm=FindNativeBone(animator,HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
         nativeElbow=FindNativeBone(animator,HumanBodyBones.RightLowerArm,"R_Forearm","RightForeArm");
@@ -239,7 +247,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     {
         if(!nativeRig||!animated)return;
         Vector3 delta=Vector3.ProjectOnPlane(transform.position-nativePrevious,Vector3.up);nativePrevious=transform.position;
-        nativeRig.walking=delta.sqrMagnitude>.00000025f;nativeRig.Face(transform.forward);nativeRig.Ground(0);
+        nativeRig.walking=delta.sqrMagnitude>.00000025f;nativeRig.Face(transform.forward);nativeRig.Ground(ambient?ambient.CorridorGroundHeight(transform.position):0);
         nativeRig.strike=strike>0;nativeRig.strikeProgress=strike;
     }
     void Initialize()
@@ -260,7 +268,10 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             }
         }
         if(first)return;
-        height=body.size.y;BuildBones();
+        height=body.size.y;
+        ambient=GetComponentInParent<Chapter3SchoolAmbient>();
+        longGarment=name.Contains("日籍女教師")||name.Contains("婦人");
+        BuildBones();
         foreach(var filter in filters)
         {
             var source=filter.GetComponent<MeshRenderer>();
@@ -369,7 +380,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
-        cowering=false;cowerWeight=0;
+        cowering=false;cowerWeight=0;groundCalibrated=false;renderedGroundOffset=0;
         navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
         restrainedGuest=null;holdingAtNeck=false;
         foreach(var saved in capsules)if(saved.collider)
@@ -454,6 +465,9 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     bool Obstacle(Collider collider,Vector3 next)
     {
         if(collider.transform.IsChildOf(transform)||collider.bounds.max.y<.28f)return false;
+        // The authored veranda is a 30 cm walking surface, not a wall.
+        // Only this named slab is stepable; railings, posts and walls stay solid.
+        if(collider.name=="外廊木地板"&&collider.bounds.max.y<=.32f)return false;
         var bystander=collider.GetComponentInParent<Chapter3Bystander>();
         var actor=collider.GetComponentInParent<Chapter2Actor>();
         if(bystander||actor)
@@ -553,8 +567,10 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         for(int side=0;side<2;side++)
         {
             int arm=3+side*3,leg=9+side*3;float sign=side==0?-1:1,step=stride*sign;
-            bones[leg].localRotation=Quaternion.Euler(step*30,0,0);
-            bones[leg+1].localRotation=Quaternion.Euler(-Mathf.Max(0,-step)*48,0,0);
+            // A long robe uses shorter steps instead of stretching its hem
+            // through the ground with the pupil's much wider running gait.
+            bones[leg].localRotation=Quaternion.Euler(step*(longGarment?16:30),0,0);
+            bones[leg+1].localRotation=Quaternion.Euler(-Mathf.Max(0,-step)*(longGarment?28:48),0,0);
             bones[leg+2].localRotation=Quaternion.Euler(-step*12,0,0);
             bones[arm].localRotation=Quaternion.Euler(-step*24-(afraid?48:0)-25*startle,0,sign*(afraid?10:3));
             bones[arm+1].localRotation=Quaternion.Euler(-25-(afraid?35:0)-20*startle,0,0);
@@ -564,20 +580,20 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         cowerWeight=Mathf.MoveTowards(cowerWeight,cowering&&!FollowingWithdrawal?1:0,Time.deltaTime*3);
         if(cowerWeight>0)
         {
-            bones[0].localPosition+=Vector3.down*(height*.19f*cowerWeight);
+            bones[0].localPosition+=Vector3.down*(height*(longGarment?.08f:.19f)*cowerWeight);
             bones[1].localRotation*=Quaternion.Euler(18*cowerWeight,0,0);
             for(int side=0;side<2;side++)
             {
                 int leg=9+side*3,arm=3+side*3;
-                bones[leg].localRotation=Quaternion.Slerp(bones[leg].localRotation,Quaternion.Euler(58,0,0),cowerWeight);
-                bones[leg+1].localRotation=Quaternion.Slerp(bones[leg+1].localRotation,Quaternion.Euler(-100,0,0),cowerWeight);
+                bones[leg].localRotation=Quaternion.Slerp(bones[leg].localRotation,Quaternion.Euler(longGarment?24:58,0,0),cowerWeight);
+                bones[leg+1].localRotation=Quaternion.Slerp(bones[leg+1].localRotation,Quaternion.Euler(longGarment?-42:-100,0,0),cowerWeight);
                 bones[arm].localRotation=Quaternion.Slerp(bones[arm].localRotation,Quaternion.Euler(-135,0,side==0?-10:10),cowerWeight);
                 bones[arm+1].localRotation=Quaternion.Slerp(bones[arm+1].localRotation,Quaternion.Euler(-65,0,0),cowerWeight);
             }
         }
         if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
-        if(fall>0)PoseFall();
+        if(fall>0)PoseFall();else GroundSyntheticPose();
     }
     void PoseFall()
     {
@@ -593,22 +609,81 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             bones[arm].localRotation=Quaternion.Euler(-55*bend-14*collapse,0,side==0?-12:18);
             bones[arm+1].localRotation=Quaternion.Euler(-40*bend-15*collapse,0,0);
         }
-        // Sample the shared geometry instead of repeatedly baking a high-poly
-        // character. This keeps the non-graphic collapse resting on the floor.
-        for(int i=0;i<bones.Length;i++)poseMatrices[i]=RelativeMatrix(bones[i],transform)*Matrix4x4.Translate(-bindPositions[i]);
-        float lowest=float.PositiveInfinity;
-        foreach(var part in parts)
-            for(int i=0;i<part.shared.samples.Length;i++)
-            {
-                Vector3 vertex=part.key.local.MultiplyPoint3x4(part.shared.samples[i]);BoneWeight weight=part.shared.sampleWeights[i];
-                Vector3 posed=poseMatrices[weight.boneIndex0].MultiplyPoint3x4(vertex)*weight.weight0+poseMatrices[weight.boneIndex1].MultiplyPoint3x4(vertex)*weight.weight1;
-                lowest=Mathf.Min(lowest,posed.y);
-            }
-        if(!float.IsPositiveInfinity(lowest))bones[0].localPosition+=Vector3.up*Mathf.Max(0,body.min.y+height*.012f-lowest);
+        GroundSyntheticPose();
         if(fall>=.95f)
             foreach(var saved in capsules)if(saved.collider)
             {saved.collider.direction=0;saved.collider.center=new Vector3(body.center.x-height*.02f*fallSide,body.min.y+height*.17f,body.center.z);saved.collider.height=height;saved.collider.radius=height*.14f;}
         if(fall>=1)finalFallPoseReady=true;
+    }
+    void GroundSyntheticPose()
+    {
+        // Walking and frightened poses need the same support correction as
+        // fallen bodies. Never lower the hips while leaving the feet below
+        // the yard/veranda. Sampling shared skin data avoids per-frame BakeMesh.
+        for(int i=0;i<bones.Length;i++)poseMatrices[i]=RelativeMatrix(bones[i],transform)*Matrix4x4.Translate(-bindPositions[i]);
+        float lowest=float.PositiveInfinity;
+        foreach(var part in parts)
+        {
+            var pose=part.detail!=null&&part.posed.sharedMesh==part.detail.mesh?part.detail:part.shared;
+            for(int i=0;i<pose.samples.Length;i++)
+            {
+                Vector3 vertex=part.key.local.MultiplyPoint3x4(pose.samples[i]);BoneWeight weight=pose.sampleWeights[i];
+                Vector3 posed=poseMatrices[weight.boneIndex0].MultiplyPoint3x4(vertex)*weight.weight0+poseMatrices[weight.boneIndex1].MultiplyPoint3x4(vertex)*weight.weight1;
+                lowest=Mathf.Min(lowest,posed.y);
+            }
+        }
+        if(float.IsPositiveInfinity(lowest))return;
+        float surface=ambient?ambient.CorridorGroundHeight(transform.position):0;
+        float localFloor=transform.InverseTransformPoint(new Vector3(transform.position.x,surface+.018f,transform.position.z)).y;
+        bones[0].localPosition+=Vector3.up*(localFloor-lowest);
+        CorrectRenderedGround(surface);
+    }
+    void CorrectRenderedGround(float surface)
+    {
+        int meshStamp=17;
+        foreach(var part in parts)if(part.posed&&part.posed.enabled&&part.posed.sharedMesh)
+            meshStamp=unchecked(meshStamp*31+part.posed.sharedMesh.GetInstanceID());
+        int pose=(walkWeight>.1f?1:0)+(waiting?2:0)+Mathf.RoundToInt(cowerWeight*4)*4+Mathf.RoundToInt(fall*4)*32;
+        if(!groundCalibrated||meshStamp!=calibratedGroundMesh||pose!=calibratedGroundPose||Mathf.Abs(surface-calibratedGroundSurface)>.001f)
+        {
+            // Calibrate the rendered skin only when LOD, support plane or
+            // posture changes. Keep the cheap shared samples for every frame.
+            // Measure the real root/renderer response rather than relying
+            // on an assumed scale for the baked female donor.
+            float minimum=RenderedLowestY();
+            renderedGroundOffset=0;
+            if(!float.IsPositiveInfinity(minimum))
+            {
+                Vector3 before=bones[0].position;
+                bones[0].position=before+Vector3.up*.025f;
+                float lifted=RenderedLowestY();
+                bones[0].position=before;
+                float response=(lifted-minimum)/.025f;
+                if(response>.1f&&response<10)
+                    renderedGroundOffset=(surface+.018f-minimum)/response;
+            }
+            groundCalibrated=true;calibratedGroundMesh=meshStamp;
+            calibratedGroundPose=pose;calibratedGroundSurface=surface;
+            // Retain only an empty probe object between occasional checks.
+            // High-poly near LOD vertex buffers must not remain per person.
+            if(groundProbe)groundProbe.Clear();
+            groundProbeVertices.Clear();groundProbeVertices.TrimExcess();
+        }
+        bones[0].position+=Vector3.up*renderedGroundOffset;
+    }
+    float RenderedLowestY()
+    {
+        if(!groundProbe)groundProbe=new Mesh{name="Crowd ground calibration",hideFlags=HideFlags.HideAndDontSave};
+        float minimum=float.PositiveInfinity;
+        foreach(var part in parts)
+        {
+            var skin=part.posed;
+            if(!skin||!skin.enabled||!skin.gameObject.activeInHierarchy||!skin.sharedMesh)continue;
+            skin.BakeMesh(groundProbe,false);groundProbe.GetVertices(groundProbeVertices);
+            foreach(var vertex in groundProbeVertices)
+                minimum=Mathf.Min(minimum,skin.transform.TransformPoint(vertex).y);
+        }
+        return minimum;
     }
     void OnDisable(){if(initialized)ResetPose();}
     void OnDestroy()
@@ -624,6 +699,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(--part.shared.users==0){meshes.Remove(part.key);if(part.shared.mesh)Destroy(part.shared.mesh);}
             if(part.detail!=null&&--part.detail.users==0){meshes.Remove(part.detailKey);if(part.detail.mesh)Destroy(part.detail.mesh);}
         }
+        if(groundProbe)Destroy(groundProbe);
         if(boneRoot)Destroy(boneRoot.gameObject);
     }
 }

@@ -166,6 +166,9 @@ public sealed class Chapter3PathMotor
         // The retreating crowd yields to leaders with its own collision checks.
         // Do not let a waiting follower trap the leader inside a capsule.
         if(crowd&&(crowd.IsRouteCompanion||crowd.FollowingWithdrawal))return false;
+        // The authored school corridor floor is a low walkable slab, not a
+        // wall. Its mesh is grounded separately by the crowd's surface probe.
+        if(collider.name=="外廊木地板"&&collider.bounds.max.y<=.32f)return false;
         return collider.bounds.max.y>.28f;
     }
 

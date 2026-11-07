@@ -51,6 +51,7 @@ public sealed partial class Chapter3SchoolAmbient
         ClearPoliceOpposition();
         skirmishActive=false;AmbushSignalFrame=-1;SkirmishPairsReady=0;
         System.Array.Clear(sheltered,0,sheltered.Length);
+        ResetCivilianShelters();
         foreach(var motor in watchMotors)motor?.Reset();
         for(int i=0;i<AmbusherCount;i++){assaultVictim[i]=i;strikeBegan[i]=-1;}
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
@@ -131,14 +132,9 @@ public sealed partial class Chapter3SchoolAmbient
             return true;
         }
         if(Withdrawing)return true; // The escort motor owns every living guest.
-        if(index>=10||(index<policeAssigned.Length&&policeAssigned[index]))
+        if(index<3||index>=10||(index<policeAssigned.Length&&policeAssigned[index]))
         {
-            // Reach nearby shelter, not the distant exit. Nobody disappears
-            // or leaves the school ahead of the player's withdrawal signal.
-            Vector3 shelter=index<14?refuges[index]:new Vector3(-10+(index-14)*3.3f,0,38.5f);
-            crowdPhases[index]=CrowdPhase.Fleeing;
-            if(Vector3.ProjectOnPlane(guest.transform.position-shelter,Vector3.up).sqrMagnitude<5||guest.WaitingAtObstacle)MoveWithinShelter(index,shelter);
-            else guest.MoveTowards(shelter,2.2f+(index%3)*.23f);
+            UpdateCivilianPanic(index);
             return true;
         }
         if(index<2&&AssaultElapsed>12){crowdPhases[index]=CrowdPhase.Fleeing;MoveWithinShelter(index,refuges[index]);return true;}

@@ -84,8 +84,16 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
         // Lower the shared Pelvis/Waist parent, then keep the original soles on
         // the ground using knee IK. Walking still comes from the existing gait.
         for(int i=0;i<2;i++){footTargets[i]=feet[i].position;footRotations[i]=feet[i].rotation;}
-        bodyRoot.position-=Vector3.up*(height*.20f*crouch);
-        if(spine)spine.rotation=Quaternion.AngleAxis(23*crouch,right)*spine.rotation;
+        if(Sheltered)
+        {
+            // A staggered ambush crouch: front foot planted toward cover,
+            // rear foot tucked back. This avoids the symmetric seated squat.
+            footTargets[0]+=(forward*height*.17f-right*height*.025f)*crouch;
+            footTargets[1]+=(-forward*height*.18f+right*height*.025f)*crouch;
+            bodyRoot.position+=(forward*height*.025f-right*height*.025f-Vector3.up*height*.27f)*crouch;
+        }
+        else bodyRoot.position-=Vector3.up*(height*.20f*crouch);
+        if(spine)spine.rotation=Quaternion.AngleAxis((Sheltered?28:23)*crouch,right)*spine.rotation;
         if(crouch>0)
             for(int i=0;i<2;i++)
             {
@@ -95,18 +103,17 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
 
         if(crouch>0&&Sheltered)
         {
-            // Quiet cover is different from shielding the face under fire.
-            // Rest each hand above its own thigh, with a relaxed downward palm.
-            for(int i=0;i<2;i++)
-            {
-                Vector3 side=right*(i==0?-1:1);
-                Vector3 target=Vector3.Lerp(thighs[i].position,knees[i].position,.72f)
-                    +Vector3.up*height*.055f+side*height*.035f;
-                PoseArm(i,target,side-forward*.35f,crouch);
-                Quaternion relaxed=Quaternion.LookRotation(forward-Vector3.up*.25f,-Vector3.up)
-                    *Quaternion.Inverse(rig.PalmFrame(i==0));
-                hands[i].rotation=Quaternion.Slerp(hands[i].rotation,relaxed,crouch);
-            }
+            // Brace the front knee with one forearm; keep the other hand ready
+            // near the chest while watching the school, rather than both palms
+            // resting symmetrically on the thighs.
+            Vector3 brace=Vector3.Lerp(thighs[0].position,knees[0].position,.82f)
+                +Vector3.up*height*.045f+forward*height*.025f;
+            PoseArm(0,brace,-right-forward*.35f,crouch);
+            Quaternion resting=Quaternion.LookRotation(forward-Vector3.up*.2f,-Vector3.up)
+                *Quaternion.Inverse(rig.PalmFrame(true));
+            hands[0].rotation=Quaternion.Slerp(hands[0].rotation,resting,crouch);
+            Vector3 ready=rig.Hips.position+Vector3.up*height*.24f+forward*height*.16f+right*height*.08f;
+            PoseArm(1,ready,right-forward*.4f,crouch);
         }
         else if(crouch>0)
         {
