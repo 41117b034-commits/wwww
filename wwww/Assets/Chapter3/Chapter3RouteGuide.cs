@@ -39,8 +39,8 @@ public sealed class Chapter3RouteGuide : MonoBehaviour
         UpdateVisible();
     }
     void LateUpdate(){if(dashes.Count>0)UpdateVisible();}
-    public void ShowAhead(Vector3 start,Vector3[] route,Transform player)
-    {Show(start,route,player,player);playerLeads=true;UpdateVisible();}
+    public void ShowAhead(Vector3 start,Vector3[] route,Transform player,System.Func<Vector3,float> ground=null)
+    {Show(start,route,player,player,ground);playerLeads=true;UpdateVisible();}
     void UpdateVisible()
     {
         if(!follower||!leader){Hide();return;}

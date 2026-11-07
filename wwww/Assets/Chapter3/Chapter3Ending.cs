@@ -49,7 +49,7 @@ public sealed partial class Chapter3Ending : MonoBehaviour
         player.canMove=false;player.canLook=true;player.view.fieldOfView=60;
         school.flow.combat.weapons.Suspend();school.flow.combat.hud.SetActive(false);
         owner.Battle.Menu.Hide();ui.chat.SetActive(false);ui.ending.SetActive(false);ui.Say("",null);
-        ui.hint.text="空白鍵略過當句台詞";
+        ui.hint.text="";
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         tadoMotor.Reset();monaMotor.Reset();bawanMotor.Reset();CurrentStage=Stage.Outcome;
         StartCoroutine(ResolveOutcome());
@@ -219,10 +219,10 @@ public sealed partial class Chapter3Ending : MonoBehaviour
     }
     IEnumerator CloseWithMona()
     {
-        CurrentStage=Stage.MonaClosing;ui.objective.text="莫那抵達接應處";ui.hint.text="空白鍵略過當句台詞";
+        CurrentStage=Stage.MonaClosing;ui.objective.text="莫那抵達接應處";ui.hint.text="";
         if(!Mona)
         {
-            ui.objective.text="接應尚未完成";ui.hint.text="莫那尚未到場，結果未保存。按 F8 重進運動會。";
+            ui.objective.text="接應尚未完成";ui.hint.text="莫那尚未到場，結果未保存。請從章節選單重新開始第三章。";
             yield break;
         }
         ui.objective.text="莫那正從接應棚後方走來";

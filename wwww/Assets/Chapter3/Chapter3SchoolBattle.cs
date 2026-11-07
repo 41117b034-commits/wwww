@@ -79,7 +79,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         {
             Menu=Chapter3MissionUI.Build(ui);
             Menu.tado.onClick.AddListener(()=>Choose(Mission.Tado));Menu.bawan.onClick.AddListener(()=>Choose(Mission.Bawan));Menu.pihu.onClick.AddListener(()=>Choose(Mission.Pihu));
-            Menu.retry.onClick.AddListener(()=>Retry());Menu.replay.onClick.AddListener(()=>school.flow.EnterSchool());
+            Menu.retry.onClick.AddListener(()=>Retry());Menu.replay.onClick.AddListener(()=>UnityEngine.SceneManagement.SceneManager.LoadScene("第三章"));
         }
         Menu.Hide();
         if(!scenery)BuildProps();ResetBreakthrough(0);scenery.gameObject.SetActive(true);
@@ -104,7 +104,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     IEnumerator Briefing()
     {
-        player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="空白鍵略過當句台詞";
+        player.canMove=false;player.canLook=true;ui.objective.text="與達多商量分工";ui.hint.text="";
         // Proximity starts the conversation immediately, without a viewing task.
         yield return Say(school.tado,"前面就是學校了，裡面正在舉行運動會，大家都埋伏好了。",5.5f,true);
         yield return Say(school.tado,"等等聽到信號，我會進去運動場。巴萬打通左側通道，比胡負責右側掩護。你選一隊跟上。",8f,false);
@@ -247,7 +247,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         }
         if(ambient)ambient.ReleaseWithdrawalAtAssembly();
         if(FollowGuide)FollowGuide.Hide();player.canMove=false;
-        ui.objective.text="校後會合 · 準備沿林路撤離";ui.hint.text="空白鍵略過當句台詞";
+        ui.objective.text="校後會合 · 準備沿林路撤離";ui.hint.text="";
         yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,Flat(player.transform.position,school.bawan.transform.position)<8);
         yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,Flat(player.transform.position,school.pihu.transform.position)<8);
         yield return Say(school.tado,Selected==Mission.Tado?"大家正往校後撤，後面的人會跟上。先離開學校，沿林路走！":"我帶的人正從會場撤出。先離開學校，沿後面那條林路走！",4.5f,Flat(player.transform.position,school.tado.transform.position)<8);

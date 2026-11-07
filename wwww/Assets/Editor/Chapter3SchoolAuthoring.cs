@@ -38,7 +38,7 @@ public static class Chapter3SchoolAuthoring
         Routes();Ground();Buildings();SportsGround();FencesAndProps();Forest();Cast();Lighting();
         CombineDetails();
         foreach(var text in flow.ui.GetComponentsInChildren<Text>(true))
-            if(text.text.Contains("F6")&&text.text.Contains("F7"))text.text="快速跳段  F6 駐在所 · F7 短交戰 · F8 學校\n空白鍵略過預寫台詞";
+            if(text.text.Contains("F6")&&text.text.Contains("F7")){text.text="";text.gameObject.SetActive(false);}
         root.gameObject.SetActive(false);
         EditorSceneManager.MarkSceneDirty(flow.gameObject.scene);EditorSceneManager.SaveScene(flow.gameObject.scene);AssetDatabase.SaveAssets();
         PolishSaved();

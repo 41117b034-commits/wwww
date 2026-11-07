@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Single-school owner. Batch 4 takes over following and objectives after Tado.
 public sealed class Chapter3SchoolController : MonoBehaviour
@@ -24,7 +23,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     readonly List<Vector3> trail = new List<Vector3>();
     readonly int[] trailIndex = new int[2];
     readonly bool[] following = new bool[2];
-    float lineUntil, lineBegan, nextTrail;
+    float lineUntil, nextTrail;
     Chapter3SchoolLighting lighting;
     Chapter3SchoolLighting Lighting=>lighting?lighting:lighting=gameObject.AddComponent<Chapter3SchoolLighting>();
     bool approachPrepared;
@@ -135,7 +134,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         if(!Exploring)return;
         ui.ConfigureVR(player.IsVR);
         if(Battle&&Battle.OwnsFlow){if(ArrivalGuide&&ArrivalGuide.VisibleMarks>0)ArrivalGuide.Hide();return;}
-        if(lineUntil>0&&((Time.time>lineUntil&&!ui.VoiceBusy)||(Time.time>lineBegan+.25f&&Keyboard.current?.spaceKey.wasPressedThisFrame==true)))
+        if(lineUntil>0&&Time.time>lineUntil&&!ui.VoiceBusy)
         {lineUntil=0;ui.Say("",null);bawan.speaking=pihu.speaking=tado.speaking=false;}
         var position=player.transform.position;
         if(Time.time>=nextTrail&&Flat(position,trail[trail.Count-1])>.9f)
@@ -189,7 +188,7 @@ public sealed class Chapter3SchoolController : MonoBehaviour
     void Speak(Chapter2Actor actor,string line,float seconds)
     {
         bawan.speaking=pihu.speaking=tado.speaking=false;actor.speaking=true;
-        ui.Say(actor.DisplayName,line);lineBegan=Time.time;lineUntil=Time.time+seconds;
+        ui.Say(actor.DisplayName,line);lineUntil=Time.time+seconds;
         actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(line,seconds,null);
     }
     public Vector3 Constrain(Vector3 current,Vector3 desired)

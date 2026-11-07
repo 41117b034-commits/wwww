@@ -88,12 +88,12 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
         {
             // A staggered ambush crouch: front foot planted toward cover,
             // rear foot tucked back. This avoids the symmetric seated squat.
-            footTargets[0]+=(forward*height*.17f-right*height*.025f)*crouch;
-            footTargets[1]+=(-forward*height*.18f+right*height*.025f)*crouch;
-            bodyRoot.position+=(forward*height*.025f-right*height*.025f-Vector3.up*height*.27f)*crouch;
+            footTargets[0]+=(forward*height*.11f-right*height*.015f)*crouch;
+            footTargets[1]+=(-forward*height*.09f+right*height*.015f)*crouch;
+            bodyRoot.position+=(forward*height*.015f-right*height*.025f-Vector3.up*height*.16f)*crouch;
         }
         else bodyRoot.position-=Vector3.up*(height*.20f*crouch);
-        if(spine)spine.rotation=Quaternion.AngleAxis((Sheltered?28:23)*crouch,right)*spine.rotation;
+        if(spine)spine.rotation=Quaternion.AngleAxis((Sheltered?20:23)*crouch,right)*spine.rotation;
         if(crouch>0)
             for(int i=0;i<2;i++)
             {
@@ -103,17 +103,21 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
 
         if(crouch>0&&Sheltered)
         {
-            // Brace the front knee with one forearm; keep the other hand ready
-            // near the chest while watching the school, rather than both palms
-            // resting symmetrically on the thighs.
-            Vector3 brace=Vector3.Lerp(thighs[0].position,knees[0].position,.82f)
-                +Vector3.up*height*.045f+forward*height*.025f;
-            PoseArm(0,brace,-right-forward*.35f,crouch);
-            Quaternion resting=Quaternion.LookRotation(forward-Vector3.up*.2f,-Vector3.up)
-                *Quaternion.Inverse(rig.PalmFrame(true));
-            hands[0].rotation=Quaternion.Slerp(hands[0].rotation,resting,crouch);
-            Vector3 ready=rig.Hips.position+Vector3.up*height*.24f+forward*height*.16f+right*height*.08f;
-            PoseArm(1,ready,right-forward*.4f,crouch);
+            // Both hands have a physical resting place. Elbows hang below
+            // the shoulders; the calibrated palms face the knees, not upward.
+            Vector3 brace=Vector3.Lerp(thighs[0].position,knees[0].position,.86f)
+                +Vector3.up*height*.035f+forward*height*.025f;
+            Vector3 resting=Vector3.Lerp(thighs[1].position,knees[1].position,.64f)
+                +Vector3.up*height*.035f+forward*height*.02f;
+            PoseArm(0,brace,-right*.25f-forward*.2f-Vector3.up,crouch);
+            PoseArm(1,resting,right*.25f-forward*.2f-Vector3.up,crouch);
+            for(int side=0;side<2;side++)
+            {
+                Vector3 fingers=(forward-Vector3.up*.25f).normalized;
+                Vector3 palm=Vector3.ProjectOnPlane(Vector3.down,fingers).normalized;
+                Quaternion target=Quaternion.LookRotation(fingers,palm)*Quaternion.Inverse(rig.PalmFrame(side==0));
+                hands[side].rotation=Quaternion.Slerp(hands[side].rotation,target,crouch);
+            }
         }
         else if(crouch>0)
         {
@@ -138,7 +142,7 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
             float nod=Mathf.Sin(Mathf.Clamp01((Time.time-reportBegan)/.85f)*Mathf.PI)*12;
             rig.Head.rotation=Quaternion.AngleAxis(nod*report,right)*rig.Head.rotation;
         }
-        if(crouch>0)rig.Head.rotation=Quaternion.AngleAxis(10*crouch,right)*rig.Head.rotation;
+        if(crouch>0)rig.Head.rotation=Quaternion.AngleAxis((Sheltered?5:10)*crouch,right)*rig.Head.rotation;
         bool watching=Sheltered&&actor.speaking&&school&&school.player;
         gazeWeight=Mathf.MoveTowards(gazeWeight,watching?1:0,Time.deltaTime*5);
         if(gazeWeight>0&&school&&school.player)

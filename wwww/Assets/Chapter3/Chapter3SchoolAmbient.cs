@@ -48,7 +48,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     public int FallenChildren=>CountFallen(SpectatorKind.Child);
     public int JapaneseAdults=>10;
     public int JapaneseChildren=>10;
-    public bool AftermathVisible=>Panicking&&FallenAdults>=2&&FallenChildren>=2;
+    public bool AftermathVisible=>Panicking&&FallenAdults>=1&&FallenChildren>=2;
     int CountFallen(SpectatorKind kind)
     {
         int count=0;if(crowd!=null)for(int i=0;i<crowd.Length;i++)
@@ -136,7 +136,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
             straggler.IsRouteCompanion=true;
             straggler.gameObject.SetActive(false);
         }
-        ConfigureSkirmish();
+        ConfigureSkirmish();ResetCampusRunners();
         gameObject.AddComponent<Chapter3SchoolBattleAudio>().Configure(this,school);
     }
     public void ResetCalm()
@@ -158,7 +158,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
         }
         for(int i=0;i<assailants.Length;i++)if(assailants[i])
         {assailants[i].ResetPose();assailants[i].gameObject.SetActive(i<3);assailants[i].transform.SetPositionAndRotation(assaultStarts[i],Quaternion.identity);}
-        HideStraggler();
+        HideStraggler();ResetCampusRunners();
     }
     public void Panic()
     {Panic(new Vector3(0,0,4));}
@@ -215,7 +215,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     void Update()
     {
         if(!initialized)Initialize();
-        if(Panicking)UpdateAssault();
+        if(Panicking)UpdateAssault();else UpdateCampusRunners();
         UpdateWithdrawal();
         for(int i=0;i<runners.Length;i++)
         {

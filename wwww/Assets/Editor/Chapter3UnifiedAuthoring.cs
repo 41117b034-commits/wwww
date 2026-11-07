@@ -162,7 +162,6 @@ public static class Chapter3UnifiedAuthoring
     static void BuildHud(Chapter3Flow f,Chapter3Combat c)
     {
         var parent=f.ui.canvas.transform;
-        var hotkeys=Text(parent,"快速跳段  F6 駐在所  ·  F7 短交戰\n空白鍵略過預寫台詞",19,new Vector2(.60f,.89f),new Vector2(.98f,.975f));hotkeys.alignment=TextAnchor.UpperRight;hotkeys.color=new Color(.9f,.87f,.75f);
         c.hud=Panel(parent,"交戰介面",Vector2.zero,Vector2.one,Color.clear);c.hud.GetComponent<Image>().raycastTarget=false;
         c.healthText=Text(c.hud.transform,"",25,new Vector2(.025f,.72f),new Vector2(.25f,.78f));
         c.ammoText=Text(c.hud.transform,"",24,new Vector2(.025f,.66f),new Vector2(.38f,.72f));

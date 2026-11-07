@@ -57,11 +57,14 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     readonly List<SkinnedMeshRenderer> nativeSkins=new List<SkinnedMeshRenderer>();
     Chapter2Actor nativeTemplate;
     Chapter3SchoolAmbient ambient;
-    bool longGarment;
+    bool longGarment,skirtGarment;
     Chapter1IncidentRig nativeRig;
     Chapter3SchoolCrowdActor restrainedGuest;
     Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
     Transform meleeSpine;
+    Transform[] nativeShelterBones;
+    readonly Vector3[] shelterFeet=new Vector3[2];
+    readonly Quaternion[] shelterFootRotations=new Quaternion[2];
     float meleeGuard;
     int meleeVariant;
     public void SetMeleePose(float guard,int variant){meleeGuard=guard;meleeVariant=variant;}
@@ -170,6 +173,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         if(first)return false;
         initialized=true;nativeTemplate=source;height=body.size.y;
+        longGarment=name.Contains("日籍女教師")||name.Contains("婦人")||name.Contains("女性");
+        skirtGarment=name.Contains("日籍女學童");
         ambient=GetComponentInParent<Chapter3SchoolAmbient>();
         if(!GetComponent<Chapter3Bystander>())gameObject.AddComponent<Chapter3Bystander>();
 
@@ -270,7 +275,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         if(first)return;
         height=body.size.y;
         ambient=GetComponentInParent<Chapter3SchoolAmbient>();
-        longGarment=name.Contains("日籍女教師")||name.Contains("婦人");
+        longGarment=name.Contains("日籍女教師")||name.Contains("婦人")||name.Contains("女性");
+        skirtGarment=name.Contains("日籍女學童");
         BuildBones();
         foreach(var filter in filters)
         {
@@ -494,6 +500,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     void LateUpdate()
     {
         if(!animated)return;
+        cowerWeight=Mathf.MoveTowards(cowerWeight,cowering&&!FollowingWithdrawal?1:0,Time.deltaTime*3);
         if(nativeRig)
         {
             if(startle>0&&nativeRig.Head)
@@ -540,6 +547,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
                 if(!meleeSpine)meleeSpine=FindNativeBone(nativeRig.animator,HumanBodyBones.Spine,"Spine","Spine1","Waist");
                 if(meleeSpine)meleeSpine.rotation=Quaternion.AngleAxis((wind*10-cut*22)*(1-recover)*(meleeVariant==2?-1:1),Vector3.up)*meleeSpine.rotation;
             }
+            if(cowerWeight>0&&fall<=0&&PrepareNativeShelter())PoseShelter(nativeShelterBones,true);
             if(presentationSpear&&nativeRig.RightHand)
             {
                 Vector3 direction=Vector3.Slerp(Vector3.up,nativeRig.Forward,strike>0?.3f+.35f*Mathf.Sin(strike*Mathf.PI):.18f);
@@ -569,45 +577,113 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             int arm=3+side*3,leg=9+side*3;float sign=side==0?-1:1,step=stride*sign;
             // A long robe uses shorter steps instead of stretching its hem
             // through the ground with the pupil's much wider running gait.
-            bones[leg].localRotation=Quaternion.Euler(step*(longGarment?16:30),0,0);
-            bones[leg+1].localRotation=Quaternion.Euler(-Mathf.Max(0,-step)*(longGarment?28:48),0,0);
+            bones[leg].localRotation=Quaternion.Euler(step*(longGarment?16:skirtGarment?22:30),0,0);
+            bones[leg+1].localRotation=Quaternion.Euler(-Mathf.Max(0,-step)*(longGarment?28:skirtGarment?36:48),0,0);
             bones[leg+2].localRotation=Quaternion.Euler(-step*12,0,0);
-            bones[arm].localRotation=Quaternion.Euler(-step*24-(afraid?48:0)-25*startle,0,sign*(afraid?10:3));
-            bones[arm+1].localRotation=Quaternion.Euler(-25-(afraid?35:0)-20*startle,0,0);
+            // The existing baked sleeves were weighted for lowered arms.
+            // Raising both shoulders by 135 degrees pulled the robe and
+            // torso into spikes; fear is now read through a restrained lean
+            // and bent elbows, keeping the upper arms beside the ribs.
+            bones[arm].localRotation=Quaternion.Euler(-step*(longGarment?8:18)-(afraid?18:0)-12*startle,0,sign*(afraid?4:2));
+            bones[arm+1].localRotation=Quaternion.Euler(-12-(afraid?18:0)-12*startle,0,0);
         }
         if(waiting)
-        {bones[6].localRotation=Quaternion.Euler(-105,0,15);bones[7].localRotation=Quaternion.Euler(-25,0,-10);}
-        cowerWeight=Mathf.MoveTowards(cowerWeight,cowering&&!FollowingWithdrawal?1:0,Time.deltaTime*3);
-        if(cowerWeight>0)
         {
-            bones[0].localPosition+=Vector3.down*(height*(longGarment?.08f:.19f)*cowerWeight);
-            bones[1].localRotation*=Quaternion.Euler(18*cowerWeight,0,0);
-            for(int side=0;side<2;side++)
-            {
-                int leg=9+side*3,arm=3+side*3;
-                bones[leg].localRotation=Quaternion.Slerp(bones[leg].localRotation,Quaternion.Euler(longGarment?24:58,0,0),cowerWeight);
-                bones[leg+1].localRotation=Quaternion.Slerp(bones[leg+1].localRotation,Quaternion.Euler(longGarment?-42:-100,0,0),cowerWeight);
-                bones[arm].localRotation=Quaternion.Slerp(bones[arm].localRotation,Quaternion.Euler(-135,0,side==0?-10:10),cowerWeight);
-                bones[arm+1].localRotation=Quaternion.Slerp(bones[arm+1].localRotation,Quaternion.Euler(-65,0,0),cowerWeight);
-            }
+            // One hand stays just in front of the chest instead of an
+            // overhead wave that twists wide sleeves through the head.
+            bones[6].localRotation=Quaternion.Euler(-28,0,4);
+            bones[7].localRotation=Quaternion.Euler(-36,0,0);
         }
+        if(cowerWeight>0)PoseShelter(bones,false);
         if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
         if(fall>0)PoseFall();else GroundSyntheticPose();
     }
+    bool PrepareNativeShelter()
+    {
+        if(nativeShelterBones!=null)return true;
+        if(!nativeRig||!nativeRig.animator||!nativeRig.Hips||!nativeRig.Head)return false;
+        var animator=nativeRig.animator;
+        var joints=new Transform[15];
+        joints[0]=nativeRig.Hips;
+        while(joints[0]&&!nativeRig.Head.IsChildOf(joints[0])&&joints[0].parent&&joints[0].parent!=nativeRoot)
+            joints[0]=joints[0].parent;
+        joints[1]=FindNativeBone(animator,HumanBodyBones.Spine,"Spine","Spine1","Waist");joints[2]=nativeRig.Head;
+        joints[3]=FindNativeBone(animator,HumanBodyBones.LeftUpperArm,"L_Upperarm","LeftArm");
+        joints[4]=FindNativeBone(animator,HumanBodyBones.LeftLowerArm,"L_Forearm","LeftForeArm");joints[5]=nativeRig.LeftHand;
+        joints[6]=nativeUpperArm;joints[7]=nativeElbow;joints[8]=nativeRig.RightHand;
+        joints[9]=FindNativeBone(animator,HumanBodyBones.LeftUpperLeg,"L_Thigh","LeftUpLeg");
+        joints[10]=FindNativeBone(animator,HumanBodyBones.LeftLowerLeg,"L_Calf","LeftLeg");
+        joints[11]=FindNativeBone(animator,HumanBodyBones.LeftFoot,"L_Foot","LeftFoot");
+        joints[12]=FindNativeBone(animator,HumanBodyBones.RightUpperLeg,"R_Thigh","RightUpLeg");
+        joints[13]=FindNativeBone(animator,HumanBodyBones.RightLowerLeg,"R_Calf","RightLeg");
+        joints[14]=FindNativeBone(animator,HumanBodyBones.RightFoot,"R_Foot","RightFoot");
+        foreach(var joint in joints)if(!joint)return false;
+        if(!nativeRig.Head.IsChildOf(joints[0]))return false;
+        nativeShelterBones=joints;return true;
+    }
+    void PoseShelter(Transform[] joints,bool originalSkin)
+    {
+        float weight=cowerWeight,worldHeight=originalSkin?nativeRig.Height:height*Mathf.Abs(transform.lossyScale.y);
+        Vector3 forward=originalSkin?nativeRig.Forward:transform.forward;
+        Vector3 right=Vector3.Cross(Vector3.up,forward).normalized;
+        for(int side=0;side<2;side++)
+        {
+            int foot=11+side*3;shelterFeet[side]=joints[foot].position;shelterFootRotations[side]=joints[foot].rotation;
+            // A small stagger reads as balance, without twisting either knee
+            // away from its foot or forcing the child's legs into a deep fold.
+            shelterFeet[side]+=forward*worldHeight*(side==0?.025f:-.015f)*weight;
+        }
+        joints[0].position-=Vector3.up*(worldHeight*(longGarment?.035f:skirtGarment?.045f:.065f)*weight);
+        joints[1].rotation=Quaternion.AngleAxis((longGarment?10:14)*weight,right)*joints[1].rotation;
+        joints[2].rotation=Quaternion.AngleAxis(8*weight,right)*joints[2].rotation;
+        for(int side=0;side<2;side++)
+        {
+            int leg=9+side*3;
+            Chapter1IncidentRig.Solve(joints[leg],joints[leg+1],joints[leg+2],shelterFeet[side],forward);
+            joints[leg+2].rotation=shelterFootRotations[side];
+        }
+        Vector3 hips=(joints[9].position+joints[12].position)*.5f;
+        for(int side=0;side<2;side++)
+        {
+            int arm=3+side*3,leg=9+side*3;float sign=side==0?-1:1;
+            Vector3 target=longGarment
+                ?hips+Vector3.up*worldHeight*(side==0?.18f:.24f)+forward*worldHeight*.13f+right*sign*worldHeight*.045f
+                :Vector3.Lerp(joints[leg].position,joints[leg+1].position,.55f)+Vector3.up*worldHeight*.035f+forward*worldHeight*.02f;
+            Vector3 oldForearm=joints[arm+2].position-joints[arm+1].position;
+            Quaternion wrist=joints[arm+2].rotation;
+            float reach=(Vector3.Distance(joints[arm].position,joints[arm+1].position)+Vector3.Distance(joints[arm+1].position,joints[arm+2].position))*.94f;
+            target=joints[arm].position+Vector3.ClampMagnitude(target-joints[arm].position,reach);
+            Chapter1IncidentRig.Solve(joints[arm],joints[arm+1],joints[arm+2],Vector3.Lerp(joints[arm+2].position,target,weight),
+                Vector3.down+right*sign*.18f+forward*.10f);
+            joints[arm+2].rotation=Quaternion.FromToRotation(oldForearm,joints[arm+2].position-joints[arm+1].position)*wrist;
+            // Native wrists have already passed Chapter3HandPose's mesh-axis
+            // calibration (4700). Preserve that frame while following the
+            // forearm instead of replacing it with the rig's fallback basis.
+        }
+    }
     void PoseFall()
     {
         float collapse=Mathf.SmoothStep(0,1,fall),bend=Mathf.Sin(collapse*Mathf.PI);
+        float settle=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,.95f,collapse));
         bones[0].localPosition=bindPositions[0]-Vector3.up*(height*.39f*collapse);
         bones[0].localRotation=Quaternion.Euler(-7*bend,0,87*collapse*fallSide);
         bones[1].localRotation=Quaternion.Euler(18*bend,0,0);
         for(int side=0;side<2;side++)
         {
-            int leg=9+side*3,arm=3+side*3;
+            int leg=9+side*3,arm=3+side*3;float sign=side==0?-1:1;
+            bool lowerArm=sign*fallSide<0;
             bones[leg].localRotation=Quaternion.Euler(22*bend+side*5*collapse,0,0);
             bones[leg+1].localRotation=Quaternion.Euler(-42*bend-10*collapse,0,0);
-            bones[arm].localRotation=Quaternion.Euler(-55*bend-14*collapse,0,side==0?-12:18);
-            bones[arm+1].localRotation=Quaternion.Euler(-40*bend-15*collapse,0,0);
+            // Let the arms fold beside the torso as the body settles. The
+            // previous spread hand became the lowest vertex and held the
+            // entire head and chest above ground during support correction.
+            bones[arm].localRotation=Quaternion.Slerp(
+                Quaternion.Euler(-55*bend-14*collapse,0,side==0?-12:18),
+                Quaternion.Euler(lowerArm?-32:-42,0,-sign*20),settle);
+            bones[arm+1].localRotation=Quaternion.Slerp(
+                Quaternion.Euler(-40*bend-15*collapse,0,0),
+                Quaternion.Euler(lowerArm?-45:-65,0,0),settle);
         }
         GroundSyntheticPose();
         if(fall>=.95f)

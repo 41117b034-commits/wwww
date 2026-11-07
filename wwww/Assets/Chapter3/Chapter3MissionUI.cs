@@ -27,7 +27,7 @@ public sealed class Chapter3MissionUI : MonoBehaviour
         ui.resultTitle=Label(end,"",font,34,new Vector2(.06f,.75f),new Vector2(.94f,.95f));
         ui.resultBody=Label(end,"",font,27,new Vector2(.06f,.30f),new Vector2(.94f,.72f));
         ui.retry=Button(end,"R  重試目前任務",font,new Vector2(.06f,.08f),new Vector2(.49f,.25f));
-        ui.replay=Button(end,"重新選擇任務",font,new Vector2(.53f,.08f),new Vector2(.94f,.25f));
+        ui.replay=Button(end,"從頭重玩第三章",font,new Vector2(.53f,.08f),new Vector2(.94f,.25f));
         ui.Hide();return ui;
     }
     public void Hide(){choice.SetActive(false);result.SetActive(false);}

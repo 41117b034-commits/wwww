@@ -8,6 +8,19 @@ public sealed partial class Chapter3SchoolAmbient
     float[] fallBegan;
     int[] escapeLeg;
     bool skirmishActive;
+    // Three supporting adults encounter one teacher and two pupils, then
+    // rejoin their existing police group. Group leaders remain with officers.
+    static readonly int[] civilianVictims={3,12,13};
+    readonly bool[] civilianEncounterDone=new bool[AmbusherCount];
+    readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
+    readonly RaycastHit[] civilianContactHits=new RaycastHit[32];
+    public int StagedCivilianFalls {get;private set;}
+    readonly float[] civilianContactDistance=new float[3],civilianContactElapsed=new float[3];
+    public bool CivilianEncounterComplete=>civilianEncounterDone[3]&&civilianEncounterDone[4]&&civilianEncounterDone[5];
+    public float CivilianContactDistance(int encounter)=>encounter>=0&&encounter<3?civilianContactDistance[encounter]:-1;
+    public float CivilianContactElapsed(int encounter)=>encounter>=0&&encounter<3?civilianContactElapsed[encounter]:-1;
+    bool HasCivilianEncounter(int actor)=>actor>=3&&actor<=5&&!civilianEncounterDone[actor];
+    bool IsStagedCivilian(int guest)=>guest==3||guest==12||guest==13;
     public int AmbushSignalFrame {get;private set;}=-1;
     public bool SkirmishActive=>Panicking&&skirmishActive;
     public Vector3 AmbushStart(int index)=>assaultStarts[index];
@@ -53,7 +66,11 @@ public sealed partial class Chapter3SchoolAmbient
         System.Array.Clear(sheltered,0,sheltered.Length);
         ResetCivilianShelters();
         foreach(var motor in watchMotors)motor?.Reset();
-        for(int i=0;i<AmbusherCount;i++){assaultVictim[i]=i;strikeBegan[i]=-1;}
+        StagedCivilianFalls=0;
+        for(int i=0;i<3;i++){civilianContactDistance[i]=-1;civilianContactElapsed[i]=-1;}
+        for(int i=0;i<AmbusherCount;i++)
+        {assaultVictim[i]=i>=3&&i<=5?civilianVictims[i-3]:-1;strikeBegan[i]=-1;civilianEncounterDone[i]=false;}
+        foreach(var motor in civilianAssaultMotors)motor.Reset();
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
     }
     public void EndSkirmish()
@@ -65,61 +82,65 @@ public sealed partial class Chapter3SchoolAmbient
     }
     void UpdateAmbush(float elapsed)
     {
-        UpdatePoliceMovement();
-        SkirmishPairsReady=0;
+        UpdatePoliceMovement();SkirmishPairsReady=0;
         for(int attacker=0;attacker<AmbusherCount;attacker++)
         {
             var actor=assailants[attacker];if(!actor||!skirmishActive)continue;
             if(attacker<3){ShelterNativeChild(attacker,actor);continue;}
+            if(HasCivilianEncounter(attacker)&&UpdateCivilianEncounter(attacker,actor,elapsed))continue;
             if(UpdatePoliceOpposition(attacker,actor))continue;
-            int index=assaultVictim[attacker];
-            if(index<0)
-            {
-                actor.SetStrike(0);
-                // Disperse instead of repeatedly swinging at a body or forming
-                // ten identical hostage-like pairs.
-                Vector3 watch=concealment[attacker]+new Vector3(attacker%2==0?2:-2,0,attacker%3-1);
-                WatchCampus(attacker,actor,watch);
-                continue;
-            }
-            var guest=crowd[index];if(!guest)continue;
-            if(attacker<2)
-            {
-                // Brief restraint, then release into the nearby shelter. Do
-                // not freeze two living pairs in the same pose until whistle.
-                if(elapsed>12)
-                {actor.HoldAtNeck(null,false);assaultVictim[attacker]=-1;crowdPhases[index]=CrowdPhase.Fleeing;continue;}
-                Vector3 forward=HoldForward(index),right=Vector3.Cross(Vector3.up,forward);
-                actor.HoldAtNeck(guest,false);
-                Vector3 behind=guest.transform.position-forward*.48f-right*.15f;
-                bool arrived=actor.MoveTowards(behind,2.4f,true,.035f);
-                bool guestReady=Vector3.ProjectOnPlane(guest.transform.position-refuges[index],Vector3.up).sqrMagnitude<.12f;
-                if(arrived&&guestReady)
-                {
-                    actor.Face(actor.transform.position+forward,150);
-                    actor.HoldAtNeck(guest,true);actor.SetStrike(0);
-                    crowdPhases[index]=CrowdPhase.Restrained;SkirmishPairsReady++;
-                }
-                continue;
-            }
-            if(guest.IsFallen)
-            {
-                // Four actors make a second encounter. Six pupils flee and
-                // are never recruited into another static pair.
-                assaultVictim[attacker]=index<10&&attacker<6?attacker+8:-1;
-                strikeBegan[attacker]=-1;actor.SetStrike(0);continue;
-            }
-            Vector3 direction=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).normalized;
-            actor.MoveTowards(guest.transform.position-direction*1.05f,3.1f);
-            float distance=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).magnitude;
-            bool guestReadyToFall=Vector3.ProjectOnPlane(guest.transform.position-refuges[index],Vector3.up).sqrMagnitude<.12f;
-            if(distance>1.5f||!guestReadyToFall||elapsed<3+attacker*.6f){actor.SetStrike(0);continue;}
-            actor.Face(guest.transform.position,180);SkirmishPairsReady++;
-            if(strikeBegan[attacker]<0)strikeBegan[attacker]=Time.time;
-            float progress=(Time.time-strikeBegan[attacker])/1.15f;
-            actor.SetStrike(progress<1?Mathf.Clamp(progress,.01f,.99f):0);
-            if(progress>=.72f&&fallBegan[index]<0)fallBegan[index]=Time.time;
+            actor.SetStrike(0);actor.SetMeleePose(0,0);
+            WatchCampus(attacker,actor,concealment[attacker]);
         }
+    }
+    bool UpdateCivilianEncounter(int attacker,Chapter3SchoolCrowdActor actor,float elapsed)
+    {
+        int index=assaultVictim[attacker];var guest=crowd[index];
+        if(!guest)return false;
+        actor.HoldAtNeck(null,false);actor.SetMeleePose(0,0);actor.SetAfraid(false);
+        if(guest.IsFallen)
+        {
+            actor.SetStrike(0);civilianEncounterDone[attacker]=true;return false;
+        }
+        Vector3 direction=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).normalized;
+        if(direction.sqrMagnitude<.1f)direction=Vector3.forward;
+        Vector3 stand=guest.transform.position-direction*1.05f;
+        float distance=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).magnitude;
+        if(distance>1.25f) civilianAssaultMotors[attacker-3].Patrol(actor,stand,3.1f,.15f);
+        actor.Face(guest.transform.position,180);
+        bool ready=Horizontal(guest.transform.position,refuges[index])<.45f;
+        if(distance>1.50f||!ready||elapsed<5+(attacker-3)*1.6f||!ClearCivilianContact(actor,guest)||
+            (strikeBegan[attacker]<0&&!CivilianEncounterVisible(guest)))
+        {actor.SetStrike(0);strikeBegan[attacker]=-1;return true;}
+        SkirmishPairsReady++;
+        if(strikeBegan[attacker]<0)strikeBegan[attacker]=Time.time;
+        float progress=(Time.time-strikeBegan[attacker])/1.15f;
+        actor.SetStrike(progress<1?Mathf.Clamp(progress,.01f,.99f):0);
+        if(progress>=.72f&&fallBegan[index]<0)
+        {fallBegan[index]=Time.time;StagedCivilianFalls++;civilianContactDistance[attacker-3]=distance;civilianContactElapsed[attacker-3]=elapsed;}
+        return true;
+    }
+    bool CivilianEncounterVisible(Chapter3SchoolCrowdActor guest)
+    {
+        var school=GetComponentInParent<Chapter3SchoolController>();
+        // Let the player physically enter the campus before each encounter.
+        // Once a swing begins, the existing contact checks own its completion.
+        return school&&school.Battle&&school.Battle.Fighting&&school.player&&
+            school.player.transform.position.z>=3&&
+            Horizontal(school.player.transform.position,guest.transform.position)<=18f;
+    }
+    bool ClearCivilianContact(Chapter3SchoolCrowdActor actor,Chapter3SchoolCrowdActor guest)
+    {
+        Vector3 from=actor.NeckPoint,to=guest.NeckPoint,delta=to-from;
+        int count=Physics.RaycastNonAlloc(from,delta.normalized,civilianContactHits,delta.magnitude,~0,QueryTriggerInteraction.Ignore);
+        for(int i=0;i<count;i++)
+        {
+            var hit=civilianContactHits[i].collider;if(!hit)continue;
+            var t=hit.transform;
+            if(t==actor.transform||t.IsChildOf(actor.transform)||t==guest.transform||t.IsChildOf(guest.transform))continue;
+            return false;
+        }
+        return true;
     }
     bool UpdateSkirmishGuest(int index)
     {
@@ -132,20 +153,16 @@ public sealed partial class Chapter3SchoolAmbient
             return true;
         }
         if(Withdrawing)return true; // The escort motor owns every living guest.
-        if(index<3||index>=10||(index<policeAssigned.Length&&policeAssigned[index]))
+        if(IsStagedCivilian(index)&&skirmishActive)
         {
-            UpdateCivilianPanic(index);
+            // The struck guests first take actual steps toward nearby cover;
+            // no remote fall, teleport, duplicate or repeated stand-up cycle.
+            guest.SetAfraid(true);guest.SetWaiting(false);guest.SetCowering(false);
+            if(Horizontal(guest.transform.position,refuges[index])>.3f)
+                guest.MoveTowards(refuges[index],2.1f,true,.25f);
+            else guest.Face(PanicOrigin,90);
             return true;
         }
-        if(index<2&&AssaultElapsed>12){crowdPhases[index]=CrowdPhase.Fleeing;MoveWithinShelter(index,refuges[index]);return true;}
-        if(index<2&&crowdPhases[index]==CrowdPhase.Restrained)
-        {
-            guest.Face(guest.transform.position+HoldForward(index),150);
-            guest.SetAfraid(true);guest.SetStartled(.2f);return true;
-        }
-        if(!skirmishActive)return false;
-        if(guest.MoveTowards(refuges[index],1.8f+(index%3)*.2f)&&index<2)
-            guest.Face(guest.transform.position+HoldForward(index),150);
-        return true;
+        UpdateCivilianPanic(index);return true;
     }
 }

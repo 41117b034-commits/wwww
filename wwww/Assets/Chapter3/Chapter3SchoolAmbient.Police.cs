@@ -30,7 +30,7 @@ public sealed partial class Chapter3SchoolAmbient
         int selected=fightingGroups[group][0];float score=float.PositiveInfinity;
         foreach(int i in fightingGroups[group])
         {
-            if(!assailants[i])continue;
+            if(!assailants[i]||HasCivilianEncounter(i))continue;
             float distance=Vector3.Distance(enemy.transform.position,assailants[i].transform.position);
             // Turn toward an actual incoming attack, then keep that opponent
             // through the cut instead of snapping between nearby targets.

@@ -69,7 +69,7 @@ public sealed partial class Chapter3Combat
             bool arrived=Flat(actor.transform.position,destination)<.18f;
             if(!arrived){coverMotors[i].Move(actor,destination,2.7f);CompanionsInCover=false;}
             else actor.Face(WorldPoint(new Vector3(0,1,12)));
-            coverPoses[i].SetUnderFire(arrived);
+            if(arrived)coverPoses[i].SetSheltered();else coverPoses[i].Clear();
         }
     }
     void ClearCompanionCover()

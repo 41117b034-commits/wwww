@@ -11,10 +11,15 @@ public sealed partial class Chapter3SchoolAmbient
     Transform[] authoredSpectators;
     bool[] authoredActive;
     Transform nativeChildTemplate;
+    readonly Chapter3PathMotor[] campusRunnerMotors={new Chapter3PathMotor(),new Chapter3PathMotor()};
+    readonly int[] campusRunnerLeg={1,3};
+    bool[] originalRunnerActive;
 
     Transform PreparePopulation()
     {
         authoredSpectators=spectators;authoredActive=new bool[spectators.Length];
+        originalRunnerActive=new bool[runners.Length];
+        for(int i=0;i<runners.Length;i++)originalRunnerActive[i]=runners[i]&&runners[i].gameObject.activeSelf;
         Transform woman=null,child=null,native=null;
         for(int i=0;i<spectators.Length;i++)if(spectators[i])
         {
@@ -25,39 +30,90 @@ public sealed partial class Chapter3SchoolAmbient
         }
         if(!woman||!child||!native)return native;
         nativeChildTemplate=child; // Preserve the original Seediq tunic and texture.
-        // Adults use the actual Japanese civilian model. Recolouring the
-        // Indigenous spectator retained its sash/jewellery and misidentified
-        // the casualties. Never use that geometry as a Japanese male teacher.
-        var schoolChild=ClothedTemplate(child,"日籍學童服裝",new Color(.78f,.81f,.78f),new Color(.12f,.17f,.23f));
+        // Existing slots, new civilian clothes. The face/hand donor is only
+        // geometry; its Indigenous clothes and accessories are not reused.
+        var boy=CampusTemplate("CampusBoy",1.25f);
+        var girl=CampusTemplate("CampusGirl",1.22f);
+        var teacher=CampusTemplate("CampusTeacher",1.72f);
         var people=new List<Transform>();int adultNumber=0,childNumber=0;
-        // Two of these pupils replace the running actors at the alarm, at
-        // their exact current positions. Never render both copies together.
         for(int i=0;i<20;i++)
         {
-            bool pupil=i>=10;
+            bool pupil=i>=10,schoolgirl=pupil&&i%2==1,maleTeacher=!pupil&&i%3==0;
             int number=pupil?++childNumber:++adultNumber;
-            Transform source=pupil?schoolChild:woman;
-            string role=pupil?"日籍學童":"日籍女教師與家屬";
-            // These two baked donors retain model-space -X as their face.
-            // Normalize geometry BEFORE generating the +Z walking skeleton;
-            // turning only the root would keep the sideways gait deformation.
-            var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number,bakedYaw:90);
+            Transform source=pupil?(schoolgirl?girl:boy):maleTeacher?teacher:woman;
+            if(!source)throw new System.InvalidOperationException("第三章缺少已匯入的日籍師生模型");
+            string role=pupil?(schoolgirl?"日籍女學童":"日籍男學童"):maleTeacher?"日籍男教師":"日籍女教師與家屬";
+            var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number,bakedYaw:!pupil&&!maleTeacher?90:0);
             person.transform.position=GuestStart(i);
             person.transform.rotation=Quaternion.Euler(0,(i*137+25)%360,0);
             person.SetFallSide(i%2==0?1:-1);
             populationObjects.Add(person.gameObject);people.Add(person.transform);
-            if(i>=18)person.gameObject.SetActive(false);
+
         }
         foreach(var t in authoredSpectators)if(t)t.gameObject.SetActive(false);
         spectators=people.ToArray();return native;
     }
+    Transform CampusTemplate(string modelName,float height)
+    {
+        var asset=Resources.Load<GameObject>("Chapter3/CampusCharacters/"+modelName);
+        if(!asset)return null;
+        var root=Instantiate(asset,transform).transform;root.name=modelName+" · template";
+        root.localPosition=Vector3.zero;root.localRotation=Quaternion.identity;root.localScale=Vector3.one;
+        populationObjects.Add(root.gameObject);
+        var capsule=root.gameObject.AddComponent<CapsuleCollider>();
+        capsule.height=height;capsule.center=Vector3.up*(height*.5f);capsule.radius=.23f;
+        var skin=Resources.Load<Texture2D>("Chapter3/CampusCharacters/CampusSkin");
+        var materials=new Dictionary<Material,Material>();
+        foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            var slots=renderer.sharedMaterials;
+            for(int i=0;i<slots.Length;i++)
+            {
+                var source=slots[i];if(!source)continue;
+                if(!materials.TryGetValue(source,out var mat))
+                {
+                    mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));mat.name=source.name+" · campus";
+                    string n=source.name;Color color=Color.white;
+                    if(n.Contains("Linen"))color=new Color(.73f,.73f,.66f);
+                    else if(n.Contains("Navy"))color=new Color(.038f,.065f,.10f);
+                    else if(n.Contains("Charcoal"))color=new Color(.075f,.082f,.087f);
+                    else if(n.Contains("NeckSkin"))color=new Color(.49f,.34f,.255f);
+                    else if(n.Contains("DarkHair"))color=new Color(.018f,.015f,.012f);
+                    else if(n.Contains("ClothShoe"))color=new Color(.035f,.031f,.027f);
+                    else if(n.Contains("Seam"))color=new Color(.51f,.52f,.49f);
+                    mat.SetColor("_BaseColor",color);mat.SetFloat("_Smoothness",.16f);mat.SetFloat("_Metallic",0);
+                    if(n.Contains("tripo_mat"))mat.SetTexture("_BaseMap",skin);
+                    clothingMaterials.Add(mat);materials.Add(source,mat);
+                }
+                slots[i]=mat;
+            }
+            renderer.sharedMaterials=slots;
+        }
+        root.gameObject.SetActive(false);return root;
+    }
+    void ResetCampusRunners()
+    {
+        for(int i=0;i<runners.Length;i++)if(runners[i])runners[i].gameObject.SetActive(false);
+        for(int i=0;i<2;i++){campusRunnerLeg[i]=i==0?1:3;campusRunnerMotors[i].Reset();}
+    }
+    void UpdateCampusRunners()
+    {
+        if(Panicking||spectators.Length<20||runningTrack.Length<4)return;
+        for(int i=0;i<2;i++)
+        {
+            var pupil=crowd[18+i];if(!pupil)continue;
+            pupil.SetAnimated(true);
+            Vector3 target=runningTrack[campusRunnerLeg[i]];
+            if(Horizontal(pupil.transform.position,target)<.25f)
+            {campusRunnerLeg[i]=(campusRunnerLeg[i]+1)%runningTrack.Length;campusRunnerMotors[i].Reset();target=runningTrack[campusRunnerLeg[i]];}
+            campusRunnerMotors[i].Patrol(pupil,target,1.7f,.2f);
+        }
+    }
     void SwitchRunningPupils()
     {
-        for(int i=0;i<runners.Length&&18+i<spectators.Length;i++)if(runners[i])
-        {
-            var target=spectators[18+i];target.SetPositionAndRotation(runners[i].transform.position,runners[i].transform.rotation);
-            target.gameObject.SetActive(true);runners[i].gameObject.SetActive(false);
-        }
+        // These are now the same two Japanese pupil objects before and after
+        // the signal. Their actual current track positions are retained.
+        for(int i=0;i<runners.Length;i++)if(runners[i])runners[i].gameObject.SetActive(false);
     }
     Transform ClothedTemplate(Transform source,string label,Color shirt,Color trousers)
     {
@@ -145,6 +201,7 @@ public sealed partial class Chapter3SchoolAmbient
         foreach(var mesh in clothingMeshes)if(mesh)Destroy(mesh);
         foreach(var mat in clothingMaterials)if(mat)Destroy(mat);
         clothingDetail.Clear();
+        if(originalRunnerActive!=null)for(int i=0;i<runners.Length;i++)if(runners[i])runners[i].gameObject.SetActive(originalRunnerActive[i]);
         if(authoredSpectators!=null)for(int i=0;i<authoredSpectators.Length;i++)if(authoredSpectators[i])authoredSpectators[i].gameObject.SetActive(authoredActive[i]);
     }
 }

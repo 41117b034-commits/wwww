@@ -129,7 +129,8 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
                 if(gathering)
                 {
                     gathering=false;
-                    FollowGuide.Show(flow.player.transform.position,points,flow.player.transform,LeadActor.transform,
+                    if(SchoolRevealed)ShowTadoRoute();
+                    else FollowGuide.Show(flow.player.transform.position,points,flow.player.transform,LeadActor.transform,
                         p=>p.z<Chapter3ApproachEnvironment.TrailStartZ?0:environment.GroundHeight(p));
                 }
                 else if(CurrentWaypoint<points.Length-1)CurrentWaypoint++;
@@ -177,17 +178,35 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
             heardLine=true;
             Say(RearActor,"聽，前面是運動會的哨聲。沿這條路繼續走。",4.3f);
         }
-        SchoolRevealed=player.transform.position.z>-28;
+        if(!SchoolRevealed&&player.transform.position.z>-28)
+        {
+            SchoolRevealed=true;
+            // Continue along the physical trail, then turn toward Tado's
+            // hiding place. Do not clip these marks at Bawan's waiting spot.
+            ShowTadoRoute();
+        }
         if(SchoolRevealed&&!revealLine&&lineUntil<=0)
         {
-            revealLine=true;Say(LeadActor,"看見操場了。從前面的校門過去。",4.2f);
+            revealLine=true;Say(LeadActor,"準備進攻了。先去校門旁找達多會合，聽他安排分工。",5.5f);
         }
         flow.ui.objective.text=SchoolRevealed?"走到校門旁，與達多會合":heardLine?"沿林路緩坡前進，循聲接近學校":"跟隨巴萬穿過林路，前往學校";
-        flow.ui.hint.text=Waiting?"同伴停下等你，走近後繼續 · WASD 移動 · 右鍵環視":"跟上巴萬 · WASD 移動 · 右鍵環視";
-        if(atSchoolEntrance&&rearArrivalChosen&&Flat(RearActor.transform.position,rearArrival)<.25f&&
+        flow.ui.hint.text=SchoolRevealed?"沿黃色箭頭到校門旁找達多 · WASD 移動 · 右鍵環視":
+            Waiting?"同伴停下等你，走近後繼續 · WASD 移動 · 右鍵環視":"跟上巴萬 · WASD 移動 · 右鍵環視";
+        if(revealLine&&lineUntil<=0&&!flow.ui.VoiceBusy&&atSchoolEntrance&&rearArrivalChosen&&Flat(RearActor.transform.position,rearArrival)<.25f&&
             Chapter3PathMotor.Clear(RearActor.transform.position,RearActor.transform.position)&&
             player.transform.position.z>=points[points.Length-1].z-1&&environment.Walkable(player.transform.position))
             flow.CompleteSchoolApproach();
+    }
+    void ShowTadoRoute()
+    {
+        // The trail's Z coordinates increase monotonically. Trim by the
+        // player's reached point, never by a slower companion's waypoint.
+        var arrival=new List<Vector3>();
+        foreach(var point in WorldWaypoints)
+            if(point.z>flow.player.transform.position.z+.25f)arrival.Add(point);
+        arrival.Add(flow.school.tado.transform.position);
+        FollowGuide.ShowAhead(flow.player.transform.position,arrival.ToArray(),flow.player.transform,
+            p=>p.z<-18?environment.GroundHeight(p):0);
     }
     void LateUpdate()
     {

@@ -128855,8 +128855,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u5FEB\u901F\u8DF3\u6BB5  F6 \u99D0\u5728\u6240 \xB7 F7 \u77ED\u4EA4\u6230
-    \xB7 F8 \u5B78\u6821\n\u7A7A\u767D\u9375\u7565\u904E\u9810\u5BEB\u53F0\u8A5E"
+  m_Text: ""
 --- !u!222 &1160891014
 CanvasRenderer:
   m_ObjectHideFlags: 0
