@@ -42,7 +42,7 @@ public sealed partial class Chapter3SchoolAmbient
             int number=pupil?++childNumber:++adultNumber;
             Transform source=pupil?(schoolgirl?girl:boy):maleTeacher?teacher:woman;
             if(!source)throw new System.InvalidOperationException("第三章缺少已匯入的日籍師生模型");
-            string role=pupil?(schoolgirl?"日籍女學童":"日籍男學童"):maleTeacher?"日籍男教師":"日籍女教師與家屬";
+            string role=pupil?(schoolgirl?"日籍女學童":"日籍男學童"):maleTeacher?"日籍男教師":"日籍女教師";
             var person=Chapter3SchoolCrowdActor.CreateFrom(source,transform,role+" "+number,bakedYaw:!pupil&&!maleTeacher?90:0);
             person.transform.position=GuestStart(i);
             person.transform.rotation=Quaternion.Euler(0,(i*137+25)%360,0);
@@ -63,6 +63,7 @@ public sealed partial class Chapter3SchoolAmbient
         var capsule=root.gameObject.AddComponent<CapsuleCollider>();
         capsule.height=height;capsule.center=Vector3.up*(height*.5f);capsule.radius=.23f;
         var skin=Resources.Load<Texture2D>("Chapter3/CampusCharacters/CampusSkin");
+        var cloth=Resources.Load<Texture2D>("Chapter3/CampusCharacters/CampusClothWeave");
         var materials=new Dictionary<Material,Material>();
         foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
         {
@@ -83,6 +84,8 @@ public sealed partial class Chapter3SchoolAmbient
                     else if(n.Contains("Seam"))color=new Color(.51f,.52f,.49f);
                     mat.SetColor("_BaseColor",color);mat.SetFloat("_Smoothness",.16f);mat.SetFloat("_Metallic",0);
                     if(n.Contains("tripo_mat"))mat.SetTexture("_BaseMap",skin);
+                    else if(cloth&&!n.Contains("Skin")&&!n.Contains("Hair")&&!n.Contains("Shoe")&&!n.Contains("Button"))
+                    {mat.SetTexture("_BaseMap",cloth);mat.SetTextureScale("_BaseMap",new Vector2(12,12));}
                     clothingMaterials.Add(mat);materials.Add(source,mat);
                 }
                 slots[i]=mat;

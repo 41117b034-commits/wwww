@@ -3,84 +3,169 @@ using UnityEngine;
 
 public sealed partial class Chapter3SchoolAmbient
 {
-    sealed class CivilianEscort
+    // User-requested fictional staging: two surviving adult men pursue the
+    // retreating fighters briefly. They are never members of the player's
+    // party, and this is not a claim about named historical teachers.
+    static readonly int[] japanesePursuerSlots={0,6};
+    static readonly Vector3[] defenderCover={new Vector3(-5,0,33),new Vector3(13,0,37)};
+    sealed class JapanesePursuer
     {
-        public Chapter3SchoolCrowdActor actor;
+        public int guest,target,leg;
         public readonly Chapter3PathMotor motor=new Chapter3PathMotor();
         public Vector3[] route;
-        public int leg;
-        public bool gathering;
-        public Vector3 home;
+        public Vector3 home,lastPosition,chasePosition,lastTargetPosition,targetForward;
         public Quaternion rotation;
+        public float distance,nextChaseTarget;
+        public bool completed,engaged;
     }
-    readonly List<CivilianEscort> civilianEscorts=new List<CivilianEscort>();
-    public int CivilianFollowerCount=>civilianEscorts.Count;
-    public int CivilianArrivedCount
-    {get{int count=0;foreach(var escort in civilianEscorts)if(escort.leg>=escort.route.Length)count++;return count;}}
+    readonly List<JapanesePursuer> japanesePursuers=new List<JapanesePursuer>();
+    // Compatibility: Japanese bystanders no longer join withdrawal formation.
+    public int CivilianFollowerCount=>0;
+    public int CivilianArrivedCount=>EscapedSpectators;
+    public int JapanesePursuerCount=>japanesePursuers.Count;
+    public int PursuingSpectators=>CountPhase(CrowdPhase.Pursuing);
+    public int PursuitCompletedCount
+    {get{int count=0;foreach(var pursuer in japanesePursuers)if(pursuer.completed)count++;return count;}}
+    public Transform JapanesePursuerActor(int index)=>index>=0&&index<japanesePursuers.Count?crowd[japanesePursuers[index].guest].transform:null;
+    public Transform JapanesePursuitTarget(int index)=>index>=0&&index<japanesePursuers.Count?assailants[japanesePursuers[index].target].transform:null;
+    public float JapanesePursuitDistance(int index)=>index>=0&&index<japanesePursuers.Count?japanesePursuers[index].distance:0;
+    bool IsJapanesePursuer(int index)=>System.Array.IndexOf(japanesePursuerSlots,index)>=0;
+    void UpdateJapaneseDefender(int index)
+    {
+        if(Withdrawing)return; // The pursuit motor owns these two living adults.
+        var actor=crowd[index];int slot=System.Array.IndexOf(japanesePursuerSlots,index);
+        actor.SetAfraid(true);actor.SetStartled(0);actor.SetCowering(false);actor.SetWaiting(false);
+        if(Horizontal(actor.transform.position,defenderCover[slot])>.4f)
+        {
+            crowdPhases[index]=CrowdPhase.Fleeing;
+            civilianPanicMotors[index].Patrol(actor,defenderCover[slot],2.9f,.3f);
+        }
+        else
+        {
+            crowdPhases[index]=CrowdPhase.Sheltered;
+            actor.SetWaiting(true);actor.Face(assailants[slot==0?9:6].transform.position,120);
+        }
+    }
     void BeginCivilianWithdrawal()
     {
         CancelCivilianWithdrawal(false);
-        for(int i=0;i<crowd.Length;i++)
+        for(int slot=0;slot<japanesePursuerSlots.Length;slot++)
         {
-            var actor=crowd[i];
+            int i=japanesePursuerSlots[slot];var actor=crowd[i];
             if(!actor||!actor.gameObject.activeInHierarchy||fallBegan[i]>=0)continue;
-            int slot=civilianEscorts.Count;
-            var route=BuildWithdrawalRoute(actor.transform.position,0);
-            // Keep the guests behind the ten fighters, out of the narrow
-            // forest entrance used by the three leaders and Pihu's event.
-            float x=-10.2f+(slot%7)*3.4f,z=65.8f+(slot/7)*2.1f;
-            route[route.Length-2]=new Vector3(x,0,64.8f);
-            route[route.Length-1]=new Vector3(x,0,z);
-            civilianEscorts.Add(new CivilianEscort{actor=actor,route=route,home=actor.transform.position,rotation=actor.transform.rotation});
-            actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
-            actor.SetCowering(false);
-            actor.FollowingWithdrawal=true;
+            var fullRoute=BuildWithdrawalRoute(actor.transform.position,0);
+            // Follow the actual open school corners; stop the pursuit at the
+            // rear clearing instead of entering the forest reception event.
+            var route=new List<Vector3>();
+            foreach(var point in fullRoute)
+            {route.Add(point);if(Horizontal(point,new Vector3(12,0,70))<.01f)break;}
+            // Leave the (22,66) -> (12,70) retreat lane free after stopping.
+            // The first adult walks to the open south side of that lane.
+            route[route.Count-1]=slot==0?new Vector3(16,0,65):new Vector3(18.2f,0,69.7f);
+            japanesePursuers.Add(new JapanesePursuer{guest=i,target=slot==0?9:6,route=route.ToArray(),
+                home=actor.transform.position,lastPosition=actor.transform.position,rotation=actor.transform.rotation,
+                lastTargetPosition=assailants[slot==0?9:6].transform.position});
+            actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);actor.SetCowering(false);
+            actor.FollowingWithdrawal=false;crowdPhases[i]=CrowdPhase.Pursuing;
         }
     }
     void UpdateCivilianWithdrawal()
     {
-        for(int escortIndex=0;escortIndex<civilianEscorts.Count;escortIndex++)
+        foreach(var pursuer in japanesePursuers)
         {
-            var escort=civilianEscorts[escortIndex];
-            var actor=escort.actor;
-            if(!actor||!actor.gameObject.activeInHierarchy)continue;
-            if(GatherBesideGate(actor,escort.motor,escortIndex,true,ref escort.gathering))continue;
-            if(escort.leg>=escort.route.Length){actor.Face(withdrawalPlayer.position,65);continue;}
-            Vector3 current=actor.transform.position,target=escort.route[escort.leg];
-            if(escort.leg<escort.route.Length-1)
+            var actor=crowd[pursuer.guest];var targetActor=assailants[pursuer.target];
+            if(!actor||!targetActor||!actor.gameObject.activeInHierarchy)continue;
+            Vector3 current=actor.transform.position,targetPosition=targetActor.transform.position;
+            Vector3 targetStep=Vector3.ProjectOnPlane(targetPosition-pursuer.lastTargetPosition,Vector3.up);
+            pursuer.lastTargetPosition=targetPosition;
+            if(targetStep.sqrMagnitude>.000001f)pursuer.targetForward=targetStep.normalized;
+            pursuer.distance+=Horizontal(current,pursuer.lastPosition);pursuer.lastPosition=current;
+            actor.SetCowering(false);actor.SetWaiting(false);
+            if(pursuer.completed)
+            {actor.SetStrike(0);actor.SetAfraid(true);actor.Face(targetPosition,85);continue;}
+            float distance=Horizontal(current,targetPosition);
+            if(!pursuer.engaged)
             {
-                var corner=OpenWithdrawalCorner(target,escort.route[escort.leg+1],actor);
-                if((corner-target).sqrMagnitude>.001f){target=escort.route[escort.leg]=corner;escort.motor.Reset();}
+                // Both adults can initially stand ahead of their opponents.
+                // Let that actual fighter pass within sight, then chase from
+                // behind instead of running the exit route ahead of him.
+                bool passing=targetStep.sqrMagnitude>.000001f&&distance<8&&
+                    Vector3.Dot(Vector3.ProjectOnPlane(targetPosition-current,Vector3.up),pursuer.targetForward)>1;
+                if(!passing)
+                {actor.SetStrike(0);actor.SetWaiting(true);actor.Face(targetPosition,160);continue;}
+                pursuer.engaged=true;pursuer.motor.Reset();
             }
-            bool merge=Horizontal(target,new Vector3(17,0,34))<.01f;
-            float radius=escort.leg==escort.route.Length-1?.25f:merge?1.2f:.5f;
-            // Once the next segment is reachable, turn through the corner
-            // instead of competing with another walker for its exact centre.
-            // A capsule cast keeps the building/fence corner solid; final
-            // assembly positions still require their original close arrival.
-            bool canTurn=escort.leg<escort.route.Length-1&&Horizontal(current,target)<1.2f&&
-                Chapter3PathMotor.Clear(current,escort.route[escort.leg+1]);
-            if(Horizontal(current,target)<radius||canTurn||(merge&&current.z>=34&&current.x>=15&&current.x<=19.5f))
+            // A direct pursuit may already have physically crossed an earlier
+            // approach point. Do not turn south and retrace it afterwards.
+            while(pursuer.leg<pursuer.route.Length-1)
             {
-                escort.leg++;
-                if(escort.leg>=escort.route.Length)actor.FollowingWithdrawal=false;
+                Vector3 passed=pursuer.route[pursuer.leg];
+                // Entering the east aisle north of the last field corner is
+                // sufficient. Waiting for z > 41 sent a pursuer at z = 40.8
+                // back west when his target crossed into the gate segment.
+                bool beyondField=current.x>=16&&current.z>36&&passed.z<=35;
+                bool beyondGate=current.x>=23&&current.z>47&&passed.z<=45.5f;
+                bool alongRearAisle=current.x>=23&&current.z>passed.z+.7f&&passed.x>=23&&passed.z<=61;
+                if(!beyondField&&!beyondGate&&!alongRearAisle)break;
+                pursuer.leg++;pursuer.motor.Reset();
+            }
+            if(pursuer.leg>=pursuer.route.Length)
+            {
+                pursuer.completed=true;crowdPhases[pursuer.guest]=CrowdPhase.Repelled;
+                actor.SetStrike(0);actor.SetAfraid(true);continue;
+            }
+            // In an open part of the same aisle, close on the actual moving
+            // fighter. The offset leaves room for a failed, non-damaging swing.
+            bool sameAisle=(current.z<41&&targetPosition.z<41)||
+                (current.x>22.5f&&targetPosition.x>22.5f&&current.z>46&&targetPosition.z>46);
+            if(sameAisle&&distance<8&&targetPosition.z<69)
+            {
+                if(distance>1.65f)
+                {
+                    if(Time.time>=pursuer.nextChaseTarget)
+                    {
+                        Vector3 behind=-pursuer.targetForward;
+                        if(behind.sqrMagnitude<.1f)behind=Vector3.ProjectOnPlane(current-targetPosition,Vector3.up).normalized;
+                        if(behind.sqrMagnitude<.1f)behind=Vector3.back;
+                        pursuer.chasePosition=targetPosition+behind*1.35f;pursuer.nextChaseTarget=Time.time+.65f;
+                    }
+                    pursuer.motor.Patrol(actor,pursuer.chasePosition,3.15f,.2f);actor.SetStrike(0);
+                }
+                else
+                {
+                    actor.Face(targetPosition,160);
+                    float swing=Mathf.Repeat(Time.time+pursuer.guest*.3f,2.1f);
+                    actor.SetStrike(swing<.8f?Mathf.Clamp(swing/.8f,.01f,.99f):0);
+                }
                 continue;
             }
-            if((target.x>=17||target.z>=44)&&!CanFollowWithdrawal(current,ref target,5.8f))continue;
-            escort.motor.Move(actor,target,Chapter3Player.WalkSpeed);
+            actor.SetStrike(0);
+            // Consume already passed corners after a direct pursuit segment.
+            // Each advancement still requires physical proximity or a clear
+            // turn; nobody is placed at the next route point.
+            Vector3 target=pursuer.route[pursuer.leg];
+            if(pursuer.leg<pursuer.route.Length-1)
+            {
+                Vector3 corner=OpenWithdrawalCorner(target,pursuer.route[pursuer.leg+1],actor);
+                if((corner-target).sqrMagnitude>.001f){target=pursuer.route[pursuer.leg]=corner;pursuer.motor.Reset();}
+            }
+            bool canTurn=pursuer.leg<pursuer.route.Length-1&&Horizontal(current,target)<1.2f&&Chapter3PathMotor.Clear(current,pursuer.route[pursuer.leg+1]);
+            if(Horizontal(current,target)<.55f||canTurn)
+            {pursuer.leg++;pursuer.motor.Reset();continue;}
+            pursuer.motor.Patrol(actor,target,3.15f,.35f);
         }
     }
     void CancelCivilianWithdrawal(bool restore)
     {
-        foreach(var escort in civilianEscorts)if(escort.actor)
+        foreach(var pursuer in japanesePursuers)if(crowd[pursuer.guest])
         {
-            escort.actor.FollowingWithdrawal=false;
+            var actor=crowd[pursuer.guest];actor.FollowingWithdrawal=false;actor.SetStrike(0);
             if(restore)
             {
-                escort.actor.ResetPose();escort.actor.SetAnimated(true);
-                escort.actor.transform.SetPositionAndRotation(escort.home,escort.rotation);
+                actor.ResetPose();actor.SetAnimated(true);
+                actor.transform.SetPositionAndRotation(pursuer.home,pursuer.rotation);
             }
         }
-        civilianEscorts.Clear();
+        japanesePursuers.Clear();
     }
 }

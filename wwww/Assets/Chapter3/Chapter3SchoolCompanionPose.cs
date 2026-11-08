@@ -16,6 +16,8 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     Chapter1IncidentRig rig;
     Chapter3SchoolController school;
     Chapter3InjuryPose injury;
+    Chapter2SpeechFace speechFace;
+    MaterialPropertyBlock faceBlock;
     Transform bodyRoot,spine;
     readonly Transform[] thighs=new Transform[2],knees=new Transform[2],feet=new Transform[2];
     readonly Transform[] arms=new Transform[2],elbows=new Transform[2],hands=new Transform[2];
@@ -156,7 +158,28 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
                 rig.Head.rotation=Quaternion.Slerp(rig.Head.rotation,target,gazeWeight);
             }
         }
+        RefreshFaceCut();
     }
+    void RefreshFaceCut()
+    {
+        if(!speechFace||speechFace.surfaces==null)return;
+        if(faceBlock==null)faceBlock=new MaterialPropertyBlock();
+        // SpeechFace (4490) writes its mask before this crouch/gaze layer
+        // (4550). Re-anchor the mask to the final head so the original face
+        // cannot overlap the animated expression patch while speaking.
+        foreach(var surface in speechFace.surfaces)
+        {
+            if(surface==null||!surface.head||!surface.body)continue;
+            surface.body.GetPropertyBlock(faceBlock);
+            faceBlock.SetVector("_StoryCutOrigin",surface.head.TransformPoint(surface.origin));
+            faceBlock.SetVector("_StoryCutRight",InverseFaceAxis(surface.head.TransformVector(surface.right)));
+            faceBlock.SetVector("_StoryCutUp",InverseFaceAxis(surface.head.TransformVector(surface.up)));
+            faceBlock.SetVector("_StoryCutForward",InverseFaceAxis(surface.head.TransformVector(surface.forward)));
+            faceBlock.SetFloat("_StoryCutEnabled",1);
+            surface.body.SetPropertyBlock(faceBlock);
+        }
+    }
+    static Vector3 InverseFaceAxis(Vector3 axis)=>axis/Mathf.Max(.00001f,axis.sqrMagnitude);
     static float Envelope(float began,float until)
     {
         if(Time.time>=until)return 0;
@@ -176,7 +199,7 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
         if(prepared)return actor&&rig;
         if(!actor)actor=GetComponent<Chapter2Actor>();
         if(!actor||!actor.Rig||!actor.Rig.animator||!actor.Rig.Hips||!actor.Rig.Head)return false;
-        rig=actor.Rig;var animator=rig.animator;
+        rig=actor.Rig;var animator=rig.animator;speechFace=actor.GetComponent<Chapter2SpeechFace>();
         headForward=rig.Head.InverseTransformDirection(rig.Forward);
         headUp=rig.Head.InverseTransformDirection(Vector3.up);
         spine=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.Spine,"Spine","Spine1","Waist");
@@ -213,5 +236,6 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
         if(!poseApplied||changedBones==null)return;
         for(int i=0;i<changedBones.Length;i++)if(changedBones[i])changedBones[i].SetLocalPositionAndRotation(originalPositions[i],originalRotations[i]);
         poseApplied=false;
+        RefreshFaceCut();
     }
 }

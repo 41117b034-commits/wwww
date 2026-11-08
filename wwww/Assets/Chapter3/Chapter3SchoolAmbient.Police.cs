@@ -8,14 +8,20 @@ public sealed partial class Chapter3SchoolAmbient
     readonly float[] policeStrikeAt=new float[AmbusherCount],policeFlinchUntil=new float[AmbusherCount],policeNextStrike=new float[AmbusherCount];
     readonly bool[] policeStrikeLanded=new bool[AmbusherCount],policeAssigned=new bool[AmbusherCount];
     readonly int[] policeGroups=new int[AmbusherCount],policeSlots=new int[AmbusherCount],policeExchanges=new int[AmbusherCount];
-    static readonly int[][] fightingGroups={new[]{6},new[]{9},new[]{7,3},new[]{8,4,5}};
+    // Two groups remain engaged with police; the other two groups have
+    // separate civilian encounters and never switch back to police targets.
+    static readonly int[][] fightingGroups={new[]{6},new[]{9}};
+    public int PoliceFightingGroupCount=>fightingGroups.Length;
+    public int CivilianFightingGroupCount=>2;
+    public int ActiveCampusFightingGroupCount=>PoliceFightingGroupCount+CivilianFightingGroupCount;
+    public bool AmbusherFightsPolice(int index)=>index>=0&&index<AmbusherCount&&policeAssigned[index];
     Chapter3Enemy[] groupPolice;
     Vector3[] groupCentres;
     readonly Chapter3PathMotor[] policeMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
     public void ConfigurePoliceGroups(Chapter3Enemy[] enemies,Vector3[] centres)
     {
         ClearPoliceOpposition();groupPolice=enemies;groupCentres=centres;
-        for(int g=0;g<fightingGroups.Length;g++)
+        for(int g=0;g<fightingGroups.Length&&g<enemies.Length;g++)
         {
             policeMotors[g].Reset();
             for(int slot=0;slot<fightingGroups[g].Length;slot++)
@@ -24,7 +30,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     public Transform PoliceTarget(int group)
     {
-        if(groupPolice==null||group>=groupPolice.Length)return null;
+        if(groupPolice==null||group<0||group>=groupPolice.Length||group>=fightingGroups.Length)return null;
         var enemy=groupPolice[group];if(!enemy)return null;
         if(enemy.Melee&&enemy.Melee.Swinging&&enemy.escortTarget)return enemy.escortTarget;
         int selected=fightingGroups[group][0];float score=float.PositiveInfinity;
@@ -45,7 +51,7 @@ public sealed partial class Chapter3SchoolAmbient
         if(groupPolice==null||Withdrawing)return;
         var battle=GetComponentInParent<Chapter3SchoolController>().Battle;
         if(!battle||!battle.Fighting)return;
-        for(int g=0;g<groupPolice.Length;g++)
+        for(int g=0;g<groupPolice.Length&&g<fightingGroups.Length;g++)
         {
             var enemy=groupPolice[g];if(!enemy||enemy.Defeated||!enemy.escortTarget)continue;
             Vector3 current=enemy.transform.position,ally=enemy.escortTarget.position;

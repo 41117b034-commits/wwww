@@ -98,8 +98,9 @@ public sealed partial class Chapter3SchoolAmbient
             actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
             withdrawalRoutes[i]=BuildWithdrawalRoute(actor.transform.position,i);withdrawalLeg[i]=0;withdrawalReached[i]=false;forestOrder[i]=-1;
         }
-        // Releasing the two holds must not leave their former partners frozen
-        // in a restraint pose. Any unfinished encounter also becomes flight.
+        // An unfinished civilian encounter becomes flight at the whistle.
+        // Existing escape routes continue; two adults start their separate
+        // pursuit. Only the original ten enter the retreat formation above.
         for(int i=0;i<crowd.Length;i++)if(crowd[i]&&crowd[i].gameObject.activeInHierarchy&&fallBegan[i]<0)
         {crowdPhases[i]=CrowdPhase.Fleeing;crowd[i].SetAfraid(true);crowd[i].SetStartled(0);if(i<14)escapeLeg[i]=0;}
         BeginCivilianWithdrawal();

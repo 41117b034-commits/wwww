@@ -10,10 +10,12 @@ public static class Chapter3NaturalCover
     public static Transform Tree(Transform parent,Vector3 position,int index)
     {
         if(!PrepareMesh())return null;
-        var root=new GameObject("山路粗樹幹掩體 "+index,typeof(MeshFilter),typeof(MeshRenderer),typeof(MeshCollider)).transform;
-        root.SetParent(parent,false);root.SetPositionAndRotation(position-Vector3.up*.025f,Quaternion.Euler(0,index*47,0));
-        // Vary height without stretching the protective trunk sideways.
-        root.localScale=new Vector3(1,.91f+(index%3)*.065f,1);
+        var root=new GameObject("山路林木掩體 "+index,typeof(MeshFilter),typeof(MeshRenderer),typeof(MeshCollider)).transform;
+        root.SetParent(parent,false);root.SetPositionAndRotation(position-Vector3.up*.025f,Quaternion.Euler(0,31+index*137.5f,0));
+        // Keep the source tree's trunk/crown proportions. Different ages are
+        // represented with uniform scale, never by inflating the lower bole.
+        float[] scales={1.03f,.94f,1.09f,.86f,.80f,.98f};
+        root.localScale=Vector3.one*scales[index%scales.Length];
         root.GetComponent<MeshFilter>().sharedMesh=visibleMesh;
         root.GetComponent<MeshRenderer>().sharedMaterials=materials;
         var collider=root.GetComponent<MeshCollider>();collider.sharedMesh=barkMesh;collider.convex=false;
@@ -57,20 +59,11 @@ public static class Chapter3NaturalCover
         if(section.Count<3){Debug.LogError("Could not measure the walnut cover trunk.");return false;}
         Bounds cross=new Bounds(section[0],Vector3.zero);foreach(var point in section)cross.Encapsulate(point);
         Vector3 center=new Vector3(cross.center.x,0,cross.center.z);
-        float widen=1.5f/Mathf.Max(.01f,Mathf.Min(cross.size.x,cross.size.z));
         for(int i=0;i<vertices.Length;i++)
         {
-            var p=vertices[i]-center;
-            // Thick lower bole blends into the original branches/crown above
-            // six metres; no uniformly inflated or flattened tree crown.
-            float factor=Mathf.Lerp(widen,1,Mathf.SmoothStep(0,1,Mathf.InverseLerp(2.8f,6,p.y)));
-            p.x*=factor;p.z*=factor;
-            if(p.y<.75f)
-            {
-                var radial=new Vector2(p.x,p.z);float limit=Mathf.Lerp(.98f,.86f,Mathf.Clamp01(p.y/.75f));
-                if(radial.magnitude>limit){radial=radial.normalized*limit;p.x=radial.x;p.z=radial.y;}
-            }
-            vertices[i]=p;
+            // Recenter the existing chest section only. The old 1.5 m width
+            // target stretched branches into a wall beside the opening group.
+            vertices[i]-=center;
         }
         visibleMesh=Object.Instantiate(source);visibleMesh.name="Chapter3 walnut cover visible";
         visibleMesh.vertices=vertices;visibleMesh.RecalculateNormals();visibleMesh.RecalculateBounds();

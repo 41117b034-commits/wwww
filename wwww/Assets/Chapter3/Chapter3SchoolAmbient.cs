@@ -4,7 +4,7 @@ using UnityEngine;
 // Panic is a visible, non-graphic staged assault, never a damage/score system.
 public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
 {
-    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen, Restrained, Escaped, Sheltered }
+    public enum CrowdPhase { Calm, Reacting, Fleeing, Falling, Fallen, Restrained, Escaped, Sheltered, Pursuing, Repelled }
     enum SpectatorKind { Guest, Child, Indigenous, Police }
     public Transform[] spectators;
     public Chapter2Actor[] runners;
@@ -48,7 +48,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     public int FallenChildren=>CountFallen(SpectatorKind.Child);
     public int JapaneseAdults=>10;
     public int JapaneseChildren=>10;
-    public bool AftermathVisible=>Panicking&&FallenAdults>=1&&FallenChildren>=2;
+    public bool AftermathVisible=>Panicking&&FallenAdults>=2&&FallenChildren>=2;
     int CountFallen(SpectatorKind kind)
     {
         int count=0;if(crowd!=null)for(int i=0;i<crowd.Length;i++)

@@ -20,9 +20,7 @@ public sealed partial class Chapter3SchoolBattle
 
     static readonly Vector3[][] assaultApproach = {
         new[] { P(0,-3), P(0,3), P(-4,8), P(-5,16) },
-        new[] { P(-4,23), P(-5,28) },
-        new[] { P(-3,29), P(4,32), P(8,30) },
-        new[] { P(6,34), P(6,36) }
+        new[] { P(-4,23), P(-5,28) }
     };
     static readonly Vector3[] assaultWithdrawal = {
         P(13,33), P(18,44.8f), P(24.2f,45.4f), P(24.2f,61), P(22,66), P(12,72), P(0,76)
@@ -100,7 +98,7 @@ public sealed partial class Chapter3SchoolBattle
 
     void PrepareAssaultStage()
     {
-        PlaceAmmo(Step == 0 ? P(-8,7) : Step == 1 ? P(8,29) : Step == 2 ? P(-7,32) : P(10,36));
+        PlaceAmmo(Step == 0 ? P(-8,7) : Step == 1 ? P(8,29) : P(-7,32));
         if (!AssaultGuide) AssaultGuide = gameObject.AddComponent<Chapter3RouteGuide>();
         if (Step == AssaultCombatStages && ambient)
         {
@@ -122,9 +120,9 @@ public sealed partial class Chapter3SchoolBattle
         if (Step < AssaultCombatStages)
         {
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
-            ui.objective.text = Step == 0 ? "支援前場交戰的族人" : Step == 1 ? "趕到西側，幫助被追趕的族人" : Step == 2 ? "支援東側包圍警察的同伴" : "前往校舍前，協助最後一組族人";
+            ui.objective.text = Step == 0 ? "支援前場與警察交戰的族人" : "趕到西側，支援另一組交戰族人";
             ui.hint.text = "協助族人擊倒警察 · " + combat.weapons.Controls;
-            combat.combatText.text = "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / 4";
+            combat.combatText.text = "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / "+AssaultCombatStages;
             return;
         }
 
@@ -213,7 +211,7 @@ public sealed partial class Chapter3SchoolBattle
         guideIndex = 0; guideMotor.Reset();
         activeRoute = RouteFromTado(Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal);
         PrepareAssaultStage();
-        Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : Step == 2 ? "東邊的族人還在跟警察交戰，跟我過去幫他們！" : Step == 3 ? "這邊打通了！校舍前還有人被壓住，過去支援！" : "各處的警察都倒下了！吹哨叫所有人跟我們一起撤出去。",4);
+        Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : "兩處的警察都倒下了！吹哨叫所有族人停手，跟我們一起撤出去。",4);
     }
 
     Vector3[] RouteFromTado(Vector3[] next)

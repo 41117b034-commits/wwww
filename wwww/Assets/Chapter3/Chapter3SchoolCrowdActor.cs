@@ -9,14 +9,20 @@ using UnityEngine;
 public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
 {
     internal const float MovementRadius=.23f,MovementBottom=.35f,MovementTop=1.25f;
+    enum GeometryProfile { Legacy,SeediqChild,CampusBoy,CampusGirl,CampusTeacher }
+    enum ClothPart : byte { None,Upper,Skirt,Torso }
     struct MeshKey : IEquatable<MeshKey>
     {
         public Mesh source;
         public Matrix4x4 local;
         public Bounds body;
-        public bool Equals(MeshKey other)=>source==other.source&&local.Equals(other.local)&&body.Equals(other.body);
+        public GeometryProfile profile;
+        public string clothing;
+        public bool Equals(MeshKey other)=>source==other.source&&local.Equals(other.local)&&body.Equals(other.body)
+            &&profile==other.profile&&clothing==other.clothing;
         public override bool Equals(object other)=>other is MeshKey key&&Equals(key);
-        public override int GetHashCode()=>source.GetHashCode()^local.GetHashCode()^body.GetHashCode();
+        public override int GetHashCode()=>source.GetHashCode()^local.GetHashCode()^body.GetHashCode()
+            ^(int)profile^(clothing==null?0:clothing.GetHashCode());
     }
     sealed class SharedPose
     {
@@ -283,14 +289,16 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             var source=filter.GetComponent<MeshRenderer>();
             if(!source||!filter.sharedMesh||!filter.sharedMesh.isReadable)continue;
             Matrix4x4 local=RelativeMatrix(filter.transform,transform);
-            var key=new MeshKey{source=filter.sharedMesh,local=local,body=body};
+            var profile=Profile(filter.sharedMesh);
+            var key=new MeshKey{source=filter.sharedMesh,local=local,body=body,profile=profile,
+                clothing=ClothingLayout(filter.sharedMesh,source.sharedMaterials,profile)};
             if(!meshes.TryGetValue(key,out var shared)){shared=WeightMesh(key);meshes.Add(key,shared);}
             shared.users++;
             var posed=new GameObject("Crowd pose · "+filter.name).AddComponent<SkinnedMeshRenderer>();
             posed.transform.SetParent(transform,false);posed.transform.localPosition=local.GetColumn(3);
             posed.transform.localRotation=local.rotation;posed.transform.localScale=local.lossyScale;
             posed.sharedMesh=shared.mesh;posed.sharedMaterials=source.sharedMaterials;
-            posed.bones=bones;posed.rootBone=bones[0];posed.quality=SkinQuality.Bone2;
+            posed.bones=bones;posed.rootBone=bones[0];posed.quality=IsCampus(profile)?SkinQuality.Bone4:SkinQuality.Bone2;
             posed.shadowCastingMode=source.shadowCastingMode;posed.receiveShadows=source.receiveShadows;
             // Fall and raised arms extend outside the standing mesh bounds.
             posed.localBounds=new Bounds(local.inverse.MultiplyPoint3x4(body.center),Vector3.one*height*2.8f);
@@ -323,7 +331,12 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     {
         var mesh=Instantiate(key.source);mesh.name=key.source.name+" · shared crowd pose";
         var vertices=mesh.vertices;var weights=new BoneWeight[vertices.Length];
-        for(int i=0;i<vertices.Length;i++)weights[i]=Weight(key.local.MultiplyPoint3x4(vertices[i]));
+        var clothing=IsCampus(key.profile)?ClassifyClothing(key,vertices):null;
+        for(int i=0;i<vertices.Length;i++)
+        {
+            var point=key.local.MultiplyPoint3x4(vertices[i]);
+            weights[i]=clothing==null?Weight(point,key.profile):CampusWeight(point,clothing[i]);
+        }
         var bindposes=new Matrix4x4[bones.Length];
         for(int i=0;i<bones.Length;i++)bindposes[i]=Matrix4x4.Translate(-bindPositions[i])*key.local;
         mesh.bindposes=bindposes;mesh.boneWeights=weights;
@@ -341,13 +354,121 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(part.detail!=null)return part.detailKey.source==source?part.detail.mesh:null;
             // Bind to this actor's original body bounds and local orientation.
             // Shared once per geometry/rig, never reweighted during movement.
-            var key=new MeshKey{source=source,local=part.key.local,body=part.key.body};
+            var key=new MeshKey{source=source,local=part.key.local,body=part.key.body,profile=part.key.profile,
+                clothing=ClothingLayout(source,part.original.sharedMaterials,part.key.profile)};
             if(!meshes.TryGetValue(key,out var shared)){shared=WeightMesh(key);meshes.Add(key,shared);}
             shared.users++;part.detailKey=key;part.detail=shared;return shared.mesh;
         }
         return null;
     }
-    BoneWeight Weight(Vector3 point)
+    GeometryProfile Profile(Mesh mesh)
+    {
+        if(mesh.name.StartsWith("CampusBoy",StringComparison.Ordinal))return GeometryProfile.CampusBoy;
+        if(mesh.name.StartsWith("CampusGirl",StringComparison.Ordinal))return GeometryProfile.CampusGirl;
+        if(mesh.name.StartsWith("CampusTeacher",StringComparison.Ordinal))return GeometryProfile.CampusTeacher;
+        return name.Contains("賽德克孩童")?GeometryProfile.SeediqChild:GeometryProfile.Legacy;
+    }
+    static bool IsCampus(GeometryProfile profile)=>profile>=GeometryProfile.CampusBoy;
+    static string ClothingLayout(Mesh mesh,Material[] materials,GeometryProfile profile)
+    {
+        if(!IsCampus(profile))return null;
+        var layout=new char[mesh.subMeshCount];
+        for(int i=0;i<layout.Length;i++)
+        {
+            string label=i<materials.Length&&materials[i]?materials[i].name:string.Empty;
+            layout[i]=profile==GeometryProfile.CampusGirl&&label.Contains("Campus_Navy")?'S'
+                :label.Contains("Campus_Linen")||label.Contains("Campus_Charcoal")||label.Contains("Campus_Navy")?'U':'-';
+        }
+        return new string(layout);
+    }
+    ClothPart[] ClassifyClothing(MeshKey key,Vector3[] vertices)
+    {
+        // Material alone is insufficient: the teacher's jacket and trousers
+        // share charcoal, and the pupils' socks share linen with their shirts.
+        // Connected cloth pieces are classified once, when the shared skin is
+        // made. Chest details stay on the torso; calves are never in the skirt mask.
+        int count=vertices.Length;var component=new int[count];var top=new float[count];var bottom=new float[count];var left=new float[count];var right=new float[count];
+        for(int i=0;i<count;i++){component[i]=i;top[i]=float.NegativeInfinity;bottom[i]=left[i]=float.PositiveInfinity;right[i]=float.NegativeInfinity;}
+        int Root(int index)
+        {
+            while(component[index]!=index){component[index]=component[component[index]];index=component[index];}
+            return index;
+        }
+        var triangles=new int[key.source.subMeshCount][];
+        for(int s=0;s<triangles.Length;s++)
+        {
+            if(key.clothing[s]=='-')continue;
+            var indices=triangles[s]=key.source.GetTriangles(s);
+            for(int i=0;i+2<indices.Length;i+=3)
+            {int root=Root(indices[i]);component[Root(indices[i+1])]=root;component[Root(indices[i+2])]=root;}
+        }
+        for(int i=0;i<count;i++)
+        {
+            int root=Root(i);float y=(key.local.MultiplyPoint3x4(vertices[i]).y-key.body.min.y)/Mathf.Max(.001f,key.body.size.y);
+            top[root]=Mathf.Max(top[root],y);bottom[root]=Mathf.Min(bottom[root],y);
+            float x=(key.local.MultiplyPoint3x4(vertices[i]).x-key.body.center.x)/Mathf.Max(.001f,key.body.size.y);
+            left[root]=Mathf.Min(left[root],x);right[root]=Mathf.Max(right[root],x);
+        }
+        var result=new ClothPart[count];
+        for(int s=0;s<triangles.Length;s++)
+        {
+            if(triangles[s]==null)continue;
+            foreach(int index in triangles[s])
+            {
+                int root=Root(index);
+                result[index]=key.clothing[s]=='S'&&top[root]<.57f&&bottom[root]>.20f?ClothPart.Skirt
+                    :top[root]>.56f?(left[root]>-.145f&&right[root]<.145f?ClothPart.Torso:ClothPart.Upper):ClothPart.None;
+            }
+        }
+        return result;
+    }
+    static float SmoothRange(float low,float high,float value)=>Mathf.SmoothStep(0,1,Mathf.InverseLerp(low,high,value));
+    BoneWeight CampusWeight(Vector3 point,ClothPart clothing)
+    {
+        float y=(point.y-body.min.y)/height,x=(point.x-body.center.x)/height;
+        int arm=x<0?3:6,leg=x<0?9:12;
+        if(clothing==ClothPart.Skirt)
+        {
+            // The sewn skirt stays continuous across its centre. A small,
+            // smoothly shared thigh influence lets the hem follow the gait;
+            // the independently classified calves keep their full leg rig.
+            float sway=.15f*(1-SmoothRange(.27f,.50f,y));
+            return MixWeights(CampusBlend(0,0,0),CampusBlend(9,12,SmoothRange(-.16f,.16f,x)),sway);
+        }
+        if(clothing==ClothPart.None&&y<.53f&&Mathf.Abs(x)<.18f)
+        {
+            if(y<.18f)return CampusBlend(leg+2,leg+1,SmoothRange(.08f,.18f,y));
+            if(y<.35f)return CampusBlend(leg+1,leg,SmoothRange(.25f,.35f,y));
+            return CampusBlend(leg,0,SmoothRange(.40f,.49f,y));
+        }
+        BoneWeight torso=y>.77f?CampusBlend(1,2,SmoothRange(.77f,.86f,y)):CampusBlend(0,1,SmoothRange(.53f,.69f,y));
+        if(clothing==ClothPart.Torso)return torso;
+        float shoulder=SmoothRange(.42f,.72f,y);
+        float armShare=SmoothRange(Mathf.Lerp(.16f,.04f,shoulder),Mathf.Lerp(.19f,.22f,shoulder),Mathf.Abs(x))
+            *(1-SmoothRange(.81f,.87f,y));
+        BoneWeight sleeve=y<.54f?CampusBlend(arm+2,arm+1,SmoothRange(.44f,.54f,y))
+            :CampusBlend(arm+1,arm,SmoothRange(.59f,.71f,y));
+        return MixWeights(torso,sleeve,armShare);
+    }
+    static BoneWeight CampusBlend(int a,int b,float weight)=>weight>.5f?Blend(b,a,1-weight):Blend(a,b,weight);
+    static BoneWeight MixWeights(BoneWeight torso,BoneWeight limb,float amount)
+    {
+        amount=Mathf.Clamp01(amount);
+        int b0=torso.boneIndex0,b1=torso.boneIndex1,b2=limb.boneIndex0,b3=limb.boneIndex1;
+        float w0=torso.weight0*(1-amount),w1=torso.weight1*(1-amount),w2=limb.weight0*amount,w3=limb.weight1*amount;
+        // Unity expects descending weights; all four also participate in the
+        // CPU support-plane sample below. No per-vertex temporary arrays.
+        SortPair(ref b0,ref w0,ref b1,ref w1);SortPair(ref b2,ref w2,ref b3,ref w3);
+        SortPair(ref b0,ref w0,ref b2,ref w2);SortPair(ref b1,ref w1,ref b3,ref w3);SortPair(ref b1,ref w1,ref b2,ref w2);
+        return new BoneWeight{boneIndex0=b0,boneIndex1=b1,boneIndex2=b2,boneIndex3=b3,weight0=w0,weight1=w1,weight2=w2,weight3=w3};
+    }
+    static void SortPair(ref int firstBone,ref float firstWeight,ref int secondBone,ref float secondWeight)
+    {
+        if(firstWeight>=secondWeight)return;
+        int bone=firstBone;firstBone=secondBone;secondBone=bone;
+        float weight=firstWeight;firstWeight=secondWeight;secondWeight=weight;
+    }
+    BoneWeight Weight(Vector3 point,GeometryProfile profile)
     {
         float y=(point.y-body.min.y)/height,x=(point.x-body.center.x)/height;
         int arm=x<0?3:6,leg=x<0?9:12;
@@ -359,7 +480,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             if(y<.35f)return Blend(leg+1,leg,Mathf.InverseLerp(.25f,.35f,y));
             return Blend(leg,0,Mathf.InverseLerp(.46f,.53f,y));
         }
-        if(Mathf.Abs(x)>(name.Contains("賽德克孩童")?.105f:.155f)&&y>.37f&&y<.84f)
+        if(Mathf.Abs(x)>(profile==GeometryProfile.SeediqChild?.105f:.155f)&&y>.37f&&y<.84f)
         {
             if(y<.52f)return Blend(arm+2,arm+1,Mathf.InverseLerp(.43f,.53f,y));
             return Blend(arm+1,arm,Mathf.InverseLerp(.60f,.70f,y));
@@ -678,13 +799,22 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             // Let the arms fold beside the torso as the body settles. The
             // previous spread hand became the lowest vertex and held the
             // entire head and chest above ground during support correction.
+            // The original kimono's wide sleeves need more inward shoulder
+            // rotation and a shallower elbow fold: otherwise a low hand/sleeve
+            // supports the whole body above the floor despite valid clearance.
+            float settledShoulderX=longGarment?(lowerArm?-12:-20):(lowerArm?-32:-42);
+            float settledShoulderZ=-sign*(longGarment?(lowerArm?72:58):20);
+            float settledElbowX=longGarment?(lowerArm?-22:-35):(lowerArm?-45:-65);
             bones[arm].localRotation=Quaternion.Slerp(
                 Quaternion.Euler(-55*bend-14*collapse,0,side==0?-12:18),
-                Quaternion.Euler(lowerArm?-32:-42,0,-sign*20),settle);
+                Quaternion.Euler(settledShoulderX,0,settledShoulderZ),settle);
             bones[arm+1].localRotation=Quaternion.Slerp(
                 Quaternion.Euler(-40*bend-15*collapse,0,0),
-                Quaternion.Euler(lowerArm?-45:-65,0,0),settle);
+                Quaternion.Euler(settledElbowX,0,0),settle);
         }
+        // The final fall shares the rounded pose-cache bucket with a still
+        // moving fall. Calibrate the settled kimono once before freezing it.
+        if(longGarment&&fall>=1&&!finalFallPoseReady)groundCalibrated=false;
         GroundSyntheticPose();
         if(fall>=.95f)
             foreach(var saved in capsules)if(saved.collider)
@@ -705,6 +835,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             {
                 Vector3 vertex=part.key.local.MultiplyPoint3x4(pose.samples[i]);BoneWeight weight=pose.sampleWeights[i];
                 Vector3 posed=poseMatrices[weight.boneIndex0].MultiplyPoint3x4(vertex)*weight.weight0+poseMatrices[weight.boneIndex1].MultiplyPoint3x4(vertex)*weight.weight1;
+                if(weight.weight2>0)posed+=poseMatrices[weight.boneIndex2].MultiplyPoint3x4(vertex)*weight.weight2;
+                if(weight.weight3>0)posed+=poseMatrices[weight.boneIndex3].MultiplyPoint3x4(vertex)*weight.weight3;
                 lowest=Mathf.Min(lowest,posed.y);
             }
         }

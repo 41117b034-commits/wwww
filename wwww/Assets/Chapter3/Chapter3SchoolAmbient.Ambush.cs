@@ -8,19 +8,23 @@ public sealed partial class Chapter3SchoolAmbient
     float[] fallBegan;
     int[] escapeLeg;
     bool skirmishActive;
-    // Three supporting adults encounter one teacher and two pupils, then
-    // rejoin their existing police group. Group leaders remain with officers.
-    static readonly int[] civilianVictims={3,12,13};
+    // Two separate civilian encounters: two teachers, and two pupils.
+    // These five participants never become extra police fighting groups.
+    static readonly int[] civilianAttackers={3,7,4,5};
+    static readonly int[] civilianVictims={3,1,12,13};
     readonly bool[] civilianEncounterDone=new bool[AmbusherCount];
-    readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
+    readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly RaycastHit[] civilianContactHits=new RaycastHit[32];
     public int StagedCivilianFalls {get;private set;}
-    readonly float[] civilianContactDistance=new float[3],civilianContactElapsed=new float[3];
-    public bool CivilianEncounterComplete=>civilianEncounterDone[3]&&civilianEncounterDone[4]&&civilianEncounterDone[5];
-    public float CivilianContactDistance(int encounter)=>encounter>=0&&encounter<3?civilianContactDistance[encounter]:-1;
-    public float CivilianContactElapsed(int encounter)=>encounter>=0&&encounter<3?civilianContactElapsed[encounter]:-1;
-    bool HasCivilianEncounter(int actor)=>actor>=3&&actor<=5&&!civilianEncounterDone[actor];
-    bool IsStagedCivilian(int guest)=>guest==3||guest==12||guest==13;
+    readonly float[] civilianContactDistance=new float[4],civilianContactElapsed=new float[4];
+    public int CivilianEncounterCount=>civilianVictims.Length;
+    public bool CivilianEncounterComplete=>civilianEncounterDone[3]&&civilianEncounterDone[7]&&civilianEncounterDone[4]&&civilianEncounterDone[5];
+    public float CivilianContactDistance(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianContactDistance[encounter]:-1;
+    public float CivilianContactElapsed(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianContactElapsed[encounter]:-1;
+    public int CivilianEncounterVictim(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianVictims[encounter]:-1;
+    public int CivilianEncounterAttacker(int encounter)=>encounter>=0&&encounter<civilianAttackers.Length?civilianAttackers[encounter]:-1;
+    bool HasCivilianEncounter(int actor)=>System.Array.IndexOf(civilianAttackers,actor)>=0&&!civilianEncounterDone[actor];
+    bool IsStagedCivilian(int guest)=>System.Array.IndexOf(civilianVictims,guest)>=0;
     public int AmbushSignalFrame {get;private set;}=-1;
     public bool SkirmishActive=>Panicking&&skirmishActive;
     public Vector3 AmbushStart(int index)=>assaultStarts[index];
@@ -67,9 +71,9 @@ public sealed partial class Chapter3SchoolAmbient
         ResetCivilianShelters();
         foreach(var motor in watchMotors)motor?.Reset();
         StagedCivilianFalls=0;
-        for(int i=0;i<3;i++){civilianContactDistance[i]=-1;civilianContactElapsed[i]=-1;}
+        for(int i=0;i<civilianVictims.Length;i++){civilianContactDistance[i]=-1;civilianContactElapsed[i]=-1;}
         for(int i=0;i<AmbusherCount;i++)
-        {assaultVictim[i]=i>=3&&i<=5?civilianVictims[i-3]:-1;strikeBegan[i]=-1;civilianEncounterDone[i]=false;}
+        {int encounter=System.Array.IndexOf(civilianAttackers,i);assaultVictim[i]=encounter>=0?civilianVictims[encounter]:-1;strikeBegan[i]=-1;civilianEncounterDone[i]=false;}
         foreach(var motor in civilianAssaultMotors)motor.Reset();
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
     }
@@ -77,8 +81,8 @@ public sealed partial class Chapter3SchoolAmbient
     {
         skirmishActive=false;SkirmishPairsReady=0;
         foreach(var actor in assailants)if(actor)actor.SetStrike(0);
-        // Holds are released by the withdrawal signal. Surviving guests wait
-        // inside the campus until they can join that same departing group.
+        // Surviving guests retain their own escape/pursuit state. Only the
+        // original ten participants join the player's departing party.
     }
     void UpdateAmbush(float elapsed)
     {
@@ -88,6 +92,12 @@ public sealed partial class Chapter3SchoolAmbient
             var actor=assailants[attacker];if(!actor||!skirmishActive)continue;
             if(attacker<3){ShelterNativeChild(attacker,actor);continue;}
             if(HasCivilianEncounter(attacker)&&UpdateCivilianEncounter(attacker,actor,elapsed))continue;
+            if(attacker==8&&!civilianEncounterDone[5])
+            {
+                var pupil=crowd[13];actor.SetAfraid(false);actor.SetStrike(0);actor.SetMeleePose(.4f,0);
+                civilianAssaultMotors[4].Patrol(actor,pupil.transform.position+new Vector3(2.3f,0,-1.2f),3.1f,.4f);
+                actor.Face(pupil.transform.position,180);continue;
+            }
             if(UpdatePoliceOpposition(attacker,actor))continue;
             actor.SetStrike(0);actor.SetMeleePose(0,0);
             WatchCampus(attacker,actor,concealment[attacker]);
@@ -97,7 +107,8 @@ public sealed partial class Chapter3SchoolAmbient
     {
         int index=assaultVictim[attacker];var guest=crowd[index];
         if(!guest)return false;
-        actor.HoldAtNeck(null,false);actor.SetMeleePose(0,0);actor.SetAfraid(false);
+        int encounter=System.Array.IndexOf(civilianAttackers,attacker);
+        actor.HoldAtNeck(null,false);actor.SetMeleePose(.4f,0);actor.SetAfraid(false);
         if(guest.IsFallen)
         {
             actor.SetStrike(0);civilianEncounterDone[attacker]=true;return false;
@@ -106,10 +117,10 @@ public sealed partial class Chapter3SchoolAmbient
         if(direction.sqrMagnitude<.1f)direction=Vector3.forward;
         Vector3 stand=guest.transform.position-direction*1.05f;
         float distance=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).magnitude;
-        if(distance>1.25f) civilianAssaultMotors[attacker-3].Patrol(actor,stand,3.1f,.15f);
+        if(distance>1.25f) civilianAssaultMotors[encounter].Patrol(actor,stand,3.1f,.15f);
         actor.Face(guest.transform.position,180);
         bool ready=Horizontal(guest.transform.position,refuges[index])<.45f;
-        if(distance>1.50f||!ready||elapsed<5+(attacker-3)*1.6f||!ClearCivilianContact(actor,guest)||
+        if(distance>1.50f||!ready||elapsed<5+encounter*1.6f||!ClearCivilianContact(actor,guest)||
             (strikeBegan[attacker]<0&&!CivilianEncounterVisible(guest)))
         {actor.SetStrike(0);strikeBegan[attacker]=-1;return true;}
         SkirmishPairsReady++;
@@ -117,7 +128,7 @@ public sealed partial class Chapter3SchoolAmbient
         float progress=(Time.time-strikeBegan[attacker])/1.15f;
         actor.SetStrike(progress<1?Mathf.Clamp(progress,.01f,.99f):0);
         if(progress>=.72f&&fallBegan[index]<0)
-        {fallBegan[index]=Time.time;StagedCivilianFalls++;civilianContactDistance[attacker-3]=distance;civilianContactElapsed[attacker-3]=elapsed;}
+        {fallBegan[index]=Time.time;StagedCivilianFalls++;civilianContactDistance[encounter]=distance;civilianContactElapsed[encounter]=elapsed;}
         return true;
     }
     bool CivilianEncounterVisible(Chapter3SchoolCrowdActor guest)
@@ -127,7 +138,7 @@ public sealed partial class Chapter3SchoolAmbient
         // Once a swing begins, the existing contact checks own its completion.
         return school&&school.Battle&&school.Battle.Fighting&&school.player&&
             school.player.transform.position.z>=3&&
-            Horizontal(school.player.transform.position,guest.transform.position)<=18f;
+            Horizontal(school.player.transform.position,guest.transform.position)<=36f;
     }
     bool ClearCivilianContact(Chapter3SchoolCrowdActor actor,Chapter3SchoolCrowdActor guest)
     {
@@ -152,7 +163,7 @@ public sealed partial class Chapter3SchoolAmbient
             crowdPhases[index]=guest.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
             return true;
         }
-        if(Withdrawing)return true; // The escort motor owns every living guest.
+        if(IsJapanesePursuer(index)){UpdateJapaneseDefender(index);return true;}
         if(IsStagedCivilian(index)&&skirmishActive)
         {
             // The struck guests first take actual steps toward nearby cover;
