@@ -87,9 +87,11 @@ public sealed partial class Chapter3SchoolAmbient
             if(!pursuer.engaged)
             {
                 // Both adults can initially stand ahead of their opponents.
-                // Let that actual fighter pass within sight, then chase from
-                // behind instead of running the exit route ahead of him.
-                bool passing=targetStep.sqrMagnitude>.000001f&&distance<8&&
+                // Let that actual fighter walk ahead, then close from behind.
+                // After the player's teacher support he may already be farther
+                // east; approach him on the route instead of waiting forever
+                // for an opponent in front to come back within eight metres.
+                bool passing=targetStep.sqrMagnitude>.000001f&&
                     Vector3.Dot(Vector3.ProjectOnPlane(targetPosition-current,Vector3.up),pursuer.targetForward)>1;
                 if(!passing)
                 {actor.SetStrike(0);actor.SetWaiting(true);actor.Face(targetPosition,160);continue;}

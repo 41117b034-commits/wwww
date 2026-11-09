@@ -507,6 +507,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
+        meleeGuard=0;meleeVariant=0;
         cowering=false;cowerWeight=0;groundCalibrated=false;renderedGroundOffset=0;
         navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
         restrainedGuest=null;holdingAtNeck=false;
@@ -716,7 +717,20 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             bones[7].localRotation=Quaternion.Euler(-36,0,0);
         }
         if(cowerWeight>0)PoseShelter(bones,false);
-        if(strike>0)
+        if(meleeGuard>0)
+        {
+            // Visible defensive hands and a short counter-shove for the
+            // campus guests. Keep wide sleeves below the old overhead arc.
+            float reach=strike>0?Mathf.Sin(strike*Mathf.PI):0;
+            float guard=Mathf.Clamp01(meleeGuard);
+            float upper=(longGarment?18:24)+guard*10,elbow=(longGarment?26:40)+guard*24;
+            bones[3].localRotation=Quaternion.Euler(-upper,0,-4);
+            bones[4].localRotation=Quaternion.Euler(-elbow,0,0);
+            bones[6].localRotation=Quaternion.Euler(-upper-reach*(longGarment?14:22),0,4+reach*4);
+            bones[7].localRotation=Quaternion.Euler(-elbow+reach*25,0,0);
+            bones[1].localRotation*=Quaternion.Euler(-3*meleeGuard,reach*8,0);
+        }
+        else if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
         if(fall>0)PoseFall();else GroundSyntheticPose();
     }

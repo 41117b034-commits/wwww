@@ -114,7 +114,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         {
             lineUntil=0;flow.ui.Say("",null);LeadActor.speaking=RearActor.speaking=false;
             if(!heardLine&&!openingReply)
-            {openingReply=true;Say(RearActor,"我跟在後面。走吧，到校門旁和達多會合。",3.5f);}
+            {openingReply=true;Say(RearActor,"我跟在後面，你們留意前方。",3.5f);}
         }
         float gap=Flat(player.transform.position,LeadActor.transform.position);
         float rearGap=Flat(RearActor.transform.position,LeadActor.transform.position);

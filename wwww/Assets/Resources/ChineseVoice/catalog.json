@@ -9854,6 +9854,180 @@
           "voice": "zh-TW-YunJheNeural"
         }
       ]
+    },
+    {
+      "chinese": "去學校的路被前面的巡警擋住了。先躲在岩石後。",
+      "source": "Chapter3:Chapter3Combat.Staging.cs",
+      "resource": "ChineseVoice/Audio/437370799ca4fd336d66_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/437370799ca4fd336d66_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/437370799ca4fd336d66_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/437370799ca4fd336d66_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/437370799ca4fd336d66_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "沿著左邊的岩石和木箱靠近。後面還有掩體，別迎著槍口衝。",
+      "source": "Chapter3:Chapter3Combat.Staging.cs",
+      "resource": "ChineseVoice/Audio/8b4597d3c489a502ab32_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/8b4597d3c489a502ab32_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/8b4597d3c489a502ab32_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/8b4597d3c489a502ab32_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/8b4597d3c489a502ab32_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "準備進攻了。先去校門旁找達多會合，聽他安排分工。",
+      "source": "Chapter3:Chapter3SchoolApproach.cs",
+      "resource": "ChineseVoice/Audio/530c79d5a2247ebda5ad_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/530c79d5a2247ebda5ad_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/530c79d5a2247ebda5ad_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/530c79d5a2247ebda5ad_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/530c79d5a2247ebda5ad_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "前面山路有日本警察擋著。小心，別讓他們發現。",
+      "source": "Chapter3:Chapter3StationController.cs",
+      "resource": "ChineseVoice/Audio/89c6cb1a50b85dd2b644_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/89c6cb1a50b85dd2b644_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/89c6cb1a50b85dd2b644_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/89c6cb1a50b85dd2b644_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/89c6cb1a50b85dd2b644_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "我跟在後面，你們留意前方。",
+      "source": "Chapter3:Chapter3SchoolApproach.cs",
+      "resource": "ChineseVoice/Audio/cd496c71f3c030d34541_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/cd496c71f3c030d34541_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/cd496c71f3c030d34541_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/cd496c71f3c030d34541_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/cd496c71f3c030d34541_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "還有族人在和教師交戰，先過去幫忙，再吹哨集合！",
+      "source": "Chapter3:Chapter3SchoolBattle.Assault.cs",
+      "resource": "ChineseVoice/Audio/f94b2a98ec451cc798e5_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/f94b2a98ec451cc798e5_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/f94b2a98ec451cc798e5_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/f94b2a98ec451cc798e5_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/f94b2a98ec451cc798e5_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
     }
   ],
   "deliveryVersion": "mature-four-voices-v1"

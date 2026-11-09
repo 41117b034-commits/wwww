@@ -121,6 +121,15 @@ public sealed class Chapter3Weapons : MonoBehaviour
             hit.collider.GetComponentInParent<Chapter3CompanionReaction>().WarnAgainstAttack();
             Notice("同伴擋住射線，未擊中警察。移開準星，按 R 裝填。",3);return true;
         }
+        // The authored support teachers retain their crowd/bystander identity.
+        // Resolve that specific encounter before the general crowd protection.
+        if(traced&&combat.SchoolEncounter)
+        {
+            var campus=combat.SchoolEncounter.CampusAmbient;
+            var teacher=hit.collider.GetComponentInParent<Chapter3SchoolCrowdActor>();
+            if(campus&&campus.HitSupportTeacher(teacher,100,camera.transform.position,out bool teacherDown))
+            {Notice(teacherDown?"命中，交戰教師倒下":"命中交戰教師");return true;}
+        }
         if(traced&&hit.collider.GetComponentInParent<Chapter3Bystander>())
         {Notice("人群擋住射線，未擊中警察。移開準星，按 R 裝填。",3);return true;}
         if(traced)
@@ -142,6 +151,7 @@ public sealed class Chapter3Weapons : MonoBehaviour
         yield return new WaitForSeconds(.22f);
         if(!combat.Fighting)yield break;
         var view=combat.player.view.transform;
+        Physics.SyncTransforms();
         // A swept fan gives the visible cut some width; each swing damages one target once.
         Chapter3Enemy victim=null;float nearest=2.2f;
         foreach(var enemy in combat.Enemies)
@@ -151,6 +161,16 @@ public sealed class Chapter3Weapons : MonoBehaviour
             if(d>nearest||Vector3.Angle(view.forward,to)>42)continue;
             if(combat.Trace(view.position,to.normalized,d+.1f,out var hit)&&hit.collider.GetComponentInParent<Chapter3Enemy>()==enemy)
             {victim=enemy;nearest=d;}
+        }
+        var campus=combat.SchoolEncounter?combat.SchoolEncounter.CampusAmbient:null;
+        Chapter3SchoolCrowdActor teacherVictim=null;
+        if(campus)for(int i=0;i<Chapter3SchoolAmbient.RequiredTeacherSupportCount;i++)
+        {
+            var teacher=campus.SupportTeacher(i);if(!campus.IsLivingSupportTeacher(teacher))continue;
+            Vector3 to=teacher.NeckPoint-Vector3.up*.22f-view.position;float d=to.magnitude;
+            if(d>nearest||Vector3.Angle(view.forward,to)>42)continue;
+            if(combat.Trace(view.position,to.normalized,d+.1f,out var hit)&&hit.collider.GetComponentInParent<Chapter3SchoolCrowdActor>()==teacher)
+            {teacherVictim=teacher;nearest=d;}
         }
         Chapter3CompanionReaction friend=null;
         foreach(var companion in combat.Companions)
@@ -162,6 +182,11 @@ public sealed class Chapter3Weapons : MonoBehaviour
             {friend=companion;nearest=d;}
         }
         if(friend){friend.KnifeHit();}
+        else if(teacherVictim)
+        {
+            bool hit=campus.HitSupportTeacher(teacherVictim,60,view.position,out bool teacherDown);
+            Notice(hit?(teacherDown?"獵刀命中，交戰教師倒下":"獵刀命中交戰教師"):"沒有擊中，靠近再揮刀。");
+        }
         else if(victim){victim.Hit(60,view.position);Notice("獵刀命中");}else Notice("沒有擊中，靠近再揮刀。");
     }
     void NoticeNotReady()

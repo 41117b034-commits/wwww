@@ -220,7 +220,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         yield return Escort(departurePath);yield return Gather();
         player.canMove=false;
         yield return Say(bawan,"往前就是霧社。到學校外面，再和達多會合。",lineSeconds+1);
-        yield return Say(pihu,"前面山路有日本警察擋著。先突破他們，再去學校外和達多會合。",lineSeconds+2);
+        yield return Say(pihu,"前面山路有日本警察擋著。小心，別讓他們發現。",lineSeconds+2);
         ui.Say("",null);ui.hint.text="";
         CurrentStage=Stage.SchoolHandoff;player.canMove=player.canLook=true;
         ui.objective.text="前往霧社的山路";

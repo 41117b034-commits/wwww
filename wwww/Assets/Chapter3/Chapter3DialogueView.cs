@@ -8,7 +8,8 @@ public sealed class Chapter3DialogueView : MonoBehaviour
     public const float Distance=2.6f;
     Chapter3Flow flow;
     Chapter2Actor actor;
-    Vector3 home,side;
+    Vector3 home,side,selectedSide;
+    static readonly float[] CameraAngles={0f,30f,-30f,60f,-60f,90f,-90f,135f,-135f,180f};
     Quaternion homeLook,homeHeading;
     bool framed;
     public bool Framing=>framed;
@@ -34,6 +35,7 @@ public sealed class Chapter3DialogueView : MonoBehaviour
         side=Vector3.ProjectOnPlane(flow.player.transform.position-actor.transform.position,Vector3.up).normalized;
         if(side.sqrMagnitude<.01f)side=-actor.facing.normalized;
         if(side.sqrMagnitude<.01f)side=Vector3.back;
+        selectedSide=side;
         flow.player.DialogueFraming=true;
     }
     public static Chapter2Actor FindSpeaker(Chapter3Flow flow,string name)
@@ -59,13 +61,16 @@ public sealed class Chapter3DialogueView : MonoBehaviour
             (!flow.ui.subtitlePanel.activeInHierarchy&&!flow.ui.chat.activeInHierarchy)) {Release();return;}
         var rig=actor.Rig;
         Vector3 focus=rig&&rig.Head?rig.Head.position-Vector3.up*.15f:actor.transform.position+Vector3.up*1.35f;
-        Vector3 selected=focus+side*Distance;bool clear=false;
-        // Keep the same radius when a wall/tree obstructs the initial camera.
-        foreach(float angle in new[]{0f,30f,-30f,60f,-60f,90f,-90f,135f,-135f,180f})
+        Physics.SyncTransforms();
+        Vector3 selected=focus+selectedSide*Distance;bool clear=Clear(focus,selected);
+        // Keep a valid shot for this speaker instead of alternating sides as
+        // nearby companions animate. Their bodies also obstruct the camera.
+        if(!clear)foreach(float angle in CameraAngles)
         {
-            Vector3 candidate=focus+Quaternion.Euler(0,angle,0)*side*Distance;
+            Vector3 direction=Quaternion.Euler(0,angle,0)*side;
+            Vector3 candidate=focus+direction*Distance;
             if(!Clear(focus,candidate))continue;
-            selected=candidate;clear=true;break;
+            selected=candidate;selectedSide=direction;clear=true;break;
         }
         if(!clear){Release();return;}
         flow.player.view.transform.SetPositionAndRotation(selected,Quaternion.LookRotation(focus-selected));
@@ -73,14 +78,20 @@ public sealed class Chapter3DialogueView : MonoBehaviour
     }
     bool Clear(Vector3 focus,Vector3 point)
     {
-        foreach(var hit in Physics.SphereCastAll(focus,.15f,(point-focus).normalized,Distance,~0,QueryTriggerInteraction.Ignore))
+        // A cast does not report a collider that already encloses its origin;
+        // explicitly keep the lens outside other characters and scenery.
+        foreach(var c in Physics.OverlapSphere(point,.25f,~0,QueryTriggerInteraction.Ignore))
+            if(Obstructs(c))return false;
+        foreach(var hit in Physics.SphereCastAll(focus,.18f,(point-focus).normalized,Distance,~0,QueryTriggerInteraction.Ignore))
         {
-            var c=hit.collider;
-            if(c.transform.IsChildOf(flow.player.transform)||c.GetComponentInParent<Chapter2Actor>()||c.GetComponentInParent<Chapter3SchoolCrowdActor>())continue;
-            if(c.bounds.max.y<.28f)continue;
-            return false;
+            if(Obstructs(hit.collider))return false;
         }
         return true;
+    }
+    bool Obstructs(Collider c)
+    {
+        if(!c||c.transform.IsChildOf(flow.player.transform)||c.transform.IsChildOf(actor.transform))return false;
+        return c.bounds.max.y>=.28f;
     }
     public void Release()
     {

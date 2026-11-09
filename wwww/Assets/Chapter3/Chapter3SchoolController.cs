@@ -96,7 +96,6 @@ public sealed class Chapter3SchoolController : MonoBehaviour
         {
             ui.fade.color=Color.clear;Exploring=true;
             ArrivalGuide.Show(player.transform.position,new[]{tado.transform.position},player.transform,tado.transform);
-            Speak(bawan,"到了。達多就在校門旁，我們過去。",4.2f);
         }
         else StartCoroutine(Arrival());
     }

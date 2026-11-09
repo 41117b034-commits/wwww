@@ -1,0 +1,7 @@
+Archived backup
+Original: C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\chapter2_named_roam_20261010
+Destination: D:\CodexWork\ArchivedBackups\chapter2_named_roam_20261010
+Files: 413
+Bytes: 1140039007
+SHA256: every archived file matched; source rehashed unchanged before removal.
+Verification: D:\CodexWork\Jobs\20261108T103544638Z-archive-five-backups-2506d027\Output\backup-five-verification\chapter2_named_roam_20261010.verified.json

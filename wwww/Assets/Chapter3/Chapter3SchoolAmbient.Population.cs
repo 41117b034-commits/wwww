@@ -62,7 +62,8 @@ public sealed partial class Chapter3SchoolAmbient
         populationObjects.Add(root.gameObject);
         var capsule=root.gameObject.AddComponent<CapsuleCollider>();
         capsule.height=height;capsule.center=Vector3.up*(height*.5f);capsule.radius=.23f;
-        var skin=Resources.Load<Texture2D>("Chapter3/CampusCharacters/CampusSkin");
+        var skin=Resources.Load<Texture2D>("Chapter3/CampusCharacters/"+
+            (modelName=="CampusTeacher"?"CampusTeacherSkin":"CampusSkin"));
         var cloth=Resources.Load<Texture2D>("Chapter3/CampusCharacters/CampusClothWeave");
         var materials=new Dictionary<Material,Material>();
         foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>(true))

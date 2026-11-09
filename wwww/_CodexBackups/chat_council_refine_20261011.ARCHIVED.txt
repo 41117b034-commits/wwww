@@ -1,0 +1,7 @@
+Archived backup
+Original: C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\chat_council_refine_20261011
+Destination: D:\CodexWork\ArchivedBackups\chat_council_refine_20261011
+Files: 234
+Bytes: 791014723
+SHA256: every archived file matched; source rehashed unchanged before removal.
+Verification: D:\CodexWork\Jobs\20261108T103544638Z-archive-five-backups-2506d027\Output\backup-five-verification\chat_council_refine_20261011.verified.json

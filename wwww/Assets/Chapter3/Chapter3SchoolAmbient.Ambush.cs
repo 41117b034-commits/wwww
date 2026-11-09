@@ -4,7 +4,6 @@ using UnityEngine;
 public sealed partial class Chapter3SchoolAmbient
 {
     readonly int[] assaultVictim=new int[AmbusherCount];
-    readonly float[] strikeBegan=new float[AmbusherCount];
     float[] fallBegan;
     int[] escapeLeg;
     bool skirmishActive;
@@ -69,18 +68,20 @@ public sealed partial class Chapter3SchoolAmbient
         skirmishActive=false;AmbushSignalFrame=-1;SkirmishPairsReady=0;
         System.Array.Clear(sheltered,0,sheltered.Length);
         ResetCivilianShelters();
+        ResetTeacherCombat();
         foreach(var motor in watchMotors)motor?.Reset();
         StagedCivilianFalls=0;
         for(int i=0;i<civilianVictims.Length;i++){civilianContactDistance[i]=-1;civilianContactElapsed[i]=-1;}
         for(int i=0;i<AmbusherCount;i++)
-        {int encounter=System.Array.IndexOf(civilianAttackers,i);assaultVictim[i]=encounter>=0?civilianVictims[encounter]:-1;strikeBegan[i]=-1;civilianEncounterDone[i]=false;}
+        {int encounter=System.Array.IndexOf(civilianAttackers,i);assaultVictim[i]=encounter>=0?civilianVictims[encounter]:-1;civilianEncounterDone[i]=false;}
         foreach(var motor in civilianAssaultMotors)motor.Reset();
         if(fallBegan!=null)for(int i=0;i<fallBegan.Length;i++){fallBegan[i]=-1;escapeLeg[i]=0;}
     }
     public void EndSkirmish()
     {
         skirmishActive=false;SkirmishPairsReady=0;
-        foreach(var actor in assailants)if(actor)actor.SetStrike(0);
+        foreach(var actor in assailants)if(actor){actor.SetStrike(0);actor.SetMeleePose(0,0);}
+        if(crowd!=null)foreach(var guest in crowd)if(guest){guest.SetStrike(0);guest.SetMeleePose(0,0);guest.SetStartled(0);}
         // Surviving guests retain their own escape/pursuit state. Only the
         // original ten participants join the player's departing party.
     }
@@ -113,23 +114,8 @@ public sealed partial class Chapter3SchoolAmbient
         {
             actor.SetStrike(0);civilianEncounterDone[attacker]=true;return false;
         }
-        Vector3 direction=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).normalized;
-        if(direction.sqrMagnitude<.1f)direction=Vector3.forward;
-        Vector3 stand=guest.transform.position-direction*1.05f;
-        float distance=Vector3.ProjectOnPlane(guest.transform.position-actor.transform.position,Vector3.up).magnitude;
-        if(distance>1.25f) civilianAssaultMotors[encounter].Patrol(actor,stand,3.1f,.15f);
-        actor.Face(guest.transform.position,180);
-        bool ready=Horizontal(guest.transform.position,refuges[index])<.45f;
-        if(distance>1.50f||!ready||elapsed<5+encounter*1.6f||!ClearCivilianContact(actor,guest)||
-            (strikeBegan[attacker]<0&&!CivilianEncounterVisible(guest)))
-        {actor.SetStrike(0);strikeBegan[attacker]=-1;return true;}
-        SkirmishPairsReady++;
-        if(strikeBegan[attacker]<0)strikeBegan[attacker]=Time.time;
-        float progress=(Time.time-strikeBegan[attacker])/1.15f;
-        actor.SetStrike(progress<1?Mathf.Clamp(progress,.01f,.99f):0);
-        if(progress>=.72f&&fallBegan[index]<0)
-        {fallBegan[index]=Time.time;StagedCivilianFalls++;civilianContactDistance[encounter]=distance;civilianContactElapsed[encounter]=elapsed;}
-        return true;
+        if(duelBegan[encounter]>=0)SkirmishPairsReady++;
+        return UpdateCivilianDuel(encounter,actor,guest,elapsed);
     }
     bool CivilianEncounterVisible(Chapter3SchoolCrowdActor guest)
     {
@@ -166,12 +152,8 @@ public sealed partial class Chapter3SchoolAmbient
         if(IsJapanesePursuer(index)){UpdateJapaneseDefender(index);return true;}
         if(IsStagedCivilian(index)&&skirmishActive)
         {
-            // The struck guests first take actual steps toward nearby cover;
-            // no remote fall, teleport, duplicate or repeated stand-up cycle.
-            guest.SetAfraid(true);guest.SetWaiting(false);guest.SetCowering(false);
-            if(Horizontal(guest.transform.position,refuges[index])>.3f)
-                guest.MoveTowards(refuges[index],2.1f,true,.25f);
-            else guest.Face(PanicOrigin,90);
+            // The paired encounter owns this person's physical defence and
+            // evasion. Do not overwrite it with the old waiting-at-refuge pose.
             return true;
         }
         UpdateCivilianPanic(index);return true;

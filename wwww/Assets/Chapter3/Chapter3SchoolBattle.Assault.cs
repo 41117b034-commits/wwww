@@ -13,9 +13,11 @@ public sealed partial class Chapter3SchoolBattle
     public bool StragglerCalled => RetreatCalled;
     public bool StragglerArrived => RetreatArrived;
     public Vector3 StragglerPosition => P(12,32);
-    public Vector3 AssaultObjective => Step == AssaultCombatStages && !StragglerCalled ? StragglerPosition
+    public bool TeacherSupportPending=>ambient&&!ambient.TeacherSupportComplete;
+    public Vector3 AssaultObjective => Step == AssaultCombatStages && !StragglerCalled ?
+        TeacherSupportPending?ambient.PendingTeacherSupportPosition:StragglerPosition
         : activeRoute != null && activeRoute.Length > 0 ? activeRoute[activeRoute.Length - 1] : P(0, 76);
-    public Vector3[] AssaultWaypoints => Step == AssaultCombatStages && !StragglerCalled ? new[] { StragglerPosition } : activeRoute;
+    public Vector3[] AssaultWaypoints => Step == AssaultCombatStages && !StragglerCalled ? new[] { AssaultObjective } : activeRoute;
     public Chapter3RouteGuide AssaultGuide { get; private set; }
 
     static readonly Vector3[][] assaultApproach = {
@@ -121,8 +123,23 @@ public sealed partial class Chapter3SchoolBattle
         {
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
             ui.objective.text = Step == 0 ? "支援前場與警察交戰的族人" : "趕到西側，支援另一組交戰族人";
-            ui.hint.text = "協助族人擊倒警察 · " + combat.weapons.Controls;
-            combat.combatText.text = "校內支援 · 警察已擊倒  "+CampusDefeatedCount+" / "+AssaultCombatStages;
+            ui.hint.text = "支援交戰族人，擊倒兩名警察與兩名交戰教師 · " + combat.weapons.Controls;
+            combat.combatText.text = "校內支援 · 警察  "+CampusDefeatedCount+" / "+AssaultCombatStages+
+                " · 教師支援  "+(ambient?ambient.TeacherSupportDefeatedCount:0)+" / 2";
+            return;
+        }
+
+        if(!RetreatCalled&&TeacherSupportPending)
+        {
+            ui.objective.text="支援會場裡仍在交戰的族人";
+            ui.hint.text="擊倒與族人交戰的兩名教師後，再吹哨集合 · "+combat.weapons.Controls;
+            combat.combatText.text="警察已清除 · 教師支援  "+ambient.TeacherSupportDefeatedCount+" / 2";
+            school.tado.Face(ambient.PendingTeacherSupportPosition);
+            if(player.ActionPressed||Time.time>=nextAssaultCall)
+            {
+                nextAssaultCall=Time.time+12;
+                Notice(school.tado.DisplayName,"還有族人在和教師交戰，先過去幫忙，再吹哨集合！",4);
+            }
             return;
         }
 
@@ -171,7 +188,8 @@ public sealed partial class Chapter3SchoolBattle
     public bool CallRetreat()
     {
         if (!Fighting || Selected != Mission.Tado || Step != AssaultCombatStages || StragglerCalled
-            || Enemies.Exists(e=>e&&!e.Defeated) || !ambient || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
+            || Enemies.Exists(e=>e&&!e.Defeated) || !ambient || !ambient.TeacherSupportComplete
+            || (combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2)) return false;
         if(!ambient.BeginWithdrawal(player.transform))return false;
         RetreatCalled = true; guideMotor.Reset();
         PlayRetreatWhistle();
@@ -211,7 +229,9 @@ public sealed partial class Chapter3SchoolBattle
         guideIndex = 0; guideMotor.Reset();
         activeRoute = RouteFromTado(Step < AssaultCombatStages ? assaultApproach[Step] : assaultWithdrawal);
         PrepareAssaultStage();
-        Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" : "兩處的警察都倒下了！吹哨叫所有族人停手，跟我們一起撤出去。",4);
+        Notice(school.tado.DisplayName,Step == 1 ? "西邊還有人被警察追著，跟我過去幫忙！" :
+            TeacherSupportPending?"兩處的警察都倒下了！還有族人在和教師交戰，先過去支援！":
+            "兩處的警察都倒下了，交戰的教師也倒下了！吹哨叫所有族人跟我們一起撤出去。",4);
     }
 
     Vector3[] RouteFromTado(Vector3[] next)

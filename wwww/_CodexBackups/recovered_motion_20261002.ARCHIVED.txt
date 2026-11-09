@@ -1,0 +1,7 @@
+Archived backup
+Original: C:\Users\jimmy\畢專_霧社事件\wwww\wwww\_CodexBackups\recovered_motion_20261002
+Destination: D:\CodexWork\ArchivedBackups\recovered_motion_20261002
+Files: 756
+Bytes: 720973406
+SHA256: every archived file matched; source rehashed unchanged before removal.
+Verification: D:\CodexWork\Jobs\20261108T103544638Z-archive-five-backups-2506d027\Output\backup-five-verification\recovered_motion_20261002.verified.json

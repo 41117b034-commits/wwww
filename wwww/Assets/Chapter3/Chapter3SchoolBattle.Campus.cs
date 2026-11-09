@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed partial class Chapter3SchoolBattle
 {
     public const int AssaultCombatStages=2;
+    public Chapter3SchoolAmbient CampusAmbient=>ambient;
     static readonly int[] campusAllies={6,9};
     static readonly Vector3[] campusPositions={P(-10,15),P(-12,28)};
     readonly int[] campusHealth={100,100};

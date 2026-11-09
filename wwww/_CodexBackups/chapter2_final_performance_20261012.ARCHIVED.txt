@@ -1,0 +1,1 @@
+2026-11-08: Moved with user approval to D:/CodexWork/ArchivedBackups/chapter2_final_performance_20261012. All 751 files verified by SHA256 before removing the C: copy. Verification manifest: D:/CodexWork/Jobs/20261108T055307825Z-chapter3-dialogue-combat-e21d0425/Output/backup-move-verification.json
