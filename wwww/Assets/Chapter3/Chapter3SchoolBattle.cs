@@ -31,6 +31,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     public Chapter3MissionUI Menu {get;private set;}
     public Chapter3RouteGuide FollowGuide {get;private set;}
     public readonly List<Chapter3Enemy> Enemies=new List<Chapter3Enemy>();
+    readonly List<Chapter3Enemy> schoolCasualties=new List<Chapter3Enemy>();
     public Chapter3CompanionReaction[] Companions {get;private set;}
     public Transform[] Barricades {get;private set;}
     public Transform Ammo {get;private set;}
@@ -251,7 +252,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,Flat(player.transform.position,school.bawan.transform.position)<8);
         yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,Flat(player.transform.position,school.pihu.transform.position)<8);
         yield return Say(school.tado,Selected==Mission.Tado?"大家正往校後撤，後面的人會跟上。先離開學校，沿林路走！":"我帶的人正從會場撤出。先離開學校，沿後面那條林路走！",4.5f,Flat(player.transform.position,school.tado.transform.position)<8);
-        CurrentStage=Stage.Complete;ClearEnemies();Menu.Hide();
+        CurrentStage=Stage.Complete;RetainSchoolCasualties();Menu.Hide();
         if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
         Rescue.Begin(school,this);
     }
@@ -390,8 +391,21 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         }
         // Keep the existing box when every nearby placement is occupied.
     }
+    void RetainSchoolCasualties()
+    {
+        // StartRegroup requires every school opponent to be defeated. Keep
+        // their original bodies visible where they fell while the separate
+        // forest encounter reuses the active enemy list.
+        foreach(var enemy in Enemies)if(enemy)
+        {enemy.AttackEnabled=false;enemy.escortTarget=null;schoolCasualties.Add(enemy);}
+        Enemies.Clear();ClearOfficerStaging();
+    }
     void ClearEnemies()
-    {foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}Enemies.Clear();ClearOfficerStaging();}
+    {
+        foreach(var e in Enemies)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}
+        foreach(var e in schoolCasualties)if(e){e.gameObject.SetActive(false);Destroy(e.gameObject);}
+        Enemies.Clear();schoolCasualties.Clear();ClearOfficerStaging();
+    }
     public void Suspend()
     {
         if(FollowGuide)FollowGuide.Hide();

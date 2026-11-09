@@ -63,7 +63,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     readonly List<SkinnedMeshRenderer> nativeSkins=new List<SkinnedMeshRenderer>();
     Chapter2Actor nativeTemplate;
     Chapter3SchoolAmbient ambient;
-    bool longGarment,skirtGarment;
+    bool longGarment,skirtGarment,teacherGarment;
     Chapter1IncidentRig nativeRig;
     Chapter3SchoolCrowdActor restrainedGuest;
     Transform nativeRoot,nativeUpperArm,nativeElbow,presentationSpear,presentationKnife;
@@ -283,6 +283,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         ambient=GetComponentInParent<Chapter3SchoolAmbient>();
         longGarment=name.Contains("日籍女教師")||name.Contains("婦人")||name.Contains("女性");
         skirtGarment=name.Contains("日籍女學童");
+        teacherGarment=name.Contains("日籍男教師");
         BuildBones();
         foreach(var filter in filters)
         {
@@ -319,6 +320,14 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             float sign=side==0?-1:1;int arm=3+side*3,leg=9+side*3;
             bindPositions[arm]=P(sign*.16f,.77f);bindPositions[arm+1]=P(sign*.20f,.60f);bindPositions[arm+2]=P(sign*.23f,.43f);
             bindPositions[leg]=P(sign*.075f,.50f);bindPositions[leg+1]=P(sign*.075f,.28f);bindPositions[leg+2]=P(sign*.075f,.055f);
+            if(teacherGarment)
+            {
+                // Measured jacket shoulder, elbow and cuff locations. The old
+                // shared pupil wrist sat in the middle of the teacher's palm.
+                bindPositions[arm]=P(sign*.146f,.798f);
+                bindPositions[arm+1]=P(sign*.193f,.674f);
+                bindPositions[arm+2]=P(sign*.241f,.504f);
+            }
         }
         for(int i=0;i<bones.Length;i++)
         {
@@ -335,7 +344,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         for(int i=0;i<vertices.Length;i++)
         {
             var point=key.local.MultiplyPoint3x4(vertices[i]);
-            weights[i]=clothing==null?Weight(point,key.profile):CampusWeight(point,clothing[i]);
+            weights[i]=clothing==null?Weight(point,key.profile):CampusWeight(point,clothing[i],key.profile);
         }
         var bindposes=new Matrix4x4[bones.Length];
         for(int i=0;i<bones.Length;i++)bindposes[i]=Matrix4x4.Translate(-bindPositions[i])*key.local;
@@ -423,7 +432,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         return result;
     }
     static float SmoothRange(float low,float high,float value)=>Mathf.SmoothStep(0,1,Mathf.InverseLerp(low,high,value));
-    BoneWeight CampusWeight(Vector3 point,ClothPart clothing)
+    BoneWeight CampusWeight(Vector3 point,ClothPart clothing,GeometryProfile profile)
     {
         float y=(point.y-body.min.y)/height,x=(point.x-body.center.x)/height;
         int arm=x<0?3:6,leg=x<0?9:12;
@@ -443,6 +452,18 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         BoneWeight torso=y>.77f?CampusBlend(1,2,SmoothRange(.77f,.86f,y)):CampusBlend(0,1,SmoothRange(.53f,.69f,y));
         if(clothing==ClothPart.Torso)return torso;
+        if(profile==GeometryProfile.CampusTeacher)
+        {
+            // The complete neck and collar share this same continuous blend.
+            // Arms get almost full limb weight outside the jacket armhole;
+            // hands and cuff edges share a wrist instead of stretching apart.
+            float shoulderBand=SmoothRange(.70f,.80f,y);
+            float teacherArmShare=SmoothRange(Mathf.Lerp(.145f,.095f,shoulderBand),
+                Mathf.Lerp(.165f,.17f,shoulderBand),Mathf.Abs(x))*(1-SmoothRange(.81f,.86f,y));
+            BoneWeight teacherSleeve=y<.59f?CampusBlend(arm+2,arm+1,SmoothRange(.505f,.57f,y))
+                :CampusBlend(arm+1,arm,SmoothRange(.63f,.73f,y));
+            return MixWeights(torso,teacherSleeve,teacherArmShare);
+        }
         float shoulder=SmoothRange(.42f,.72f,y);
         float armShare=SmoothRange(Mathf.Lerp(.16f,.04f,shoulder),Mathf.Lerp(.19f,.22f,shoulder),Mathf.Abs(x))
             *(1-SmoothRange(.81f,.87f,y));
@@ -729,10 +750,35 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             bones[6].localRotation=Quaternion.Euler(-upper-reach*(longGarment?14:22),0,4+reach*4);
             bones[7].localRotation=Quaternion.Euler(-elbow+reach*25,0,0);
             bones[1].localRotation*=Quaternion.Euler(-3*meleeGuard,reach*8,0);
+            if(teacherGarment)PoseTeacherFight();
         }
         else if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
         if(fall>0)PoseFall();else GroundSyntheticPose();
+    }
+    void PoseTeacherFight()
+    {
+        // Guard, brace, counter and recover, with one hand protecting the
+        // upper chest while the other reaches. IK retains arm segment length.
+        float extension=strike>0?Mathf.Sin(strike*Mathf.PI):0;
+        float brace=meleeGuard>.8f?1:0;
+        int attackingSide=meleeVariant%2;
+        bones[0].localPosition+=Vector3.down*height*.025f;
+        bones[1].localRotation=Quaternion.Euler(5+brace*5,extension*(attackingSide==0?-12:12),0);
+        bones[2].localRotation=Quaternion.Euler(-4-brace*3,0,0);
+        for(int side=0;side<2;side++)
+        {
+            int arm=3+side*3,leg=9+side*3;float sign=side==0?-1:1;
+            bones[leg].localRotation=Quaternion.Euler(side==0?13:-7,0,-sign*3);
+            bones[leg+1].localRotation=Quaternion.Euler(-17,0,0);
+            bones[leg+2].localRotation=Quaternion.Euler(8,0,0);
+            float reach=side==attackingSide?extension:0;
+            Vector3 target=transform.TransformPoint(new Vector3(body.center.x+sign*height*(.15f-reach*.035f),
+                body.min.y+height*(.735f+brace*.035f-reach*.055f),body.center.z+height*(.19f+reach*.20f)));
+            Vector3 hint=transform.right*sign-transform.up*.65f+transform.forward*.15f;
+            Chapter1IncidentRig.Solve(bones[arm],bones[arm+1],bones[arm+2],target,hint);
+            bones[arm+2].localRotation=Quaternion.Euler(8,0,0);
+        }
     }
     bool PrepareNativeShelter()
     {

@@ -81,7 +81,7 @@ public sealed partial class Chapter3Combat
         }
         OpeningPrepared=true;if(coverGuide)coverGuide.Hide();
         player.canMove=false;ui.objective.text="躲在岩石後，確認前往學校的路線";
-        yield return Say(bawan,"去學校的路被前面的巡警擋住了。先躲在岩石後。",lineSeconds);
+        yield return Say(bawan,"先別露頭。等他轉身，我們再靠近。",lineSeconds);
         yield return Say(pihu,weapons.Selected==Chapter3Weapons.Weapon.Knife?
             "沿著左邊的岩石和木箱靠近。後面還有掩體，別迎著槍口衝。":
             "槍打完一發，就要再裝一發。裝填時躲好。",lineSeconds);

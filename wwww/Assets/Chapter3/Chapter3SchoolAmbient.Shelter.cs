@@ -19,12 +19,12 @@ public sealed partial class Chapter3SchoolAmbient
     bool[] civilianPassedCorridor;
     float[] civilianDestinationChecks;
     Collider[] corridorFloors;
-    public bool CivilianHidesInCorridor(int index)=>false;
-    public Vector3 CivilianRefuge(int index)=>civilianCorridorEntries[index];
+    public bool CivilianHidesInCorridor(int index)=>index>=0&&index<crowd.Length&&!IsStagedCivilian(index);
+    public Vector3 CivilianRefuge(int index)=>civilianPanicRoutes[index][civilianPanicRoutes[index].Length-1];
     public int CiviliansPassedCorridorCount
     {get{int count=0;if(civilianPassedCorridor!=null)foreach(bool passed in civilianPassedCorridor)if(passed)count++;return count;}}
     public int CiviliansAtRefuge
-    {get{int count=0;if(civilianPassedCorridor!=null)for(int i=0;i<crowd.Length;i++)if(civilianPassedCorridor[i]&&crowd[i]&&Horizontal(crowd[i].transform.position,civilianCorridorEntries[i])<2)count++;return count;}}
+    {get{int count=0;if(civilianPassedCorridor!=null)for(int i=0;i<crowd.Length;i++)if(civilianPassedCorridor[i]&&crowd[i]&&crowdPhases[i]==CrowdPhase.Sheltered)count++;return count;}}
     void ResetCivilianShelters()
     {
         civilianPanicMotors=new Chapter3PathMotor[crowd.Length];
@@ -34,21 +34,16 @@ public sealed partial class Chapter3SchoolAmbient
         for(int i=0;i<crowd.Length;i++)
         {
             civilianPanicMotors[i]=new Chapter3PathMotor();
-            // Enter the veranda on scattered approaches, then keep running
-            // through the east opening to safety. The corridor is a passage,
-            // never a row of permanently crouching or waiting civilians.
-            float x=Mathf.Clamp(homes[i].x*.75f+(i%3-1)*1.1f,-15,14);
-            Vector3 refuge=civilianCorridorEntries[i]=new Vector3(x,0,46.3f);
-            float side=homes[i].x<0?-1:1;
+            // Panic starts on the field and ends at an individual sheltered
+            // veranda bay. No route crosses the east exit into the clearing.
+            Vector3 refuge=CivilianSafeDestination(i);
+            civilianCorridorEntries[i]=refuge;
             var route=new System.Collections.Generic.List<Vector3>();
-            if(i%3==1)
-            {route.Add(new Vector3(side*19.2f,0,Mathf.Clamp(homes[i].z+9,20,37)));route.Add(new Vector3(side*19.2f,0,41.5f));}
-            route.Add(new Vector3(x,0,43.4f));civilianCorridorLeg[i]=route.Count;route.Add(refuge);
-            route.Add(new Vector3(17.3f,0,46.3f));route.Add(new Vector3(18,0,44.8f));
-            route.Add(new Vector3(24.2f,0,45.4f));route.Add(new Vector3(24.2f,0,61));
-            // A scattered safe area east of the school is separate from the
-            // Indigenous party's forest approach and roll-call positions.
-            route.Add(CivilianSafeDestination(i));
+            float side=homes[i].x<0?-1:1;
+            if(i%3==1)route.Add(new Vector3(side*19.2f,0,Mathf.Clamp(homes[i].z+7,20,37)));
+            route.Add(new Vector3(refuge.x,0,41.5f));
+            route.Add(new Vector3(refuge.x,0,43.4f));
+            civilianCorridorLeg[i]=route.Count;route.Add(refuge);
             civilianPanicRoutes[i]=route.ToArray();
         }
         for(int i=0;i<childShelterLeg.Length;i++){childShelterLeg[i]=0;childShelterMotors[i].Reset();}
@@ -95,28 +90,41 @@ public sealed partial class Chapter3SchoolAmbient
         if(leg<route.Length)
         {
             crowdPhases[index]=CrowdPhase.Fleeing;
-            if(leg==route.Length-1&&Time.time>=civilianDestinationChecks[index])
+            if(Time.time>=civilianDestinationChecks[index])
             {
                 civilianDestinationChecks[index]=Time.time+1;
                 // The scattered destination is not guaranteed to be outside
                 // authored rocks or already settled people. Resolve an open
                 // standing place, then walk there normally before counting it.
-                Vector3 target=OpenCivilianDestination(index,actor,route[leg]);
+                Vector3 target=leg==route.Length-1?OpenCivilianDestination(index,actor,route[leg]):OpenShelterApproach(index,actor,route[leg]);
                 if((target-route[leg]).sqrMagnitude>.001f)
                 {route[leg]=target;civilianPanicMotors[index].Reset();}
             }
             civilianPanicMotors[index].Patrol(actor,route[leg],3.0f+(index%3)*.18f,.25f);
             return;
         }
-        crowdPhases[index]=CrowdPhase.Escaped;
-        actor.SetCowering(false);actor.SetWaiting(true);
+        crowdPhases[index]=CrowdPhase.Sheltered;
+        actor.SetCowering(index%3!=0);actor.SetWaiting(index%3==0);
         actor.Face(PanicOrigin,65);
+    }
+    static Vector3 OpenShelterApproach(int index,Chapter3SchoolCrowdActor actor,Vector3 target)
+    {
+        if(Chapter3PathMotor.ClearCrowdPoint(target,actor))return target;
+        Vector3 anchor=new Vector3(CivilianSafeDestination(index).x,0,target.z);
+        foreach(float offset in new[]{.8f,-.8f,1.3f,-1.3f,1.8f,-1.8f,2.4f,-2.4f})
+        {
+            Vector3 candidate=anchor+Vector3.right*offset;
+            if(Mathf.Abs(candidate.x)<20&&Chapter3PathMotor.ClearCrowdPoint(candidate,actor))return candidate;
+        }
+        return target;
     }
     static Vector3 CivilianSafeDestination(int index)
     {
-        float angle=(index*137.5f)*Mathf.Deg2Rad,radius=2.1f+(index%4)*1.05f;
-        return new Vector3(32+Mathf.Cos(angle)*radius,0,64+Mathf.Sin(angle)*radius);
+        // Uneven spacing in two rows, inside the veranda floor and clear of
+        // its posts; rear slots stay short of the classroom wall (z = 47.5).
+        return new Vector3(-15.7f+(index%10)*3.25f+(index%3-1)*.18f,0,index<10?45.65f:46.65f);
     }
+
     static Vector3 OpenCivilianDestination(int index,Chapter3SchoolCrowdActor actor,Vector3 target)
     {
         if(Chapter3PathMotor.ClearCrowdPoint(target,actor))return target;
@@ -128,7 +136,7 @@ public sealed partial class Chapter3SchoolAmbient
         for(int ring=1;ring<=4;ring++)for(int turn=0;turn<8;turn++)
         {
             Vector3 candidate=anchor+Quaternion.Euler(0,turn*45,0)*approach*(ring*.8f);
-            if(Chapter3PathMotor.ClearCrowdPoint(candidate,actor))return candidate;
+            if(candidate.z>=45.25f&&candidate.z<=46.85f&&Mathf.Abs(candidate.x)<17&&Chapter3PathMotor.ClearCrowdPoint(candidate,actor))return candidate;
         }
         return target;
     }

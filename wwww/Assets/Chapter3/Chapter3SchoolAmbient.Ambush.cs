@@ -7,10 +7,10 @@ public sealed partial class Chapter3SchoolAmbient
     float[] fallBegan;
     int[] escapeLeg;
     bool skirmishActive;
-    // Two separate civilian encounters: two teachers, and two pupils.
-    // These five participants never become extra police fighting groups.
+    // Two nearby pairs in each of two teacher groups. All four original male
+    // teachers have a real opponent; women and pupils seek cover in school.
     static readonly int[] civilianAttackers={3,7,4,5};
-    static readonly int[] civilianVictims={3,1,12,13};
+    static readonly int[] civilianVictims={3,0,6,9};
     readonly bool[] civilianEncounterDone=new bool[AmbusherCount];
     readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly RaycastHit[] civilianContactHits=new RaycastHit[32];
@@ -35,29 +35,20 @@ public sealed partial class Chapter3SchoolAmbient
 
     // Irregular, separate locations; neither ranks nor mirrored pairs.
     static readonly Vector3[] guestStarts={
-        new Vector3(-11,0,15),new Vector3(14,0,27),new Vector3(-12,0,8),new Vector3(10,0,12),
-        new Vector3(-8,0,27),new Vector3(12,0,34),new Vector3(-13,0,36),new Vector3(5.7f,0,5.8f),
-        new Vector3(8.8f,0,26),new Vector3(-15,0,24),new Vector3(-9,0,13),new Vector3(14.5f,0,17),
+        new Vector3(9,0,15),new Vector3(14,0,27),new Vector3(-12,0,8),new Vector3(13,0,16),
+        new Vector3(-8,0,27),new Vector3(12,0,34),new Vector3(8,0,31),new Vector3(5.7f,0,5.8f),
+        new Vector3(8.8f,0,26),new Vector3(12,0,31),new Vector3(-9,0,13),new Vector3(14.5f,0,17),
         new Vector3(-11,0,31),new Vector3(8.5f,0,34),new Vector3(-3,0,17),new Vector3(3.5f,0,10),
         new Vector3(-8,0,22),new Vector3(14,0,23),new Vector3(-4,0,14),new Vector3(-2.4f,0,32)};
     static readonly Vector3[] refuges={
-        new Vector3(-12.7f,0,18.5f),new Vector3(12.6f,0,30.8f),new Vector3(-13.9f,0,10.9f),new Vector3(8.6f,0,15.2f),
-        new Vector3(-7.8f,0,30.5f),new Vector3(14,0,35),new Vector3(-10,0,37.4f),new Vector3(4,0,7),
-        new Vector3(10.8f,0,27.4f),new Vector3(-13.8f,0,23.4f),new Vector3(-12,0,14.9f),new Vector3(12.8f,0,19.3f),
+        new Vector3(9,0,15),new Vector3(12.6f,0,30.8f),new Vector3(-13.9f,0,10.9f),new Vector3(13,0,16),
+        new Vector3(-7.8f,0,30.5f),new Vector3(14,0,35),new Vector3(8,0,31.5f),new Vector3(4,0,7),
+        new Vector3(10.8f,0,27.4f),new Vector3(12,0,31.5f),new Vector3(-12,0,14.9f),new Vector3(12.8f,0,19.3f),
         new Vector3(-13.6f,0,33.2f),new Vector3(6.4f,0,34.9f)};
     static readonly Vector3[] concealment={
         new Vector3(-14,0,16),new Vector3(15,0,29),new Vector3(-10,0,6),new Vector3(13,0,10),
         new Vector3(-11,0,28),new Vector3(15.5f,0,34),new Vector3(-14,0,39),new Vector3(8,0,6.2f),
         new Vector3(13,0,24),new Vector3(-14,0,21)};
-    // Each survivor crosses open ground on a different path. The final lane
-    // uses the existing rear opening, not a target beyond a solid fence.
-    static readonly Vector3[][] escapeRoutes={
-        new[]{new Vector3(-3,0,25),new Vector3(-6,0,34),new Vector3(-1,0,38),new Vector3(8,0,34),new Vector3(17,0,34),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(26,0,51)},
-        new[]{new Vector3(2,0,17),new Vector3(4,0,21),new Vector3(9,0,25),new Vector3(16,0,30),new Vector3(18,0,38),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(27,0,54)},
-        new[]{new Vector3(-7,0,29),new Vector3(-11,0,34),new Vector3(-4,0,38),new Vector3(4,0,36),new Vector3(9,0,34),new Vector3(18,0,35),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(28,0,52)},
-        new[]{new Vector3(12,0,25),new Vector3(15,0,31),new Vector3(18,0,38),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(29,0,56)},
-        new[]{new Vector3(-2,0,24),new Vector3(3,0,29),new Vector3(8,0,33),new Vector3(16,0,34),new Vector3(18,0,42),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(30,0,54)},
-        new[]{new Vector3(-5,0,34),new Vector3(-2,0,38),new Vector3(5,0,35),new Vector3(11,0,33),new Vector3(18,0,36),new Vector3(18,0,44.8f),new Vector3(24.2f,0,45.4f),new Vector3(27,0,57)}};
     static Vector3 GuestStart(int index)=>guestStarts[index];
     static Vector3 AmbusherStart(int index)=>concealment[index];
     static Vector3 HoldForward(int index)=>Quaternion.Euler(0,index==0?55:-80,0)*Vector3.forward;
@@ -82,7 +73,7 @@ public sealed partial class Chapter3SchoolAmbient
         skirmishActive=false;SkirmishPairsReady=0;
         foreach(var actor in assailants)if(actor){actor.SetStrike(0);actor.SetMeleePose(0,0);}
         if(crowd!=null)foreach(var guest in crowd)if(guest){guest.SetStrike(0);guest.SetMeleePose(0,0);guest.SetStartled(0);}
-        // Surviving guests retain their own escape/pursuit state. Only the
+        // Surviving guests retain their own school shelter state. Only the
         // original ten participants join the player's departing party.
     }
     void UpdateAmbush(float elapsed)
@@ -93,12 +84,6 @@ public sealed partial class Chapter3SchoolAmbient
             var actor=assailants[attacker];if(!actor||!skirmishActive)continue;
             if(attacker<3){ShelterNativeChild(attacker,actor);continue;}
             if(HasCivilianEncounter(attacker)&&UpdateCivilianEncounter(attacker,actor,elapsed))continue;
-            if(attacker==8&&!civilianEncounterDone[5])
-            {
-                var pupil=crowd[13];actor.SetAfraid(false);actor.SetStrike(0);actor.SetMeleePose(.4f,0);
-                civilianAssaultMotors[4].Patrol(actor,pupil.transform.position+new Vector3(2.3f,0,-1.2f),3.1f,.4f);
-                actor.Face(pupil.transform.position,180);continue;
-            }
             if(UpdatePoliceOpposition(attacker,actor))continue;
             actor.SetStrike(0);actor.SetMeleePose(0,0);
             WatchCampus(attacker,actor,concealment[attacker]);
@@ -149,7 +134,6 @@ public sealed partial class Chapter3SchoolAmbient
             crowdPhases[index]=guest.IsFallen?CrowdPhase.Fallen:CrowdPhase.Falling;
             return true;
         }
-        if(IsJapanesePursuer(index)){UpdateJapaneseDefender(index);return true;}
         if(IsStagedCivilian(index)&&skirmishActive)
         {
             // The paired encounter owns this person's physical defence and

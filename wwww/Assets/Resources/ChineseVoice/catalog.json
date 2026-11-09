@@ -10028,6 +10028,35 @@
           "voice": "zh-CN-YunyangNeural"
         }
       ]
+    },
+    {
+      "chinese": "先別露頭。等他轉身，我們再靠近。",
+      "source": "Chapter3:Chapter3Combat.Staging.cs",
+      "resource": "ChineseVoice/Audio/128513412680fd66b854_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/128513412680fd66b854_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/128513412680fd66b854_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/128513412680fd66b854_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/128513412680fd66b854_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
     }
   ],
   "deliveryVersion": "mature-four-voices-v1"

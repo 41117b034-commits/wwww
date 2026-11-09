@@ -102,14 +102,8 @@ public sealed partial class Chapter3SchoolAmbient
             actor.HoldAtNeck(null,false);actor.SetStrike(0);actor.SetMeleePose(0,0);actor.SetStartled(0);actor.SetAfraid(false);actor.SetWaiting(false);
             withdrawalRoutes[i]=BuildWithdrawalRoute(actor.transform.position,i);withdrawalLeg[i]=0;withdrawalReached[i]=false;forestOrder[i]=-1;
         }
-        // The Tado assignment admits the whistle only after actual player
-        // support defeats both teachers and both police are cleared. Any
-        // unfinished pupil staging becomes flight at that valid whistle.
-        // Existing escape routes continue; two adults start their separate
-        // pursuit. Only the original ten enter the retreat formation above.
-        for(int i=0;i<crowd.Length;i++)if(crowd[i]&&crowd[i].gameObject.activeInHierarchy&&fallBegan[i]<0)
-        {crowdPhases[i]=CrowdPhase.Fleeing;crowd[i].SetAfraid(true);crowd[i].SetStartled(0);if(i<14)escapeLeg[i]=0;}
-        BeginCivilianWithdrawal();
+        // Japanese survivors keep walking to their existing school shelters.
+        // The whistle releases only the same ten Indigenous participants.
         return true;
     }
     public void FollowIntoForest(Transform player)
@@ -185,7 +179,7 @@ public sealed partial class Chapter3SchoolAmbient
     }
     public void CancelWithdrawal(bool restorePositions=false)
     {
-        CancelReceptionClearing();CancelCivilianWithdrawal(restorePositions);
+        CancelReceptionClearing();
         if(Withdrawing&&restorePositions)
             for(int i=0;i<AmbusherCount;i++)if(assailants[i])
             {
@@ -250,7 +244,6 @@ public sealed partial class Chapter3SchoolAmbient
             actor.SetWaiting(false);
             withdrawalMotors[i].Move(actor,target,Chapter3Player.WalkSpeed);
         }
-        UpdateCivilianWithdrawal();
     }
     bool GatherBesideGate(Chapter3SchoolCrowdActor actor,Chapter3PathMotor motor,int index,bool civilian,ref bool gathering)
     {
