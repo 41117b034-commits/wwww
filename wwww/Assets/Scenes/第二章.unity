@@ -16955,27 +16955,27 @@ MonoBehaviour:
     role: 4
     chinese: "\u6211\u8DDF\u96A8\u60A8\uFF01"
     clip: {fileID: 0}
-    volumeDb: 0
+    volumeDb: 12
   - id: C2_039
     role: 4
     chinese: "\u70BA\u4E86\u7956\u9748\uFF0C\u8840\u796D\u5F69\u8679\uFF01"
     clip: {fileID: 0}
-    volumeDb: 0
+    volumeDb: 12
   - id: C2_040
     role: 7
     chinese: "\u6211\u5011\u8DDF\u96A8\u60A8\uFF01"
     clip: {fileID: 0}
-    volumeDb: 0
+    volumeDb: 12
   - id: C2_041
     role: 7
     chinese: "\u70BA\u4E86\u7956\u9748\uFF01"
     clip: {fileID: 0}
-    volumeDb: 0
+    volumeDb: 12
   - id: C2_042
     role: 7
     chinese: "\u8840\u796D\u5F69\u8679\uFF01"
     clip: {fileID: 0}
-    volumeDb: 0
+    volumeDb: 12
   - id: C2_043
     role: 3
     chinese: "\u597D\uFF01"
