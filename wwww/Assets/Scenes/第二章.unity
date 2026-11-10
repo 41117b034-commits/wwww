@@ -16979,18 +16979,18 @@ MonoBehaviour:
   - id: C2_043
     role: 3
     chinese: "\u597D\uFF01"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: 50923a71c2b887d45810a1957c1e303d, type: 3}
+    volumeDb: 12
   - id: C2_044
     role: 3
     chinese: "\u4ECA\u591C\u56DE\u53BB\u5C0D\u59BB\u5152\u597D\u4E00\u9EDE\uFF0C"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: de0b816b61e30214288c3847e276e8a1, type: 3}
+    volumeDb: 12
   - id: C2_045
     role: 3
     chinese: "\u5225\u9732\u7834\u7DBB\u3002"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: 4a826ceb0d5ee184eace68b0533a115a, type: 3}
+    volumeDb: 12
   - id: C2_046
     role: 3
     chinese: "\u5929\u4EAE\u4E4B\u5F8C\u2026\u2026\u6211\u5011\u5F69\u8679\u6A4B\u4E0A\u898B\uFF01"
