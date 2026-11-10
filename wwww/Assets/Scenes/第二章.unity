@@ -16994,13 +16994,13 @@ MonoBehaviour:
   - id: C2_046
     role: 3
     chinese: "\u5929\u4EAE\u4E4B\u5F8C\u2026\u2026\u6211\u5011\u5F69\u8679\u6A4B\u4E0A\u898B\uFF01"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: d13bff6da3f7f9c429b31573b50ebf13, type: 3}
+    volumeDb: 12
   - id: C2_047
     role: 8
     chinese: "\u83AB\u90A3\u982D\u76EE\uFF0C\u9019\u6839\u672C\u662F\u81EA\u6BBA\uFF01\u6211\u60F3\u6D3B\u4E0B\u53BB\u2026\u2026"
-    clip: {fileID: 0}
-    volumeDb: 0
+    clip: {fileID: 8300000, guid: b511283f4a132d84da82713b749e0b24, type: 3}
+    volumeDb: 12
   - id: C2_048
     role: 3
     chinese: "\u6D3B\u4E0B\u53BB\uFF1F"
