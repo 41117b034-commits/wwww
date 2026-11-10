@@ -99,6 +99,10 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public bool HasPoseGeometry=>parts.Count>0||nativeSkins.Count>0;
     public bool UsingOriginalSkin=>nativeRig;
     public Transform RightHand=>nativeRig?nativeRig.RightHand:bones[8];
+    public Transform HeldKnife=>presentationKnife;
+    Vector3 droppedKnifePoint;
+    Quaternion droppedKnifeRotation;
+    bool knifeReleased;
     public Vector3 NeckPoint=>bones[2]?bones[2].TransformPoint(0,-height*.065f,0):transform.TransformPoint(body.center.x,body.min.y+height*.805f,body.center.z);
     public bool HoldingAtNeck=>holdingAtNeck&&restrainedGuest;
     public float ModelHeight=>height;
@@ -253,6 +257,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         // Keep the existing handheld knife's world size regardless of the
         // crowd template's authored scale.
         var scale=transform.lossyScale;knife.localScale=new Vector3(1/scale.x,1/scale.y,1/scale.z);
+        if(teacherGarment)knife.gameObject.SetActive(false);
     }
     void Update()
     {
@@ -529,6 +534,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
         meleeGuard=0;meleeVariant=0;
+        knifeReleased=false;
+        if(teacherGarment&&presentationKnife)presentationKnife.gameObject.SetActive(false);
         cowering=false;cowerWeight=0;groundCalibrated=false;renderedGroundOffset=0;
         navigationReady=detouring=waitingAtObstacle=false;nextDetour=0;
         restrainedGuest=null;holdingAtNeck=false;
@@ -708,7 +715,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         }
         // Finished background casualties retain the already-verified final
         // bones/collider; no repeated vertex sampling during the forest ending.
-        if(!boneRoot||finalFallPoseReady)return;
+        if(!boneRoot||finalFallPoseReady){if(teacherGarment)PoseTeacherKnife();return;}
         for(int i=0;i<bones.Length;i++){bones[i].localRotation=Quaternion.identity;bones[i].localPosition=bindPositions[i]-(parents[i]<0?Vector3.zero:bindPositions[parents[i]]);}
         walkWeight=Mathf.MoveTowards(walkWeight,Time.time-lastMovement<.08f&&fall<=0?1:0,Time.deltaTime*7);
         float stride=Mathf.Sin(phase)*walkWeight;
@@ -755,6 +762,25 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         else if(strike>0)
         {bones[6].localRotation=Quaternion.Euler(-40-70*Mathf.Sin(strike*Mathf.PI),0,12);bones[7].localRotation=Quaternion.Euler(-30+25*Mathf.Sin(strike*Mathf.PI),0,0);}
         if(fall>0)PoseFall();else GroundSyntheticPose();
+        if(teacherGarment)PoseTeacherKnife();
+    }
+    void PoseTeacherKnife()
+    {
+        if(!presentationKnife||!RightHand)return;
+        presentationKnife.gameObject.SetActive(meleeGuard>0||fall>0);
+        if(!presentationKnife.gameObject.activeSelf)return;
+        Vector3 grip=RightHand.TransformPoint(new Vector3(-height*.004f,-height*.035f,height*.005f));
+        Vector3 direction=RightHand.TransformDirection(new Vector3(0,.25f,.97f));
+        Quaternion rotation=Quaternion.LookRotation(RightHand.right,direction);
+        if(fall<=0){knifeReleased=false;presentationKnife.SetPositionAndRotation(grip,rotation);return;}
+        if(!knifeReleased)
+        {
+            knifeReleased=true;droppedKnifePoint=transform.position+transform.right*.55f+transform.forward*.20f;
+            droppedKnifePoint.y=.06f;
+            droppedKnifeRotation=Quaternion.LookRotation(Vector3.up,transform.forward);
+        }
+        float drop=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.15f,.8f,fall));
+        presentationKnife.SetPositionAndRotation(Vector3.Lerp(grip,droppedKnifePoint,drop),Quaternion.Slerp(rotation,droppedKnifeRotation,drop));
     }
     void PoseTeacherFight()
     {
@@ -762,7 +788,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         // upper chest while the other reaches. IK retains arm segment length.
         float extension=strike>0?Mathf.Sin(strike*Mathf.PI):0;
         float brace=meleeGuard>.8f?1:0;
-        int attackingSide=meleeVariant%2;
+        int attackingSide=1; // The right hand carries the knife; the left guards.
         bones[0].localPosition+=Vector3.down*height*.025f;
         bones[1].localRotation=Quaternion.Euler(5+brace*5,extension*(attackingSide==0?-12:12),0);
         bones[2].localRotation=Quaternion.Euler(-4-brace*3,0,0);

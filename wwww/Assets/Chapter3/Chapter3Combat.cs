@@ -182,7 +182,7 @@ public sealed partial class Chapter3Combat : MonoBehaviour
         CurrentStage=Stage.Cleared;warningUntil=0;ui.Say("",null);weapons.Suspend();player.canMove=false;player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
         hud.SetActive(false);
         yield return new WaitForSeconds(2);
-        yield return Say(bawan,"前面的路通了。比胡，看看大家有沒有跟上。",lineSeconds);
+        yield return Say(bawan,"前面的路通了，跟我沿林路走。比胡，留意後方的動靜。",lineSeconds);
         yield return Say(pihu,"我在。走吧，到學校外和達多會合。",lineSeconds);
         // Face up the same road as the police encounter. Bring the leader into
         // that view, then let him lead towards the school instead of following behind.

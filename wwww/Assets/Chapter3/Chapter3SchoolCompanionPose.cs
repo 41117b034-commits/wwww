@@ -15,6 +15,8 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     Chapter2Actor actor;
     Chapter1IncidentRig rig;
     Chapter3SchoolController school;
+    Transform listener;
+    Transform Listener=>listener?listener:school&&school.player?school.player.view.transform:null;
     Chapter3InjuryPose injury;
     Chapter2SpeechFace speechFace;
     MaterialPropertyBlock faceBlock;
@@ -32,6 +34,7 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
     float gazeWeight;
 
     void Awake(){actor=GetComponent<Chapter2Actor>();school=GetComponentInParent<Chapter3SchoolController>();}
+    public void SetListener(Transform target){listener=target;}
     public void SignalForward(float seconds)
     {
         if(seconds<=0)return;
@@ -58,8 +61,8 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
 
     void Update()
     {
-        if(Sheltered&&actor&&actor.speaking&&school&&school.player)
-            actor.Face(school.player.view.transform.position);
+        if(Sheltered&&actor&&actor.speaking&&Listener)
+            actor.Face(Listener.position);
     }
 
     void LateUpdate()
@@ -145,13 +148,13 @@ public sealed class Chapter3SchoolCompanionPose : MonoBehaviour
             rig.Head.rotation=Quaternion.AngleAxis(nod*report,right)*rig.Head.rotation;
         }
         if(crouch>0)rig.Head.rotation=Quaternion.AngleAxis((Sheltered?5:10)*crouch,right)*rig.Head.rotation;
-        bool watching=Sheltered&&actor.speaking&&school&&school.player;
+        bool watching=Sheltered&&actor.speaking&&Listener;
         gazeWeight=Mathf.MoveTowards(gazeWeight,watching?1:0,Time.deltaTime*5);
-        if(gazeWeight>0&&school&&school.player)
+        if(gazeWeight>0&&Listener)
         {
             // The imported head's local Z is not its visual face direction.
             // Keep the crouch and hands, but lift the face to the listener's eyes.
-            Vector3 look=school.player.view.transform.position-rig.Head.position;
+            Vector3 look=Listener.position-rig.Head.position;
             if(look.sqrMagnitude>.01f)
             {
                 Quaternion target=Quaternion.LookRotation(look,Vector3.up)*Quaternion.Inverse(Quaternion.LookRotation(headForward,headUp));

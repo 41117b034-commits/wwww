@@ -16,6 +16,8 @@ public sealed class Chapter3Enemy : MonoBehaviour
     // Mission staging may move a guard before allowing it to aim. Existing
     // mountain and rescue encounters keep their original enabled default.
     public bool AttackEnabled=true;
+    public Chapter2Actor StagedAimTarget;
+    public float StagedAimWeight;
     public bool AlliesOnly;
     public bool HoldingFire=>!Defeated&&Time.time<holdFireUntil;
     public float SafeWindowSeconds=>!Defeated&&AttackEnabled&&!Telegraphing?Mathf.Max(0,Mathf.Max(holdFireUntil,nextAttack)-Time.time):0;
@@ -43,6 +45,14 @@ public sealed class Chapter3Enemy : MonoBehaviour
     void Start()
     {
         started=true;nextAttack=Time.time+2;if(!restorePending)Health=100;
+        var uniform=Resources.Load<Material>("Chapter3/PoliceUniform");
+        if(uniform&&actor)foreach(var skin in actor.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            var materials=skin.sharedMaterials;bool changed=false;
+            for(int i=0;i<materials.Length;i++)if(materials[i]&&materials[i].name.Contains("b2cbe21f"))
+            {materials[i]=uniform;changed=true;}
+            if(changed)skin.sharedMaterials=materials;
+        }
         Chapter3EnemyHitZone.Install(this);
         if(!GetComponent<Chapter3EnemyWoundPose>())gameObject.AddComponent<Chapter3EnemyWoundPose>();
         reportAudio=gameObject.AddComponent<AudioSource>();reportAudio.playOnAwake=false;reportAudio.spatialBlend=.85f;reportAudio.maxDistance=45;reportAudio.volume=.45f;
@@ -58,7 +68,13 @@ public sealed class Chapter3Enemy : MonoBehaviour
     {
         if(AlliesOnly&&!escortTarget){CancelAim();return;}
         if(Melee){Melee.Tick();return;}
-        if(!AttackEnabled){CancelAim();attackGranted=false;return;}
+        if(!AttackEnabled)
+        {
+            CancelAim();attackGranted=false;
+            if(!Defeated&&StagedAimTarget&&rifle)
+            {actor.Face(StagedAimTarget.transform.position);rifle.target=StagedAimTarget;rifle.aimTarget=null;rifle.aim=StagedAimWeight;rifle.lowered=0;}
+            return;
+        }
         if(HoldingFire)
         {
             CancelAim();
@@ -115,6 +131,14 @@ public sealed class Chapter3Enemy : MonoBehaviour
         foreach(var hit in Physics.SphereCastAll(transform.position+Vector3.up*.7f,.3f,direction,.7f,~0,QueryTriggerInteraction.Ignore))
             if(!hit.collider.transform.IsChildOf(transform))return true;
         return false;
+    }
+    // The authored injury uses this already-visible officer's rifle and sound.
+    // Gameplay damage remains disabled until the subsequent player decision.
+    public void FireStagedShot()
+    {
+        if(AttackEnabled||Defeated||!StagedAimTarget)return;
+        Shots++;if(rifle)rifle.Fire();
+        if(reportAudio&&combat&&combat.weapons.shotClip)reportAudio.PlayOneShot(combat.weapons.shotClip);
     }
     public void HoldFire(float seconds)
     {

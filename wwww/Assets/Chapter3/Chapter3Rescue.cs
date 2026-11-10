@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 // Authored rescue branch. Choice is retained on retry; the ending commits the
 // chapter result only after the outcome and Mona's roll call and close.
-public sealed class Chapter3Rescue : MonoBehaviour
+public sealed partial class Chapter3Rescue : MonoBehaviour
 {
     public enum Stage { Inactive, Advancing, Injury, Choice, AwaitingLift, Supporting, Leaving, Handoff, Down, Complete }
     public enum Decision { None, Rescue, Leave }
@@ -42,7 +42,6 @@ public sealed class Chapter3Rescue : MonoBehaviour
     Vector3 supportRight=Vector3.right,lastPlayerPosition;
     Collider[] pihuColliders;
     bool[] colliderEnabled;
-    AudioSource shot;
     static Vector3 P(float x,float z)=>new Vector3(x,0,z);
     static readonly Vector3[] approach={P(0,82),P(0,85),P(-3,92)};
     static readonly Vector3[] exit={P(-3,94),P(0,98),P(8,103),P(13,106)};
@@ -62,6 +61,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
         combat.weapons.Suspend();combat.hud.SetActive(false);ui.Say("",null);
         CurrentStage=Stage.Advancing;player.speed=Chapter3Player.WalkSpeed;player.canMove=player.canLook=true;
         school.GetComponentInChildren<Chapter3SchoolAmbient>()?.FollowIntoForest(player.transform);
+        PrepareAmbush(false);
         player.FocusOn(P(0,85)+Vector3.up*1.2f);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
         ui.objective.text="與巴萬、比胡、達多沿林路離開學校";
         if(!FollowGuide)FollowGuide=gameObject.AddComponent<Chapter3RouteGuide>();
@@ -70,6 +70,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
     void Update()
     {
         if(!Active||!school)return;
+        UpdateAmbush();
         if(CurrentStage==Stage.Advancing){AdvanceTogether();return;}
         if(CurrentStage==Stage.Choice)
         {
@@ -159,8 +160,10 @@ public sealed class Chapter3Rescue : MonoBehaviour
         FollowGuide.Hide();
         CurrentStage=Stage.Injury;CompanionsWaiting=false;player.canMove=false;player.canLook=true;
         ui.objective.text="比胡受傷了";ui.hint.text="";player.FocusOn(InjuryPosition+Vector3.up*.9f);
-        if(!shot){shot=gameObject.AddComponent<AudioSource>();shot.playOnAwake=false;shot.spatialBlend=0;shot.volume=.4f;}
-        if(combat.weapons.shotClip)shot.PlayOneShot(combat.weapons.shotClip);
+        if(AmbushGuard)AmbushGuard.StagedAimWeight=1;
+        yield return new WaitForSeconds(.65f);
+        if(AmbushGuard)AmbushGuard.FireStagedShot();
+        AmbushShotFired=true;ambushRevealing=true;
         SetPihuCollision(false);
         for(float t=0;t<1.35f;t+=Time.deltaTime){Pose.SetInjured(Mathf.SmoothStep(0,1,t/1.35f));yield return null;}
         Pose.SetInjured(1);
@@ -177,7 +180,8 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     void ResetCheckpoint(bool retry)
     {
-        ClearGuard();bypasses.Clear();bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();bawanIndex=tadoIndex=0;
+        if(retry){ClearGuard();PrepareAmbush(true);}
+        bypasses.Clear();bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();bawanIndex=tadoIndex=0;
         Health=100;hurtAt=-10;noticeUntil=0;LiftProgress=0;Delivered=false;
         Pose.SetSupported(0,player.transform);Pose.SetInjured(1);SetPihuCollision(false);
         school.pihu.transform.position=InjuryPosition;school.pihu.Face(InjuryPosition+Vector3.back);
@@ -186,9 +190,7 @@ public sealed class Chapter3Rescue : MonoBehaviour
             school.bawan.transform.position=P(-5,93);school.tado.transform.position=P(-.8f,94);
             player.Warp(P(-3.7f,90.5f)+Vector3.up*.06f,InjuryPosition+Vector3.up*.7f);
         }
-        var go=Instantiate(combat.enemyTemplates[0],school.transform);go.name="林路追來的警察";go.transform.position=P(1.5f,97);
-        var enemy=go.GetComponent<Chapter3Enemy>();enemy.combat=combat;enemy.advances=false;enemy.attackInterval=7;enemy.engagementRange=17;enemy.escortTarget=null;
-        battle.Enemies.Add(enemy);go.SetActive(true);
+        if(AmbushGuard){AmbushGuard.StagedAimTarget=null;AmbushGuard.AttackEnabled=true;AmbushGuard.HoldFire(2);}
         CurrentStage=Selected==Decision.Rescue?Stage.AwaitingLift:Stage.Leaving;
         battle.Menu.Hide();combat.weapons.ResetEquipment();combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;
         player.canMove=player.canLook=true;player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
@@ -381,10 +383,11 @@ public sealed class Chapter3Rescue : MonoBehaviour
     }
     public void Suspend()
     {
+        ReleaseAmbush();
         if(FollowGuide)FollowGuide.Hide();
         if(Ending)Ending.Suspend();
         StopAllCoroutines();bypasses.Clear();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
-        if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);if(shot)shot.Stop();
+        if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);
         if(school){school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;}
         if(player){player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;}
     }

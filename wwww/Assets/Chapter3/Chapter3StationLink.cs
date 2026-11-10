@@ -7,6 +7,7 @@ public sealed class Chapter3StationLink : MonoBehaviour
 {
     public static readonly Vector3 Origin=new Vector3(-22,0,-101);
     readonly List<Mesh> meshes=new List<Mesh>();
+    AnimationCurve stationSeam;
     Chapter3Flow flow;
     public void Build(Chapter3Flow owner)
     {
@@ -33,7 +34,15 @@ public sealed class Chapter3StationLink : MonoBehaviour
             // Move the existing tree, including its colliders, onto the verge.
             if(t.name=="駐在所林木 83")t.position+=new Vector3(3,0,-3);
             if(t.name=="庭院石緣"&&t.position.x>-10&&t.position.z>-101)t.gameObject.SetActive(false);
-            if(t.name=="Station mountain ground")Trim(t.GetComponent<MeshFilter>(),-93,false);
+            if(t.name=="Station mountain ground")
+            {
+                var filter=t.GetComponent<MeshFilter>();Trim(filter,-93,false);
+                var heights=new SortedDictionary<float,float>();
+                foreach(var v in filter.sharedMesh.vertices)
+                {var point=t.TransformPoint(v);if(Mathf.Abs(point.z+93)<.005f)heights[point.x]=point.y;}
+                stationSeam=new AnimationCurve();foreach(var pair in heights)stationSeam.AddKey(pair.Key,pair.Value);
+                for(int key=0;key<stationSeam.length;key++)stationSeam.SmoothTangents(key,0);
+            }
         }
         for(int i=1;i<local.Length;i++)Road(root,station.departurePath[i-1],station.departurePath[i],road,i);
         Road(root,station.departurePath[local.Length-1],flow.combat.WorldPoint(new Vector3(0,0,-8)),road,local.Length);
@@ -41,6 +50,8 @@ public sealed class Chapter3StationLink : MonoBehaviour
         {
             if(t.name=="交戰山谷地形"||t.name=="山路地面")Trim(t.GetComponent<MeshFilter>(),-93,true);
             if(t.name.StartsWith("交戰道路林木 ")&&t.position.z<-92)t.gameObject.SetActive(false);
+            else if(t.name.StartsWith("交戰道路林木 ")||t.name.StartsWith("交戰道路蕨草 "))
+            {var point=t.position;point.y=JoinedValleyHeight(point);t.position=point;}
         }
     }
     static void AlignRoadSign(Transform root,Vector3[] route)
@@ -90,12 +101,26 @@ public sealed class Chapter3StationLink : MonoBehaviour
                 if(insideA!=insideB){float t=(seam-a.p.z)/(b.p.z-a.p.z);clipped.Add((Vector3.Lerp(a.p,b.p,t),Vector2.Lerp(a.uv,b.uv,t)));}
             }
             int start=verts.Count;
-            foreach(var v in clipped){verts.Add(filter.transform.InverseTransformPoint(v.p));tex.Add(v.uv);}
+            foreach(var v in clipped)
+            {
+                var point=v.p;
+                if(keepNorth&&filter.name=="交戰山谷地形")point.y=JoinedValleyHeight(point);
+                verts.Add(filter.transform.InverseTransformPoint(point));tex.Add(v.uv);
+            }
             for(int n=1;n+1<clipped.Count;n++)triangles.AddRange(new[]{start,start+n,start+n+1});
         }
         var mesh=new Mesh{name=original.name+" continuous station join",indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};
         mesh.SetVertices(verts);mesh.SetUVs(0,tex);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();meshes.Add(mesh);
         filter.sharedMesh=mesh;var collider=filter.GetComponent<MeshCollider>();if(collider)collider.sharedMesh=mesh;
+    }
+    float JoinedValleyHeight(Vector3 point)
+    {
+        if(stationSeam==null||stationSeam.length==0||point.z>=-65)return point.y;
+        // The old north/south cut exposed the valley's 11 m western slope
+        // directly behind the 5 m station roof. Match the courtyard edge,
+        // then regain the original hillside gradually across 28 metres.
+        float blend=Mathf.SmoothStep(0,1,Mathf.InverseLerp(-93,-65,point.z));
+        return Mathf.Lerp(stationSeam.Evaluate(point.x),point.y,blend);
     }
     public void Preview()
     {

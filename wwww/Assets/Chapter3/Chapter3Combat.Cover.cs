@@ -43,10 +43,11 @@ public sealed partial class Chapter3Combat
         {
             var actor=actors[i];if(!actor)continue;
             if(!coverPoses[i])coverPoses[i]=actor.GetComponent<Chapter3SchoolCompanionPose>()??actor.gameObject.AddComponent<Chapter3SchoolCompanionPose>();
+            coverPoses[i].SetListener(player.view.transform);
             var destination=CompanionCoverPoint(i);
             bool arrived=Flat(actor.transform.position,destination)<.18f;
             if(!arrived){coverMotors[i].Move(actor,destination,2.7f);CompanionsInCover=false;}
-            else actor.Face(WorldPoint(new Vector3(0,1,12)));
+            else actor.Face(actor.speaking?player.view.transform.position:WorldPoint(new Vector3(0,1,12)));
             if(arrived)coverPoses[i].SetSheltered();else coverPoses[i].Clear();
         }
     }

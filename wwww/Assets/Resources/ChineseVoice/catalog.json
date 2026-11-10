@@ -10057,6 +10057,35 @@
           "voice": "zh-CN-YunyangNeural"
         }
       ]
+    },
+    {
+      "chinese": "前面的路通了，跟我沿林路走。比胡，留意後方的動靜。",
+      "source": "Chapter3:Chapter3Combat.cs",
+      "resource": "ChineseVoice/Audio/e411bcec15715fbf161d_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/e411bcec15715fbf161d_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/e411bcec15715fbf161d_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/e411bcec15715fbf161d_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/e411bcec15715fbf161d_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
     }
   ],
   "deliveryVersion": "mature-four-voices-v1"

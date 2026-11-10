@@ -47,6 +47,7 @@ public sealed partial class Chapter3SchoolAmbient
             person.transform.position=GuestStart(i);
             person.transform.rotation=Quaternion.Euler(0,(i*137+25)%360,0);
             person.SetFallSide(i%2==0?1:-1);
+            if(maleTeacher)AddKnife(person,GetComponentInParent<Chapter3SchoolController>(),"男教師手持刀");
             populationObjects.Add(person.gameObject);people.Add(person.transform);
 
         }
@@ -78,11 +79,12 @@ public sealed partial class Chapter3SchoolAmbient
                     string n=source.name;Color color=Color.white;
                     if(n.Contains("Linen"))color=new Color(.73f,.73f,.66f);
                     else if(n.Contains("Navy"))color=new Color(.038f,.065f,.10f);
-                    else if(n.Contains("Charcoal"))color=new Color(.075f,.082f,.087f);
+                    else if(n.Contains("Charcoal"))color=modelName=="CampusTeacher"?
+                        (n.Contains("Button")?new Color(.045f,.049f,.055f):new Color(.14f,.15f,.16f)):new Color(.075f,.082f,.087f);
                     else if(n.Contains("NeckSkin"))color=new Color(.49f,.34f,.255f);
                     else if(n.Contains("DarkHair"))color=new Color(.018f,.015f,.012f);
                     else if(n.Contains("ClothShoe"))color=new Color(.035f,.031f,.027f);
-                    else if(n.Contains("Seam"))color=new Color(.51f,.52f,.49f);
+                    else if(n.Contains("Seam"))color=modelName=="CampusTeacher"?new Color(.08f,.09f,.10f):new Color(.51f,.52f,.49f);
                     mat.SetColor("_BaseColor",color);mat.SetFloat("_Smoothness",.16f);mat.SetFloat("_Metallic",0);
                     if(n.Contains("tripo_mat"))mat.SetTexture("_BaseMap",skin);
                     else if(cloth&&!n.Contains("Skin")&&!n.Contains("Hair")&&!n.Contains("Shoe")&&!n.Contains("Button"))
@@ -180,11 +182,11 @@ public sealed partial class Chapter3SchoolAmbient
         mesh.subMeshCount=triangles.Length;for(int i=0;i<triangles.Length;i++)mesh.SetTriangles(triangles[i],i);
         return mesh;
     }
-    static void AddKnife(Chapter3SchoolCrowdActor actor,Chapter3SchoolController school)
+    static void AddKnife(Chapter3SchoolCrowdActor actor,Chapter3SchoolController school,string label="族人手持獵刀")
     {
         var donor=school&&school.flow&&school.flow.combat?school.flow.combat.weapons.knife:null;
         if(!donor||!actor.RightHand)return;
-        var root=new GameObject("族人手持獵刀").transform;root.SetParent(actor.transform,false);
+        var root=new GameObject(label).transform;root.SetParent(actor.transform,false);
         // Geometry only; no first-person controller, collider or copied actor.
         foreach(var filter in donor.GetComponentsInChildren<MeshFilter>(true))
         {
