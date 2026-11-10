@@ -16899,57 +16899,57 @@ MonoBehaviour:
   - id: C2_027
     role: 5
     chinese: "\u982D\u76EE\uFF01"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 26d10798a58ca814e84e7b3c7517eeeb, type: 3}
     volumeDb: 0
   - id: C2_028
     role: 5
     chinese: "\u6211\u5BE7\u53EF\u505A\u81EA\u7531\u7684\u9B3C\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 9064f1524ced9e74b9c9874be64c9e0f, type: 3}
     volumeDb: 0
   - id: C2_029
     role: 5
     chinese: "\u4E5F\u4E0D\u505A\u5C48\u8FB1\u7684\u4EBA\uFF01"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 9f41798234ddd23468b9d6646cfa4a53, type: 3}
     volumeDb: 0
   - id: C2_030
     role: 6
     chinese: "\u6211\u5011\u6253\u4E0D\u8D0F\u65E5\u672C\u5E1D\u570B\u7684\u2026\u2026"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: cc24886d00d05ca49a0c5057302cb90b, type: 3}
     volumeDb: 0
   - id: C2_031
     role: 3
     chinese: "\u660E\u5929\u7684\u904B\u52D5\u6703\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 15493e94e27175a45ac0a917751cfbd6, type: 3}
     volumeDb: 0
   - id: C2_032
     role: 3
     chinese: "\u65E5\u672C\u5B98\u540F\u90FD\u5728\u516C\u5B78\u6821\u3002"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 0e1b70dde3476ed46a2daa0ea7eb1623, type: 3}
     volumeDb: 0
   - id: C2_033
     role: 3
     chinese: "\u90A3\u662F\u7956\u9748\u7D66\u7684\u552F\u4E00\u6A5F\u6703\uFF01"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 7cffbfa27eec676409a61db0af36bdc7, type: 3}
     volumeDb: 0
   - id: C2_034
     role: 3
     chinese: "\u6211\u83AB\u90A3\xB7\u9B6F\u9053\u5DF2\u7D93\u6C7A\u5B9A\u8D77\u7FA9\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 0eac170e9c4a65347aa4cb686b5bb794, type: 3}
     volumeDb: 0
   - id: C2_035
     role: 3
     chinese: "\u7528\u9BAE\u8840\u6D17\u5237\u5C48\u8FB1\uFF01"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 9d817678170fb264b8bad397e3275d8e, type: 3}
     volumeDb: 0
   - id: C2_036
     role: 3
     chinese: "\u8CFD\u5FB7\u514B\u5DF4\u840A\u7684\u5B50\u5B6B\u5011\uFF0C"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 38c613ea894248c4aa5358acb0009db0, type: 3}
     volumeDb: 0
   - id: C2_037
     role: 3
     chinese: "\u4F60\u5011\uFF0C\u9858\u4E0D\u9858\u610F\u8DDF\u96A8\u6211\uFF1F"
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: bb3a51192849f0f4b9b00b7a8afb100d, type: 3}
     volumeDb: 0
   - id: C2_038
     role: 4
