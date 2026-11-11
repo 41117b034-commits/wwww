@@ -5,7 +5,7 @@ using UnityEngine;
 public sealed class Chapter3ApproachAudio : MonoBehaviour
 {
     const int SampleRate=22050, Seconds=12;
-    const float FullVolume=.24f;
+    const float FullVolume=.38f;
     Chapter3SchoolController school;
     Transform listener;
     AudioSource source;
@@ -82,7 +82,7 @@ public sealed class Chapter3ApproachAudio : MonoBehaviour
             source=go.AddComponent<AudioSource>();
             source.playOnAwake=false;source.loop=true;source.spatialBlend=1;
             source.rolloffMode=AudioRolloffMode.Linear;
-            source.minDistance=14;source.maxDistance=180;
+            source.minDistance=18;source.maxDistance=180;
             source.dopplerLevel=0;source.spread=80;source.priority=160;
             source.reverbZoneMix=.15f;
         }
@@ -103,7 +103,7 @@ public sealed class Chapter3ApproachAudio : MonoBehaviour
             low+=.025f*(noise-low);mid+=.24f*(noise-mid);
             // A soft, slowly changing diffuse bed without intelligible voices.
             float swell=.72f+.18f*Mathf.Sin(2*Mathf.PI*t/3f)+.10f*Mathf.Sin(2*Mathf.PI*t/4f);
-            float value=(low*.14f+(mid-low)*.035f)*swell;
+            float value=(low*.26f+(mid-low)*.055f)*swell;
             // Loose applause clusters: short filtered noise, not weapon reports.
             float cluster=t%4;
             for(int clap=0;clap<6;clap++)
@@ -112,7 +112,7 @@ public sealed class Chapter3ApproachAudio : MonoBehaviour
                 if(age>=0&&age<.13f)
                 {
                     float envelope=Mathf.Min(age/.008f,1)*Mathf.Exp(-age*35);
-                    value+=(noise-mid)*envelope*(.13f-clap*.008f);
+                    value+=(noise-mid)*envelope*(.19f-clap*.01f);
                 }
             }
             // Two modest referee-whistle bursts per loop, with soft edges.
@@ -121,7 +121,7 @@ public sealed class Chapter3ApproachAudio : MonoBehaviour
             {
                 float envelope=Mathf.Sin(Mathf.PI*whistle/.38f);
                 float phase=2*Mathf.PI*(2050*whistle+.6f*Mathf.Sin(2*Mathf.PI*17*whistle));
-                value+=(Mathf.Sin(phase)+.22f*Mathf.Sin(phase*2.01f))*envelope*.065f;
+                value+=(Mathf.Sin(phase)+.22f*Mathf.Sin(phase*2.01f))*envelope*.10f;
             }
             // Quiet loop seam; no discontinuity or sharp start on first hearing.
             float edge=Mathf.Clamp01(Mathf.Min(t,Seconds-t)/.08f);

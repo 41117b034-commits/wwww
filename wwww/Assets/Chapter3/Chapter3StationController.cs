@@ -322,7 +322,7 @@ public sealed class Chapter3StationController : MonoBehaviour
     }
     bool Walkable(Vector3 p)
     {
-        bool departing=CurrentStage==Stage.Departure||CurrentStage==Stage.SchoolHandoff;
+        bool departing=CurrentStage==Stage.Departure||CurrentStage==Stage.SchoolHandoff||(flow&&flow.Region=="Combat");
         return roadBoundary.Contains(p,player.GetComponent<CharacterController>().radius+.04f,departing);
     }
     static float Flat(Vector3 a,Vector3 b)=>Vector3.ProjectOnPlane(a-b,Vector3.up).magnitude;

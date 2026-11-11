@@ -123,7 +123,7 @@ public sealed partial class Chapter3SchoolBattle
         {
             MoveRoute(school.tado,guideMotor,activeRoute,ref guideIndex,true);
             ui.objective.text = Step == 0 ? "支援前場與警察交戰的族人" : "趕到西側，支援另一組交戰族人";
-            ui.hint.text = "支援交戰族人，擊倒兩名警察與四名交戰男教師 · " + combat.weapons.Controls;
+            ui.hint.text = "支援交戰族人，擊倒兩名警察與兩名交戰男教師 · " + combat.weapons.Controls;
             combat.combatText.text = "校內支援 · 警察  "+CampusDefeatedCount+" / "+AssaultCombatStages+
                 " · 教師支援  "+(ambient?ambient.TeacherSupportDefeatedCount:0)+" / "+Chapter3SchoolAmbient.RequiredTeacherSupportCount;
             return;
@@ -132,7 +132,7 @@ public sealed partial class Chapter3SchoolBattle
         if(!RetreatCalled&&TeacherSupportPending)
         {
             ui.objective.text="支援會場裡仍在交戰的族人";
-            ui.hint.text="擊倒與族人交戰的四名男教師後，再吹哨集合 · "+combat.weapons.Controls;
+            ui.hint.text="擊倒與族人交戰的兩名男教師後，再吹哨集合 · "+combat.weapons.Controls;
             combat.combatText.text="警察已清除 · 教師支援  "+ambient.TeacherSupportDefeatedCount+" / "+Chapter3SchoolAmbient.RequiredTeacherSupportCount;
             school.tado.Face(ambient.PendingTeacherSupportPosition);
             if(player.ActionPressed||Time.time>=nextAssaultCall)

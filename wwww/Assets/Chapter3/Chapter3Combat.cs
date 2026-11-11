@@ -41,14 +41,14 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     public Vector3 WorldPoint(Vector3 point)=>point+transform.position;
     public void Begin()
     {
-        FitRockColliders();
+        PrepareScenery();
         SchoolEncounter=null;StopAllCoroutines();Retries=0;ResetCheckpoint();CurrentStage=Stage.Intro;
         player.canMove=player.canLook=true;weapons.gameObject.SetActive(true);
         StartCoroutine(Introduction());
     }
     public void BeginFromStation(Vector3 leader,Vector3 rear,Vector3 leaderFacing,Vector3 rearFacing)
     {
-        FitRockColliders();SchoolEncounter=null;StopAllCoroutines();Retries=0;
+        PrepareScenery();SchoolEncounter=null;StopAllCoroutines();Retries=0;
         ResetCheckpoint(false);
         bawan.transform.position=leader;pihu.transform.position=rear;
         bawan.Face(leader+leaderFacing);pihu.Face(rear+rearFacing);
@@ -257,10 +257,9 @@ public sealed partial class Chapter3Combat : MonoBehaviour
     public Vector3 Constrain(Vector3 current,Vector3 desired)
     {
         if(flow&&flow.Approach&&flow.Approach.Active)return flow.Approach.Constrain(current,desired);
-        if(flow&&flow.StationLink&&current.z<WorldPoint(new Vector3(0,0,-12)).z)
+        if(flow&&flow.StationLink&&desired.z<WorldPoint(new Vector3(0,0,-9)).z)
         {
-            if(desired.z<WorldPoint(new Vector3(0,0,-12)).z)return flow.station.Constrain(current,desired);
-            return desired;
+            return flow.station.Constrain(current,desired);
         }
         Vector3 local=desired-transform.position;
         local.x=Mathf.Clamp(local.x,-7,7);local.z=Mathf.Clamp(local.z,-12,30);return local+transform.position;

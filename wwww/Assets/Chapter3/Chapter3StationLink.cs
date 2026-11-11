@@ -124,7 +124,7 @@ public sealed class Chapter3StationLink : MonoBehaviour
     }
     public void Preview()
     {
-        flow.combatRegion.SetActive(true);flow.combat.Suspend();
+        flow.combatRegion.SetActive(true);flow.combat.PrepareScenery();flow.combat.Suspend();
         flow.combat.bawan.gameObject.SetActive(false);flow.combat.pihu.gameObject.SetActive(false);
         flow.Approach.Prepare();
         foreach(var light in flow.combatRegion.GetComponentsInChildren<Light>(true))light.enabled=false;

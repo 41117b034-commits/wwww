@@ -11,7 +11,7 @@ public sealed partial class Chapter3Combat
 
     // The old rectangular collider included empty space above the sloping
     // stone. Use the visible static rock mesh for bullets and physical cover.
-    void FitRockColliders()
+    public void PrepareScenery()
     {
         PrepareEncounterCover();PrepareRightTreeCover();
         foreach(var root in GetComponentsInChildren<Transform>(true))

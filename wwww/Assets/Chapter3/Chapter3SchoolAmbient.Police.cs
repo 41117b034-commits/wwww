@@ -12,7 +12,7 @@ public sealed partial class Chapter3SchoolAmbient
     // separate civilian encounters and never switch back to police targets.
     static readonly int[][] fightingGroups={new[]{6},new[]{9}};
     public int PoliceFightingGroupCount=>fightingGroups.Length;
-    public int CivilianFightingGroupCount=>2;
+    public int CivilianFightingGroupCount=>civilianVictims.Length;
     public int ActiveCampusFightingGroupCount=>PoliceFightingGroupCount+CivilianFightingGroupCount;
     public bool AmbusherFightsPolice(int index)=>index>=0&&index<AmbusherCount&&policeAssigned[index];
     Chapter3Enemy[] groupPolice;

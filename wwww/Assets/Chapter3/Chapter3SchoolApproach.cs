@@ -75,7 +75,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         leadFacing=LeadActor.facing;rearFacing=RearActor.facing;
         if(LeadActor.Rig)LeadActor.Rig.smoothLocomotion=true;
         if(RearActor.Rig)RearActor.Rig.smoothLocomotion=true;
-        Say(LeadActor,"前面的路通了，跟我沿林路走。比胡，照看後面的人。",4.5f);
+        Say(LeadActor,"前面的路通了，跟我沿林路走。比胡，留意後方的動靜。",4.5f);
         flow.ui.objective.text="跟隨巴萬穿過林路，前往學校";
         audioCue.Begin(flow.player.view.transform);
         FollowGuide.Show(flow.player.transform.position,new[]{rally},flow.player.transform,LeadActor.transform);
@@ -172,7 +172,7 @@ public sealed class Chapter3SchoolApproach : MonoBehaviour
         float hearing=Mathf.InverseLerp(-44,-28,player.transform.position.z);
         // Establish the sports cue while the field is still behind the bend;
         // starting a barely audible source is not enough to lead the player.
-        audioCue.SetProgress(Mathf.InverseLerp(-44,-35,player.transform.position.z));
+        audioCue.SetProgress(Mathf.InverseLerp(-58,-32,player.transform.position.z));
         if(hearing>.12f&&!heardLine)
         {
             heardLine=true;

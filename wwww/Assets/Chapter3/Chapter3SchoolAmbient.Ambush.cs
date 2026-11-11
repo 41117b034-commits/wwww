@@ -7,17 +7,16 @@ public sealed partial class Chapter3SchoolAmbient
     float[] fallBegan;
     int[] escapeLeg;
     bool skirmishActive;
-    // Two nearby pairs in each of two teacher groups. All four original male
-    // teachers have a real opponent; women and pupils seek cover in school.
-    static readonly int[] civilianAttackers={3,7,4,5};
-    static readonly int[] civilianVictims={3,0,6,9};
+    // One teacher per encounter. The other original teachers seek shelter.
+    static readonly int[] civilianAttackers={3,4};
+    static readonly int[] civilianVictims={3,6};
     readonly bool[] civilianEncounterDone=new bool[AmbusherCount];
-    readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor(),new Chapter3PathMotor()};
+    readonly Chapter3PathMotor[] civilianAssaultMotors={new Chapter3PathMotor(),new Chapter3PathMotor()};
     readonly RaycastHit[] civilianContactHits=new RaycastHit[32];
     public int StagedCivilianFalls {get;private set;}
-    readonly float[] civilianContactDistance=new float[4],civilianContactElapsed=new float[4];
+    readonly float[] civilianContactDistance=new float[RequiredTeacherSupportCount],civilianContactElapsed=new float[RequiredTeacherSupportCount];
     public int CivilianEncounterCount=>civilianVictims.Length;
-    public bool CivilianEncounterComplete=>civilianEncounterDone[3]&&civilianEncounterDone[7]&&civilianEncounterDone[4]&&civilianEncounterDone[5];
+    public bool CivilianEncounterComplete=>civilianEncounterDone[3]&&civilianEncounterDone[4];
     public float CivilianContactDistance(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianContactDistance[encounter]:-1;
     public float CivilianContactElapsed(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianContactElapsed[encounter]:-1;
     public int CivilianEncounterVictim(int encounter)=>encounter>=0&&encounter<civilianVictims.Length?civilianVictims[encounter]:-1;

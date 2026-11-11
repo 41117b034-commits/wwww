@@ -29,10 +29,17 @@ public sealed class Chapter3StationRoadBoundary
         var courtyard=region.InverseTransformPoint(point);
         if(courtyard.x>=-10&&courtyard.x<=10&&courtyard.z>=-24&&courtyard.z<=2.7f)return true;
         if(!allowRoad)return false;
+        // A broad shoulder joins the narrow station road to the valley.
+        // Keep this footprint on both sides of the story handoff.
+        if(point.z>=-94&&point.z<=-83)
+        {
+            float width=Mathf.Lerp(2.7f,7.2f,Mathf.SmoothStep(0,1,Mathf.InverseLerp(-94,-86,point.z)));
+            if(Mathf.Abs(point.x)<=width)return true;
+        }
         foreach(var box in roads)
         {
             Vector3 local=box.transform.InverseTransformPoint(point)-box.center;
-            if(Mathf.Abs(local.x)<=box.size.x*.5f&&Mathf.Abs(local.z)<=box.size.z*.5f)return true;
+            if(Mathf.Abs(local.x)<=box.size.x*.5f+.35f/box.transform.lossyScale.x&&Mathf.Abs(local.z)<=box.size.z*.5f+.35f/box.transform.lossyScale.z)return true;
         }
         return false;
     }

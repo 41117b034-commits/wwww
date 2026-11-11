@@ -1,16 +1,16 @@
 using UnityEngine;
 
-// The four original male teachers form two groups; every one has a native
-// opponent. Only these combatants accept player damage, never the pupils.
+// Two male teachers each face one native opponent. Other teachers shelter.
+// Only the two combatants accept player damage, never the pupils.
 public sealed partial class Chapter3SchoolAmbient
 {
-    public const int RequiredTeacherSupportCount=4;
-    static readonly int[] supportTeacherSlots={3,0,6,9};
-    readonly int[] teacherHealth={100,100,100,100},teacherPlayerHits=new int[4];
-    readonly float[] teacherHitUntil=new float[4];
-    readonly float[] duelBegan={-1,-1,-1,-1};
-    readonly int[] duelContactCycle={-1,-1,-1,-1},duelResponseCycle={-1,-1,-1,-1};
-    readonly int[] duelContacts=new int[4],duelResponses=new int[4];
+    public const int RequiredTeacherSupportCount=2;
+    static readonly int[] supportTeacherSlots={3,6};
+    readonly int[] teacherHealth={100,100},teacherPlayerHits=new int[RequiredTeacherSupportCount];
+    readonly float[] teacherHitUntil=new float[RequiredTeacherSupportCount];
+    readonly float[] duelBegan={-1,-1};
+    readonly int[] duelContactCycle={-1,-1},duelResponseCycle={-1,-1};
+    readonly int[] duelContacts=new int[RequiredTeacherSupportCount],duelResponses=new int[RequiredTeacherSupportCount];
     static readonly float[] approachAngles={0,45,-45,90,-90,135,-135,180};
     static Vector3 OpenDuelApproach(Chapter3SchoolCrowdActor actor,Chapter3SchoolCrowdActor opponent,Vector3 away,float reach)
     {
@@ -25,9 +25,9 @@ public sealed partial class Chapter3SchoolAmbient
     public Chapter3SchoolCrowdActor SupportTeacher(int index)=>index>=0&&index<RequiredTeacherSupportCount&&crowd!=null?crowd[supportTeacherSlots[index]]:null;
     public int SupportTeacherHealth(int index)=>index>=0&&index<RequiredTeacherSupportCount?teacherHealth[index]:0;
     public int SupportTeacherPlayerHits(int index)=>index>=0&&index<RequiredTeacherSupportCount?teacherPlayerHits[index]:0;
-    public int CivilianDuelContacts(int index)=>index>=0&&index<4?duelContacts[index]:0;
-    public int CivilianDuelResponses(int index)=>index>=0&&index<4?duelResponses[index]:0;
-    public bool CivilianDuelStarted(int index)=>index>=0&&index<4&&duelBegan[index]>=0;
+    public int CivilianDuelContacts(int index)=>index>=0&&index<RequiredTeacherSupportCount?duelContacts[index]:0;
+    public int CivilianDuelResponses(int index)=>index>=0&&index<RequiredTeacherSupportCount?duelResponses[index]:0;
+    public bool CivilianDuelStarted(int index)=>index>=0&&index<RequiredTeacherSupportCount&&duelBegan[index]>=0;
     public int TeacherSupportDefeatedCount
     {get{int count=0;for(int i=0;i<RequiredTeacherSupportCount;i++)if(teacherHealth[i]<=0&&teacherPlayerHits[i]>0&&SupportTeacher(i)&&SupportTeacher(i).IsFallen)count++;return count;}}
     public bool TeacherSupportComplete=>TeacherSupportDefeatedCount==RequiredTeacherSupportCount;
@@ -59,7 +59,7 @@ public sealed partial class Chapter3SchoolAmbient
     void ResetTeacherCombat()
     {
         for(int i=0;i<RequiredTeacherSupportCount;i++){teacherHealth[i]=100;teacherPlayerHits[i]=0;teacherHitUntil[i]=0;}
-        for(int i=0;i<4;i++){duelBegan[i]=-1;duelContactCycle[i]=duelResponseCycle[i]=-1;duelContacts[i]=duelResponses[i]=0;}
+        for(int i=0;i<RequiredTeacherSupportCount;i++){duelBegan[i]=-1;duelContactCycle[i]=duelResponseCycle[i]=-1;duelContacts[i]=duelResponses[i]=0;}
     }
     bool UpdateCivilianDuel(int encounter,Chapter3SchoolCrowdActor actor,Chapter3SchoolCrowdActor guest,float elapsed)
     {
@@ -100,7 +100,7 @@ public sealed partial class Chapter3SchoolAmbient
             duelContactCycle[encounter]=cycle;duelContacts[encounter]++;
             civilianContactDistance[encounter]=distance;civilianContactElapsed[encounter]=elapsed;
             // Repeated visible contact does not finish the player's support
-            // objective. All four male teachers need actual weapon hits.
+            // objective. Both male teachers need actual player weapon hits.
         }
         bool defendedStep=nativeSwing&&phase>=.48f&&Horizontal(guest.transform.position,refuges[index])>.12f;
         bool counterShove=counter&&!flinching&&phase>=1.65f;
