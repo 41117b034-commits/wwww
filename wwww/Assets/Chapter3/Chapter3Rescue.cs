@@ -39,7 +39,6 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
     int bawanIndex,pihuIndex,tadoIndex;
     bool forestPartyReady;
     float hurtAt=-10,noticeUntil;
-    Vector3 supportRight=Vector3.right,lastPlayerPosition;
     Collider[] pihuColliders;
     bool[] colliderEnabled;
     static Vector3 P(float x,float z)=>new Vector3(x,0,z);
@@ -104,23 +103,23 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
             if(!Supporting)
             {
                 player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
-                ui.objective.text="救援比胡 · 靠近並扶起他";
-                ui.hint.text=Flat(player.transform.position,school.pihu.transform.position)<.65f?"退後半步，站到比胡身旁再按住 E 扶起。":near?"按住 E 扶起比胡 · 放開會中止 · "+combat.weapons.Controls:"靠近比胡 · 先處理前方警察，再扶他離開";
+                ui.objective.text="救援比胡 · 靠近並背起他";
+                ui.hint.text=Flat(player.transform.position,school.pihu.transform.position)<.65f?"退後半步，站到比胡身旁再按住 E 背起。":near?"按住 E 背起比胡 · 放開會中止 · "+combat.weapons.Controls:"靠近比胡 · 先處理掩體後的警察，再背他離開";
             }
         }
         else if(Supporting)
         {
-            UpdateSupport();
-            if(player.ActionPressed)PutDown();
-            ui.objective.text="扶著比胡前往林間接應處";
-            ui.hint.text="WASD 扶行 · 按住右鍵環視 · E 放下比胡後可使用武器";
+            if(!CarryTransition)
+            {UpdateSupport();if(player.ActionPressed)PutDown();}
+            ui.objective.text="背著比胡前往林間接應處";
+            ui.hint.text=CarryTransition?"扶穩比胡，完成背起或放下的動作……":"WASD 背負移動 · 按住右鍵環視 · E 放下比胡後可使用武器";
         }
         else
         {player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;ui.objective.text="跟上巴萬，前往林間接應處";ui.hint.text="比胡留在林路轉折處 · "+combat.weapons.Controls;}
         UpdateHud();
         bool playerArrived=Flat(player.transform.position,ReceptionPosition)<2.6f;
         bool pihuArrived=Selected==Decision.Leave||(Supporting&&Flat(school.pihu.transform.position,ReceptionPosition)<3.5f);
-        if(playerArrived&&pihuArrived&&tadoIndex>=exit.Length&&Flat(school.bawan.transform.position,ReceptionPosition)<5)
+        if(!CarryTransition&&playerArrived&&pihuArrived&&tadoIndex>=exit.Length&&Flat(school.bawan.transform.position,ReceptionPosition)<5)
             StartCoroutine(Handoff());
     }
     void AdvanceTogether()
@@ -168,7 +167,7 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         for(float t=0;t<1.35f;t+=Time.deltaTime){Pose.SetInjured(Mathf.SmoothStep(0,1,t/1.35f));yield return null;}
         Pose.SetInjured(1);
         yield return Say(school.pihu,"啊……我的腿！我走不動了……",3.6f);
-        yield return Say(school.bawan,"比胡！前面還有警察。你扶他，我替你看著路！",4.5f);
+        yield return Say(school.bawan,"比胡！前面還有警察。你背他，我替你看著路！",4.5f);
         yield return Say(school.tado,"我先到前面的接應棚。把他帶過來！",3.5f);
         CurrentStage=Stage.Choice;ui.objective.text="決定是否救援比胡";ui.hint.text="選擇 1／2，或點選按鈕";
         choicePanel.SetActive(true);Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
@@ -183,6 +182,7 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         if(retry){ClearGuard();PrepareAmbush(true);}
         bypasses.Clear();bawanMotor.Reset();pihuMotor.Reset();tadoMotor.Reset();bawanIndex=tadoIndex=0;
         Health=100;hurtAt=-10;noticeUntil=0;LiftProgress=0;Delivered=false;
+        CarryTransition=false;Pose.SetCarried(0,player.transform,Vector3.forward);
         Pose.SetSupported(0,player.transform);Pose.SetInjured(1);SetPihuCollision(false);
         school.pihu.transform.position=InjuryPosition;school.pihu.Face(InjuryPosition+Vector3.back);
         if(retry)
@@ -195,7 +195,7 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         battle.Menu.Hide();combat.weapons.ResetEquipment();combat.hud.SetActive(true);combat.downPanel.SetActive(false);combat.hurtOverlay.color=Color.clear;
         player.canMove=player.canLook=true;player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;
         ui.Say("",null);ui.fade.color=Color.clear;Cursor.lockState=CursorLockMode.Locked;Cursor.visible=false;
-        if(Selected==Decision.Rescue)Notice(school.bawan.DisplayName,"扶住他，別急。我跟著你們。",3.5f);
+        if(Selected==Decision.Rescue)Notice(school.bawan.DisplayName,"把比胡背穩，沿著林路慢慢走。我跟著你們。",5.5f);
         else Notice(school.bawan.DisplayName,"……跟上。別再有人落在後面。",3.5f);
         if(Selected==Decision.Leave)FollowGuide.Show(player.transform.position,exit,player.transform,school.bawan.transform);
     }
@@ -206,35 +206,30 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         if(!held||delta<=0||distance>2||distance<.65f||combat.weapons.Reloading||Time.time<hurtAt+.5f)
         {LiftProgress=0;Pose.SetSupported(0,player.transform);return false;}
         LiftProgress=Mathf.Clamp01(LiftProgress+delta/2);
-        Pose.SetSupported(LiftProgress,player.transform);
         if(LiftProgress<1)return false;
+        carryForward=Vector3.ProjectOnPlane(player.transform.forward,Vector3.up).normalized;
+        if(carryForward.sqrMagnitude<.1f)carryForward=Vector3.forward;
+        Vector3 carryTarget=CarryPosition(player.transform.position,carryForward);
+        if(!Chapter3PathMotor.Clear(school.pihu.transform.position,carryTarget))
+        {LiftProgress=0;ui.hint.text="身後空間不足，稍微移到路中央再背起比胡。";return false;}
         CurrentStage=Stage.Supporting;combat.weapons.Suspend();player.view.fieldOfView=60;player.speed=1.15f;
         FollowGuide.Show(player.transform.position,exit,player.transform,school.tado.transform);
-        supportRight=Vector3.ProjectOnPlane(school.pihu.transform.position-player.transform.position,Vector3.up).normalized;
-        if(supportRight.sqrMagnitude<.1f)supportRight=Vector3.right;
-        lastPlayerPosition=player.transform.position;SetPihuCollision(false);ui.Say("",null);noticeUntil=0;
+        SetPihuCollision(false);ui.Say("",null);noticeUntil=0;
+        StartCoroutine(LiftOntoBack(carryTarget));
         return true;
     }
     void UpdateSupport()
     {
-        Vector3 delta=Vector3.ProjectOnPlane(player.transform.position-lastPlayerPosition,Vector3.up);
-        if(delta.magnitude>.001f)
-        {
-            Vector3 nextRight=Vector3.Cross(Vector3.up,delta.normalized);
-            // Keep the supported side stable when the player backs up.
-            if(Vector3.Dot(nextRight,supportRight)<0)nextRight=-nextRight;
-            supportRight=Vector3.RotateTowards(supportRight,nextRight,Time.deltaTime*1.4f,0);
-        }
-        Vector3 target=player.transform.position+supportRight*.85f;target.y=0;
-        if(Chapter3PathMotor.Clear(school.pihu.transform.position,target))pihuMotor.Move(school.pihu,target,1.65f);
-        Pose.SetSupported(1,player.transform);player.speed=1.15f;lastPlayerPosition=player.transform.position;
+        Vector3 nextForward=Vector3.RotateTowards(carryForward,Vector3.ProjectOnPlane(player.transform.forward,Vector3.up).normalized,Time.deltaTime*2.8f,0);
+        Vector3 target=CarryPosition(player.transform.position,nextForward);
+        if(Chapter3PathMotor.Clear(school.pihu.transform.position,target))carryForward=nextForward;
+        school.pihu.transform.position=CarryPosition(player.transform.position,carryForward);
+        Pose.SetCarried(1,player.transform,carryForward);player.speed=1.15f;
     }
     public bool PutDown()
     {
-        if(!Supporting)return false;
-        CurrentStage=Stage.AwaitingLift;LiftProgress=0;Pose.SetSupported(0,player.transform);combat.weapons.gameObject.SetActive(true);player.speed=Chapter3Player.WalkSpeed;
-        FollowGuide.Hide();
-        Notice(school.pihu.DisplayName,"我在這裡等你……",2.5f);return true;
+        if(!Supporting||CarryTransition||!TryPutDownPosition(out var target))return false;
+        StartCoroutine(PutDownCarried(target));return true;
     }
     public void Damage(int amount,Vector3 source)
     {
@@ -242,11 +237,12 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         Health=Mathf.Max(0,Health-amount);hurtAt=Time.time;
         if(CurrentStage==Stage.AwaitingLift){LiftProgress=0;Pose.SetSupported(0,player.transform);}
         if(Health>0)return;
+        StopAllCoroutines();CarryTransition=false;
         CurrentStage=Stage.Down;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
         FollowGuide.Hide();
         player.canMove=player.canLook=false;player.view.fieldOfView=60;ui.Say("",null);ui.hint.text="R 從林路檢查點重試";
         Pose.SetSupported(0,player.transform);
-        battle.Menu.ShowResult("你受傷倒下了",Selected==Decision.Rescue?"回到比胡受傷處。\n救援選擇與攜帶的武器會保留。\n先處理警察，再扶比胡走向接應處。":"回到林路檢查點。\n留下比胡的選擇與攜帶的武器會保留。",true);
+        battle.Menu.ShowResult("你受傷倒下了",Selected==Decision.Rescue?"回到比胡受傷處。\n救援選擇與攜帶的武器會保留。\n先處理警察，再背比胡走向接應處。":"回到林路檢查點。\n留下比胡的選擇與攜帶的武器會保留。",true);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
     }
     public bool Retry()
@@ -266,10 +262,12 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
             float until=Time.time+6;
             while(Flat(school.tado.transform.position,target)>.3f&&Time.time<until){tadoMotor.Move(school.tado,target,2);yield return null;}
             school.tado.Face(school.pihu.transform.position);
-            player.FocusOn(school.pihu.transform.position+Vector3.up*.9f);
+            player.FocusOn(school.tado.transform.position+Vector3.up*1.2f);
             yield return Say(school.tado,"到了，我接住他。你先喘口氣。",3.8f);
-            for(float t=0;t<1.2f;t+=Time.deltaTime){Pose.SetSupported(1-Mathf.SmoothStep(0,1,t/1.2f),player.transform);yield return null;}
-            Pose.SetSupported(0,player.transform);Delivered=true;
+            Vector3 seat;while(!TryPutDownPosition(out seat))yield return null;
+            yield return TransferCarry(seat,1,0,1.2f);
+            Pose.SetCarried(0,player.transform,carryForward);Delivered=true;
+            player.FocusOn(school.pihu.transform.position+Vector3.up*.9f);
             yield return Say(school.pihu,"謝謝……我還撐得住。",3.5f);
         }
         else
@@ -286,8 +284,8 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
     void UpdateHud()
     {
         combat.healthText.text="生命值  "+Health+" / 100";
-        var w=combat.weapons;combat.ammoText.text=Supporting?"正在扶行 · 武器收起":w.Selected==Chapter3Weapons.Weapon.Knife?"獵刀":"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve;
-        combat.combatText.text=Supporting?"比胡靠著你移動\n前往接應棚 · E 可放下":CurrentStage==Stage.AwaitingLift?"扶起比胡  "+Mathf.RoundToInt(LiftProgress*100)+"%":"沿林路前進，跟同伴保持距離";
+        var w=combat.weapons;combat.ammoText.text=Supporting?"正在背負比胡 · 武器收起":w.Selected==Chapter3Weapons.Weapon.Knife?"獵刀":"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve;
+        combat.combatText.text=Supporting?"比胡在你背上\n前往接應棚 · E 可放下":CurrentStage==Stage.AwaitingLift?"背起比胡  "+Mathf.RoundToInt(LiftProgress*100)+"%":"沿林路前進，跟同伴保持距離";
         if(!Supporting)
         {
             if(w.Reloading)combat.combatText.text+="\n單發裝填  "+Mathf.CeilToInt(w.ReloadProgress*100)+"%";
@@ -364,8 +362,8 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         if(distance>width*width)desired=closest+Vector3.ClampMagnitude(desired-closest,width);
         if(Supporting)
         {
-            var pihuTarget=desired+supportRight*.85f;pihuTarget.y=0;
-            if(!Chapter3PathMotor.Clear(school.pihu.transform.position,pihuTarget)||Flat(pihuTarget,school.pihu.transform.position)>1.65f)
+            var pihuTarget=CarryPosition(desired,carryForward);
+            if(!Chapter3PathMotor.Clear(school.pihu.transform.position,pihuTarget))
             {desired.x=current.x;desired.z=current.z;}
         }
         return desired;
@@ -387,6 +385,7 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         if(FollowGuide)FollowGuide.Hide();
         if(Ending)Ending.Suspend();
         StopAllCoroutines();bypasses.Clear();CurrentStage=Stage.Inactive;Selected=Decision.None;Delivered=false;LiftProgress=0;CompanionsWaiting=false;
+        CarryTransition=false;carryForward=Vector3.forward;
         if(Pose)Pose.ResetPose();SetPihuCollision(true);if(choicePanel)choicePanel.SetActive(false);
         if(school){school.bawan.speaking=school.pihu.speaking=school.tado.speaking=false;}
         if(player){player.speed=Chapter3Player.WalkSpeed;player.view.fieldOfView=60;}
@@ -398,7 +397,7 @@ public sealed partial class Chapter3Rescue : MonoBehaviour
         Label(panel,"比胡受傷，無法繼續行走",32,new Vector2(.05f,.76f),new Vector2(.95f,.97f));
         ChoiceRescue=Button(panel,"1  救援比胡",new Vector2(.05f,.46f),new Vector2(.48f,.69f));
         ChoiceLeave=Button(panel,"2  留下比胡，繼續前進",new Vector2(.52f,.46f),new Vector2(.95f,.69f));
-        Label(panel,"靠近後按住 E 扶起，帶他到接應處。\n若途中倒下，重試仍保留救援選擇。",23,new Vector2(.055f,.10f),new Vector2(.475f,.42f));
+        Label(panel,"靠近後按住 E 背起，帶他到接應處。\n若途中倒下，重試仍保留救援選擇。",23,new Vector2(.055f,.10f),new Vector2(.475f,.42f));
         Label(panel,"讓比胡留在受傷處，\n跟巴萬走向接應棚。",23,new Vector2(.535f,.10f),new Vector2(.945f,.42f));
         ChoiceRescue.onClick.AddListener(()=>Choose(Decision.Rescue));ChoiceLeave.onClick.AddListener(()=>Choose(Decision.Leave));
     }

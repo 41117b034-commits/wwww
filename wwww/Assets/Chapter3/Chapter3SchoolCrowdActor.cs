@@ -522,6 +522,8 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
         foreach(var skin in nativeSkins)if(skin)skin.enabled=value;
         if(nativeRig){nativeRig.enabled=value;nativeRig.walking=false;nativeRig.strike=false;nativePrevious=transform.position;}
     }
+    float applauseWeight;
+    public void SetApplause(float weight){applauseWeight=Mathf.Clamp01(weight);}
     public void SetAfraid(bool value){afraid=value;}
     public void SetStartled(float weight){startle=Mathf.Clamp01(weight);}
     public void SetWaiting(bool value){waiting=value;}
@@ -533,7 +535,7 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
     public void ResetPose()
     {
         phase=walkWeight=fall=strike=startle=0;lastMovement=-100;afraid=waiting=finalFallPoseReady=false;SetAnimated(false);
-        meleeGuard=0;meleeVariant=0;
+        meleeGuard=0;meleeVariant=0;applauseWeight=0;
         knifeReleased=false;
         if(teacherGarment&&presentationKnife)presentationKnife.gameObject.SetActive(false);
         cowering=false;cowerWeight=0;groundCalibrated=false;renderedGroundOffset=0;
@@ -743,6 +745,19 @@ public sealed class Chapter3SchoolCrowdActor : MonoBehaviour
             // overhead wave that twists wide sleeves through the head.
             bones[6].localRotation=Quaternion.Euler(-28,0,4);
             bones[7].localRotation=Quaternion.Euler(-36,0,0);
+        }
+        if(applauseWeight>0&&fall<=0)
+        {
+            float open=.5f+.5f*Mathf.Sin(Time.time*8.5f+transform.GetSiblingIndex()*1.4f);
+            for(int side=0;side<2;side++)
+            {
+                int arm=3+side*3;float sign=side==0?-1:1;
+                Vector3 forward=transform.forward,right=transform.right;
+                Vector3 target=transform.position+Vector3.up*height*.69f+forward*height*.23f+right*sign*height*(.035f+.065f*open);
+                Vector3 forearm=bones[arm+2].position-bones[arm+1].position;Quaternion wrist=bones[arm+2].rotation;
+                Chapter1IncidentRig.Solve(bones[arm],bones[arm+1],bones[arm+2],Vector3.Lerp(bones[arm+2].position,target,applauseWeight),right*sign-forward*.2f);
+                bones[arm+2].rotation=Quaternion.FromToRotation(forearm,bones[arm+2].position-bones[arm+1].position)*wrist;
+            }
         }
         if(cowerWeight>0)PoseShelter(bones,false);
         if(meleeGuard>0)

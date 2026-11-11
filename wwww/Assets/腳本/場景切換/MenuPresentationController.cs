@@ -974,7 +974,38 @@ public sealed class MenuPresentationController : MonoBehaviour
         }
 
         CenterCanvasVertically(canvas, true);
+        ConfigureChapterBackButton(canvas, chapterLabels[0]);
         Canvas.ForceUpdateCanvases();
+    }
+
+    private static void ConfigureChapterBackButton(Canvas canvas, TextMeshProUGUI reference)
+    {
+        Transform existing=canvas.transform.Find("Chapter Selection Back");
+        GameObject go=existing?existing.gameObject:new GameObject("Chapter Selection Back",typeof(RectTransform),typeof(Image),typeof(Button));
+        go.layer=canvas.gameObject.layer;
+        RectTransform rect=go.GetComponent<RectTransform>();
+        rect.SetParent(canvas.transform,false);
+        rect.anchorMin=rect.anchorMax=new Vector2(0,1);rect.pivot=new Vector2(0,1);
+        rect.anchoredPosition=new Vector2(-6,4);rect.sizeDelta=new Vector2(25,9);rect.localScale=Vector3.one;
+        rect.SetAsLastSibling();
+        Image image=go.GetComponent<Image>();image.color=new Color(.95f,.91f,.80f,.98f);
+        Button button=go.GetComponent<Button>();button.targetGraphic=image;
+        ColorBlock colors=button.colors;colors.highlightedColor=new Color(1,.94f,.77f);colors.pressedColor=new Color(.78f,.68f,.48f);button.colors=colors;
+        var label=go.GetComponentInChildren<TextMeshProUGUI>();
+        if(!label)
+        {
+            var textObject=new GameObject("返回",typeof(RectTransform),typeof(TextMeshProUGUI));
+            textObject.layer=go.layer;textObject.transform.SetParent(rect,false);label=textObject.GetComponent<TextMeshProUGUI>();
+        }
+        label.font=reference.font;label.fontSize=5.2f;label.fontStyle=FontStyles.Bold;
+        label.text="返回";label.color=new Color(.30f,.10f,.06f);label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;
+        label.rectTransform.anchorMin=Vector2.zero;label.rectTransform.anchorMax=Vector2.one;label.rectTransform.offsetMin=label.rectTransform.offsetMax=Vector2.zero;
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(()=>
+        {
+            button.interactable=false;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+            SceneManager.LoadScene("點選介面",LoadSceneMode.Single);
+        });
     }
 
     private static void EnlargeChapterSelectionPanel(Canvas canvas)

@@ -202,14 +202,7 @@ public sealed class Chapter3StationController : MonoBehaviour
         rebuke.Rebuking=false;HasRifle=HasKnife=false;if(flow)flow.ClearEquipment();ui.hint.text="你沒有隨隊出發，莫那讓你回家休息。";
         yield return new WaitForSeconds(1.5f);
         CurrentStage=Stage.Ended;ui.objective.text="此次行動結束";
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying=false;
-#else
-        // A standalone player has no Play Mode; retain a legible, non-progressing ending.
-        var labels=ui.ending.GetComponentsInChildren<Text>(true);int labelIndex=0;
-        foreach(var label in labels)if(!label.GetComponentInParent<Button>())label.text=labelIndex++==0?"此次行動結束":"你尚未準備好出發。\n莫那讓你留下，回家休息。";
-        ui.ending.SetActive(true);
-#endif
+        Chapter3Flow.ReturnToChapterSelection();
     }
     IEnumerator Depart()
     {

@@ -166,6 +166,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     {
         Initialize();if(Panicking)return;
         Panicking=true;panicBegan=Time.time;PanicOrigin=origin;
+        foreach(var guest in crowd)if(guest)guest.SetApplause(0);
         SwitchRunningPupils();
         // These actors already occupy separate positions INSIDE the school.
         // One signal releases all ten in the same frame, on every route.
@@ -215,7 +216,7 @@ public sealed partial class Chapter3SchoolAmbient : MonoBehaviour
     void Update()
     {
         if(!initialized)Initialize();
-        if(Panicking)UpdateAssault();else UpdateCampusRunners();
+        if(Panicking)UpdateAssault();else {UpdateCampusRunners();UpdateCalmSports();}
         UpdateWithdrawal();
         for(int i=0;i<runners.Length;i++)
         {

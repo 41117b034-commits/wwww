@@ -8,6 +8,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
 {
     public float InjuryWeight { get; private set; }
     public float SupportWeight { get; private set; }
+    public float CarryWeight { get; private set; }
     public float DeathWeight { get; private set; }
     public bool BonesReady => prepared;
     public Vector3 SupportHandPosition => prepared ? hands[supportArm].position : transform.position;
@@ -18,6 +19,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
     MaterialPropertyBlock faceBlock;
     Transform bodyRoot, spine, supportPlayer;
     Camera supportView;
+    Vector3 carryForward;
     readonly Transform[] thighs = new Transform[2], knees = new Transform[2], feet = new Transform[2];
     readonly Transform[] arms = new Transform[2], elbows = new Transform[2], hands = new Transform[2];
     readonly Vector3[] neutralAnkles = new Vector3[2], footTargets = new Vector3[2];
@@ -70,6 +72,15 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         }
         SupportWeight = next;
     }
+    public void SetCarried(float weight,Transform player,Vector3 forward)
+    {
+        CarryWeight=Mathf.Clamp01(weight);supportPlayer=player;
+        var controller=player?player.GetComponent<Chapter3Player>():null;
+        supportView=controller?controller.view:null;
+        carryForward=Vector3.ProjectOnPlane(forward,Vector3.up).normalized;
+        if(carryForward.sqrMagnitude<.1f)carryForward=Vector3.forward;
+        SupportWeight=0;
+    }
 
     // The ending owns timing, camera, actor-root placement and collision. Do not
     // combine this with Actor.BeginFall: that rotates only Pelvis on this avatar
@@ -90,7 +101,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
     public void ResetPose()
     {
         RestoreLastPose();
-        InjuryWeight = SupportWeight = DeathWeight = 0f;
+        InjuryWeight = SupportWeight = CarryWeight = DeathWeight = 0f;
         deathCaptured = false;
         deathStartHipLocal = deathTargetHipLocal = Vector3.zero;
         supportPlayer = null;
@@ -113,6 +124,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
     void LateUpdate()
     {
         if (!Prepare()) return;
+        if(CarryWeight>0&&supportPlayer)actor.Face(actor.transform.position+carryForward);
         Vector3 movement = Vector3.ProjectOnPlane(actor.transform.position - previousPosition, Vector3.up);
         previousPosition = actor.transform.position;
         if (InjuryWeight <= 0f && DeathWeight <= 0f) { poseApplied = false; return; }
@@ -146,7 +158,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         }
         float supportSide = Mathf.Lerp(-1f, 1f, rightSupportBlend);
         motionWeight = Mathf.MoveTowards(motionWeight,
-            movement.sqrMagnitude > .000001f && supported > .5f ? 1f : 0f, Time.deltaTime * 7f);
+            movement.sqrMagnitude > .000001f && (supported > .5f || CarryWeight > .5f) ? 1f : 0f, Time.deltaTime * 7f);
         // Distance, not elapsed time, advances the limp: waiting never slides feet.
         limpPhase += Mathf.Min(movement.magnitude, height * .15f) / Mathf.Max(.1f, height * .44f) * Mathf.PI * 2f;
 
@@ -217,6 +229,7 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
         }
         if (rig.Head)
             rig.Head.rotation = Quaternion.AngleAxis(Mathf.Lerp(14f, 8f, supported) * injury, right) * rig.Head.rotation;
+        if(CarryWeight>0&&supportPlayer&&DeathWeight<=0)ApplyCarriedPose();
         if (DeathWeight > 0f)
         {
             // Capture a wounded seated pose once, then make the entire collapse
@@ -238,6 +251,34 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
             deathCaptured = true;
             ApplyDeathPose();
         }
+    }
+
+    void ApplyCarriedPose()
+    {
+        float weight=CarryWeight,height=rig.Height;
+        Vector3 forward=carryForward,right=Vector3.Cross(Vector3.up,forward);
+        Vector3 carrier=supportPlayer.position;carrier.y=actor.GroundHeight;
+        float bob=motionWeight*Mathf.Sin(limpPhase*.5f)*.012f;
+        Vector3 hip=actor.transform.position+Vector3.up*(height*.78f+bob);
+        bodyRoot.position+=Vector3.Lerp(Vector3.zero,hip-rig.Hips.position,weight);
+        // Both knees remain bent above the ground. There is no injured gait
+        // or second walking actor next to the player while being carried.
+        if(spine)spine.rotation=Quaternion.AngleAxis(12*weight,right)*spine.rotation;
+        for(int side=0;side<2;side++)
+        {
+            float sign=side==0?-1:1;
+            Vector3 foot=carrier-forward*.38f+right*(sign*.34f)+Vector3.up*(height*.40f+bob);
+            Quaternion sole=feet[side].rotation;
+            Chapter1IncidentRig.Solve(thighs[side],knees[side],feet[side],Vector3.Lerp(feet[side].position,foot,weight),forward+right*sign*.45f);
+            feet[side].rotation=sole;
+            Vector3 hand=carrier+forward*.14f+right*(sign*.24f)+Vector3.up*(height*.94f+bob);
+            Vector3 forearm=hands[side].position-elbows[side].position;Quaternion wrist=hands[side].rotation;
+            float reach=(Vector3.Distance(arms[side].position,elbows[side].position)+Vector3.Distance(elbows[side].position,hands[side].position))*.96f;
+            hand=arms[side].position+Vector3.ClampMagnitude(hand-arms[side].position,reach);
+            Chapter1IncidentRig.Solve(arms[side],elbows[side],hands[side],Vector3.Lerp(hands[side].position,hand,weight),right*sign+forward*.25f);
+            hands[side].rotation=Quaternion.FromToRotation(forearm,hands[side].position-elbows[side].position)*wrist;
+        }
+        RefreshFaceCut();
     }
 
     void CaptureDeathRestore()

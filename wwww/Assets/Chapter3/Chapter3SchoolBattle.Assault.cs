@@ -15,9 +15,11 @@ public sealed partial class Chapter3SchoolBattle
     public Vector3 StragglerPosition => P(12,32);
     public bool TeacherSupportPending=>ambient&&!ambient.TeacherSupportComplete;
     public Vector3 AssaultObjective => Step == AssaultCombatStages && !StragglerCalled ?
-        TeacherSupportPending?ambient.PendingTeacherSupportPosition:StragglerPosition
+        TeacherSupportPending?ambient.PendingTeacherSupportPosition:P(24.2f,45.4f)
         : activeRoute != null && activeRoute.Length > 0 ? activeRoute[activeRoute.Length - 1] : P(0, 76);
-    public Vector3[] AssaultWaypoints => Step == AssaultCombatStages && !StragglerCalled ? new[] { AssaultObjective } : activeRoute;
+    public Vector3[] AssaultWaypoints => RetreatCalled&&playerWithdrawalRoute!=null?playerWithdrawalRoute:
+        Step == AssaultCombatStages && !StragglerCalled ? new[] { AssaultObjective } : activeRoute;
+    Vector3[] playerWithdrawalRoute;
     public Chapter3RouteGuide AssaultGuide { get; private set; }
 
     static readonly Vector3[][] assaultApproach = {
@@ -193,7 +195,10 @@ public sealed partial class Chapter3SchoolBattle
         if(!ambient.BeginWithdrawal(player.transform))return false;
         RetreatCalled = true; guideMotor.Reset();
         PlayRetreatWhistle();
-        AssaultGuide.ShowAhead(player.transform.position,activeRoute,player.transform);
+        // The leader may still be walking old combat waypoints. Ground arrows
+        // belong to the player's exit route, never that leader's catch-up path.
+        playerWithdrawalRoute=Chapter3SchoolAmbient.PlayerWithdrawalRoute(player.transform.position);
+        AssaultGuide.ShowAhead(player.transform.position,playerWithdrawalRoute,player.transform);
         Notice("你","（口哨聲）大家撤退！跟上我們，到校後集合！",4.5f);
         return true;
     }
@@ -255,6 +260,6 @@ public sealed partial class Chapter3SchoolBattle
         if (ambient) ambient.HideStraggler();
         if(ambient)ambient.CancelWithdrawal(CurrentStage==Stage.Down);
         if(retreatSignal)retreatSignal.Stop();
-        RetreatCalled = false;RetreatSignalCount=0;
+        RetreatCalled = false;RetreatSignalCount=0;playerWithdrawalRoute=null;
     }
 }

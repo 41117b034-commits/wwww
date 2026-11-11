@@ -101,6 +101,7 @@ public sealed partial class Chapter3SchoolAmbient
     {
         for(int i=0;i<runners.Length;i++)if(runners[i])runners[i].gameObject.SetActive(false);
         for(int i=0;i<2;i++){campusRunnerLeg[i]=i==0?1:3;campusRunnerMotors[i].Reset();}
+        ResetCalmSports();
     }
     void UpdateCampusRunners()
     {

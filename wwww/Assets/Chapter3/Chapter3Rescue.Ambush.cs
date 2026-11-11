@@ -7,7 +7,10 @@ public sealed partial class Chapter3Rescue
     public bool AmbushRevealed {get;private set;}
     public Vector3 AmbushHiddenPosition=>new Vector3(-9.35f,0,93.85f);
     readonly Chapter3PathMotor ambushMotor=new Chapter3PathMotor();
-    static readonly Vector3[] ambushExit={new Vector3(-9.4f,0,94.3f),new Vector3(-6,0,95),new Vector3(1.5f,0,97)};
+    // Step around the back edge of the same rock, then hold the firing corner.
+    // The officer never walks out into the middle of the retreat route.
+    public Vector3 AmbushFiringPosition=>new Vector3(-6.65f,0,93.65f);
+    static readonly Vector3[] ambushExit={new Vector3(-9.4f,0,94.3f),new Vector3(-6.65f,0,94.3f),new Vector3(-6.65f,0,93.65f)};
     bool ambushRevealing;
     int ambushLeg;
 

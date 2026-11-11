@@ -52,7 +52,12 @@ public sealed class Chapter3Flow : MonoBehaviour
         if(startAtStation&&StationLink)StationLink.Preview();
         // One persistent camera, presentation, listener and EventSystem for every region.
         ui.replay.onClick.RemoveAllListeners();ui.replay.onClick.AddListener(()=>SceneManager.LoadScene("第三章"));
-        ui.menu.onClick.RemoveAllListeners();ui.menu.onClick.AddListener(()=>SceneManager.LoadScene("選擇章節ˊ"));
+        ui.menu.onClick.RemoveAllListeners();ui.menu.onClick.AddListener(ReturnToChapterSelection);
+    }
+    public static void ReturnToChapterSelection()
+    {
+        Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+        SceneManager.LoadScene("選擇章節ˊ",LoadSceneMode.Single);
     }
     void LeaveCurrent()
     {

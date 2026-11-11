@@ -10086,6 +10086,122 @@
           "voice": "zh-CN-YunyangNeural"
         }
       ]
+    },
+    {
+      "chinese": "比胡！前面還有警察。你背他，我替你看著路！",
+      "source": "Chapter3:Chapter3Rescue.cs",
+      "resource": "ChineseVoice/Audio/7bb2ebeeb28722d16d4b_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/7bb2ebeeb28722d16d4b_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/7bb2ebeeb28722d16d4b_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/7bb2ebeeb28722d16d4b_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/7bb2ebeeb28722d16d4b_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "把比胡背穩，沿著林路慢慢走。我跟著你們。",
+      "source": "Chapter3:Chapter3Rescue.cs",
+      "resource": "ChineseVoice/Audio/0af631c1c84e8c28dec6_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/0af631c1c84e8c28dec6_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/0af631c1c84e8c28dec6_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/0af631c1c84e8c28dec6_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/0af631c1c84e8c28dec6_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "右側通路原有2人，他和比胡都回來了，比胡受傷，由他背回接應處。",
+      "source": "Chapter3:Chapter3Ending.cs",
+      "resource": "ChineseVoice/Audio/b9c01b5b5cbb3e305255_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/b9c01b5b5cbb3e305255_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/b9c01b5b5cbb3e305255_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/b9c01b5b5cbb3e305255_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/b9c01b5b5cbb3e305255_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
+    },
+    {
+      "chinese": "右側通路原有1人，比胡受傷，由他背回接應處，已經回來了。",
+      "source": "Chapter3:Chapter3Ending.cs",
+      "resource": "ChineseVoice/Audio/bda69e3ca8d9871b5379_m",
+      "femaleResource": "",
+      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "variants": [
+        {
+          "role": "bawan",
+          "resource": "ChineseVoice/Audio/bda69e3ca8d9871b5379_m",
+          "voice": "zh-TW-YunJheNeural"
+        },
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/bda69e3ca8d9871b5379_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        },
+        {
+          "role": "tado",
+          "resource": "ChineseVoice/Audio/bda69e3ca8d9871b5379_m_tado",
+          "voice": "zh-CN-YunxiNeural"
+        },
+        {
+          "role": "pihu",
+          "resource": "ChineseVoice/Audio/bda69e3ca8d9871b5379_m_pihu",
+          "voice": "zh-CN-YunyangNeural"
+        }
+      ]
     }
   ],
   "deliveryVersion": "mature-four-voices-v1"

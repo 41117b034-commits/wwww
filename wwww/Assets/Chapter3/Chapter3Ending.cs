@@ -249,8 +249,10 @@ public sealed partial class Chapter3Ending : MonoBehaviour
         // Only the completed outcome and Mona's report commit a result.
         CommitResult();
         CurrentStage=Stage.Complete;player.canMove=player.canLook=false;
-        ShowEnding();ui.hint.text="";ui.Say("",null);
+        ui.hint.text="";ui.Say("",null);
         Cursor.lockState=CursorLockMode.None;Cursor.visible=true;
+        if(Saved||!PersistResult)Chapter3Flow.ReturnToChapterSelection();
+        else ShowEnding(); // A failed save still has an explicit retry.
     }
     static int CentralNpcCount(Chapter3SchoolController owner)
     {
@@ -265,7 +267,7 @@ public sealed partial class Chapter3Ending : MonoBehaviour
         (Result.mission==Chapter3SchoolBattle.Mission.Tado?"包括他、我和一起進入會場的同伴。":"是我和一起進入會場的同伴。");
     public string RightReport=>"右側通路原有"+Result.RightCount+"人，"+
         (Result.pihuSurvived
-            ?(Result.mission==Chapter3SchoolBattle.Mission.Pihu?"他和比胡都回來了，比胡受傷，由他扶回接應處。":"比胡受傷，由他扶回接應處，已經回來了。")
+            ?(Result.mission==Chapter3SchoolBattle.Mission.Pihu?"他和比胡都回來了，比胡受傷，由他背回接應處。":"比胡受傷，由他背回接應處，已經回來了。")
             :(Result.mission==Chapter3SchoolBattle.Mission.Pihu?"他回來了，比胡留在林路。我回去確認，比胡已經死了。":"比胡留在林路。我回去確認，他已經死了，右側沒有人回來。"));
 
     void BorrowMona()
@@ -351,7 +353,9 @@ public sealed partial class Chapter3Ending : MonoBehaviour
     public bool RetrySave()
     {
         if(CurrentStage!=Stage.Complete||Saved||!PersistResult)return false;
-        CommitResult();ShowEnding();return Saved;
+        CommitResult();
+        if(Saved)Chapter3Flow.ReturnToChapterSelection();else ShowEnding();
+        return Saved;
     }
     void RestoreEndingLabels()
     {

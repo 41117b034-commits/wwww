@@ -154,6 +154,32 @@ public sealed partial class Chapter3SchoolAmbient
         actor.FollowingWithdrawal=true;actor.SetWaiting(false);
         withdrawalMotors[index].Move(actor,target,Chapter3Player.WalkSpeed,.12f);
     }
+    public static Vector3[] PlayerWithdrawalRoute(Vector3 start)
+    {
+        // Share the real rear opening, keeping the approach clear of the
+        // equipment table. Omit corners already behind a player outside it.
+        var route=new List<Vector3>();
+        if(start.z<45)
+        {
+            if(start.x<4)
+            {
+                if(start.z<19)route.Add(new Vector3(-10,0,20));
+                if(start.z<27)route.Add(new Vector3(-7,0,28));
+                route.Add(new Vector3(-6,0,35));route.Add(new Vector3(2,0,35));route.Add(new Vector3(8,0,33));
+            }
+            else
+            {
+                if(start.z<18)route.Add(new Vector3(12,0,20));
+                if(start.z<26)route.Add(new Vector3(14,0,27));
+            }
+            if(start.z<34)route.Add(new Vector3(17,0,34));
+            route.Add(new Vector3(18,0,44.8f));route.Add(new Vector3(24.2f,0,45.4f));
+        }
+        if(start.z<60)route.Add(new Vector3(24.2f,0,61));
+        if(start.z<65)route.Add(new Vector3(22,0,66));
+        if(start.z<70)route.Add(new Vector3(12,0,72));
+        route.Add(new Vector3(0,0,76));return route.ToArray();
+    }
     static Vector3[] BuildWithdrawalRoute(Vector3 start,int index)
     {
         var route=new List<Vector3>();
