@@ -20,6 +20,7 @@ public sealed class Chapter4Player : MonoBehaviour
     public bool IsVR { get; private set; }
     public bool MenuPressed { get; private set; }
     public bool SubmitPressed { get; private set; }
+    public bool InteractPressed { get; private set; }
     public bool IsGrounded => motor && motor.enabled && motor.isGrounded;
     public CharacterController Motor => motor;
 
@@ -82,6 +83,7 @@ public sealed class Chapter4Player : MonoBehaviour
         bool menu = leftMenu || rightMenu;
         MenuPressed = focused && (Keyboard.current?.escapeKey.wasPressedThisFrame == true || (menu && !previousMenu));
         SubmitPressed = focused && trigger && !previousTrigger;
+        InteractPressed = focused && (Keyboard.current?.eKey.wasPressedThisFrame == true || SubmitPressed);
         previousMenu = menu;
         previousTrigger = trigger;
         if (!focused || !view) return;

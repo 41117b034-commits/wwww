@@ -15,6 +15,9 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Text continueLabel;
     public Button continueButton;
     public Button menuButton;
+    public GameObject speechPanel;
+    public Text speakerName, speechText, carryover, partyStatus, interaction, navigation;
+    public Button signalButton;
 
     bool vr;
     bool controlsInitialized;
@@ -36,7 +39,59 @@ public sealed class Chapter4Presentation : MonoBehaviour
         controlsVR = useVR;
         if (controls) controls.text = useVR
             ? "左搖桿移動　右搖桿轉向　選單鍵開啟選單；注視按鈕並按右扳機選取"
-            : "WASD 移動　按住滑鼠右鍵環視，或點一下畫面固定滑鼠　Esc 選單";
+            : "WASD 移動　右鍵環視／點畫面固定滑鼠　E 示意隊伍　Esc 選單";
+    }
+
+    public void EnsureStoryUI()
+    {
+        if (speechPanel) return;
+        Font font = objective.font;
+        var status = Panel(canvas.transform, "撤離隊伍狀態", new Vector2(.025f, .73f), new Vector2(.48f, .825f), new Color(.035f, .047f, .04f, .84f), false);
+        carryover = Label(status, "", font, 21, new Vector2(.035f, .51f), new Vector2(.97f, .96f));
+        carryover.color = new Color(.87f, .80f, .66f);
+        partyStatus = Label(status, "", font, 24, new Vector2(.035f, .04f), new Vector2(.97f, .51f));
+        var speech = Panel(canvas.transform, "撤離對話", new Vector2(.16f, .17f), new Vector2(.84f, .35f), new Color(.035f, .047f, .04f, .94f), false);
+        speechPanel = speech.gameObject;
+        speakerName = Label(speech, "", font, 24, new Vector2(.035f, .69f), new Vector2(.965f, .96f));
+        speakerName.color = new Color(.94f, .83f, .62f);
+        speechText = Label(speech, "", font, 28, new Vector2(.035f, .08f), new Vector2(.965f, .70f));
+        var prompt = Panel(canvas.transform, "探路示意", new Vector2(.12f, .095f), new Vector2(.88f, .155f), new Color(.035f, .047f, .04f, .88f), false);
+        interaction = Label(prompt, "", font, 23, new Vector2(.02f, 0), new Vector2(.98f, 1));
+        interaction.alignment = TextAnchor.MiddleCenter;
+        signalButton = prompt.gameObject.AddComponent<Button>();
+        signalButton.targetGraphic = prompt.GetComponent<Image>();
+        navigation = Label(canvas.transform, "", font, 29, new Vector2(.69f, .88f), new Vector2(.97f, .97f));
+        navigation.alignment = TextAnchor.MiddleRight;
+        navigation.color = new Color(.96f, .86f, .64f);
+        menuPanel.transform.SetAsLastSibling();
+        speechPanel.SetActive(false);
+        SetInteraction("", false);
+    }
+
+    public void SetCarryover(string value) { if (carryover) carryover.text = value; }
+    public void SetPartyStatus(string value) { if (partyStatus) partyStatus.text = value; }
+    public void ShowSpeech(string name, string text)
+    {
+        speakerName.text = name; speechText.text = text; speechPanel.SetActive(true);
+    }
+    public void HideSpeech() { if (speechPanel) speechPanel.SetActive(false); }
+    public void SetInteraction(string text, bool ready)
+    {
+        if (!interaction) return;
+        interaction.text = text;
+        signalButton.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        signalButton.interactable = ready;
+        signalButton.GetComponent<Image>().raycastTarget = ready;
+        interaction.color = ready ? new Color(1, .88f, .58f) : new Color(.90f, .91f, .86f);
+    }
+    public void SetNavigation(Camera view, Vector3 target, bool visible)
+    {
+        if (!navigation) return;
+        navigation.gameObject.SetActive(visible);
+        if (!visible || !view) return;
+        Vector3 direction = Vector3.ProjectOnPlane(target - view.transform.position, Vector3.up);
+        float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(view.transform.forward, Vector3.up), direction, Vector3.up);
+        navigation.text = Mathf.Abs(angle) > 115 ? "回頭沿路探查" : angle < -25 ? "← 沿路探查" : angle > 25 ? "沿路探查 →" : "↑ 沿路探查";
     }
 
     public void ShowMenu(string title, string message, string continueText)

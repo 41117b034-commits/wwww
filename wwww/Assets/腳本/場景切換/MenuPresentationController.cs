@@ -112,6 +112,10 @@ public sealed class MenuPresentationController : MonoBehaviour
     private IEnumerator ApplyScenePresentationAfterLayout(Scene scene)
     {
         yield return null;
+        // A quick menu-to-chapter transition can unload this scene during the
+        // layout wait. Do not inspect its name or apply its layout to the next scene.
+        if (!scene.IsValid() || !scene.isLoaded || SceneManager.GetActiveScene() != scene)
+            yield break;
         // Some older scene debug components set AudioListener.volume in Start().
         // Reapply the saved master volume after all scene Start methods have run.
         GameAudioSettings.Apply();

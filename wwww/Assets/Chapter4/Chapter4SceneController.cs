@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// The walking environment has a local arrival state, never a chapter-complete
-// flag. It deliberately does not read or write earlier chapter results.
+// Arrival remains local. The evacuation reads Chapter 3 once; neither component
+// writes the previous result or marks Chapter 4 complete.
 public sealed class Chapter4SceneController : MonoBehaviour
 {
     public Chapter4Player player;
     public Chapter4Presentation presentation;
+    public Chapter4Evacuation evacuation;
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -43,6 +44,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         player.SetInputEnabled(true);
         presentation.SetObjective("沿山路前往集合地");
         presentation.HideMenu();
+        if (evacuation) evacuation.Begin();
     }
 
     void Update()
@@ -78,10 +80,10 @@ public sealed class Chapter4SceneController : MonoBehaviour
                 ReachedCheckpointCount++;
             }
         }
-        if (!HasArrived && player.IsGrounded && Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance))
+        if (!HasArrived && (!evacuation || evacuation.ArrivalReady) && player.IsGrounded && Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance))
         {
             HasArrived = true;
-            presentation.SetObjective("已抵達集合地");
+            presentation.SetObjective(evacuation ? "隊伍已抵達集合地" : "已抵達集合地");
             OpenMenu(true);
         }
     }
@@ -98,8 +100,8 @@ public sealed class Chapter4SceneController : MonoBehaviour
     {
         IsPaused = true;
         player.SetInputEnabled(false);
-        presentation.ShowMenu(arrival ? "已抵達集合地" : "暫停",
-            arrival ? "可以繼續查看周圍，或返回章節選單。" : "沿山路前往集合地。",
+        presentation.ShowMenu(arrival ? (evacuation ? "隊伍已抵達集合地" : "已抵達集合地") : "暫停",
+            arrival ? "可以繼續查看周圍，或返回章節選單。" : "探查前方通路，再示意隊伍跟上。",
             arrival || HasArrived ? "繼續探索" : "繼續");
     }
 
@@ -108,7 +110,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (changingScene || !player || !presentation) return;
         IsPaused = false;
         presentation.HideMenu();
-        player.SetInputEnabled(true);
+        player.SetInputEnabled(!evacuation || evacuation.CurrentStage != Chapter4Evacuation.Stage.Opening);
     }
 
     public void ReturnToChapterMenu()
