@@ -551,6 +551,12 @@ public sealed class MenuPresentationController : MonoBehaviour
                 continue;
             }
 
+            var rect=button.transform as RectTransform;
+            if(rect)
+            {
+                rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
+                rect.anchoredPosition=new Vector2(0,language==GameSubtitleLanguage.Chinese?11:-11);
+            }
             int instanceId = button.GetInstanceID();
             if (!boundLanguageButtons.Add(instanceId))
             {
@@ -559,13 +565,12 @@ public sealed class MenuPresentationController : MonoBehaviour
 
             GameSubtitleLanguage capturedLanguage = language;
             button.onClick.AddListener(() => SelectLanguage(capturedLanguage));
-            var rect=button.transform as RectTransform;
-            if(rect)rect.anchoredPosition=new Vector2(0,language==GameSubtitleLanguage.Chinese?10:-12);
-            if(language==GameSubtitleLanguage.Chinese&&!button.transform.parent.Find("VoiceLanguageHint"))
-                CreateDialogText("VoiceLanguageHint",button.transform.parent,label,"字幕固定中文",new Vector2(0,-34),new Vector2(90,12),7,Color.white);
         }
         foreach(var label in FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include,FindObjectsSortMode.None))
-            if(Compact(label.text)=="語言")label.text="配音語言（字幕固定中文）";
+        {
+            if(label.name=="VoiceLanguageHint")label.gameObject.SetActive(false);
+            else if(Compact(label.text)=="配音語言（字幕固定中文）")label.text="語言";
+        }
     }
 
     private static bool TryGetLanguage(string label, out GameSubtitleLanguage language)
@@ -980,24 +985,33 @@ public sealed class MenuPresentationController : MonoBehaviour
 
     private static void ConfigureChapterBackButton(Canvas canvas, TextMeshProUGUI reference)
     {
-        Transform existing=canvas.transform.Find("Chapter Selection Back");
+        Image panel=null;
+        foreach(var candidate in canvas.GetComponentsInChildren<Image>(true))
+            if(candidate.name=="Panel"&&IsBrownMenuPanel(candidate.color)){panel=candidate;break;}
+        Transform existing=null;
+        foreach(var candidate in canvas.GetComponentsInChildren<Button>(true))
+            if(candidate.name=="Chapter Selection Back"){existing=candidate.transform;break;}
         GameObject go=existing?existing.gameObject:new GameObject("Chapter Selection Back",typeof(RectTransform),typeof(Image),typeof(Button));
         go.layer=canvas.gameObject.layer;
         RectTransform rect=go.GetComponent<RectTransform>();
-        rect.SetParent(canvas.transform,false);
+        // Anchor to the visible panel, whose edges extend beyond the canvas.
+        // Sharing its sliced corner keeps the tab flush as the panel resizes.
+        rect.SetParent(panel?panel.transform:canvas.transform,false);
         rect.anchorMin=rect.anchorMax=new Vector2(0,1);rect.pivot=new Vector2(0,1);
-        rect.anchoredPosition=new Vector2(-6,4);rect.sizeDelta=new Vector2(25,9);rect.localScale=Vector3.one;
+        rect.anchoredPosition=Vector2.zero;rect.sizeDelta=new Vector2(36,14);rect.localScale=Vector3.one;
         rect.SetAsLastSibling();
-        Image image=go.GetComponent<Image>();image.color=new Color(.95f,.91f,.80f,.98f);
+        Image image=go.GetComponent<Image>();image.color=new Color(.95f,.91f,.80f,1);
+        image.sprite=panel?panel.sprite:null;image.type=Image.Type.Sliced;
+        if(panel)image.pixelsPerUnitMultiplier=panel.pixelsPerUnitMultiplier;
         Button button=go.GetComponent<Button>();button.targetGraphic=image;
-        ColorBlock colors=button.colors;colors.highlightedColor=new Color(1,.94f,.77f);colors.pressedColor=new Color(.78f,.68f,.48f);button.colors=colors;
+        ColorBlock colors=button.colors;colors.highlightedColor=new Color(1,.96f,.84f);colors.selectedColor=colors.highlightedColor;colors.pressedColor=new Color(.85f,.76f,.57f);colors.fadeDuration=.12f;button.colors=colors;
         var label=go.GetComponentInChildren<TextMeshProUGUI>();
         if(!label)
         {
             var textObject=new GameObject("返回",typeof(RectTransform),typeof(TextMeshProUGUI));
             textObject.layer=go.layer;textObject.transform.SetParent(rect,false);label=textObject.GetComponent<TextMeshProUGUI>();
         }
-        label.font=reference.font;label.fontSize=5.2f;label.fontStyle=FontStyles.Bold;
+        label.font=reference.font;label.fontSize=7f;label.fontStyle=FontStyles.Bold;
         label.text="返回";label.color=new Color(.30f,.10f,.06f);label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;
         label.rectTransform.anchorMin=Vector2.zero;label.rectTransform.anchorMax=Vector2.one;label.rectTransform.offsetMin=label.rectTransform.offsetMax=Vector2.zero;
         button.onClick.RemoveAllListeners();
