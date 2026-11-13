@@ -18,6 +18,8 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public GameObject speechPanel;
     public Text speakerName, speechText, carryover, partyStatus, interaction, navigation;
     public Button signalButton;
+    public Text gasStatus;
+    public Image gasVeil;
 
     bool vr;
     bool controlsInitialized;
@@ -39,7 +41,27 @@ public sealed class Chapter4Presentation : MonoBehaviour
         controlsVR = useVR;
         if (controls) controls.text = useVR
             ? "左搖桿移動　右搖桿轉向　選單鍵開啟選單；注視按鈕並按右扳機選取"
-            : "WASD 移動　右鍵環視／點畫面固定滑鼠　E 示意隊伍　Esc 選單";
+            : "WASD 移動　右鍵環視／點畫面固定滑鼠　E 示意隊伍　Esc 選單；倒下後 R 重試";
+    }
+
+    public void EnsureGasUI()
+    {
+        if (gasStatus) return;
+        var veil = Panel(canvas.transform, "毒氣影響", Vector2.zero, Vector2.one, Color.clear, false);
+        gasVeil = veil.GetComponent<Image>();
+        veil.SetAsFirstSibling();
+        var panel = Panel(canvas.transform, "後方煙霧提示", new Vector2(.025f, .635f), new Vector2(.48f, .715f), new Color(.035f, .047f, .04f, .86f), false);
+        gasStatus = Label(panel, "", objective.font, 22, new Vector2(.035f, .03f), new Vector2(.965f, .97f));
+        menuPanel.transform.SetAsLastSibling();
+    }
+
+    public void SetGasStatus(string text, float exposure, float collapse)
+    {
+        if (!gasStatus) return;
+        gasStatus.text = text;
+        gasStatus.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        gasStatus.color = exposure > .65f ? new Color(1, .73f, .52f) : new Color(.91f, .88f, .72f);
+        gasVeil.color = new Color(.16f, .19f, .13f, Mathf.Max(exposure * .26f, collapse * .82f));
     }
 
     public void EnsureStoryUI()

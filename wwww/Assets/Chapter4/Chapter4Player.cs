@@ -21,12 +21,13 @@ public sealed class Chapter4Player : MonoBehaviour
     public bool MenuPressed { get; private set; }
     public bool SubmitPressed { get; private set; }
     public bool InteractPressed { get; private set; }
+    public bool RetryPressed { get; private set; }
     public bool IsGrounded => motor && motor.enabled && motor.isGrounded;
     public CharacterController Motor => motor;
 
     CharacterController motor;
     Vector3 desktopEyePosition;
-    float pitch, verticalSpeed, nextSnapTime;
+    float pitch, verticalSpeed, nextSnapTime, collapseWeight;
     bool focused = true, previousMenu, previousTrigger, floorTracking;
     int ignoreLookThroughFrame;
     readonly List<XRInputSubsystem> xrSubsystems = new List<XRInputSubsystem>();
@@ -74,6 +75,8 @@ public sealed class Chapter4Player : MonoBehaviour
             if (head.TryGetFeatureValue(XRUsages.deviceRotation, out Quaternion rotation))
                 view.transform.localRotation = rotation;
         }
+        else if (view)
+            view.transform.localPosition = desktopEyePosition - Vector3.up * (desktopEyePosition.y * .62f * collapseWeight);
 
         var left = XRInputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         var right = XRInputDevices.GetDeviceAtXRNode(XRNode.RightHand);
@@ -84,6 +87,7 @@ public sealed class Chapter4Player : MonoBehaviour
         MenuPressed = focused && (Keyboard.current?.escapeKey.wasPressedThisFrame == true || (menu && !previousMenu));
         SubmitPressed = focused && trigger && !previousTrigger;
         InteractPressed = focused && (Keyboard.current?.eKey.wasPressedThisFrame == true || SubmitPressed);
+        RetryPressed = focused && Keyboard.current?.rKey.wasPressedThisFrame == true;
         previousMenu = menu;
         previousTrigger = trigger;
         if (!focused || !view) return;
@@ -147,6 +151,9 @@ public sealed class Chapter4Player : MonoBehaviour
         ignoreLookThroughFrame = Time.frameCount + 1;
         if (!enabled) ReleasePointer();
     }
+
+    // Only the desktop eye lowers. XR tracking always owns the headset pose.
+    public void SetCollapseVisual(float weight) { collapseWeight = Mathf.Clamp01(weight); }
 
     public void WarpTo(Transform destination, bool alignDesktopView = true)
     {

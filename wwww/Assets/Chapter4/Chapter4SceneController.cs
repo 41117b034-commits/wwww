@@ -8,6 +8,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     public Chapter4Player player;
     public Chapter4Presentation presentation;
     public Chapter4Evacuation evacuation;
+    public Chapter4GasSequence gas;
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -45,6 +46,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         presentation.SetObjective("沿山路前往集合地");
         presentation.HideMenu();
         if (evacuation) evacuation.Begin();
+        if (gas) gas.Begin();
     }
 
     void Update()
@@ -52,6 +54,12 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (!player || !presentation || changingScene) return;
         presentation.ConfigureVR(player.IsVR);
         presentation.SetControls(player.IsVR);
+        if (gas && gas.IsCollapsed)
+        {
+            if (gas.CanRetry && player.RetryPressed) gas.RetryCheckpoint();
+            else if (player.IsVR) presentation.UpdateGaze(player.SubmitPressed);
+            return;
+        }
         if (player.MenuPressed)
         {
             if (IsPaused) Resume();
@@ -83,7 +91,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (!HasArrived && (!evacuation || evacuation.ArrivalReady) && player.IsGrounded && Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance))
         {
             HasArrived = true;
-            presentation.SetObjective(evacuation ? "隊伍已抵達集合地" : "已抵達集合地");
+            presentation.SetObjective(gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地");
             OpenMenu(true);
         }
     }
@@ -100,17 +108,37 @@ public sealed class Chapter4SceneController : MonoBehaviour
     {
         IsPaused = true;
         player.SetInputEnabled(false);
-        presentation.ShowMenu(arrival ? (evacuation ? "隊伍已抵達集合地" : "已抵達集合地") : "暫停",
-            arrival ? "可以繼續查看周圍，或返回章節選單。" : "探查前方通路，再示意隊伍跟上。",
+        presentation.ShowMenu(arrival ? (gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地") : "暫停",
+            arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") : "探查前方通路，再示意隊伍跟上。",
             arrival || HasArrived ? "繼續探索" : "繼續");
     }
 
     public void Resume()
     {
         if (changingScene || !player || !presentation) return;
+        if (gas && gas.IsCollapsed) { gas.RetryCheckpoint(); return; }
         IsPaused = false;
         presentation.HideMenu();
         player.SetInputEnabled(!evacuation || evacuation.CurrentStage != Chapter4Evacuation.Stage.Opening);
+    }
+
+    public void BeginGasCollapse()
+    {
+        IsPaused = true;
+        player.SetInputEnabled(false);
+        presentation.HideSpeech();
+        presentation.SetInteraction("", false);
+    }
+
+    public void RestoreAfterGasFailure(Transform checkpoint)
+    {
+        HasArrived = false;
+        IsPaused = false;
+        recoveryPoint = checkpoint;
+        player.WarpTo(checkpoint);
+        player.SetCollapseVisual(0);
+        presentation.HideMenu();
+        player.SetInputEnabled(true);
     }
 
     public void ReturnToChapterMenu()

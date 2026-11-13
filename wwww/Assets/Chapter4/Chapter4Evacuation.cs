@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Batch 2 ends with the whole party physically gathered. It never writes a
-// chapter result; the later gas/contact/ending batches will extend this flow.
+// Local evacuation progress. Gas may separate Obing from the main party;
+// contact/ending decisions are deliberately owned by the next story batch.
 public sealed class Chapter4Evacuation : MonoBehaviour
 {
     public enum Stage { Opening, Scouting, ReadyToSignal, Following, Gathered }
@@ -29,6 +29,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public float LegEnd => lengths[legs[LegIndex].routeIndex];
     public float RouteLength => lengths[lengths.Length - 1];
     public float ScoutedDistance { get; private set; }
+    public int RequiredPartyCount => party.FindAll(RequiredForArrival).Count;
 
     readonly List<Chapter4Companion> party = new List<Chapter4Companion>();
     Vector3[] route;
@@ -91,6 +92,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                     CurrentStage = Stage.Scouting;
                     chapter.player.SetInputEnabled(true);
                     stageClock = 0;
+                    if (chapter.gas) chapter.gas.CaptureCheckpoint(0);
                 }
             }
         }
@@ -102,20 +104,26 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         }
         else if (CurrentStage == Stage.Following)
         {
-            bool all = true;
-            foreach (var actor in party) all &= actor.AtDestination;
+            bool all = !chapter.gas || !chapter.gas.BlocksPartyAdvance;
+            foreach (var actor in party) if (RequiredForArrival(actor)) all &= actor.AtDestination;
             if (all)
             {
                 if (LegIndex == legs.Length - 1)
                 {
                     CurrentStage = Stage.Gathered;
-                    Say("bawan", "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。", 5.8f);
+                    Say("bawan", chapter.gas && chapter.gas.ObingSeparated
+                        ? "主隊到集合地了。古慕和露比都跟上了，歐冰還在後方。先讓傷患歇一口氣。"
+                        : "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。", 6.5f);
                 }
                 else
                 {
+                    float checkpointDistance = LegEnd;
                     LegIndex++;
                     CurrentStage = Stage.Scouting;
-                    Say("bawan", "隊伍都跟上了。我照應後方，你再往前確認下一段路。", 5.5f);
+                    Say("bawan", chapter.gas && chapter.gas.ObingSeparated
+                        ? "主隊跟上了。露比正扶著古慕，歐冰還在後方。你先確認下一段通路。"
+                        : "隊伍都跟上了。我照應後方，你再往前確認下一段路。", 6f);
+                    if (chapter.gas) chapter.gas.CaptureCheckpoint(checkpointDistance);
                 }
                 stageClock = 0;
             }
@@ -147,7 +155,8 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         CurrentStage = Stage.Following;
         SignalCount++;
         stageClock = 0;
-        for (int i = 0; i < party.Count; i++) party[i].FollowTo(LegEnd - i * 1.45f, i * .45f);
+        for (int i = 0; i < party.Count; i++)
+            if (RequiredForArrival(party[i])) party[i].FollowTo(LegEnd - i * 1.45f, i * .45f);
         Say("bawan", "看見你的示意了。傷患先走，大家沿著這條路跟上！", 5f);
         UpdateHUD();
     }
@@ -172,6 +181,18 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     static float OpeningDuration(int index) => index == 1 ? 7.2f : 6f;
 
+    public bool RequiredForArrival(Chapter4Companion actor) => !chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing";
+
+    public void Announce(string actorId, string text, float seconds) { Say(actorId, text, seconds); }
+
+    public void RestoreCheckpoint(int leg, int signals, float scouted)
+    {
+        LegIndex = leg; SignalCount = signals; ScoutedDistance = scouted;
+        CurrentStage = Stage.Scouting; stageClock = 0;
+        Say("bawan", "在這裡重新集結。確認前面的通路，再示意大家跟上。", 5.8f);
+        UpdateHUD();
+    }
+
     void Say(string actorId, string text, float seconds)
     {
         ClearSpeech();
@@ -192,13 +213,15 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     {
         var ui = chapter.presentation;
         bool opening = CurrentStage == Stage.Opening, following = CurrentStage == Stage.Following;
-        ui.SetObjective(opening ? "聽莫那與巴萬交代撤離" : PartyGathered ? "隊伍已抵達集合地" :
+        bool separated = chapter.gas && chapter.gas.ObingSeparated;
+        ui.SetObjective(opening ? "聽莫那與巴萬交代撤離" : PartyGathered ? (separated ? "主隊已抵達集合地" : "隊伍已抵達集合地") :
             following ? "等候隊伍沿路跟上" : "探路：" + legs[LegIndex].title);
-        int arrived = 0;
-        foreach (var actor in party) if (actor.AtDestination) arrived++;
-        ui.SetPartyStatus(opening ? "傷患先行・巴萬照應隊伍" : PartyGathered ? "全員會合　" + party.Count + "／" + party.Count :
-            following ? "隊伍前進中　" + arrived + "／" + party.Count + " 抵達" :
-            "第 " + (LegIndex + 1) + "／" + legs.Length + " 段　前方 " + Mathf.CeilToInt(FlatDistance(chapter.player.transform.position, ScoutTarget)) + " 公尺");
+        int arrived = 0, required = 0;
+        foreach (var actor in party) if (RequiredForArrival(actor)) { required++; if (actor.AtDestination) arrived++; }
+        ui.SetPartyStatus((opening ? "傷患先行・巴萬照應隊伍" : PartyGathered ? "主隊集結　" + required + "／" + required :
+            following ? "隊伍前進中　" + arrived + "／" + required + " 抵達" :
+            "第 " + (LegIndex + 1) + "／" + legs.Length + " 段　前方 " + Mathf.CeilToInt(FlatDistance(chapter.player.transform.position, ScoutTarget)) + " 公尺") +
+            (separated ? "・歐冰在後方" : ""));
         contextualHint = CurrentStage == Stage.ReadyToSignal
             ? (chapter.player.IsVR ? "通路已確認・按右扳機示意隊伍前進" : "通路已確認・按 E 示意隊伍前進")
             : following ? "巴萬正照應隊伍。可以回看同伴，等大家抵達再探下一段。"
