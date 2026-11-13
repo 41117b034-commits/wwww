@@ -31,7 +31,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     Chapter4Evacuation flow;
     Chapter4Companion gumu, lubi, obing;
     float rescueClock, obingClock, collapseClock, grace;
-    bool initialized, failureMenuShown;
+    bool initialized, failureMenuShown, obingRecovered;
     Transform retryAnchor;
     Checkpoint checkpoint;
     sealed class Checkpoint
@@ -39,7 +39,8 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         public int leg, signals;
         public float distance, front, elapsed, rescueClock, obingClock;
         public RescueStage rescue;
-        public bool separated, seated;
+        public bool separated, seated, recovered;
+        public Chapter4Contact.Snapshot contact;
         public Chapter4Companion.Snapshot[] actors;
     }
 
@@ -64,7 +65,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-        atmosphere.Tick(FrontDistance, Active, chapter.IsPaused, Time.deltaTime);
+        atmosphere.Tick(FrontDistance, Active, chapter.WorldFrozen, Time.deltaTime);
         if (IsCollapsed)
         {
             collapseClock += Time.unscaledDeltaTime;
@@ -78,7 +79,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             }
             return;
         }
-        if (!Active || chapter.IsPaused) return;
+        if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         Elapsed += dt;
         FrontDistance = Mathf.Min(flow.RouteLength - 28, FrontDistance + frontSpeed * dt);
@@ -153,6 +154,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
 
     void UpdateObing(float dt)
     {
+        if (obingRecovered) return;
         if (!ObingSeparated)
         {
             if (GumuStage != RescueStage.WalkingTogether || obing.Progress < 28 || flow.CurrentStage != Chapter4Evacuation.Stage.Following) return;
@@ -180,7 +182,8 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (!initialized || IsCollapsed) return;
         checkpoint = new Checkpoint { leg = flow.LegIndex, signals = flow.SignalCount, distance = distance,
             front = FrontDistance, elapsed = Elapsed, rescueClock = rescueClock, obingClock = obingClock,
-            rescue = GumuStage, separated = ObingSeparated, seated = ObingSeated,
+            rescue = GumuStage, separated = ObingSeparated, seated = ObingSeated, recovered = obingRecovered,
+            contact = chapter.contact ? chapter.contact.Capture() : null,
             actors = new Chapter4Companion.Snapshot[flow.Party.Count] };
         for (int i = 0; i < flow.Party.Count; i++) checkpoint.actors[i] = flow.Party[i].Capture();
         CheckpointCount++;
@@ -190,7 +193,8 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     {
         if (!CanRetry || checkpoint == null) return;
         for (int i = 0; i < flow.Party.Count; i++) flow.Party[i].Restore(checkpoint.actors[i]);
-        GumuStage = checkpoint.rescue; ObingSeparated = checkpoint.separated; ObingSeated = checkpoint.seated;
+        GumuStage = checkpoint.rescue; ObingSeparated = checkpoint.separated; ObingSeated = checkpoint.seated; obingRecovered = checkpoint.recovered;
+        if (chapter.contact) chapter.contact.Restore(checkpoint.contact);
         rescueClock = checkpoint.rescueClock; obingClock = checkpoint.obingClock;
         FrontDistance = Mathf.Min(checkpoint.front, checkpoint.distance - 18);
         Elapsed = checkpoint.elapsed; Exposure = collapseClock = 0; grace = 6;
@@ -202,5 +206,11 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         chapter.RestoreAfterGasFailure(retryAnchor);
         atmosphere.ResetSmoke(FrontDistance);
         chapter.presentation.SetGasStatus("已回到集結點・確認通路後再示意隊伍前進", 0, 0);
+    }
+
+    public void MarkObingRejoined()
+    {
+        obingRecovered = true;
+        ObingSeparated = ObingSeated = false;
     }
 }

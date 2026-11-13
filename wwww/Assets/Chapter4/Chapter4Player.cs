@@ -22,13 +22,14 @@ public sealed class Chapter4Player : MonoBehaviour
     public bool SubmitPressed { get; private set; }
     public bool InteractPressed { get; private set; }
     public bool RetryPressed { get; private set; }
+    public bool ContactPressed { get; private set; }
     public bool IsGrounded => motor && motor.enabled && motor.isGrounded;
     public CharacterController Motor => motor;
 
     CharacterController motor;
     Vector3 desktopEyePosition;
     float pitch, verticalSpeed, nextSnapTime, collapseWeight;
-    bool focused = true, previousMenu, previousTrigger, floorTracking;
+    bool focused = true, previousMenu, previousTrigger, previousLeftTrigger, floorTracking;
     int ignoreLookThroughFrame;
     readonly List<XRInputSubsystem> xrSubsystems = new List<XRInputSubsystem>();
 
@@ -83,11 +84,14 @@ public sealed class Chapter4Player : MonoBehaviour
         left.TryGetFeatureValue(XRUsages.menuButton, out bool leftMenu);
         right.TryGetFeatureValue(XRUsages.menuButton, out bool rightMenu);
         right.TryGetFeatureValue(XRUsages.triggerButton, out bool trigger);
+        left.TryGetFeatureValue(XRUsages.triggerButton, out bool leftTrigger);
         bool menu = leftMenu || rightMenu;
         MenuPressed = focused && (Keyboard.current?.escapeKey.wasPressedThisFrame == true || (menu && !previousMenu));
         SubmitPressed = focused && trigger && !previousTrigger;
         InteractPressed = focused && (Keyboard.current?.eKey.wasPressedThisFrame == true || SubmitPressed);
         RetryPressed = focused && Keyboard.current?.rKey.wasPressedThisFrame == true;
+        ContactPressed = focused && (Keyboard.current?.fKey.wasPressedThisFrame == true || leftTrigger && !previousLeftTrigger);
+        previousLeftTrigger = leftTrigger;
         previousMenu = menu;
         previousTrigger = trigger;
         if (!focused || !view) return;

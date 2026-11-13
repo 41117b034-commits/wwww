@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Local evacuation progress. Gas may separate Obing from the main party;
-// contact/ending decisions are deliberately owned by the next story batch.
+// Local evacuation progress; Chapter4Contact owns Obing's acknowledgement and
+// reunion, while Chapter4Ending owns the final completion transaction.
 public sealed class Chapter4Evacuation : MonoBehaviour
 {
     public enum Stage { Opening, Scouting, ReadyToSignal, Following, Gathered }
@@ -72,7 +72,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     void Update()
     {
-        if (!initialized || chapter.IsPaused) return;
+        if (!initialized || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         stageClock += dt;
         if (subtitleClock > 0)
@@ -104,7 +104,8 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         }
         else if (CurrentStage == Stage.Following)
         {
-            bool all = !chapter.gas || !chapter.gas.BlocksPartyAdvance;
+            bool all = (!chapter.gas || !chapter.gas.BlocksPartyAdvance) &&
+                (!chapter.contact || !chapter.contact.Responded || chapter.contact.Reunited);
             foreach (var actor in party) if (RequiredForArrival(actor)) all &= actor.AtDestination;
             if (all)
             {
@@ -145,7 +146,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     public void TrySignal()
     {
-        if (!initialized || chapter.IsPaused) return;
+        if (!initialized || chapter.WorldFrozen) return;
         if (CurrentStage != Stage.ReadyToSignal || !AtScoutTarget())
         {
             if (CurrentStage == Stage.Scouting)
@@ -153,11 +154,13 @@ public sealed class Chapter4Evacuation : MonoBehaviour
             return;
         }
         CurrentStage = Stage.Following;
+        if (chapter.contact) chapter.contact.NotifySignal(LegIndex);
         SignalCount++;
         stageClock = 0;
         for (int i = 0; i < party.Count; i++)
             if (RequiredForArrival(party[i])) party[i].FollowTo(LegEnd - i * 1.45f, i * .45f);
-        Say("bawan", "看見你的示意了。傷患先走，大家沿著這條路跟上！", 5f);
+        if (!chapter.contact || chapter.contact.CurrentState != Chapter4Contact.State.Rising)
+            Say("bawan", "看見你的示意了。傷患先走，大家沿著這條路跟上！", 5f);
         UpdateHUD();
     }
 
@@ -181,7 +184,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     static float OpeningDuration(int index) => index == 1 ? 7.2f : 6f;
 
-    public bool RequiredForArrival(Chapter4Companion actor) => !chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing";
+    public bool RequiredForArrival(Chapter4Companion actor) => !chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing" || chapter.contact && chapter.contact.Responded;
 
     public void Announce(string actorId, string text, float seconds) { Say(actorId, text, seconds); }
 

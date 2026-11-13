@@ -19,11 +19,12 @@ public sealed class Chapter4Companion : MonoBehaviour
     public CharacterController Motor { get; private set; }
     public Chapter4CompanionPose Pose { get; private set; }
     public bool MotionHeld { get; set; }
+    public bool IndependentFollow { get; set; }
     public float RouteOffset { get; set; }
     public Chapter4Companion SupportPartner { get; set; }
     public Chapter4Companion SupportFollower { get; set; }
     public Vector3? AssistTarget { get; set; }
-    public bool IsPaused => owner && owner.chapter.IsPaused;
+    public bool IsPaused => owner && owner.chapter.WorldFrozen;
     // A formation slot is an arrival area, not an exact point that can lie on
     // the edge of a roadside rock. Both route progress and physical distance
     // must agree before the party controller counts this character as arrived.
@@ -79,19 +80,19 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (!owner || !Rig) return;
         Pose.RestoreModelBase();
         Walking = false;
-        if (!owner.chapter.IsPaused)
+        if (!IsPaused)
         {
             travelClock += Time.deltaTime;
             if (!MotionHeld)
             {
                 if (AssistTarget.HasValue) StepToward(AssistTarget.Value, Time.deltaTime);
-                else if (owner.CurrentStage == Chapter4Evacuation.Stage.Following && travelClock >= releaseAt)
+                else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || IndependentFollow) && travelClock >= releaseAt)
                     Walk(Time.deltaTime);
             }
         }
         Rig.walking = Walking;
-        Rig.frozen = owner.chapter.IsPaused;
-        Rig.speakingWeight = Speaking && !owner.chapter.IsPaused ? .6f : 0;
+        Rig.frozen = IsPaused;
+        Rig.speakingWeight = Speaking && !IsPaused ? .6f : 0;
         Rig.Ground(transform.position.y);
         if (!Walking && Speaking && !MotionHeld && !SupportPartner && !SupportFollower)
             Rig.Face(owner.chapter.player.transform.position - transform.position);
@@ -196,7 +197,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     {
         public Vector3 position, forward;
         public float progress, destination, speed, offset;
-        public bool joined, held;
+        public bool joined, held, independent;
         public Chapter4Companion partner, follower;
         public Chapter4CompanionPose.State pose;
         public float poseWeight, poseClock;
@@ -204,7 +205,7 @@ public sealed class Chapter4Companion : MonoBehaviour
 
     public Snapshot Capture() => new Snapshot { position = transform.position, forward = Rig.Forward,
         progress = Progress, destination = destination, speed = walkSpeed, offset = RouteOffset,
-        joined = JoinedRoute, held = MotionHeld, partner = SupportPartner, follower = SupportFollower,
+        joined = JoinedRoute, held = MotionHeld, independent = IndependentFollow, partner = SupportPartner, follower = SupportFollower,
         pose = Pose.CurrentState, poseWeight = Pose.Weight, poseClock = Pose.Clock };
 
     public void Restore(Snapshot saved)
@@ -213,6 +214,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         Motor.enabled = false; transform.position = saved.position; Motor.enabled = true;
         Progress = saved.progress; destination = saved.destination; walkSpeed = saved.speed; RouteOffset = saved.offset;
         JoinedRoute = saved.joined; MotionHeld = saved.held; SupportPartner = saved.partner; SupportFollower = saved.follower;
+        IndependentFollow = saved.independent;
         AssistTarget = null; Walking = Speaking = false; releaseAt = travelClock = 0;
         Rig.Face(saved.forward); Rig.Ground(transform.position.y); Rig.walking = false;
         Pose.Set(saved.pose, saved.poseWeight, saved.poseClock);

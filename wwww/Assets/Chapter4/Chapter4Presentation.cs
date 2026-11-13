@@ -20,10 +20,15 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Button signalButton;
     public Text gasStatus;
     public Image gasVeil;
+    public Button contactButton;
+    public Text contactText;
+    public GameObject endingPanel;
+    public Text endingKicker, endingTitle, endingBody, endingFooter;
 
     bool vr;
     bool controlsInitialized;
     bool controlsVR;
+    bool contactStyleConfigured;
     Transform desktopParent;
     Vector2 desktopAnchorMin, desktopAnchorMax, desktopPivot, desktopSize;
     Vector3 desktopPosition, desktopScale;
@@ -40,8 +45,55 @@ public sealed class Chapter4Presentation : MonoBehaviour
         controlsInitialized = true;
         controlsVR = useVR;
         if (controls) controls.text = useVR
-            ? "左搖桿移動　右搖桿轉向　選單鍵開啟選單；注視按鈕並按右扳機選取"
-            : "WASD 移動　右鍵環視／點畫面固定滑鼠　E 示意隊伍　Esc 選單；倒下後 R 重試";
+            ? "左搖桿移動　右搖桿轉向　右扳機示意　左扳機聯絡　選單鍵暫停；注視並按右扳機選取"
+            : "WASD 移動　右鍵環視　E 示意隊伍　F 聯絡歐冰　Esc 選單　R 重試";
+    }
+
+    public void EnsureEndingUI()
+    {
+        if (endingPanel) return;
+        contactButton = CreateButton(canvas.transform, "聯絡歐冰", objective.font, new Vector2(.52f, .72f), new Vector2(.975f, .825f), out contactText);
+        contactText.fontSize = 23;
+        var backdrop = Panel(canvas.transform, "個人結局與共同史實後記", Vector2.zero, Vector2.one, new Color(.025f, .037f, .03f, .98f), true);
+        endingPanel = backdrop.gameObject;
+        var card = Panel(backdrop, "章末文字", new Vector2(.13f, .15f), new Vector2(.87f, .86f), new Color(.055f, .075f, .06f, 1), true);
+        endingKicker = Label(card, "", objective.font, 23, new Vector2(.065f, .87f), new Vector2(.935f, .96f));
+        endingKicker.color = new Color(.79f, .79f, .66f);
+        endingTitle = Label(card, "", objective.font, 38, new Vector2(.065f, .72f), new Vector2(.935f, .88f));
+        endingTitle.color = new Color(.95f, .83f, .62f);
+        endingBody = Label(card, "", objective.font, 29, new Vector2(.065f, .16f), new Vector2(.935f, .71f));
+        endingBody.alignment = TextAnchor.UpperLeft;
+        endingBody.lineSpacing = 1.15f;
+        endingFooter = Label(card, "", objective.font, 19, new Vector2(.065f, .025f), new Vector2(.935f, .14f));
+        endingFooter.color = new Color(.75f, .78f, .72f);
+        SetContactStatus("", false);
+        endingPanel.SetActive(false);
+        menuPanel.transform.SetAsLastSibling();
+    }
+
+    public void SetContactStatus(string text, bool ready)
+    {
+        if (!contactButton) return;
+        if (!contactStyleConfigured)
+        {
+            contactButton.targetGraphic.color = new Color(.035f, .047f, .04f, .94f);
+            var colors = contactButton.colors;
+            colors.disabledColor = Color.white;
+            contactButton.colors = colors;
+            contactStyleConfigured = true;
+        }
+        contactText.text = text;
+        contactText.color = ready ? new Color(1, .88f, .58f) : new Color(.91f, .92f, .87f);
+        contactButton.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        contactButton.interactable = ready;
+        contactButton.GetComponent<Image>().raycastTarget = ready;
+    }
+
+    public void ShowEnding(string kicker, string title, string body, string footer)
+    {
+        endingKicker.text = kicker; endingTitle.text = title; endingBody.text = body; endingFooter.text = footer;
+        endingPanel.SetActive(true);
+        if (vr) PlaceVRCanvas();
     }
 
     public void EnsureGasUI()
@@ -174,7 +226,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     {
         // HUD follows the view; an open VR menu stays in its initial world pose
         // so the buttons do not follow the user's gaze during selection.
-        if (vr && menuPanel && !menuPanel.activeSelf) PlaceVRCanvas();
+        if (vr && menuPanel && !menuPanel.activeSelf && (!endingPanel || !endingPanel.activeSelf)) PlaceVRCanvas();
     }
 
     void PlaceVRCanvas()

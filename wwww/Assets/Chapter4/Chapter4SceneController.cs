@@ -1,14 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Arrival remains local. The evacuation reads Chapter 3 once; neither component
-// writes the previous result or marks Chapter 4 complete.
+// Arrival starts the chapter ending only after the physically gathered party's
+// report. The ending owns the separate Chapter 4 completion transaction.
 public sealed class Chapter4SceneController : MonoBehaviour
 {
     public Chapter4Player player;
     public Chapter4Presentation presentation;
     public Chapter4Evacuation evacuation;
     public Chapter4GasSequence gas;
+    public Chapter4Contact contact;
+    public Chapter4Ending ending;
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -18,6 +20,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     public string chapterMenuScene = "選擇章節ˊ";
     public bool HasArrived { get; private set; }
     public bool IsPaused { get; private set; }
+    public bool WorldFrozen => IsPaused || ending && ending.HasStarted;
     public int ReachedCheckpointCount { get; private set; }
 
     Transform recoveryPoint;
@@ -47,6 +50,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         presentation.HideMenu();
         if (evacuation) evacuation.Begin();
         if (gas) gas.Begin();
+        if (contact) contact.Begin();
     }
 
     void Update()
@@ -54,6 +58,12 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (!player || !presentation || changingScene) return;
         presentation.ConfigureVR(player.IsVR);
         presentation.SetControls(player.IsVR);
+        if (ending && ending.CurrentStage == Chapter4Ending.Stage.SaveFailed)
+        {
+            if (player.RetryPressed) ending.RetrySave();
+            else if (player.IsVR) presentation.UpdateGaze(player.SubmitPressed);
+            return;
+        }
         if (gas && gas.IsCollapsed)
         {
             if (gas.CanRetry && player.RetryPressed) gas.RetryCheckpoint();
@@ -70,6 +80,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
             if (player.IsVR) presentation.UpdateGaze(player.SubmitPressed);
             return;
         }
+        if (ending && ending.HasStarted) return;
 
         // Recovery is only for leaving the physical walkable surface. It does
         // not count as arrival or save a story outcome.
@@ -90,6 +101,11 @@ public sealed class Chapter4SceneController : MonoBehaviour
         }
         if (!HasArrived && (!evacuation || evacuation.ArrivalReady) && player.IsGrounded && Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance))
         {
+            if (ending)
+            {
+                if (ending.TryBegin()) HasArrived = true;
+                return;
+            }
             HasArrived = true;
             presentation.SetObjective(gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地");
             OpenMenu(true);
@@ -109,17 +125,26 @@ public sealed class Chapter4SceneController : MonoBehaviour
         IsPaused = true;
         player.SetInputEnabled(false);
         presentation.ShowMenu(arrival ? (gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地") : "暫停",
-            arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") : "探查前方通路，再示意隊伍跟上。",
-            arrival || HasArrived ? "繼續探索" : "繼續");
+            arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") :
+            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "探查前方通路，再示意隊伍跟上。",
+            ending && ending.HasStarted ? "繼續閱讀" : arrival || HasArrived ? "繼續探索" : "繼續");
     }
 
     public void Resume()
     {
         if (changingScene || !player || !presentation) return;
         if (gas && gas.IsCollapsed) { gas.RetryCheckpoint(); return; }
+        if (ending && ending.CurrentStage == Chapter4Ending.Stage.SaveFailed) { ending.RetrySave(); return; }
         IsPaused = false;
         presentation.HideMenu();
-        player.SetInputEnabled(!evacuation || evacuation.CurrentStage != Chapter4Evacuation.Stage.Opening);
+        player.SetInputEnabled((!ending || !ending.HasStarted) && (!evacuation || evacuation.CurrentStage != Chapter4Evacuation.Stage.Opening));
+    }
+
+    public void ShowEndingSaveFailure()
+    {
+        IsPaused = true;
+        player.SetInputEnabled(false);
+        presentation.ShowMenu("本次結局尚未保存", "原有紀錄已保留。\n按 R 或下方按鈕重試保存。", "重試保存");
     }
 
     public void BeginGasCollapse()
