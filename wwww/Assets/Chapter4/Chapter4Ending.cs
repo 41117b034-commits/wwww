@@ -39,7 +39,7 @@ public sealed class Chapter4Ending : MonoBehaviour
         if (!HasStarted || chapter.IsPaused || CurrentStage == Stage.SaveFailed || CurrentStage == Stage.Complete) return;
         CardElapsed += Time.deltaTime;
         float duration = CurrentStage == Stage.Personal ? 12 : CurrentStage == Stage.History1930 ? 16 : 19;
-        if (CardElapsed < duration) return;
+        if (CardElapsed < duration || chapter.Voice.Busy) return;
         if (CurrentStage == Stage.Personal) Show(Stage.History1930);
         else if (CurrentStage == Stage.History1930) Show(Stage.History1931);
         else { pending.epilogueSeen = true; RetrySave(); }
@@ -47,6 +47,7 @@ public sealed class Chapter4Ending : MonoBehaviour
 
     void Show(Stage stage)
     {
+        chapter.Voice.Stop();
         CurrentStage = stage; CardElapsed = 0;
         string bihu = pending.inheritedBihu == Chapter4Evacuation.BihuState.Rescued ? "比胡獲救的結果，承接自第三章。" :
             pending.inheritedBihu == Chapter4Evacuation.BihuState.Dead ? "比胡已於第三章死亡；這份記憶也隨你留下。" : "缺少有效的第三章紀錄，比胡的狀態仍未確認。";
@@ -60,6 +61,7 @@ public sealed class Chapter4Ending : MonoBehaviour
             stage == Stage.History1930 ? "1930 年 · 戰局與莫那之死" : "1931 年 · 再次受難與強制遷居",
             stage == Stage.History1930 ? History1930 : History1931,
             "史實參考：國立公共資訊圖書館「民國近代史」之第一次、第二次霧社事件。");
+        chapter.Voice.Enqueue("narrator", chapter.presentation.endingBody.text, 0, true);
     }
 
     public void RetrySave()

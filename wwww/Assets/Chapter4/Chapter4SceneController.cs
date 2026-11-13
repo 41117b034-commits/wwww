@@ -11,6 +11,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     public Chapter4GasSequence gas;
     public Chapter4Contact contact;
     public Chapter4Ending ending;
+    public Chapter4Voice Voice { get; private set; }
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -48,6 +49,8 @@ public sealed class Chapter4SceneController : MonoBehaviour
         player.SetInputEnabled(true);
         presentation.SetObjective("沿山路前往集合地");
         presentation.HideMenu();
+        Voice = gameObject.AddComponent<Chapter4Voice>();
+        Voice.Initialize(this);
         if (evacuation) evacuation.Begin();
         if (gas) gas.Begin();
         if (contact) contact.Begin();

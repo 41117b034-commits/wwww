@@ -17,7 +17,7 @@ public sealed class Chapter4Contact : MonoBehaviour
     {
         get
         {
-            if (!initialized || Responded || chapter.WorldFrozen || chapter.gas.IsCollapsed || !chapter.gas.ObingSeated) return 0;
+            if (!initialized || Responded || chapter.WorldFrozen || flow.Regrouping || chapter.gas.IsCollapsed || !chapter.gas.ObingSeated) return 0;
             int leg = flow.LegIndex;
             if (leg != 1 && leg != 2) return 0;
             if (flow.ScoutedDistance < flow.LegEnd - 2.2f || !chapter.player.IsGrounded ||

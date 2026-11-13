@@ -22,7 +22,8 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public int LegIndex { get; private set; }
     public int SignalCount { get; private set; }
     public bool PartyGathered => CurrentStage == Stage.Gathered;
-    public bool ArrivalReady => PartyGathered && subtitleClock <= 0;
+    public bool Regrouping => regrouping;
+    public bool ArrivalReady => PartyGathered && !chapter.Voice.Busy;
     public int ActivePartyCount => party.Count;
     public IReadOnlyList<Chapter4Companion> Party => party;
     public Vector3 ScoutTarget => PointOnRoute(LegEnd);
@@ -34,10 +35,10 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     readonly List<Chapter4Companion> party = new List<Chapter4Companion>();
     Vector3[] route;
     float[] lengths;
-    float stageClock, subtitleClock;
+    float stageClock;
     int openingLine = -1;
     bool initialized;
-    Chapter4Companion speaker;
+    bool regrouping;
     string contextualHint;
 
     public void Begin()
@@ -75,17 +76,12 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         if (!initialized || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         stageClock += dt;
-        if (subtitleClock > 0)
-        {
-            subtitleClock -= dt;
-            if (subtitleClock <= 0) ClearSpeech();
-        }
         if (CurrentStage != Stage.Opening && !PartyGathered) TrackScoutedTrail();
         if (CurrentStage == Stage.Opening)
         {
-            if (stageClock >= OpeningDuration(openingLine))
+            if (!chapter.Voice.Busy)
             {
-                if (openingLine < 3) ShowOpeningLine(openingLine + 1);
+                if (openingLine < 5) ShowOpeningLine(openingLine + 1);
                 else
                 {
                     ClearSpeech();
@@ -98,7 +94,8 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         }
         else if (CurrentStage == Stage.Scouting || CurrentStage == Stage.ReadyToSignal)
         {
-            bool ready = ScoutedDistance >= LegEnd - 2.2f && AtScoutTarget();
+            bool ready = !regrouping && ScoutedDistance >= LegEnd - 2.2f && AtScoutTarget();
+            if (regrouping && !chapter.Voice.Busy) regrouping = false;
             CurrentStage = ready ? Stage.ReadyToSignal : Stage.Scouting;
             if (chapter.player.InteractPressed) TrySignal();
         }
@@ -115,6 +112,9 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                     Say("bawan", chapter.gas && chapter.gas.ObingSeparated
                         ? "主隊到集合地了。古慕和露比都跟上了，歐冰還在後方。先讓傷患歇一口氣。"
                         : "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。", 6.5f);
+                    Say("lubi", "古慕，坐穩了再鬆手。我在你旁邊，你先慢慢把氣喘勻。", 8);
+                    Say("gumu", "我到這裡了……露比，謝謝你一直扶著我。先看看其他人有沒有需要照應。", 10);
+                    Say("mona", "先讓傷患休息，其他人守住通路。到了集合地，仍然要留意山下的動靜。", 11);
                 }
                 else
                 {
@@ -125,6 +125,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                         ? "主隊跟上了。露比正扶著古慕，歐冰還在後方。你先確認下一段通路。"
                         : "隊伍都跟上了。我照應後方，你再往前確認下一段路。", 6f);
                     if (chapter.gas) chapter.gas.CaptureCheckpoint(checkpointDistance);
+                    RegroupDialogue(LegIndex);
                 }
                 stageClock = 0;
             }
@@ -179,7 +180,9 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                     ? "比胡已經死了。我們記著他，也要把眼前的人帶出去。達多，先照應傷患。"
                     : "達多，先照應傷患，讓他們走在前面。大家看好身邊的人。", OpeningDuration(index));
         else if (index == 2) Say("bawan", "你先去前面探路。走過岔路，確認能通行，再抬手示意我們跟上。", OpeningDuration(index));
-        else Say("bawan", "我留在隊伍旁照應。等大家走到你那裡，我會回報，再由你繼續領路。", OpeningDuration(index));
+        else if (index == 3) Say("bawan", "我留在隊伍旁照應。等大家走到你那裡，我會回報，再由你繼續領路。", OpeningDuration(index));
+        else if (index == 4) Say("tado", "傷患跟著我，腳步放穩。走到轉彎處先看清前一個人，別只顧著往聲音的方向跑。", 12);
+        else Say("obing", "我在隊伍後面照看。岔路若看不見大家，請把方向喊給我聽，我會循著通路跟上。", 12);
     }
 
     static float OpeningDuration(int index) => index == 1 ? 7.2f : 6f;
@@ -191,25 +194,45 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public void RestoreCheckpoint(int leg, int signals, float scouted)
     {
         LegIndex = leg; SignalCount = signals; ScoutedDistance = scouted;
-        CurrentStage = Stage.Scouting; stageClock = 0;
+        CurrentStage = Stage.Scouting; stageClock = 0; regrouping = false;
+        ClearSpeech();
         Say("bawan", "在這裡重新集結。確認前面的通路，再示意大家跟上。", 5.8f);
         UpdateHUD();
     }
 
     void Say(string actorId, string text, float seconds)
     {
-        ClearSpeech();
-        speaker = party.Find(a => a.actorId == actorId);
-        if (speaker) speaker.Speaking = true;
-        chapter.presentation.ShowSpeech(speaker ? speaker.displayName : "巴萬", text);
-        subtitleClock = seconds;
+        chapter.Voice.Enqueue(actorId, text, seconds);
     }
 
     void ClearSpeech()
     {
-        if (speaker) speaker.Speaking = false;
-        speaker = null;
-        chapter.presentation.HideSpeech();
+        chapter.Voice.Stop();
+    }
+
+    void RegroupDialogue(int leg)
+    {
+        regrouping = true;
+        if (leg == 1)
+        {
+            Say("tado", "先在這段較寬的路邊站穩。前面的人不要擠在一起，留出讓傷患轉身的地方。", 11);
+            Say("lubi", "古慕，把重量靠過來。腳下有突出的石頭，我們一步一步跨過去，不用趕著追。", 11);
+            Say("gumu", "我還能走。只是胸口悶，腳也使不上力……讓我靠著你，慢慢走。", 10);
+            Say("bawan", "前面是岔路。你去確認上坡那條通路，也留意歐冰的聲音；找到方向，可以喊給她聽。", 12);
+        }
+        else if (leg == 2)
+        {
+            Say("lubi", "這一段終於走過來了。古慕，先站穩，抓好我的肩，我不會把你留在這裡。", 11);
+            Say("gumu", "我聽得見。你先換一口氣，我會抓緊。等大家排好，我們再一起走。", 10);
+            Say("tado", "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。", 11);
+            Say("bawan", "再往前就是最後的岩肩。看清通往集合地的方向，再示意隊伍過去。", 10);
+        }
+        else
+        {
+            Say("mona", "前面的人放慢，留意後方。讓傷患先到平坦的地方，不要在最後一段散開。", 11);
+            Say("lubi", "古慕，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。", 10);
+            Say("gumu", "我看見了……我跟著你。到了那裡，讓我們先坐一下，再清點身邊的人。", 11);
+        }
     }
 
     void UpdateHUD()
@@ -217,7 +240,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         var ui = chapter.presentation;
         bool opening = CurrentStage == Stage.Opening, following = CurrentStage == Stage.Following;
         bool separated = chapter.gas && chapter.gas.ObingSeparated;
-        ui.SetObjective(opening ? "聽莫那與巴萬交代撤離" : PartyGathered ? (separated ? "主隊已抵達集合地" : "隊伍已抵達集合地") :
+        ui.SetObjective(opening ? "聽莫那與巴萬交代撤離" : regrouping ? "傷患整隊・聽同伴交代下一段通路" : PartyGathered ? (separated ? "主隊已抵達集合地" : "隊伍已抵達集合地") :
             following ? "等候隊伍沿路跟上" : "探路：" + legs[LegIndex].title);
         int arrived = 0, required = 0;
         foreach (var actor in party) if (RequiredForArrival(actor)) { required++; if (actor.AtDestination) arrived++; }

@@ -45,7 +45,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
             var main = ps.main;
             main.playOnAwake = false; main.loop = true; main.duration = 12; main.startLifetime = new ParticleSystem.MinMaxCurve(8, 13);
             main.startSpeed = new ParticleSystem.MinMaxCurve(.12f, .36f); main.startSize = new ParticleSystem.MinMaxCurve(6, 11);
-            main.startColor = new Color(.55f, .58f, .46f, .48f); main.maxParticles = 120;
+            main.startColor = new Color(.55f, .58f, .46f, .34f); main.maxParticles = 120;
             main.simulationSpace = ParticleSystemSimulationSpace.World; main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
             main.useUnscaledTime = false;
             var emission = ps.emission; emission.rateOverTime = 4;
@@ -79,6 +79,9 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
     {
         if (banks == null) return;
         Place(front);
+        float duck = flow.chapter.Voice && flow.chapter.Voice.Speaking ? .32f : 1;
+        Barrage.volume = Mathf.MoveTowards(Barrage.volume, .29f * duck, dt * .8f);
+        Rifles.volume = Mathf.MoveTowards(Rifles.volume, .15f * duck, dt * .6f);
         if (!active) return;
         if (!playing)
         {

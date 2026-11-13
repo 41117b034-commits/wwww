@@ -1,0 +1,119 @@
+{
+  "version": "mature-four-voices-v1",
+  "roles": {
+    "default": {
+      "voice": "zh-TW-YunJheNeural",
+      "rate": -4,
+      "pitch": -14
+    },
+    "bawan": {
+      "voice": "zh-TW-YunJheNeural",
+      "rate": -4,
+      "pitch": -14
+    },
+    "mona": {
+      "voice": "zh-CN-YunjianNeural",
+      "rate": -7,
+      "pitch": -8
+    },
+    "tado": {
+      "voice": "zh-CN-YunxiNeural",
+      "rate": -4,
+      "pitch": -14
+    },
+    "pihu": {
+      "voice": "zh-CN-YunyangNeural",
+      "rate": -5,
+      "pitch": -6
+    },
+    "female": {
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": -3,
+      "pitch": -5
+    },
+    "gumu": {
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": -8,
+      "pitch": -8
+    },
+    "lubi": {
+      "voice": "zh-TW-HsiaoYuNeural",
+      "rate": -5,
+      "pitch": -6
+    },
+    "obing": {
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": -5,
+      "pitch": -8
+    },
+    "narrator": {
+      "voice": "zh-TW-YunJheNeural",
+      "rate": -8,
+      "pitch": -14
+    }
+  },
+  "delivery": [
+    {
+      "name": "hurt_or_grief",
+      "contains": [
+        "站不起",
+        "受傷",
+        "好痛",
+        "很痛",
+        "撐不住",
+        "撐著",
+        "死了",
+        "沒能",
+        "沒回來",
+        "流血"
+      ],
+      "rate": -4,
+      "pitch": -2
+    },
+    {
+      "name": "quiet_warning",
+      "contains": [
+        "巡警",
+        "別出聲",
+        "小聲",
+        "腳步放輕",
+        "別站在",
+        "靠著岩石",
+        "埋伏"
+      ],
+      "rate": -1,
+      "pitch": -2
+    },
+    {
+      "name": "urgent",
+      "contains": [
+        "快走",
+        "快跑",
+        "趴下",
+        "退後",
+        "掩護",
+        "放開",
+        "住手",
+        "小心",
+        "別停",
+        "跟上",
+        "撤退"
+      ],
+      "rate": 3,
+      "pitch": 2
+    },
+    {
+      "name": "warm",
+      "contains": [
+        "謝謝",
+        "辛苦",
+        "平安",
+        "婚禮",
+        "庇佑",
+        "別怕"
+      ],
+      "rate": 0,
+      "pitch": 1
+    }
+  ]
+}

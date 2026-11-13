@@ -82,7 +82,11 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         Elapsed += dt;
-        FrontDistance = Mathf.Min(flow.RouteLength - 28, FrontDistance + frontSpeed * dt);
+        // The longer voiced regrouping never lets the visual front overtake
+        // the wounded formation. Players can still enter the smoke behind it.
+        float rear = float.PositiveInfinity;
+        foreach (var actor in flow.Party) if (flow.RequiredForArrival(actor)) rear = Mathf.Min(rear, actor.Progress);
+        FrontDistance = Mathf.Min(flow.RouteLength - 28, Mathf.Max(FrontDistance, Mathf.Min(rear - 12, FrontDistance + frontSpeed * dt)));
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
         UpdateObing(dt);
@@ -97,6 +101,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (Exposure >= 1)
         {
             IsCollapsed = true; collapseClock = 0;
+            chapter.Voice.Stop();
             chapter.BeginGasCollapse();
         }
     }
@@ -144,7 +149,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             gumu.MotionHeld = lubi.MotionHeld = false;
             gumu.SupportFollower = lubi;
             gumu.RouteOffset = -.35f;
-            gumu.walkSpeed = 1.25f; lubi.walkSpeed = 1.65f;
+            gumu.walkSpeed = 1.0f; lubi.walkSpeed = 1.65f;
             gumu.Pose.Set(Chapter4CompanionPose.State.Supported);
             lubi.Pose.Set(Chapter4CompanionPose.State.Supporting);
             GumuStage = RescueStage.WalkingTogether; rescueClock = 0;

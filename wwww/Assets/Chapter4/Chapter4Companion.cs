@@ -39,6 +39,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     Vector3 previousPosition;
     Transform upperArm, elbow, hand, spine;
     readonly Collider[] laneHits = new Collider[24];
+    SkinnedMeshRenderer[] faces;
     static readonly float[] pairLanes = { 0, .35f, -.65f, .65f, -.9f };
 
     public void Initialize(Chapter4Evacuation flow, Chapter4Companion predecessor, int order)
@@ -62,6 +63,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         hand = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftHand, "L_Hand", "LeftHand");
         spine = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.Spine, "Spine", "Spine1", "Spine01");
         previousPosition = transform.position;
+        faces = model.GetComponentsInChildren<SkinnedMeshRenderer>(true);
         // Player and companions may share a narrow path without creating an
         // unwinnable body-block. Terrain, trees, rocks and props remain solid.
         Physics.IgnoreCollision(Motor, flow.chapter.player.Motor);
@@ -98,6 +100,19 @@ public sealed class Chapter4Companion : MonoBehaviour
             Rig.Face(owner.chapter.player.transform.position - transform.position);
         if (SupportPartner && !AssistTarget.HasValue && !MotionHeld) Rig.Face(SupportPartner.Rig.Forward);
         previousPosition = transform.position;
+    }
+
+    void AnimateSpeech()
+    {
+        if (!owner || faces == null) return;
+        var voice = owner.chapter.Voice;
+        float weight = !IsPaused && voice && voice.SpeakerRole == actorId ? voice.MouthWeight * 80 : 0;
+        foreach (var face in faces)
+        {
+            if (!face || !face.sharedMesh) continue;
+            int jaw = face.sharedMesh.GetBlendShapeIndex(Chapter2SpeechFace.Jaw);
+            if (jaw >= 0) face.SetBlendShapeWeight(jaw, weight);
+        }
     }
 
     void Walk(float deltaTime)
@@ -223,6 +238,7 @@ public sealed class Chapter4Companion : MonoBehaviour
 
     void LateUpdate()
     {
+        AnimateSpeech();
         // An injured arm stays supported while the existing gait moves the legs.
         if (!wounded || !Rig || !upperArm || !elbow || !hand) return;
         Vector3 forward = Rig.Forward;
