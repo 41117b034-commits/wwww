@@ -269,7 +269,12 @@ public sealed class Chapter3InjuryPose : MonoBehaviour
             float sign=side==0?-1:1;
             Vector3 foot=carrier-forward*.38f+right*(sign*.34f)+Vector3.up*(height*.40f+bob);
             Quaternion sole=feet[side].rotation;
-            Chapter1IncidentRig.Solve(thighs[side],knees[side],feet[side],Vector3.Lerp(feet[side].position,foot,weight),forward+right*sign*.45f);
+            // The grounded injury targets were captured before lifting the hip.
+            // Blending from the already lifted ankle raised the feet a second
+            // time, making them rise during set-down and hover beside the player.
+            // Plant the feet before the final hip descent into the seated pose.
+            float footLift=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.5f,1f,weight));
+            Chapter1IncidentRig.Solve(thighs[side],knees[side],feet[side],Vector3.Lerp(footTargets[side],foot,footLift),forward+right*sign*.45f);
             feet[side].rotation=sole;
             Vector3 hand=carrier+forward*.14f+right*(sign*.24f)+Vector3.up*(height*.94f+bob);
             Vector3 forearm=hands[side].position-elbows[side].position;Quaternion wrist=hands[side].rotation;

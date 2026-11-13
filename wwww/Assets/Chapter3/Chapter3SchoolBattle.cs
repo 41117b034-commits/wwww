@@ -58,6 +58,10 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     readonly Dictionary<Chapter2Actor,Vector3> routeBypasses=new Dictionary<Chapter2Actor,Vector3>();
     Vector3[] activeRoute,otherRoute;
     Vector3 safePihu;
+    bool sideRetreatReleased;
+    Vector3[] sideRetreatRoute;
+    const int SideRetreatHoldIndex=10; // Wait just outside the real rear opening.
+    bool SideLeadersArrived=>guideIndex>=activeRoute.Length&&otherIndex>=otherRoute.Length;
     float noticeUntil,hurtAt=-10;
     AudioSource distantShots;
     static Vector3 P(float x,float z)=>new Vector3(x,0,z);
@@ -137,6 +141,11 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     }
     void ResetMission(bool preserveArrival=false)
     {
+        sideRetreatReleased=false;
+        sideRetreatRoute=(Vector3[])assaultBackgroundRoute.Clone();
+        // Meet on the exit side of the clearing. From either flank the player
+        // can see Tado with the approaching party behind him in the same view.
+        sideRetreatRoute[sideRetreatRoute.Length-1]=P(6,76);
         routeBypasses.Clear();
         if(Selected==Mission.Tado){ResetAssaultMission(preserveArrival);return;}
         StopAssault();ClearSchoolPoses();StopBreakthrough();guideMotor.Reset();tadoMotor.Reset();otherMotor.Reset();threatMotor.Reset();
@@ -196,6 +205,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         bool supply=combat.weapons.Selected==Chapter3Weapons.Weapon.Rifle&&Flat(player.transform.position,Ammo.position)<2;
         if(supply&&player.ActionPressed)combat.weapons.Refill();
         if(supply)ui.hint.text="E 補充備彈   ·   R 單發裝填";
+        UpdateActionPrompt(supply);
         player.speed=combat.weapons.Aiming?1.7f:Chapter3Player.WalkSpeed;
         combat.healthText.text="生命值  "+Health+" / 100";
         var w=combat.weapons;combat.ammoText.text=w.Selected==Chapter3Weapons.Weapon.Rifle?"村田十八年式  "+(w.Loaded?1:0)+" / 1   備彈 "+w.Reserve:"獵刀";
@@ -227,7 +237,7 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
     {
         // Never freeze an unresolved guard into an idle bystander at handoff.
         if(Step<(Selected==Mission.Tado?AssaultCombatStages+1:2)||Enemies.Exists(e=>e&&!e.Defeated))return;
-        StopBreakthrough();ClearSchoolPoses();
+        StopBreakthrough();ClearSchoolPoses();Menu.HideAction();
         CurrentStage=Stage.Regroup;Advancing=Returning=false;combat.weapons.Suspend();combat.hud.SetActive(false);combat.hurtOverlay.color=Color.clear;
         foreach(var e in Enemies)if(e)e.escortTarget=null;
         player.view.fieldOfView=60;player.speed=Chapter3Player.WalkSpeed;ui.Say("",null);
@@ -235,7 +245,12 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // Tado may still be inside the school when the player reaches the rear.
         // Preserve his remaining exit corners instead of cutting through a wall.
         if(Selected!=Mission.Tado){activeRoute=Selected==Mission.Bawan?westExit:eastExit;guideIndex=0;guideMotor.Reset();}
-        if(ambient)ambient.EndSkirmish();RefreshFollowGuide();
+        if(ambient)
+        {
+            if(Selected!=Mission.Tado)ambient.BeginWithdrawal(player.transform,school.tado.transform);
+            else ambient.EndSkirmish();
+        }
+        RefreshFollowGuide();
         StartCoroutine(Regroup());
     }
     IEnumerator Regroup()
@@ -246,18 +261,46 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             ui.hint.text="到校後黃色指引處集合 · WASD 移動 · 按住右鍵環視";
             yield return null;
         }
-        if(ambient)ambient.ReleaseWithdrawalAtAssembly();
         if(FollowGuide)FollowGuide.Hide();player.canMove=false;
         ui.objective.text="校後會合 · 準備沿林路撤離";ui.hint.text="";
+        if(Selected!=Mission.Tado)
+        {
+            while(!SideLeadersArrived)
+            {ui.hint.text="在空地等巴萬與比胡會合";yield return null;}
+            ui.hint.text="";
+        }
+        else if(ambient)ambient.ReleaseWithdrawalAtAssembly();
         yield return Say(school.bawan,Selected==Mission.Bawan?"我們把左邊打通了，側門已經打開。你們都到了嗎？":"左邊的通道打通了，側門已經打開。我們在這裡接應。",4.2f,Flat(player.transform.position,school.bawan.transform.position)<8);
         yield return Say(school.pihu,Selected==Mission.Pihu?"到了！剛才他替我看住警察，我才能穿過右邊。":"右邊的族人也通過了，我從那邊撤過來。",4.2f,Flat(player.transform.position,school.pihu.transform.position)<8);
+        if(Selected!=Mission.Tado)
+        {
+            sideRetreatReleased=true;
+            if(ambient&&!ambient.Withdrawing)ambient.BeginWithdrawal(player.transform,school.tado.transform);
+            ui.objective.text="校後會合 · 等達多帶族人撤出";
+            while(otherEscortIndex<assaultBackgroundRoute.Length)
+            {
+                ui.hint.text="達多正帶著族人趕來";
+                player.FocusOn(school.tado.transform.position+Vector3.up*1.2f);
+                yield return null;
+            }
+            if(ambient){ambient.ReleaseWithdrawalLeaderAtAssembly();ambient.ReleaseWithdrawalAtAssembly();}
+            ui.hint.text="";
+        }
         yield return Say(school.tado,Selected==Mission.Tado?"大家正往校後撤，後面的人會跟上。先離開學校，沿林路走！":"我帶的人正從會場撤出。先離開學校，沿後面那條林路走！",4.5f,Flat(player.transform.position,school.tado.transform.position)<8);
+        if(Selected!=Mission.Tado&&ambient)
+        {
+            // Let the player make room if they reached the clearing on a crowd
+            // member's final slot; a frozen player must never block the reunion.
+            player.canMove=true;
+            while(!ambient.WithdrawalArrived)
+            {ui.hint.text="等達多身後的族人到齊  "+ambient.WithdrawalArrivedCount+" / "+Chapter3SchoolAmbient.AmbusherCount+" · 可移到一旁讓出通道";yield return null;}
+            ui.hint.text="";
+        }
         CurrentStage=Stage.Complete;RetainSchoolCasualties();Menu.Hide();
         if(!Rescue)Rescue=gameObject.AddComponent<Chapter3Rescue>();
         Rescue.Begin(school,this);
     }
-    // Rescue takes over each leader only after that leader has walked their
-    // remaining school route. Late arrivals never block the player's reunion.
+    // Rescue takes over only after each leader has walked the remaining route.
     public bool ContinueToAssembly(Chapter2Actor actor)
     {
         var guide=Selected==Mission.Tado?school.tado:Selected==Mission.Bawan?school.bawan:school.pihu;
@@ -277,7 +320,10 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
             if(Selected==Mission.Bawan||UpdateBackgroundWestPassages())MoveRoute(actor,otherMotor,otherRoute,ref otherIndex,false);
             return otherIndex>=otherRoute.Length;
         }
-        var route=Selected==Mission.Tado?eastSquad:assaultBackgroundRoute;
+        var route=Selected==Mission.Tado?eastSquad:sideRetreatRoute;
+        if(Selected!=Mission.Tado&&!sideRetreatReleased&&otherEscortIndex>=SideRetreatHoldIndex)return false;
+        if(Selected!=Mission.Tado&&otherEscortIndex<route.Length-1)
+            route[otherEscortIndex]=Chapter3SchoolAmbient.OpenWithdrawalCorner(route[otherEscortIndex],route[otherEscortIndex+1]);
         MoveRoute(actor,tadoMotor,route,ref otherEscortIndex,false);
         return otherEscortIndex>=route.Length;
     }
@@ -289,8 +335,44 @@ public sealed partial class Chapter3SchoolBattle : MonoBehaviour
         // Leaders now keep their own assignment regardless of the chosen route.
         if(Selected==Mission.Tado)
             MoveRoute(school.pihu,tadoMotor,eastSquad,ref otherEscortIndex,false);
-        else
-            MoveRoute(school.tado,tadoMotor,assaultBackgroundRoute,ref otherEscortIndex,false);
+        else if(otherEscortIndex<SideRetreatHoldIndex)
+            ContinueToAssembly(school.tado);
+    }
+    void UpdateActionPrompt(bool supply)
+    {
+        if(Selected==Mission.Tado){Menu.HideAction();return;}
+        if(supply){Menu.ShowAction("E","補充備彈","離開補給箱後，再示意同伴行動");return;}
+        if(Selected==Mission.Pihu)
+        {
+            if(CrossingArrived&&!CurrentThreatCleared){Menu.ShowAction("!","比胡已到，先處理警察","通路安全後再一起前進");return;}
+            if(!AtCrossing||ThreatRevealing||Returning||CrossingArrived){Menu.HideAction();return;}
+            if(Flat(player.transform.position,school.pihu.transform.position)>18)
+                Menu.ShowAction("!","靠近比胡","回到能照應他的位置，再按 E 示意");
+            else Menu.ShowAction("E",Advancing?"示意比胡撤回":"示意比胡前進",
+                Advancing?"比胡正在穿越通道":CurrentThreatCleared?"警察已倒下，比胡正等你的信號":"先留意警察，準備好再示意");
+            return;
+        }
+        if(Step==0)
+        {
+            var guard=BreakthroughGuard(0);
+            if(!guard||!guard.Defeated){Menu.HideAction();return;}
+            bool near=Flat(player.transform.position,Barricades[0].position)<=3.4f;
+            Menu.ShowAction(near?"E":"!",near?"按住 E 移開門閂":"走近便門的門閂",
+                combat.weapons.Reloading?"等待裝填完成":near?"保持按住  "+Mathf.FloorToInt(WorkProgress/1.8f*100)+"%":"警察已倒下，沿箭頭到門邊");
+            return;
+        }
+        if(Step!=1){Menu.HideAction();return;}
+        bool blocking=Flat(player.transform.position,GateWorkPosition)<1.05f;
+        bool atHandle=guideIndex>=activeRoute.Length&&Flat(school.bawan.transform.position,GateWorkPosition)<=.35f;
+        if(blocking)Menu.ShowAction("!","讓出門邊位置","站到通道旁，讓巴萬走到推門處");
+        else if(!GateCommanded&&atHandle)
+        {
+            bool near=Flat(player.transform.position,school.bawan.transform.position)<=4;
+            Menu.ShowAction(near?"E":"!",near?"請巴萬推開側門":"靠近巴萬","到他身旁按 E，接著照應通道");
+        }
+        else if(GatePaused)Menu.ShowAction("!","巴萬暫停推門",Flat(player.transform.position,Barricades[1].position)>=13?"回到側門附近照應他":"留意警察，開門進度已保留");
+        else if(GateWorking)Menu.ShowAction("…","照應正在推門的巴萬","側門開啟  "+Mathf.RoundToInt(GateWorkProgress*100)+"%");
+        else Menu.HideAction();
     }
     void MoveRoute(Chapter2Actor actor,Chapter3PathMotor motor,Vector3[] route,ref int index,bool waitForPlayer,Vector3 offset=default,float maxSpeed=float.PositiveInfinity)
     {

@@ -49,6 +49,13 @@ public sealed partial class Chapter3SchoolAmbient
     public bool PlayerAtWithdrawalAssembly=>withdrawalPlayer&&Horizontal(withdrawalPlayer.position,new Vector3(0,0,78))<4;
     public bool CanFollowWithdrawal(Vector3 current,ref Vector3 target,float gap)
     {
+        if(withdrawalLeader&&!withdrawalLeaderArrived)
+        {
+            float leaderLimit=WithdrawalProgress(withdrawalLeader.position)-gap;
+            if(leaderLimit<=0||WithdrawalProgress(current)>=leaderLimit-.15f)return false;
+            if(WithdrawalProgress(target)>leaderLimit)target=WithdrawalSample(leaderLimit);
+            return true;
+        }
         if(withdrawalReleased||PlayerAtWithdrawalAssembly)return true;
         float progress=WithdrawalProgress(current);
         if(!gateReleased)return true; // Individual assembly slots keep the gate open.
@@ -58,8 +65,11 @@ public sealed partial class Chapter3SchoolAmbient
         return true;
     }
     Transform withdrawalPlayer;
+    Transform withdrawalLeader;
+    bool withdrawalLeaderArrived;
     bool withdrawalReleased;
     public void ReleaseWithdrawalAtAssembly(){if(Withdrawing)withdrawalReleased=true;}
+    public void ReleaseWithdrawalLeaderAtAssembly(){withdrawalLeaderArrived=true;}
     public bool Withdrawing {get;private set;}
     public int WithdrawalSignalFrame {get;private set;}=-1;
     public Vector3 WithdrawalDestination(int index)=>new Vector3(-4.4f+(index%5)*2.2f,0,72.5f+(index/5)*2.2f);
@@ -82,7 +92,7 @@ public sealed partial class Chapter3SchoolAmbient
             if(actor&&actor.transform.position.z<68&&Horizontal(actor.transform.position,leader)>22)return true;
         return false;
     }
-    public bool BeginWithdrawal(Transform player)
+    public bool BeginWithdrawal(Transform player,Transform leader=null)
     {
         if(!Panicking||Withdrawing||!player)return false;
         var battle=GetComponentInParent<Chapter3SchoolController>()?.Battle;
@@ -91,6 +101,8 @@ public sealed partial class Chapter3SchoolAmbient
                 battle.CampusDefeatedCount<Chapter3SchoolBattle.AssaultCombatStages))return false;
         foreach(var actor in assailants)if(!actor||!actor.gameObject.activeInHierarchy)return false;
         EndSkirmish();HideStraggler();withdrawalPlayer=player;Withdrawing=true;withdrawalReleased=false;gateReleased=false;forestFollowing=false;nextForestOrder=0;WithdrawalSignalFrame=Time.frameCount;
+        withdrawalLeader=leader;withdrawalLeaderArrived=false;
+        if(leader)gateReleased=true;
         for(int i=0;i<AmbusherCount;i++)
         {
             var actor=assailants[i];withdrawalHomes[i]=actor.transform.position;withdrawalRotations[i]=actor.transform.rotation;
@@ -213,6 +225,7 @@ public sealed partial class Chapter3SchoolAmbient
                 assailants[i].SetAnimated(true);
             }
         Withdrawing=false;withdrawalReleased=false;forestFollowing=false;nextForestOrder=0;forestFollowPosition=Vector3.zero;WithdrawalSignalFrame=-1;withdrawalPlayer=null;
+        withdrawalLeader=null;withdrawalLeaderArrived=false;
         for(int i=0;i<AmbusherCount;i++){if(assailants[i])assailants[i].FollowingWithdrawal=false;withdrawalMotors[i]?.Reset();withdrawalRoutes[i]=null;withdrawalLeg[i]=0;withdrawalReached[i]=false;forestOrder[i]=-1;}
     }
     void UpdateWithdrawal()
@@ -257,6 +270,7 @@ public sealed partial class Chapter3SchoolAmbient
                 Chapter3PathMotor.Clear(current,route[withdrawalLeg[i]+1]);
             if(Horizontal(current,target)<arrival||canTurn||passedMerge)
             {
+                if(withdrawalLeg[i]==route.Length-1&&withdrawalLeader&&!withdrawalLeaderArrived)continue;
                 withdrawalLeg[i]++;
                 // A settled participant is now a standing obstacle. Later
                 // arrivals must plan around them to reach the rear row.
