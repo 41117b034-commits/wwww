@@ -45,7 +45,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
             var main = ps.main;
             main.playOnAwake = false; main.loop = true; main.duration = 12; main.startLifetime = new ParticleSystem.MinMaxCurve(8, 13);
             main.startSpeed = new ParticleSystem.MinMaxCurve(.12f, .36f); main.startSize = new ParticleSystem.MinMaxCurve(6, 11);
-            main.startColor = new Color(.55f, .58f, .46f, .34f); main.maxParticles = 120;
+            main.startColor = new Color(.50f, .52f, .47f, .48f); main.maxParticles = 180;
             main.simulationSpace = ParticleSystemSimulationSpace.World; main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
             main.useUnscaledTime = false;
             var emission = ps.emission; emission.rateOverTime = 4;
@@ -120,6 +120,24 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         var emit = new ParticleSystem.EmitParams { position = position + Vector3.up * .9f,
             startSize = 5, startLifetime = 5, startColor = new Color(.64f, .66f, .54f, .25f), velocity = Vector3.up * .12f };
         banks[0].Emit(emit, 4);
+    }
+
+    public void BlastAt(Vector3 position, bool warning)
+    {
+        if (banks == null) return;
+        int count = warning ? 5 : 24;
+        for (int i = 0; i < count; i++)
+        {
+            float angle = i * 2.39996f;
+            var emit = new ParticleSystem.EmitParams {
+                position = position + new Vector3(Mathf.Cos(angle), .2f, Mathf.Sin(angle)) * (warning ? .3f : 1.3f),
+                startSize = warning ? 1.4f : 2.8f + i % 4,
+                startLifetime = warning ? 2.8f : 3.5f + i % 3,
+                startColor = warning ? new Color(.59f, .48f, .32f, .7f) : new Color(.32f, .28f, .22f, .65f),
+                velocity = warning ? Vector3.up * .8f : new Vector3(Mathf.Cos(angle) * 2, 1.1f + i % 4, Mathf.Sin(angle) * 2)
+            };
+            banks[0].Emit(emit, 1);
+        }
     }
 
     public void ResetSmoke(float front)

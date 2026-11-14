@@ -25,10 +25,13 @@ public sealed class Chapter4Player : MonoBehaviour
     public bool ContactPressed { get; private set; }
     public bool IsGrounded => motor && motor.enabled && motor.isGrounded;
     public CharacterController Motor => motor;
+    public Chapter4Evacuation Evacuation { get; set; }
+    public bool IsBracing { get; private set; }
+    public float CurrentSpeed => speed * (Evacuation ? 1.15f : 1) * (IsBracing ? .55f : 1);
 
     CharacterController motor;
     Vector3 desktopEyePosition;
-    float pitch, verticalSpeed, nextSnapTime, collapseWeight;
+    float pitch, verticalSpeed, nextSnapTime, collapseWeight, braceWeight;
     bool focused = true, previousMenu, previousTrigger, previousLeftTrigger, floorTracking;
     int ignoreLookThroughFrame;
     readonly List<XRInputSubsystem> xrSubsystems = new List<XRInputSubsystem>();
@@ -77,7 +80,7 @@ public sealed class Chapter4Player : MonoBehaviour
                 view.transform.localRotation = rotation;
         }
         else if (view)
-            view.transform.localPosition = desktopEyePosition - Vector3.up * (desktopEyePosition.y * .62f * collapseWeight);
+            view.transform.localPosition = desktopEyePosition - Vector3.up * (desktopEyePosition.y * .62f * collapseWeight + .36f * braceWeight);
 
         var left = XRInputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         var right = XRInputDevices.GetDeviceAtXRNode(XRNode.RightHand);
@@ -124,6 +127,9 @@ public sealed class Chapter4Player : MonoBehaviour
 
         Vector2 input = Vector2.zero;
         var keyboard = Keyboard.current;
+        right.TryGetFeatureValue(XRUsages.gripButton, out bool grip);
+        IsBracing = keyboard?.leftCtrlKey.isPressed == true || keyboard?.rightCtrlKey.isPressed == true || IsVR && grip;
+        braceWeight = Mathf.MoveTowards(braceWeight, IsBracing ? 1 : 0, Time.deltaTime * 5);
         if (keyboard != null)
             input = new Vector2((keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0),
                 (keyboard.wKey.isPressed ? 1 : 0) - (keyboard.sKey.isPressed ? 1 : 0));
@@ -138,7 +144,7 @@ public sealed class Chapter4Player : MonoBehaviour
 
         Vector3 forward = Vector3.ProjectOnPlane(view.transform.forward, Vector3.up).normalized;
         if (forward.sqrMagnitude < .01f) forward = transform.forward;
-        Vector3 velocity = Vector3.ClampMagnitude(forward * input.y + Vector3.Cross(Vector3.up, forward) * input.x, 1) * speed;
+        Vector3 velocity = Vector3.ClampMagnitude(forward * input.y + Vector3.Cross(Vector3.up, forward) * input.x, 1) * CurrentSpeed;
         verticalSpeed = IsGrounded ? -2 : Mathf.Max(-25, verticalSpeed - 20 * Time.deltaTime);
         velocity.y = verticalSpeed;
         Move(velocity * Time.deltaTime);
@@ -146,12 +152,13 @@ public sealed class Chapter4Player : MonoBehaviour
 
     public void Move(Vector3 displacement)
     {
-        if (canMove && motor && motor.enabled) motor.Move(displacement);
+        if (canMove && motor && motor.enabled) motor.Move(Evacuation ? Evacuation.ConstrainPlayerStep(transform.position, displacement) : displacement);
     }
 
     public void SetInputEnabled(bool enabled)
     {
         canMove = canLook = enabled;
+        if (!enabled) IsBracing = false;
         ignoreLookThroughFrame = Time.frameCount + 1;
         if (!enabled) ReleasePointer();
     }

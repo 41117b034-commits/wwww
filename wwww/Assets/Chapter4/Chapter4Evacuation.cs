@@ -23,6 +23,10 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public int SignalCount { get; private set; }
     public bool PartyGathered => CurrentStage == Stage.Gathered;
     public bool Regrouping => regrouping;
+    public bool OpeningRush => initialized && LegIndex == 0 && SignalCount == 0;
+    public float AdvanceLimit => LegEnd + 1.2f;
+    public bool BoundaryBlocked => Time.time - blockedAt < .7f;
+    public int BlockedSteps { get; private set; }
     public bool ArrivalReady => PartyGathered && !chapter.Voice.Busy;
     public int ActivePartyCount => party.Count;
     public IReadOnlyList<Chapter4Companion> Party => party;
@@ -36,7 +40,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     Vector3[] route;
     float[] lengths;
     float stageClock;
-    int openingLine = -1;
+    float blockedAt = -100;
     bool initialized;
     bool regrouping;
     string contextualHint;
@@ -64,10 +68,13 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         chapter.presentation.SetCarryover(InheritedBihu == BihuState.Rescued ? "比胡獲救・隨傷患先行" :
             InheritedBihu == BihuState.Dead ? "比胡已於第三章死亡" : "尚無有效第三章結果・比胡狀態未確認");
         chapter.presentation.signalButton.onClick.AddListener(TrySignal);
-        chapter.player.SetInputEnabled(false);
+        chapter.player.Evacuation = this;
+        chapter.player.SetInputEnabled(true);
         CurrentStage = Stage.Opening;
         initialized = true;
-        ShowOpeningLine(0);
+        // People flee as the first order is spoken. No dialogue input lock.
+        for (int i = 0; i < party.Count; i++) party[i].FollowTo(Mathf.Max(1, 12 - i * 1.2f), i * .18f);
+        Say("mona", "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。", 0);
         UpdateHUD();
     }
 
@@ -76,26 +83,20 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         if (!initialized || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         stageClock += dt;
-        if (CurrentStage != Stage.Opening && !PartyGathered) TrackScoutedTrail();
+        if (!PartyGathered) TrackScoutedTrail();
         if (CurrentStage == Stage.Opening)
         {
-            if (!chapter.Voice.Busy)
+            if (stageClock >= 1.5f)
             {
-                if (openingLine < 5) ShowOpeningLine(openingLine + 1);
-                else
-                {
-                    ClearSpeech();
-                    CurrentStage = Stage.Scouting;
-                    chapter.player.SetInputEnabled(true);
-                    stageClock = 0;
-                    if (chapter.gas) chapter.gas.CaptureCheckpoint(0);
-                }
+                CurrentStage = Stage.Scouting;
+                stageClock = 0;
+                Say("bawan", "你先去前面探路。走過岔路，確認能通行，再抬手示意我們跟上。", 0);
+                if (chapter.gas) chapter.gas.CaptureCheckpoint(0);
             }
         }
         else if (CurrentStage == Stage.Scouting || CurrentStage == Stage.ReadyToSignal)
         {
-            bool ready = !regrouping && ScoutedDistance >= LegEnd - 2.2f && AtScoutTarget();
-            if (regrouping && !chapter.Voice.Busy) regrouping = false;
+            bool ready = ScoutedDistance >= LegEnd - 2.2f && AtScoutTarget();
             CurrentStage = ready ? Stage.ReadyToSignal : Stage.Scouting;
             if (chapter.player.InteractPressed) TrySignal();
         }
@@ -113,13 +114,12 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                         ? "主隊到集合地了。古慕和露比都跟上了，歐冰還在後方。先讓傷患歇一口氣。"
                         : "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。", 6.5f);
                     Say("lubi", "古慕，坐穩了再鬆手。我在你旁邊，你先慢慢把氣喘勻。", 8);
-                    Say("gumu", "我到這裡了……露比，謝謝你一直扶著我。先看看其他人有沒有需要照應。", 10);
-                    Say("mona", "先讓傷患休息，其他人守住通路。到了集合地，仍然要留意山下的動靜。", 11);
                 }
                 else
                 {
                     float checkpointDistance = LegEnd;
                     LegIndex++;
+                    ScoutedDistance = Mathf.Min(ScoutedDistance, checkpointDistance);
                     CurrentStage = Stage.Scouting;
                     Say("bawan", chapter.gas && chapter.gas.ObingSeparated
                         ? "主隊跟上了。露比正扶著古慕，歐冰還在後方。你先確認下一段通路。"
@@ -135,10 +135,8 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     void TrackScoutedTrail()
     {
-        // Keep observing real exploration while the party is moving, so a
-        // player who scouts ahead need not walk the same stretch a second time.
-        // Signals still require the current party leg to have finished.
-        float projected = ProjectProgress(chapter.player.transform.position, Mathf.Max(0, ScoutedDistance - 2), Mathf.Min(RouteLength, ScoutedDistance + 4));
+        // Future sections cannot be banked before the party really arrives.
+        float projected = ProjectProgress(chapter.player.transform.position, Mathf.Max(0, ScoutedDistance - 2), Mathf.Min(LegEnd, ScoutedDistance + 4));
         Vector3 point = PointOnRoute(projected);
         if (chapter.player.IsGrounded && FlatDistance(point, chapter.player.transform.position) < 3.1f &&
             Mathf.Abs(point.y - chapter.player.transform.position.y) < 1.3f)
@@ -168,25 +166,6 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     bool AtScoutTarget() => chapter.player.IsGrounded && FlatDistance(chapter.player.transform.position, ScoutTarget) <= 2.6f &&
         Mathf.Abs(chapter.player.transform.position.y - ScoutTarget.y) <= 1.3f;
 
-    void ShowOpeningLine(int index)
-    {
-        openingLine = index;
-        stageClock = 0;
-        if (index == 0) Say("mona", "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。", OpeningDuration(index));
-        else if (index == 1)
-            Say("bawan", InheritedBihu == BihuState.Rescued
-                ? "比胡被你救回來了，傷還沒好。達多會照應他，讓他和傷患走在前面。"
-                : InheritedBihu == BihuState.Dead
-                    ? "比胡已經死了。我們記著他，也要把眼前的人帶出去。達多，先照應傷患。"
-                    : "達多，先照應傷患，讓他們走在前面。大家看好身邊的人。", OpeningDuration(index));
-        else if (index == 2) Say("bawan", "你先去前面探路。走過岔路，確認能通行，再抬手示意我們跟上。", OpeningDuration(index));
-        else if (index == 3) Say("bawan", "我留在隊伍旁照應。等大家走到你那裡，我會回報，再由你繼續領路。", OpeningDuration(index));
-        else if (index == 4) Say("tado", "傷患跟著我，腳步放穩。走到轉彎處先看清前一個人，別只顧著往聲音的方向跑。", 12);
-        else Say("obing", "我在隊伍後面照看。岔路若看不見大家，請把方向喊給我聽，我會循著通路跟上。", 12);
-    }
-
-    static float OpeningDuration(int index) => index == 1 ? 7.2f : 6f;
-
     public bool RequiredForArrival(Chapter4Companion actor) => !chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing" || chapter.contact && chapter.contact.Responded;
 
     public void Announce(string actorId, string text, float seconds) { Say(actorId, text, seconds); }
@@ -212,27 +191,41 @@ public sealed class Chapter4Evacuation : MonoBehaviour
 
     void RegroupDialogue(int leg)
     {
-        regrouping = true;
+        regrouping = false;
         if (leg == 1)
-        {
-            Say("tado", "先在這段較寬的路邊站穩。前面的人不要擠在一起，留出讓傷患轉身的地方。", 11);
-            Say("lubi", "古慕，把重量靠過來。腳下有突出的石頭，我們一步一步跨過去，不用趕著追。", 11);
-            Say("gumu", "我還能走。只是胸口悶，腳也使不上力……讓我靠著你，慢慢走。", 10);
-            Say("bawan", "前面是岔路。你去確認上坡那條通路，也留意歐冰的聲音；找到方向，可以喊給她聽。", 12);
-        }
+            Say("bawan", "前面是岔路。你去確認上坡那條通路，也留意歐冰的聲音；找到方向，可以喊給她聽。", 0);
         else if (leg == 2)
-        {
-            Say("lubi", "這一段終於走過來了。古慕，先站穩，抓好我的肩，我不會把你留在這裡。", 11);
-            Say("gumu", "我聽得見。你先換一口氣，我會抓緊。等大家排好，我們再一起走。", 10);
-            Say("tado", "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。", 11);
-            Say("bawan", "再往前就是最後的岩肩。看清通往集合地的方向，再示意隊伍過去。", 10);
-        }
+            Say("tado", "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。", 0);
         else
+            Say("lubi", "古慕，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。", 0);
+    }
+
+    // Enforce the active fire corridor for every desktop/XR/fixture Move.
+    // Restrict displacement, never teleport the player back after crossing.
+    public Vector3 ConstrainPlayerStep(Vector3 from, Vector3 displacement)
+    {
+        if (!initialized || PartyGathered) return displacement;
+        Vector3 horizontal = Vector3.ProjectOnPlane(displacement, Vector3.up);
+        if (Allowed(from + horizontal, from)) return displacement;
+        float low = 0, high = 1;
+        for (int i = 0; i < 9; i++)
         {
-            Say("mona", "前面的人放慢，留意後方。讓傷患先到平坦的地方，不要在最後一段散開。", 11);
-            Say("lubi", "古慕，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。", 10);
-            Say("gumu", "我看見了……我跟著你。到了那裡，讓我們先坐一下，再清點身邊的人。", 11);
+            float mid = (low + high) * .5f;
+            if (Allowed(from + horizontal * mid, from)) low = mid; else high = mid;
         }
+        blockedAt = Time.time; BlockedSteps++;
+        return horizontal * low + Vector3.up * displacement.y;
+    }
+
+    bool Allowed(Vector3 candidate, Vector3 from)
+    {
+        float progress = ProjectProgress(candidate, 0, RouteLength);
+        float current = ProjectProgress(from, 0, RouteLength);
+        if (progress > AdvanceLimit && progress > current + .001f) return false;
+        float distance = FlatDistance(candidate, PointOnRoute(progress));
+        float oldDistance = FlatDistance(from, PointOnRoute(current));
+        bool camp = LegIndex == 0 && progress < 3 && FlatDistance(candidate, PointOnRoute(0)) < 12;
+        return camp || distance <= 4.6f || distance < oldDistance;
     }
 
     void UpdateHUD()
@@ -240,20 +233,25 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         var ui = chapter.presentation;
         bool opening = CurrentStage == Stage.Opening, following = CurrentStage == Stage.Following;
         bool separated = chapter.gas && chapter.gas.ObingSeparated;
-        ui.SetObjective(opening ? "聽莫那與巴萬交代撤離" : regrouping ? "傷患整隊・聽同伴交代下一段通路" : PartyGathered ? (separated ? "主隊已抵達集合地" : "隊伍已抵達集合地") :
-            following ? "等候隊伍沿路跟上" : "探路：" + legs[LegIndex].title);
+        string[] orders = { "穿過落彈林路，到前方彎道示意", "避開低處濃煙，確認上坡通路", "穿過岩肩，接應後方同伴", "帶隊離開火線，前往集合地" };
+        ui.SetObjective(opening ? "砲擊逼近！立刻離開營地" : PartyGathered ? (separated ? "主隊已抵達集合地" : "隊伍已抵達集合地") :
+            following ? "留在彎道接應隊伍，避開落彈" : orders[Mathf.Clamp(LegIndex, 0, 3)]);
         int arrived = 0, required = 0;
         foreach (var actor in party) if (RequiredForArrival(actor)) { required++; if (actor.AtDestination) arrived++; }
-        ui.SetPartyStatus((opening ? "傷患先行・巴萬照應隊伍" : PartyGathered ? "主隊集結　" + required + "／" + required :
+        ui.SetPartyStatus((opening ? "隊伍正在撤離・邊走邊聽交代" : PartyGathered ? "主隊集結　" + required + "／" + required :
             following ? "隊伍前進中　" + arrived + "／" + required + " 抵達" :
             "第 " + (LegIndex + 1) + "／" + legs.Length + " 段　前方 " + Mathf.CeilToInt(FlatDistance(chapter.player.transform.position, ScoutTarget)) + " 公尺") +
             (separated ? "・歐冰在後方" : ""));
         contextualHint = CurrentStage == Stage.ReadyToSignal
             ? (chapter.player.IsVR ? "通路已確認・按右扳機示意隊伍前進" : "通路已確認・按 E 示意隊伍前進")
-            : following ? "巴萬正照應隊伍。可以回看同伴，等大家抵達再探下一段。"
-            : opening || PartyGathered ? "" : BranchHint();
+            : BoundaryBlocked ? "留在撤離通路！本段隊伍到齊前，前方火線尚未解除。"
+            : following ? (chapter.player.IsVR ? "留在這段接應・握住右握把壓低身體，避開落彈" : "留在這段接應・按住 Ctrl 壓低身體，避開落彈")
+            : opening ? "砲火已到營地！沿箭頭撤離，對話中也能行動。" : PartyGathered ? "" : BranchHint();
         ui.SetInteraction(contextualHint, CurrentStage == Stage.ReadyToSignal);
-        ui.SetNavigation(chapter.player.view, PointOnRoute(Mathf.Min(LegEnd, ScoutedDistance + 6)), !opening && !following && !PartyGathered);
+        string nearLabel = CurrentStage == Stage.ReadyToSignal
+            ? (chapter.player.IsVR ? "按右扳機接應隊伍" : "按 E 接應隊伍")
+            : following ? "回看隊伍・留意落彈" : "";
+        ui.SetNavigation(chapter.player.view, following ? ScoutTarget : PointOnRoute(Mathf.Min(LegEnd, ScoutedDistance + 6)), !PartyGathered, nearLabel);
     }
 
     string BranchHint()
@@ -264,7 +262,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
             if (FlatDistance(chapter.player.transform.position, group.GetChild(group.childCount - 1).position) < 4)
                 return "這條支路被擋住了，回到岔路，沿能通行的山路探查。";
         }
-        return "隊伍在後方等候。沿山路探查，確認通路後再示意。";
+        return "後方濃煙正在逼近。沿箭頭確認這段通路，按 E 接應隊伍。";
     }
 
     public Vector3 PointOnRoute(float distance)

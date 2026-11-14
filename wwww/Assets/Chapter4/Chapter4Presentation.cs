@@ -24,6 +24,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Text contactText;
     public GameObject endingPanel;
     public Text endingKicker, endingTitle, endingBody, endingFooter;
+    public Text retreatWarning;
 
     bool vr;
     bool controlsInitialized;
@@ -45,8 +46,8 @@ public sealed class Chapter4Presentation : MonoBehaviour
         controlsInitialized = true;
         controlsVR = useVR;
         if (controls) controls.text = useVR
-            ? "左搖桿移動　右搖桿轉向　右扳機示意　左扳機聯絡　選單鍵暫停；注視並按右扳機選取"
-            : "WASD 移動　右鍵環視　E 示意隊伍　F 聯絡歐冰　Esc 選單　R 重試";
+            ? "左搖桿移動　右搖桿轉向　右握把低身　右扳機示意　左扳機聯絡　選單暫停"
+            : "WASD 撤離　Ctrl 低身　右鍵環視　E 示意　F 聯絡歐冰　Esc 選單　R 重試";
     }
 
     public void EnsureEndingUI()
@@ -116,6 +117,45 @@ public sealed class Chapter4Presentation : MonoBehaviour
         gasVeil.color = new Color(.16f, .19f, .13f, Mathf.Max(exposure * .26f, collapse * .82f));
     }
 
+    public void EnsureRetreatUI()
+    {
+        if (retreatWarning) return;
+        // Keep the middle of the view open while orders are spoken on the move.
+        Place(objective.transform.parent, .025f, .865f, .40f, .975f);
+        foreach (var label in objective.transform.parent.GetComponentsInChildren<Text>()) label.fontSize = 21;
+        objective.fontSize = 23;
+        Place(carryover.transform.parent, .025f, .78f, .40f, .855f);
+        carryover.fontSize = 17; partyStatus.fontSize = 21;
+        Place(gasStatus.transform.parent, .025f, .69f, .40f, .775f); gasStatus.fontSize = 19;
+        Place(speechPanel.transform, .16f, .11f, .84f, .24f);
+        speechPanel.GetComponent<Image>().color = new Color(.035f, .047f, .04f, .78f);
+        speakerName.fontSize = 20; speechText.fontSize = 25;
+        Place(signalButton.transform, .12f, .26f, .88f, .315f); interaction.fontSize = 21;
+        Place(controls.transform.parent, .065f, .025f, .935f, .07f); controls.fontSize = 19;
+        Place(navigation.transform, .70f, .89f, .975f, .96f); navigation.fontSize = 26;
+        if (contactButton) { Place(contactButton.transform, .52f, .70f, .975f, .79f); contactText.fontSize = 21; }
+        var panel = Panel(canvas.transform, "砲火與撤離警示", new Vector2(.44f, .80f), new Vector2(.975f, .87f), new Color(.08f, .055f, .035f, .84f), false);
+        retreatWarning = Label(panel, "", objective.font, 24, new Vector2(.025f, .05f), new Vector2(.975f, .95f));
+        retreatWarning.alignment = TextAnchor.MiddleCenter;
+        panel.gameObject.SetActive(false);
+        menuPanel.transform.SetAsLastSibling();
+    }
+
+    static void Place(Transform item, float left, float bottom, float right, float top)
+    {
+        var rect = (RectTransform)item;
+        rect.anchorMin = new Vector2(left, bottom); rect.anchorMax = new Vector2(right, top);
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+    }
+
+    public void SetThreatCue(string text, float intensity)
+    {
+        if (!retreatWarning) return;
+        retreatWarning.text = text;
+        retreatWarning.color = Color.Lerp(new Color(.96f, .87f, .66f), new Color(1, .68f, .35f), Mathf.Clamp01(intensity));
+        retreatWarning.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
+    }
+
     public void EnsureStoryUI()
     {
         if (speechPanel) return;
@@ -158,12 +198,14 @@ public sealed class Chapter4Presentation : MonoBehaviour
         signalButton.GetComponent<Image>().raycastTarget = ready;
         interaction.color = ready ? new Color(1, .88f, .58f) : new Color(.90f, .91f, .86f);
     }
-    public void SetNavigation(Camera view, Vector3 target, bool visible)
+    public void SetNavigation(Camera view, Vector3 target, bool visible, string nearLabel = "")
     {
         if (!navigation) return;
         navigation.gameObject.SetActive(visible);
         if (!visible || !view) return;
         Vector3 direction = Vector3.ProjectOnPlane(target - view.transform.position, Vector3.up);
+        if (direction.sqrMagnitude < 3.2f * 3.2f && !string.IsNullOrEmpty(nearLabel))
+        { navigation.text = nearLabel; return; }
         float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(view.transform.forward, Vector3.up), direction, Vector3.up);
         navigation.text = Mathf.Abs(angle) > 115 ? "回頭沿路探查" : angle < -25 ? "← 沿路探查" : angle > 25 ? "沿路探查 →" : "↑ 沿路探查";
     }

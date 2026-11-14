@@ -25,6 +25,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     public Chapter4Companion SupportFollower { get; set; }
     public Vector3? AssistTarget { get; set; }
     public bool IsPaused => owner && owner.chapter.WorldFrozen;
+    public Chapter4SceneController RetreatChapter => owner ? owner.chapter : null;
     // A formation slot is an arrival area, not an exact point that can lie on
     // the edge of a roadside rock. Both route progress and physical distance
     // must agree before the party controller counts this character as arrived.
@@ -45,6 +46,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     public void Initialize(Chapter4Evacuation flow, Chapter4Companion predecessor, int order)
     {
         owner = flow;
+        walkSpeed = wounded ? 1.7f : 2.15f;
         ahead = predecessor;
         Motor = GetComponent<CharacterController>();
         var animator = model.GetComponentInChildren<Animator>();
@@ -88,7 +90,7 @@ public sealed class Chapter4Companion : MonoBehaviour
             if (!MotionHeld)
             {
                 if (AssistTarget.HasValue) StepToward(AssistTarget.Value, Time.deltaTime);
-                else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || IndependentFollow) && travelClock >= releaseAt)
+                else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || owner.OpeningRush || IndependentFollow) && travelClock >= releaseAt)
                     Walk(Time.deltaTime);
             }
         }
@@ -124,16 +126,20 @@ public sealed class Chapter4Companion : MonoBehaviour
             return;
         }
         if (SupportFollower && Chapter4Evacuation.FlatDistance(transform.position, SupportFollower.transform.position) > 1.12f) return;
-        if (ahead && (!ahead.JoinedRoute || ahead.Progress < .9f)) return;
-        float limit = ahead ? Mathf.Min(destination, ahead.Progress - 1.35f) : destination;
+        // At the first shelling everyone leaves their own camp position.
+        // Do not make the whole cast wait for the wounded leader to join a queue.
+        bool rushing = owner.OpeningRush;
+        if (!rushing && ahead && (!ahead.JoinedRoute || ahead.Progress < .9f)) return;
+        float limit = ahead && !rushing ? Mathf.Min(destination, ahead.Progress - 1.35f) : destination;
         if (JoinedRoute && Progress >= limit - .06f) return;
         if (SupportFollower && JoinedRoute) SelectPairLane(limit);
-        Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(0);
+        float entry = rushing ? owner.ProjectProgress(transform.position, 0, destination) : 0;
+        Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(entry);
         StepToward(target, deltaTime);
         if (!JoinedRoute)
         {
-            if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(0), Vector3.up).magnitude < .18f)
-                JoinedRoute = true;
+            if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(entry), Vector3.up).magnitude < .18f)
+            { JoinedRoute = true; Progress = entry; }
         }
         else Progress = Mathf.Max(Progress, owner.ProjectProgress(transform.position, Progress, Mathf.Min(destination, Progress + 1.5f)));
     }

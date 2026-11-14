@@ -12,6 +12,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     public Chapter4Contact contact;
     public Chapter4Ending ending;
     public Chapter4Voice Voice { get; private set; }
+    public Chapter4RetreatPressure Retreat { get; private set; }
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -54,6 +55,8 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (evacuation) evacuation.Begin();
         if (gas) gas.Begin();
         if (contact) contact.Begin();
+        Retreat = gameObject.AddComponent<Chapter4RetreatPressure>();
+        Retreat.Initialize(this);
     }
 
     void Update()
@@ -140,7 +143,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (ending && ending.CurrentStage == Chapter4Ending.Stage.SaveFailed) { ending.RetrySave(); return; }
         IsPaused = false;
         presentation.HideMenu();
-        player.SetInputEnabled((!ending || !ending.HasStarted) && (!evacuation || evacuation.CurrentStage != Chapter4Evacuation.Stage.Opening));
+        player.SetInputEnabled(!ending || !ending.HasStarted);
     }
 
     public void ShowEndingSaveFailure()
