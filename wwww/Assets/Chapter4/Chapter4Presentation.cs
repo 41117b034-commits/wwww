@@ -25,6 +25,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public GameObject endingPanel;
     public Text endingKicker, endingTitle, endingBody, endingFooter;
     public Text retreatWarning;
+    public Text impactTarget;
 
     bool vr;
     bool controlsInitialized;
@@ -154,6 +155,31 @@ public sealed class Chapter4Presentation : MonoBehaviour
         retreatWarning.text = text;
         retreatWarning.color = Color.Lerp(new Color(.96f, .87f, .66f), new Color(1, .68f, .35f), Mathf.Clamp01(intensity));
         retreatWarning.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
+    }
+
+    public void SetImpactTarget(Camera view, Vector3 position, float seconds, bool active, bool inside)
+    {
+        if (!impactTarget)
+        {
+            var panel = Panel(canvas.transform, "精確落點倒數", Vector2.one * .5f, Vector2.one * .5f, new Color(.12f, .035f, .02f, .94f), false);
+            panel.sizeDelta = new Vector2(290, 68);
+            var border = panel.gameObject.AddComponent<Outline>(); border.effectColor = new Color(1, .9f, .65f); border.effectDistance = new Vector2(2, -2);
+            impactTarget = Label(panel, "", objective.font, 22, new Vector2(.025f, .025f), new Vector2(.975f, .975f));
+            impactTarget.alignment = TextAnchor.MiddleCenter;
+            menuPanel.transform.SetAsLastSibling();
+        }
+        impactTarget.transform.parent.gameObject.SetActive(active);
+        if (!active || !view) return;
+        Vector3 point = view.WorldToViewportPoint(position + Vector3.up * 1.8f);
+        Vector3 local = view.transform.InverseTransformPoint(position);
+        bool behind = point.z <= 0;
+        Vector2 anchor = behind ? new Vector2(local.x < 0 ? .15f : .85f, .44f)
+            : new Vector2(Mathf.Clamp(point.x, .15f, .85f), Mathf.Clamp(point.y, .39f, .69f));
+        var rect = (RectTransform)impactTarget.transform.parent;
+        rect.anchorMin = rect.anchorMax = anchor; rect.anchoredPosition = Vector2.zero;
+        string direction = behind ? "後方落點" : point.x < 0 ? "← 左側落點" : point.x > 1 ? "右側落點 →" : "▼ 落點";
+        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (inside ? "危險！移出白色外圈" : "已在爆炸範圍外");
+        impactTarget.color = inside ? new Color(1, .85f, .46f) : new Color(.81f, 1, .85f);
     }
 
     public void EnsureStoryUI()

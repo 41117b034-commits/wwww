@@ -56,7 +56,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         Rig.smoothLocomotion = true;
         Rig.BeginDepartureWalk(order * .72f);
         Rig.walking = false;
-        Rig.Face(flow.chapter.player.transform.position - transform.position);
+        Rig.Face(flow.PointOnRoute(6) - flow.PointOnRoute(0));
         Rig.Ground(transform.position.y);
         Pose = gameObject.AddComponent<Chapter4CompanionPose>();
         Pose.Initialize(this, animator);
@@ -98,8 +98,8 @@ public sealed class Chapter4Companion : MonoBehaviour
         Rig.frozen = IsPaused;
         Rig.speakingWeight = Speaking && !IsPaused ? .6f : 0;
         Rig.Ground(transform.position.y);
-        if (!Walking && Speaking && !MotionHeld && !SupportPartner && !SupportFollower)
-            Rig.Face(owner.chapter.player.transform.position - transform.position);
+        // Orders are called over the shoulder while retreating. Speech must not
+        // turn an otherwise forward-facing body back toward the player.
         if (SupportPartner && !AssistTarget.HasValue && !MotionHeld) Rig.Face(SupportPartner.Rig.Forward);
         previousPosition = transform.position;
     }
@@ -134,12 +134,13 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (JoinedRoute && Progress >= limit - .06f) return;
         if (SupportFollower && JoinedRoute) SelectPairLane(limit);
         float entry = rushing ? owner.ProjectProgress(transform.position, 0, destination) : 0;
-        Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(entry);
+        Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(rushing ? Mathf.Min(destination, entry + 3) : entry);
         StepToward(target, deltaTime);
         if (!JoinedRoute)
         {
-            if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(entry), Vector3.up).magnitude < .18f)
-            { JoinedRoute = true; Progress = entry; }
+            float joinedAt = rushing ? owner.ProjectProgress(transform.position, 0, destination) : entry;
+            if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(joinedAt), Vector3.up).magnitude < .20f)
+            { JoinedRoute = true; Progress = joinedAt; }
         }
         else Progress = Mathf.Max(Progress, owner.ProjectProgress(transform.position, Progress, Mathf.Min(destination, Progress + 1.5f)));
     }
@@ -153,7 +154,7 @@ public sealed class Chapter4Companion : MonoBehaviour
             Motor.Move(delta.normalized * step + Vector3.down * (2f * deltaTime));
             Vector3 moved = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up);
             Walking = moved.magnitude > .0005f;
-            if (Walking) Rig.Face(moved);
+            if (Walking) Rig.Face(Vector3.RotateTowards(Rig.Forward, moved.normalized, 220 * Mathf.Deg2Rad * deltaTime, 0));
         }
     }
 
