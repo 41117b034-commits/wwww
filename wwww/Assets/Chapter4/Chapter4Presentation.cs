@@ -233,7 +233,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         if (direction.sqrMagnitude < 3.2f * 3.2f && !string.IsNullOrEmpty(nearLabel))
         { navigation.text = nearLabel; return; }
         float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(view.transform.forward, Vector3.up), direction, Vector3.up);
-        navigation.text = Mathf.Abs(angle) > 115 ? "回頭沿路探查" : angle < -25 ? "← 沿路探查" : angle > 25 ? "沿路探查 →" : "↑ 沿路探查";
+        navigation.text = Mathf.Abs(angle) > 115 ? "回頭接應隊伍" : angle < -25 ? "← 沿路撤離" : angle > 25 ? "沿路撤離 →" : "↑ 沿路撤離";
     }
 
     public void ShowMenu(string title, string message, string continueText)

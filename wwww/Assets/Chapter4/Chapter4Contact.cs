@@ -18,12 +18,9 @@ public sealed class Chapter4Contact : MonoBehaviour
         get
         {
             if (!initialized || Responded || chapter.WorldFrozen || flow.Regrouping || chapter.gas.IsCollapsed || !chapter.gas.ObingSeated) return 0;
-            int leg = flow.LegIndex;
-            if (leg != 1 && leg != 2) return 0;
-            if (flow.ScoutedDistance < flow.LegEnd - 2.2f || !chapter.player.IsGrounded ||
-                Chapter4Evacuation.FlatDistance(chapter.player.transform.position, flow.ScoutTarget) > 5 ||
-                Mathf.Abs(chapter.player.transform.position.y - flow.ScoutTarget.y) > 1.3f) return 0;
-            return leg;
+            float p = flow.PlayerProgress;
+            if (!chapter.player.IsGrounded || Mathf.Abs(chapter.player.transform.position.y - flow.PointOnRoute(p).y) > 1.3f) return 0;
+            return p >= 96 && p <= 111 ? 1 : p >= 130 && p <= 144 ? 2 : 0;
         }
     }
 
@@ -44,6 +41,10 @@ public sealed class Chapter4Contact : MonoBehaviour
     void Update()
     {
         if (!initialized || chapter.WorldFrozen) return;
+        // Continuous following no longer has a per-leg E that closes an opportunity.
+        // Passing a call site counts even if the player never stops there.
+        if (flow.PlayerProgress > 111) OpportunityMask |= 1;
+        if (flow.PlayerProgress > 144) OpportunityMask |= 2;
         int opportunity = AvailableOpportunity;
         if (opportunity > 0) OpportunityMask |= 1 << (opportunity - 1);
         if (chapter.player.ContactPressed) TryContact();
@@ -70,7 +71,7 @@ public sealed class Chapter4Contact : MonoBehaviour
             {
                 CurrentState = State.Reunited;
                 obing.IndependentFollow = false;
-                obing.FollowTo(flow.LegEnd - (flow.ActivePartyCount - 1) * 1.45f, 0);
+                obing.FollowTo(Mathf.Max(obing.Progress, tail.Progress - 1.45f), 0);
                 chapter.gas.MarkObingRejoined();
                 flow.Announce("obing", "我看見你們了……謝謝你告訴我方向。我會跟緊。", 6.2f);
             }

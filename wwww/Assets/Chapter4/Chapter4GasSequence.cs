@@ -43,6 +43,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         public RescueStage rescue;
         public bool separated, seated, recovered;
         public Chapter4Contact.Snapshot contact;
+        public Chapter4RetreatAction.Snapshot action;
         public Chapter4Companion.Snapshot[] actors;
     }
 
@@ -85,13 +86,17 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
         Elapsed += dt;
-        bool deciding = flow.CurrentStage == Chapter4Evacuation.Stage.Scouting || flow.CurrentStage == Chapter4Evacuation.Stage.ReadyToSignal;
+        bool deciding = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
+            flow.Action.Rockfall && flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided);
         DecisionClock = deciding ? DecisionClock + dt : 0;
         float advance = frontSpeed + Mathf.Clamp((DecisionClock - 25) * .035f, 0, 1.6f);
         // No permanent rear-of-party safety leash. During automatic assistance
         // and actual following the rally point offers a pocket, but an ignored
         // signal lets smoke sweep through that pocket too.
-        float ceiling = flow.PartyGathered ? flow.RouteLength - 18 : flow.LegEnd + (deciding ? 7 : -9);
+        float ceiling = flow.PartyGathered ? flow.RouteLength - 18 : flow.RouteLength;
+        if (BlocksPartyAdvance || flow.Action.Crossing == Chapter4RetreatAction.CrossingState.UnderFire ||
+            flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Crossing)
+            ceiling = Mathf.Min(ceiling, flow.RearProgress - 10);
         FrontDistance = Mathf.Max(FrontDistance, Mathf.Min(ceiling, FrontDistance + advance * dt));
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
@@ -103,7 +108,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         string status = Exposure > .02f ? "煙霧中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開濃煙" :
             BlastStress > .08f ? "落彈衝擊 " + Mathf.CeilToInt(BlastStress * 100) + "%・避開警戒範圍、低身前進" :
             "日軍砲火持續・後方濃煙距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
-        if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！確認通路後，立即示意隊伍撤離";
+        if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！抓住砲火空檔，帶著隊伍離開";
         if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";
         else if (GumuStage != RescueStage.Waiting) status += "\n古慕咳嗽倒下・露比正在照應";
         chapter.presentation.SetGasStatus(status, Mathf.Max(Exposure, BlastStress), 0);
@@ -171,7 +176,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (obingRecovered) return;
         if (!ObingSeparated)
         {
-            if (GumuStage != RescueStage.WalkingTogether || obing.Progress < 28 || flow.CurrentStage != Chapter4Evacuation.Stage.Following) return;
+            if (GumuStage != RescueStage.WalkingTogether || obing.Progress < 84 || flow.CurrentStage != Chapter4Evacuation.Stage.Following) return;
             ObingSeparated = true; obingClock = 0;
             obing.MotionHeld = true;
             obing.Pose.Set(Chapter4CompanionPose.State.Coughing);
@@ -198,6 +203,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             front = FrontDistance, elapsed = Elapsed, rescueClock = rescueClock, obingClock = obingClock,
             rescue = GumuStage, separated = ObingSeparated, seated = ObingSeated, recovered = obingRecovered,
             contact = chapter.contact ? chapter.contact.Capture() : null,
+            action = flow.Action.Capture(),
             actors = new Chapter4Companion.Snapshot[flow.Party.Count] };
         for (int i = 0; i < flow.Party.Count; i++) checkpoint.actors[i] = flow.Party[i].Capture();
         CheckpointCount++;
@@ -206,6 +212,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     public void RetryCheckpoint()
     {
         if (!CanRetry || checkpoint == null) return;
+        flow.Action.Restore(checkpoint.action);
         for (int i = 0; i < flow.Party.Count; i++) flow.Party[i].Restore(checkpoint.actors[i]);
         GumuStage = checkpoint.rescue; ObingSeparated = checkpoint.separated; ObingSeated = checkpoint.seated; obingRecovered = checkpoint.recovered;
         if (chapter.contact) chapter.contact.Restore(checkpoint.contact);
@@ -220,7 +227,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         chapter.RestoreAfterGasFailure(retryAnchor);
         atmosphere.ResetSmoke(FrontDistance);
         if (chapter.Retreat) chapter.Retreat.ResetAfterRetry();
-        chapter.presentation.SetGasStatus("已回到集結點・確認通路後再示意隊伍前進", 0, 0);
+        chapter.presentation.SetGasStatus("已回到接應處・觀察砲火空檔，沿路撤離", 0, 0);
     }
 
     public void MarkObingRejoined()

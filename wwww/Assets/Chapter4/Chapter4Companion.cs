@@ -42,6 +42,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     readonly Collider[] laneHits = new Collider[24];
     SkinnedMeshRenderer[] faces;
     static readonly float[] pairLanes = { 0, .35f, -.65f, .65f, -.9f };
+    static readonly float[] singleLanes = { 0, .35f, -.35f, .65f, -.65f, .9f, -.9f, 1.2f, -1.2f };
 
     public void Initialize(Chapter4Evacuation flow, Chapter4Companion predecessor, int order)
     {
@@ -133,6 +134,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         float limit = ahead && !rushing ? Mathf.Min(destination, ahead.Progress - 1.35f) : destination;
         if (JoinedRoute && Progress >= limit - .06f) return;
         if (SupportFollower && JoinedRoute) SelectPairLane(limit);
+        else if (JoinedRoute) SelectSingleLane(limit);
         float entry = rushing ? owner.ProjectProgress(transform.position, 0, destination) : 0;
         Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(rushing ? Mathf.Min(destination, entry + 3) : entry);
         StepToward(target, deltaTime);
@@ -184,6 +186,15 @@ public sealed class Chapter4Companion : MonoBehaviour
         return BodyFits(point + right * offset) && BodyFits(point + right * (offset + .72f));
     }
 
+    void SelectSingleLane(float limit)
+    {
+        float near = Mathf.Min(limit, Progress + .35f), far = Mathf.Min(limit, Progress + 1.25f);
+        bool Fits(float distance, float offset) => BodyFits(owner.PointOnRoute(distance) + RouteRight(distance) * offset);
+        if (Fits(near, RouteOffset) && Fits(far, RouteOffset)) return;
+        foreach (float offset in singleLanes)
+            if (Fits(near, offset) && Fits(far, offset)) { RouteOffset = offset; return; }
+    }
+
     bool BodyFits(Vector3 feet)
     {
         float radius = Motor.radius + .05f;
@@ -206,7 +217,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         point += RouteRight(distance) * RouteOffset;
         // The first person approaches beside the signal point, leaving room
         // for a player who remains there to watch the party arrive.
-        if (!ahead)
+        if (!ahead && destination >= owner.RouteLength - .05f)
         {
             Vector3 forward = owner.PointOnRoute(destination) - owner.PointOnRoute(destination - .7f);
             Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;

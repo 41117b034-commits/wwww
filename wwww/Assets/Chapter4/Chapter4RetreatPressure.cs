@@ -28,7 +28,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     AudioClip engineClip, impactClip, whistleClip;
     AudioSource whistle;
     Vector3 flightOrigin, flightForward, flightRight;
-    float warningRemaining, nextImpact, nextGate, flightClock, nextFlight, flashClock;
+    float warningRemaining, nextImpact, flightClock, nextFlight, flashClock;
     bool warningHarmless, initialized, paused;
     Color oldFogColor, oldAmbient;
     float oldFogDensity, oldAmbientIntensity;
@@ -66,7 +66,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Marker = new GameObject("落彈範圍與中心標記").AddComponent<Chapter4ImpactMarker>();
         Marker.transform.SetParent(transform, false); Marker.Initialize(flow.terrain);
         chapter.presentation.SetImpactTarget(chapter.player.view, Vector3.zero, 0, false, false);
-        nextImpact = 2; nextGate = 6; nextFlight = 0;
+        nextImpact = 2; nextFlight = 0;
         initialized = true;
     }
 
@@ -114,18 +114,10 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             if (warningRemaining <= 0) Detonate();
             else { Marker.Pulse(warningRemaining); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, warningRemaining, true, PlayerInsideBlast); }
         }
-        else
+        else if (flow.Action == null || !flow.Action.ControlsShells)
         {
             nextImpact -= dt;
             if (nextImpact <= 0) Warn();
-        }
-        // The next section visibly remains under fire until the party arrives.
-        nextGate -= dt;
-        if (nextGate <= 0 && flow.LegIndex < flow.legs.Length - 1)
-        {
-            var point = flow.PointOnRoute(flow.AdvanceLimit + 4);
-            chapter.gas.atmosphere.BlastAt(point, false);
-            nextGate = 8;
         }
         string cue = "";
         if (IsTelegraphing)
@@ -136,7 +128,8 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             cue = where + "落彈・" + warningRemaining.ToString("0.0") + " 秒・" + (PlayerInsideBlast ? "立刻移出警戒線！" : "已在範圍外，繼續撤離");
         }
         else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
-        else if (flow.BoundaryBlocked) cue = "前方仍在落彈・先接回這一段的隊伍";
+        else if (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap) cue = "砲聲停了・在岩旁示意隊伍，一起穿過空地";
+        else if (flow.BoundaryBlocked) cue = "別落下同伴・留在撤離通路接應";
         else if (plane.gameObject.activeSelf && flightClock < 8) cue = "日軍飛機掠過前方上空・沿通路撤離";
         chapter.presentation.SetThreatCue(cue, IsTelegraphing ? .8f : ImpactPulse);
     }
@@ -144,7 +137,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     void Warn()
     {
         float player = flow.ProjectProgress(chapter.player.transform.position, 0, flow.RouteLength);
-        float distance = Mathf.Clamp(player + (ImpactCount == 0 ? 8 : -1.5f), 2, flow.LegEnd - 2);
+        float distance = Mathf.Clamp(player + (ImpactCount == 0 ? 8 : -1.5f), 2, flow.RouteLength - 12);
         Vector3 direction = flow.PointOnRoute(distance + 1) - flow.PointOnRoute(distance - 1);
         Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
         ImpactPosition = flow.PointOnRoute(distance) + right * (ImpactCount % 2 == 0 ? 1.8f : -1.8f);
@@ -154,6 +147,17 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Marker.Show(ImpactPosition, BlastRadius);
         whistle.transform.position = ImpactPosition + Vector3.up * 5; whistle.Play();
         chapter.gas.atmosphere.BlastAt(ImpactPosition, true);
+    }
+
+    public bool ScheduleImpact(Vector3 point, bool harmless)
+    {
+        if (!initialized || IsTelegraphing || chapter.WorldFrozen || chapter.gas.IsCollapsed) return false;
+        ImpactPosition = point;
+        if (flow.terrain.Raycast(new Ray(point + Vector3.up * 20, Vector3.down), out var hit, 40)) ImpactPosition = hit.point;
+        warningRemaining = WarningDuration; warningHarmless = harmless;
+        Marker.Show(ImpactPosition, BlastRadius);
+        whistle.transform.position = ImpactPosition + Vector3.up * 5; whistle.Play();
+        chapter.gas.atmosphere.BlastAt(ImpactPosition, true); return true;
     }
 
     void Detonate()
@@ -222,10 +226,10 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
 
     public void ResetAfterRetry()
     {
-        warningRemaining = 0; nextImpact = 7; nextGate = 6; ImpactPulse = flashClock = 0;
+        warningRemaining = 0; nextImpact = 7; ImpactPulse = flashClock = 0;
         HideMarker();
         whistle.Stop(); Impacts.Stop(); flash.enabled = false;
-        chapter.presentation.SetThreatCue("已回到集結點・沿通路撤離，及時示意隊伍", 0);
+        chapter.presentation.SetThreatCue("已回到接應處・留意砲火空檔，帶著同伴撤離", 0);
     }
 
     static AudioClip BuildSound(string name, float seconds, int kind)
