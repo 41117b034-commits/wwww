@@ -78,7 +78,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             if (CanRetry && !failureMenuShown)
             {
                 failureMenuShown = true;
-                chapter.presentation.ShowMenu("你因" + cause + "而倒下了", "回到最近的集結點。\n避開落彈白圈，接應隊伍並持續撤離。", "重試檢查點");
+                chapter.presentation.ShowMenu("你因" + cause + "而倒下了", "回到最近的集結點。\n避開落彈範圍，接應隊伍並持續撤離。", "重試檢查點");
             }
             return;
         }
@@ -101,7 +101,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && density > 0 ? exposurePerSecond * density : -.13f) * dt);
         BlastStress = Mathf.Max(0, BlastStress - .012f * dt);
         string status = Exposure > .02f ? "煙霧中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開濃煙" :
-            BlastStress > .08f ? "落彈衝擊 " + Mathf.CeilToInt(BlastStress * 100) + "%・避開白圈預警、低身前進" :
+            BlastStress > .08f ? "落彈衝擊 " + Mathf.CeilToInt(BlastStress * 100) + "%・避開警戒範圍、低身前進" :
             "日軍砲火持續・後方濃煙距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
         if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！確認通路後，立即示意隊伍撤離";
         if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";

@@ -1,6 +1,6 @@
 Shader "Wushe/Chapter4ThreatMarker"
 {
-    Properties { _BaseColor ("Marker colour", Color) = (1,0.3,0.05,1) }
+    Properties { _BaseColor ("Marker colour", Color) = (0.83,0.82,0.74,0.74) }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" "Queue"="Transparent+50" "RenderType"="Transparent" }
@@ -8,7 +8,7 @@ Shader "Wushe/Chapter4ThreatMarker"
         {
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
-            ZTest Always
+            ZTest LEqual
             Cull Off
             HLSLPROGRAM
             #pragma vertex Vert

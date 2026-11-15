@@ -133,7 +133,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             Vector3 direction = ImpactPosition - chapter.player.transform.position;
             float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(chapter.player.view.transform.forward, Vector3.up), Vector3.ProjectOnPlane(direction, Vector3.up), Vector3.up);
             string where = Mathf.Abs(angle) > 110 ? "後方" : angle < -25 ? "左前方" : angle > 25 ? "右前方" : "前方";
-            cue = where + "落彈・" + warningRemaining.ToString("0.0") + " 秒・" + (PlayerInsideBlast ? "立刻移出白圈！" : "已在圈外，繼續撤離");
+            cue = where + "落彈・" + warningRemaining.ToString("0.0") + " 秒・" + (PlayerInsideBlast ? "立刻移出警戒線！" : "已在範圍外，繼續撤離");
         }
         else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
         else if (flow.BoundaryBlocked) cue = "前方仍在落彈・先接回這一段的隊伍";

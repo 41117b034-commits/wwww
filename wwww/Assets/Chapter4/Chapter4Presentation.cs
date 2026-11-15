@@ -153,7 +153,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     {
         if (!retreatWarning) return;
         retreatWarning.text = text;
-        retreatWarning.color = Color.Lerp(new Color(.96f, .87f, .66f), new Color(1, .68f, .35f), Mathf.Clamp01(intensity));
+        retreatWarning.color = Color.Lerp(new Color(.85f, .83f, .73f), new Color(.92f, .85f, .69f), Mathf.Clamp01(intensity));
         retreatWarning.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
     }
 
@@ -161,10 +161,10 @@ public sealed class Chapter4Presentation : MonoBehaviour
     {
         if (!impactTarget)
         {
-            var panel = Panel(canvas.transform, "精確落點倒數", Vector2.one * .5f, Vector2.one * .5f, new Color(.12f, .035f, .02f, .94f), false);
-            panel.sizeDelta = new Vector2(290, 68);
-            var border = panel.gameObject.AddComponent<Outline>(); border.effectColor = new Color(1, .9f, .65f); border.effectDistance = new Vector2(2, -2);
-            impactTarget = Label(panel, "", objective.font, 22, new Vector2(.025f, .025f), new Vector2(.975f, .975f));
+            var panel = Panel(canvas.transform, "精確落點倒數", Vector2.one * .5f, Vector2.one * .5f, new Color(.045f, .055f, .045f, .78f), false);
+            panel.sizeDelta = new Vector2(260, 58);
+            var border = panel.gameObject.AddComponent<Outline>(); border.effectColor = new Color(.73f, .73f, .64f, .28f); border.effectDistance = new Vector2(1, -1);
+            impactTarget = Label(panel, "", objective.font, 20, new Vector2(.025f, .025f), new Vector2(.975f, .975f));
             impactTarget.alignment = TextAnchor.MiddleCenter;
             menuPanel.transform.SetAsLastSibling();
         }
@@ -174,12 +174,12 @@ public sealed class Chapter4Presentation : MonoBehaviour
         Vector3 local = view.transform.InverseTransformPoint(position);
         bool behind = point.z <= 0;
         Vector2 anchor = behind ? new Vector2(local.x < 0 ? .15f : .85f, .44f)
-            : new Vector2(Mathf.Clamp(point.x, .15f, .85f), Mathf.Clamp(point.y, .39f, .69f));
+            : new Vector2(Mathf.Clamp(point.x, .15f, .85f), Mathf.Clamp(point.y, .39f, .63f));
         var rect = (RectTransform)impactTarget.transform.parent;
         rect.anchorMin = rect.anchorMax = anchor; rect.anchoredPosition = Vector2.zero;
         string direction = behind ? "後方落點" : point.x < 0 ? "← 左側落點" : point.x > 1 ? "右側落點 →" : "▼ 落點";
-        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (inside ? "危險！移出白色外圈" : "已在爆炸範圍外");
-        impactTarget.color = inside ? new Color(1, .85f, .46f) : new Color(.81f, 1, .85f);
+        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (inside ? "危險範圍內・往外移動" : "已在爆炸範圍外");
+        impactTarget.color = inside ? new Color(.93f, .88f, .76f) : new Color(.78f, .82f, .74f);
     }
 
     public void EnsureStoryUI()
