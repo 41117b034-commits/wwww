@@ -13,6 +13,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     public Chapter4Ending ending;
     public Chapter4Voice Voice { get; private set; }
     public Chapter4RetreatPressure Retreat { get; private set; }
+    public Chapter4RearGuard RearGuard { get; private set; }
     public Transform spawnPoint;
     public Transform gatheringPoint;
     public Transform[] routeCheckpoints;
@@ -57,6 +58,8 @@ public sealed class Chapter4SceneController : MonoBehaviour
         if (contact) contact.Begin();
         Retreat = gameObject.AddComponent<Chapter4RetreatPressure>();
         Retreat.Initialize(this);
+        RearGuard = gameObject.AddComponent<Chapter4RearGuard>();
+        RearGuard.Initialize(this);
     }
 
     void Update()
@@ -132,7 +135,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         player.SetInputEnabled(false);
         presentation.ShowMenu(arrival ? (gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地") : "暫停",
             arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") :
-            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "觀察砲火空檔、從岩旁繞路，帶著同伴一起撤離。",
+            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "射擊壓制追兵，讓同伴通過；砲火逼近時立刻撤離。\nR 裝填，備彈木箱旁按 E 補充。",
             ending && ending.HasStarted ? "繼續閱讀" : arrival || HasArrived ? "繼續探索" : "繼續");
     }
 

@@ -14,41 +14,20 @@ public sealed class Chapter4RetreatAction
     public float Clock { get; private set; }
     public bool Rockfall { get; private set; }
     public int CrossingsSignalled { get; private set; }
-    public bool ControlsShells => Crossing != CrossingState.Approach && Crossing != CrossingState.Clear || Rockfall && flow.PlayerProgress < ForkEnd + 3;
-    public bool CanSignal => Crossing == CrossingState.Gap && Clock < 24 &&
-        flow.chapter.player.IsGrounded && !flow.chapter.gas.IsCollapsed &&
-        flow.PlayerProgress >= CrossingEntry - 3.5f && flow.PlayerProgress <= CrossingExit + 2 &&
-        flow.RearProgress >= 23 && !flow.chapter.gas.BlocksPartyAdvance;
-    public float PartyLimit => Crossing != CrossingState.Clear && Crossing != CrossingState.Crossing
-        ? CrossingEntry - 1 : Choice == RouteChoice.Undecided ? ForkStart - 1 : flow.RouteLength;
-    public float MinimumPartyAdvance => Crossing == CrossingState.Crossing ? CrossingExit + 12 : 12;
-    public float PlayerLimit => Crossing != CrossingState.Clear && Crossing != CrossingState.Crossing
-        ? CrossingEntry + 2 : Crossing == CrossingState.Crossing ? CrossingExit + 6 :
-        Choice == RouteChoice.Undecided ? ForkStart + 10 : flow.RouteLength;
-    public string Objective => Crossing == CrossingState.UnderFire ? "先到岩後避砲，觀察前方空檔" :
-        Crossing == CrossingState.Gap ? "砲聲暫歇・示意隊伍穿過空地" :
-        Crossing == CrossingState.Crossing ? "穿過空地，到對面岩石接應隊伍" :
+    Chapter4RearGuard Combat => flow.chapter.RearGuard;
+    public bool ControlsShells => Combat && (Combat.Holding || Combat.CurrentPhase == Chapter4RearGuard.Phase.ForcedWithdrawal) || Rockfall && flow.PlayerProgress < ForkEnd + 3;
+    public bool CanSignal => false;
+    public float PartyLimit => Choice == RouteChoice.Undecided ? ForkStart - 1 : flow.RouteLength;
+    public float MinimumPartyAdvance => Combat ? Combat.PartyAdvance : 12;
+    public float PlayerLimit => Mathf.Min(Combat ? Combat.PlayerLimit : 43, Choice == RouteChoice.Undecided ? ForkStart + 10 : flow.RouteLength);
+    public string Objective => Combat && !string.IsNullOrEmpty(Combat.Objective) ? Combat.Objective :
         Rockfall && Choice == RouteChoice.Undecided ? "前路被落石截斷・從岩石兩側繞行" :
         Choice != RouteChoice.Undecided && flow.PlayerProgress < ForkEnd ?
-            (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") :
-        flow.PlayerProgress < 16 ? "砲擊逼近！先隨隊離開營地" : "帶著同伴往上坡撤離";
-    public string Hint
-    {
-        get
-        {
-            string key = flow.chapter.player.IsVR ? "右扳機" : "E";
-            if (Crossing == CrossingState.UnderFire) return "前方空地正在落彈・留在路旁岩後，等砲聲停下";
-            if (Crossing == CrossingState.Gap)
-                return CanSignal ? "空檔已到！按 " + key + " 帶隊穿過，前往對面岩石" :
-                    flow.RearProgress < 23 || flow.chapter.gas.BlocksPartyAdvance ? "傷患正在靠攏・先在路旁岩後接應" :
-                    Clock >= 24 ? "這次空檔已不足全隊通過・等下一輪砲聲停下" : "到前方岩石附近，確認空檔後帶隊通過";
-            if (Crossing == CrossingState.Crossing) return "隊伍已跟上・穿過空地後在對面岩石接應，勿停在路中央";
-            if (Rockfall && Choice == RouteChoice.Undecided) return "左側貼岩：多繞幾步、有掩護　／　右側短路：較暴露・直接走入你選的路";
-            if (flow.chapter.contact && flow.chapter.contact.Responded && !flow.chapter.contact.Reunited) return "歐冰已回應・留在附近接應，她正沿剛才的路追上";
-            return "隊伍會持續跟隨・留意前方落彈與身後腳步";
-        }
-    }
-
+            (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") : "接應同伴，往上坡撤離";
+    public string Hint => Combat && !string.IsNullOrEmpty(Combat.Hint) ? Combat.Hint :
+        Rockfall && Choice == RouteChoice.Undecided ? "左側貼岩：多繞幾步、有掩護　／　右側短路：較暴露・直接走入你選的路" :
+        flow.chapter.contact && flow.chapter.contact.Responded && !flow.chapter.contact.Reunited ? "歐冰已回應・留在附近接應，她正沿剛才的路追上" :
+        "留意前方落彈與身後腳步・步槍仍可使用";
     readonly Chapter4Evacuation flow;
     readonly Vector3[][] branches = { new Vector3[26], new Vector3[26] };
     readonly List<Mesh> meshes = new List<Mesh>();
@@ -56,7 +35,7 @@ public sealed class Chapter4RetreatAction
     Transform geometry, rubble;
     Vector3 rubbleRest;
     float fallClock, shellClock;
-    bool volley;
+
 
     public Chapter4RetreatAction(Chapter4Evacuation owner)
     {
@@ -74,26 +53,11 @@ public sealed class Chapter4RetreatAction
     public void Tick(float dt)
     {
         float player = flow.PlayerProgress;
-        if (Crossing == CrossingState.Approach && player >= 29)
-        { Crossing = CrossingState.UnderFire; Clock = 0; volley = false; }
-        if (Crossing != CrossingState.Approach && Crossing != CrossingState.Clear)
+        if (Combat)
         {
-            Clock += dt;
-            if (Crossing == CrossingState.UnderFire)
-            {
-                if (!volley && flow.chapter.Retreat && flow.chapter.Retreat.ScheduleImpact(flow.BasePoint(45), false)) volley = true;
-                if (Clock >= 8 && !flow.chapter.Retreat.IsTelegraphing)
-                { Crossing = CrossingState.Gap; Clock = 0; }
-            }
-            else if (Crossing == CrossingState.Gap && Clock >= 32)
-            { Crossing = CrossingState.UnderFire; Clock = 0; volley = false; }
-            else if (Crossing == CrossingState.Crossing)
-            {
-                // Once released, the wave remains safe until the slowest required person clears it.
-                // This is a committed crossing, not a hidden timer that kills the wounded.
-                if (flow.RearProgress >= CrossingExit - 1)
-                { Crossing = CrossingState.Clear; Clock = 0; }
-            }
+            Clock = Combat.Clock;
+            Crossing = Combat.CurrentPhase == Chapter4RearGuard.Phase.OpeningCover ? CrossingState.UnderFire :
+                Combat.CurrentPhase == Chapter4RearGuard.Phase.ForcedWithdrawal ? CrossingState.Crossing : CrossingState.Clear;
         }
         if (!Rockfall && player >= 58)
         {
@@ -117,17 +81,10 @@ public sealed class Chapter4RetreatAction
         }
     }
 
-    public bool Signal()
-    {
-        if (!CanSignal) return false;
-        Crossing = CrossingState.Crossing; Clock = 0; CrossingsSignalled++; return true;
-    }
-
-    public Vector3 NavigationTarget => Crossing == CrossingState.UnderFire || Crossing == CrossingState.Gap
-        ? Ground(flow.BasePoint(CrossingEntry - 2) - Right(CrossingEntry - 2) * 1.4f) :
+    public bool Signal() => false;
+    public Vector3 NavigationTarget => Combat && Combat.Holding ? Combat.NavigationTarget :
         Rockfall && Choice == RouteChoice.Undecided ? flow.BasePoint(ForkStart + 1) :
         flow.PointOnRoute(Mathf.Min(flow.AdvanceLimit, flow.PlayerProgress + 6));
-
     public Vector3 MapPoint(float distance, Vector3 original) => Choice == RouteChoice.Undecided || distance <= ForkStart || distance >= ForkEnd
         ? original : BranchPoint(distance, Choice);
     public Vector3 BranchPoint(float d, RouteChoice choice)
@@ -159,6 +116,8 @@ public sealed class Chapter4RetreatAction
         foreach (var mesh in UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
             if (mesh.name == "風化岩石" && mesh.sharedMesh && mesh.GetComponent<MeshRenderer>()) { donor = mesh; break; }
         if (!donor) throw new InvalidOperationException("Chapter 4 weathered-rock donor missing.");
+        Rock(donor, geometry, 3, -2.1f, new Vector3(2, 1.55f, 2.6f));
+        Rock(donor, geometry, 111, -2.8f, new Vector3(2.2f, 1.8f, 3.2f));
         Rock(donor, geometry, 11, -2.8f, new Vector3(2.2f, 2, 3.3f));
         Rock(donor, geometry, 36, -2.8f, new Vector3(2.2f, 2.2f, 4));
         Rock(donor, geometry, 54, -3.1f, new Vector3(2.3f, 2.4f, 4));
@@ -229,14 +188,15 @@ public sealed class Chapter4RetreatAction
     }
     [Serializable] public sealed class Snapshot
     {
-        public CrossingState crossing; public RouteChoice choice; public float clock, fall, shell; public bool rockfall; public int signals;
+        public CrossingState crossing; public RouteChoice choice; public float clock, fall, shell; public bool rockfall; public int signals; public Chapter4RearGuard.Snapshot combat;
     }
-    public Snapshot Capture() => new Snapshot { crossing = Crossing, choice = Choice, clock = Clock, fall = fallClock, shell = shellClock, rockfall = Rockfall, signals = CrossingsSignalled };
+    public Snapshot Capture() => new Snapshot { crossing = Crossing, choice = Choice, clock = Clock, fall = fallClock, shell = shellClock, rockfall = Rockfall, signals = CrossingsSignalled, combat = Combat ? Combat.Capture() : null };
     public void Restore(Snapshot s)
     {
         if (s == null) return;
+        if (Combat) Combat.Restore(s.combat);
         Crossing = s.crossing; Choice = s.choice; Clock = s.clock; fallClock = s.fall; shellClock = s.shell;
-        Rockfall = s.rockfall; volley = false; CrossingsSignalled = s.signals; rubble.gameObject.SetActive(Rockfall);
+        Rockfall = s.rockfall; CrossingsSignalled = s.signals; rubble.gameObject.SetActive(Rockfall);
         rubble.position = rubbleRest + Vector3.up * (Rockfall ? 2.5f * (1 - Mathf.SmoothStep(0, 1, fallClock / 1.3f)) : 0);
     }
     public void Dispose()

@@ -15,6 +15,8 @@ public sealed class Chapter4Companion : MonoBehaviour
     public bool JoinedRoute { get; private set; }
     public bool Walking { get; private set; }
     public bool Speaking { get; set; }
+    public bool PinnedByFire => owner && owner.chapter.RearGuard && owner.chapter.RearGuard.ShouldPin(this);
+    public float CoverCrouch { get; private set; }
     public Chapter1IncidentRig Rig { get; private set; }
     public CharacterController Motor { get; private set; }
     public Chapter4CompanionPose Pose { get; private set; }
@@ -85,6 +87,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (!owner || !Rig) return;
         Pose.RestoreModelBase();
         Walking = false;
+        if (!IsPaused) CoverCrouch = Mathf.MoveTowards(CoverCrouch, PinnedByFire ? 1 : 0, Time.deltaTime * 4);
         if (!IsPaused)
         {
             travelClock += Time.deltaTime;
@@ -124,6 +127,12 @@ public sealed class Chapter4Companion : MonoBehaviour
         {
             StepToward(SupportTarget(), deltaTime);
             Progress = Mathf.Max(Progress, owner.ProjectProgress(transform.position, Progress, Mathf.Min(Destination, Progress + 1.5f)));
+            return;
+        }
+        if (PinnedByFire)
+        {
+            // Reach the roadside by ordinary movement instead of freezing upright in the lane.
+            StepToward(owner.PointOnRoute(Progress) - RouteRight(Progress) * (SupportFollower ? 1f : 1.3f), deltaTime);
             return;
         }
         if (SupportFollower && Chapter4Evacuation.FlatDistance(transform.position, SupportFollower.transform.position) > 1.12f) return;

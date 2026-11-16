@@ -80,8 +80,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         if (banks == null) return;
         Place(front);
         float duck = flow.chapter.Voice && flow.chapter.Voice.Speaking ? .32f : 1;
-        bool crossingGap = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
-            flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Crossing);
+        bool crossingGap = flow.chapter.RearGuard && flow.chapter.RearGuard.Holding;
         if (crossingGap) duck *= .18f;
         Barrage.volume = Mathf.MoveTowards(Barrage.volume, .29f * duck, dt * .8f);
         Rifles.volume = Mathf.MoveTowards(Rifles.volume, .15f * duck, dt * .6f);

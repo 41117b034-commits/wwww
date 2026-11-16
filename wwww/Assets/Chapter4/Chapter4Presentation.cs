@@ -26,6 +26,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Text endingKicker, endingTitle, endingBody, endingFooter;
     public Text retreatWarning;
     public Text impactTarget;
+    public Text rifleStatus, rifleReticle;
 
     bool vr;
     bool controlsInitialized;
@@ -47,8 +48,29 @@ public sealed class Chapter4Presentation : MonoBehaviour
         controlsInitialized = true;
         controlsVR = useVR;
         if (controls) controls.text = useVR
-            ? "左搖桿移動　右搖桿轉向　右握把低身　右扳機示意　左扳機聯絡　選單暫停"
-            : "WASD 撤離　Ctrl 低身　右鍵環視　E 示意　F 聯絡歐冰　Esc 選單　R 重試";
+            ? "左搖桿移動　右扳機射擊　右 B 裝填　右 A 補彈　右握把低身　左扳機聯絡　選單暫停"
+            : "WASD 移動　左鍵射擊　右鍵瞄準／環視　R 裝填　Ctrl 低身　E 補彈　F 聯絡歐冰　Esc 選單";
+    }
+
+    public void EnsureCombatUI()
+    {
+        if (rifleStatus) return;
+        var panel = Panel(canvas.transform, "步槍與射擊回饋", new Vector2(.65f, .335f), new Vector2(.975f, .43f), new Color(.035f, .047f, .04f, .8f), false);
+        rifleStatus = Label(panel, "", objective.font, 21, new Vector2(.03f, .04f), new Vector2(.97f, .96f));
+        rifleStatus.color = new Color(.88f, .87f, .76f);
+        rifleReticle = Label(canvas.transform, "+", objective.font, 24, new Vector2(.49f, .48f), new Vector2(.51f, .52f));
+        rifleReticle.alignment = TextAnchor.MiddleCenter;
+        rifleReticle.color = new Color(.91f, .90f, .81f, .85f);
+        var edge = rifleReticle.gameObject.AddComponent<Outline>(); edge.effectColor = new Color(.025f,.03f,.025f,.85f); edge.effectDistance = new Vector2(1,-1);
+        menuPanel.transform.SetAsLastSibling();
+    }
+    public void SetCombatStatus(Chapter4Rifle gun, bool visible, string status)
+    {
+        if (!rifleStatus) return;
+        rifleStatus.transform.parent.gameObject.SetActive(visible);
+        rifleReticle.gameObject.SetActive(visible && !vr);
+        if (!visible) return;
+        rifleStatus.text = "步槍　" + (gun.Loaded ? "1" : "0") + "／1　備彈 " + gun.Reserve + (gun.Reloading ? "　裝填中" : "") + "\n" + gun.Feedback;
     }
 
     public void EnsureEndingUI()

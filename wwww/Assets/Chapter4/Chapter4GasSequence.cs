@@ -19,6 +19,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     public float FrontDistance { get; private set; } = -18;
     public float Exposure { get; private set; }
     public float BlastStress { get; private set; }
+    public string ImpactCause { get; private set; } = "落彈衝擊";
     public float DecisionClock { get; private set; }
     public float Elapsed { get; private set; }
     public int RetryCount { get; private set; }
@@ -74,7 +75,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             collapseClock += Time.unscaledDeltaTime;
             float fall = Mathf.SmoothStep(0, 1, collapseClock / 1.6f);
             chapter.player.SetCollapseVisual(fall);
-            string cause = Exposure >= 1 ? "濃煙窒息" : "落彈衝擊";
+            string cause = Exposure >= 1 ? "濃煙窒息" : ImpactCause;
             chapter.presentation.SetGasStatus(cause + "中倒下・從最近集結點重新撤離", 1, fall);
             if (CanRetry && !failureMenuShown)
             {
@@ -94,9 +95,10 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         // and actual following the rally point offers a pocket, but an ignored
         // signal lets smoke sweep through that pocket too.
         float ceiling = flow.PartyGathered ? flow.RouteLength - 18 : flow.RouteLength;
-        if (BlocksPartyAdvance || flow.Action.Crossing == Chapter4RetreatAction.CrossingState.UnderFire ||
-            flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Crossing)
+        if (BlocksPartyAdvance)
             ceiling = Mathf.Min(ceiling, flow.RearProgress - 10);
+        if (chapter.RearGuard && chapter.RearGuard.Holding)
+            ceiling = Mathf.Min(ceiling, flow.RearProgress - 10, flow.PlayerProgress - 10);
         FrontDistance = Mathf.Max(FrontDistance, Mathf.Min(ceiling, FrontDistance + advance * dt));
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
@@ -106,7 +108,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && density > 0 ? exposurePerSecond * density : -.13f) * dt);
         BlastStress = Mathf.Max(0, BlastStress - .012f * dt);
         string status = Exposure > .02f ? "煙霧中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開濃煙" :
-            BlastStress > .08f ? "落彈衝擊 " + Mathf.CeilToInt(BlastStress * 100) + "%・避開警戒範圍、低身前進" :
+            BlastStress > .08f ? ImpactCause + " " + Mathf.CeilToInt(BlastStress * 100) + "%・利用岩石掩蔽，別停在火線" :
             "日軍砲火持續・後方濃煙距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
         if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！抓住砲火空檔，帶著隊伍離開";
         if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";
@@ -218,7 +220,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         if (chapter.contact) chapter.contact.Restore(checkpoint.contact);
         rescueClock = checkpoint.rescueClock; obingClock = checkpoint.obingClock;
         FrontDistance = Mathf.Min(checkpoint.front, checkpoint.distance - 18);
-        Elapsed = checkpoint.elapsed; Exposure = BlastStress = DecisionClock = collapseClock = 0; grace = 6;
+        Elapsed = checkpoint.elapsed; Exposure = BlastStress = DecisionClock = collapseClock = 0; grace = 6; ImpactCause = "落彈衝擊";
         IsCollapsed = failureMenuShown = false; RetryCount++;
         retryAnchor.position = flow.PointOnRoute(checkpoint.distance) + Vector3.up * .06f;
         Vector3 forward = flow.PointOnRoute(checkpoint.distance + 1) - flow.PointOnRoute(checkpoint.distance);
@@ -239,6 +241,13 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     public void ReceiveBlast(float strength)
     {
         if (!initialized || chapter.WorldFrozen || IsCollapsed || grace > 0) return;
+        ImpactCause = "落彈衝擊";
+        BlastStress = Mathf.Clamp01(BlastStress + Mathf.Max(0, strength));
+    }
+    public void ReceiveGunfire(float strength)
+    {
+        if (!initialized || chapter.WorldFrozen || IsCollapsed || grace > 0) return;
+        ImpactCause = "追兵射擊";
         BlastStress = Mathf.Clamp01(BlastStress + Mathf.Max(0, strength));
     }
 }

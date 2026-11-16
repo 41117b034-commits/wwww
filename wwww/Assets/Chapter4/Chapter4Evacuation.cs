@@ -230,19 +230,13 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         ui.SetObjective(PartyGathered ? "隊伍已抵達集合地" : Action.Objective);
         string status = PartyGathered ? "主隊集結　" + RequiredPartyCount + "／" + RequiredPartyCount :
             "隊伍持續跟隨・距隊尾 " + Mathf.CeilToInt(Mathf.Max(0, PlayerProgress - RearProgress)) + " 公尺";
-        if (Action.Crossing == Chapter4RetreatAction.CrossingState.UnderFire)
-            status = "岩後等待・觀察前方落彈";
-        else if (Action.Crossing == Chapter4RetreatAction.CrossingState.Gap)
-            status = "砲火空檔・" + Mathf.CeilToInt(Mathf.Max(0, 32 - Action.Clock)) + " 秒";
-        else if (Action.Crossing == Chapter4RetreatAction.CrossingState.Crossing)
-            status = "隊伍正在穿越・到對面岩石接應";
+        if (chapter.RearGuard && !string.IsNullOrEmpty(chapter.RearGuard.Status)) status = chapter.RearGuard.Status;
         ui.SetPartyStatus(status + (separated ? "・歐冰落在後方" : ""));
         bool tether = PlayerProgress >= RearProgress + 23.7f && !PartyGathered;
-        contextualHint = PartyGathered ? "" : tether ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
+        contextualHint = PartyGathered ? "" : tether && !(chapter.RearGuard && chapter.RearGuard.Holding) ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
         ui.SetInteraction(contextualHint, !PartyGathered && Action.CanSignal);
         ui.SetNavigation(chapter.player.view, Action.NavigationTarget, !PartyGathered,
-            Action.CanSignal ? (chapter.player.IsVR ? "右扳機・帶隊通過" : "E・帶隊通過") :
-            Action.Crossing == Chapter4RetreatAction.CrossingState.UnderFire ? "岩後等待砲聲停下" :
+            chapter.RearGuard && chapter.RearGuard.Holding ? "就近岩後掩護" :
             Action.Rockfall && Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided ? "從岩石兩側繞行" : "沿路撤離");
     }
     public Vector3 PointOnRoute(float distance) => Action == null ? BasePoint(distance) : Action.MapPoint(distance, BasePoint(distance));

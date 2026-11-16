@@ -23,6 +23,9 @@ public sealed class Chapter4Player : MonoBehaviour
     public bool InteractPressed { get; private set; }
     public bool RetryPressed { get; private set; }
     public bool ContactPressed { get; private set; }
+    public bool FirePressed { get; private set; }
+    public bool ReloadPressed { get; private set; }
+    public bool AimHeld { get; private set; }
     public bool IsGrounded => motor && motor.enabled && motor.isGrounded;
     public CharacterController Motor => motor;
     public Chapter4Evacuation Evacuation { get; set; }
@@ -32,7 +35,7 @@ public sealed class Chapter4Player : MonoBehaviour
     CharacterController motor;
     Vector3 desktopEyePosition;
     float pitch, verticalSpeed, nextSnapTime, collapseWeight, braceWeight;
-    bool focused = true, previousMenu, previousTrigger, previousLeftTrigger, floorTracking;
+    bool focused = true, previousMenu, previousTrigger, previousLeftTrigger, previousPrimary, previousSecondary, floorTracking;
     int ignoreLookThroughFrame;
     readonly List<XRInputSubsystem> xrSubsystems = new List<XRInputSubsystem>();
 
@@ -91,7 +94,14 @@ public sealed class Chapter4Player : MonoBehaviour
         bool menu = leftMenu || rightMenu;
         MenuPressed = focused && (Keyboard.current?.escapeKey.wasPressedThisFrame == true || (menu && !previousMenu));
         SubmitPressed = focused && trigger && !previousTrigger;
-        InteractPressed = focused && (Keyboard.current?.eKey.wasPressedThisFrame == true || SubmitPressed);
+        right.TryGetFeatureValue(XRUsages.primaryButton, out bool primary);
+        right.TryGetFeatureValue(XRUsages.secondaryButton, out bool secondary);
+        bool overUI = Cursor.lockState != CursorLockMode.Locked && EventSystem.current && EventSystem.current.IsPointerOverGameObject();
+        InteractPressed = focused && (Keyboard.current?.eKey.wasPressedThisFrame == true || primary && !previousPrimary);
+        FirePressed = focused && canMove && !menu && !overUI && (IsVR ? SubmitPressed : Mouse.current?.leftButton.wasPressedThisFrame == true);
+        ReloadPressed = focused && canMove && (Keyboard.current?.rKey.wasPressedThisFrame == true || secondary && !previousSecondary);
+        AimHeld = focused && canMove && !IsVR && Mouse.current?.rightButton.isPressed == true;
+        previousPrimary = primary; previousSecondary = secondary;
         RetryPressed = focused && Keyboard.current?.rKey.wasPressedThisFrame == true;
         ContactPressed = focused && (Keyboard.current?.fKey.wasPressedThisFrame == true || leftTrigger && !previousLeftTrigger);
         previousLeftTrigger = leftTrigger;
@@ -104,7 +114,6 @@ public sealed class Chapter4Player : MonoBehaviour
         if (!canMove || MenuPressed) return;
 
         var mouse = Mouse.current;
-        bool overUI = EventSystem.current && EventSystem.current.IsPointerOverGameObject();
         if (!IsVR && canLook && mouse != null && !overUI)
         {
             if (mouse.leftButton.wasPressedThisFrame && Cursor.lockState != CursorLockMode.Locked)

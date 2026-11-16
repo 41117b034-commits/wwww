@@ -61,10 +61,18 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         if (!actor.IsPaused) Clock += Time.deltaTime;
         if (CurrentState == State.Normal)
         {
+            if (actor.CoverCrouch > .001f)
+            {
+                baseModelPosition = actor.model.localPosition; baseModelRotation = actor.model.localRotation; modelPosed = true;
+                Vector3 left = leftFoot.position, rightFootTarget = rightFoot.position;
+                actor.model.position -= Vector3.up * (.32f * actor.CoverCrouch);
+                Plant(leftThigh, leftCalf, leftFoot, left, actor.Rig.Forward, 1);
+                Plant(rightThigh, rightCalf, rightFoot, rightFootTarget, actor.Rig.Forward, 1);
+            }
             var chapter = actor.RetreatChapter;
             float flinch = chapter && chapter.Retreat ? chapter.Retreat.ImpactPulse : 0;
             Vector3 travel = actor.Rig.Forward, side = Vector3.Cross(Vector3.up, travel);
-            spine.rotation = Quaternion.AngleAxis((actor.Walking ? 15 : 5) + flinch * 10, side) * spine.rotation;
+            spine.rotation = Quaternion.AngleAxis((actor.Walking ? 15 : 5) + flinch * 10 + actor.CoverCrouch * 25, side) * spine.rotation;
             if (flinch > .08f)
                 Arm(false, Vector3.Lerp(rightHand.position, actor.Rig.Head.position + travel * .1f - Vector3.up * .12f, flinch), -travel + Vector3.down);
             return;
