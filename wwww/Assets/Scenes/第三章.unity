@@ -118533,6 +118533,10 @@ MonoBehaviour:
   actor: {fileID: 1068718365}
   rifle: {fileID: 1068718364}
   advances: 0
+  AttackEnabled: 1
+  StagedAimTarget: {fileID: 0}
+  StagedAimWeight: 0
+  AlliesOnly: 0
   escortTarget: {fileID: 0}
   attackInterval: 4.5
   engagementRange: 32
@@ -128855,7 +128859,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ""
+  m_Text: 
 --- !u!222 &1160891014
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -138466,6 +138470,10 @@ MonoBehaviour:
   actor: {fileID: 1242706320}
   rifle: {fileID: 1242706319}
   advances: 0
+  AttackEnabled: 1
+  StagedAimTarget: {fileID: 0}
+  StagedAimWeight: 0
+  AlliesOnly: 0
   escortTarget: {fileID: 0}
   attackInterval: 4.5
   engagementRange: 32
@@ -146482,6 +146490,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1313696976}
   - component: {fileID: 1313696975}
+  - component: {fileID: 1313696977}
   m_Layer: 0
   m_Name: "\u7B2C\u4E09\u7AE0 \xB7 \u55AE\u4E00\u5834\u666F\u6D41\u7A0B\u8207\u5FEB\u901F\u8DF3\u6BB5"
   m_TagString: Untagged
@@ -146527,6 +146536,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1313696977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1313696974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5b37979bffe7f6449f616f8036d55d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flow: {fileID: 0}
+  villageMusic: {fileID: 8300000, guid: 6f5c535a93210d44b8daebed635634c4, type: 3}
+  stationMusic: {fileID: 8300000, guid: b9db4be9ac8846547a630d075b2fe965, type: 3}
+  refusalMusic: {fileID: 8300000, guid: b9ef10f5b501a0546988706b8341b72d, type: 3}
+  trailCombatMusic: {fileID: 8300000, guid: 37f98aec23dea6f4d83516014c6cc050, type: 3}
+  schoolApproachMusic: {fileID: 8300000, guid: 8bc3ccdd6964b9042b9b87af3b0188f0, type: 3}
+  schoolCalmMusic: {fileID: 8300000, guid: 8bc3ccdd6964b9042b9b87af3b0188f0, type: 3}
+  briefingMusic: {fileID: 8300000, guid: b9db4be9ac8846547a630d075b2fe965, type: 3}
+  missionChoiceMusic: {fileID: 8300000, guid: b9db4be9ac8846547a630d075b2fe965, type: 3}
+  schoolBattleMusic: {fileID: 8300000, guid: 37f98aec23dea6f4d83516014c6cc050, type: 3}
+  rescueChoiceMusic: {fileID: 8300000, guid: b9ef10f5b501a0546988706b8341b72d, type: 3}
+  rescueEscortMusic: {fileID: 8300000, guid: b9db4be9ac8846547a630d075b2fe965, type: 3}
+  leaveCompanionMusic: {fileID: 8300000, guid: 064cd12eefabf0942a32006a588d5f4b, type: 3}
+  survivorEndingMusic: {fileID: 8300000, guid: 064cd12eefabf0942a32006a588d5f4b, type: 3}
+  lossEndingMusic: {fileID: 8300000, guid: 064cd12eefabf0942a32006a588d5f4b, type: 3}
+  rollCallMusic: {fileID: 8300000, guid: 6f5c535a93210d44b8daebed635634c4, type: 3}
+  musicVolume: 0.3
+  duckFactor: 0.3
+  musicFadeSeconds: 1
+  musicOutput: {fileID: 0}
+  currentMusicCue: 0
 --- !u!1 &1314519911
 GameObject:
   m_ObjectHideFlags: 0
@@ -239517,6 +239559,10 @@ MonoBehaviour:
   actor: {fileID: 2126355561}
   rifle: {fileID: 2126355560}
   advances: 1
+  AttackEnabled: 1
+  StagedAimTarget: {fileID: 0}
+  StagedAimWeight: 0
+  AlliesOnly: 0
   escortTarget: {fileID: 0}
   attackInterval: 4.5
   engagementRange: 32
