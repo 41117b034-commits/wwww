@@ -14,6 +14,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     public bool PlayerInsideBlast => Chapter4Evacuation.FlatDistance(ImpactPosition, chapter.player.transform.position) < BlastRadius;
     public Chapter4ImpactMarker Marker { get; private set; }
     public Chapter4JapaneseAircraft Airframe { get; private set; }
+    public Chapter4JapaneseAircraft Wingman { get; private set; }
     public Vector3 ImpactPosition { get; private set; }
     public int ImpactCount { get; private set; }
     public int CoveredImpacts { get; private set; }
@@ -26,9 +27,10 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     Transform plane;
     Light flash;
     AudioClip engineClip, impactClip, whistleClip;
-    AudioSource whistle;
+    AudioSource whistle, wingmanEngine;
     Vector3 flightOrigin, flightForward, flightRight;
-    float warningRemaining, nextImpact, flightClock, nextFlight, flashClock;
+    float warningRemaining, nextImpact, flightClock, flashClock;
+    public const float FlightCycleSeconds = 36;
     bool warningHarmless, initialized, paused;
     Color oldFogColor, oldAmbient;
     float oldFogDensity, oldAmbientIntensity;
@@ -57,6 +59,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         impactClip = BuildSound("Forest shell impact", 2.5f, 1);
         whistleClip = BuildSound("Incoming shell cue", WarningDuration, 2);
         Aircraft = Source("遠方飛機聲", engineClip, .62f, true);
+        wingmanEngine = Source("另一架日軍飛機引擎", engineClip, .48f, true);
         Impacts = Source("近處落彈聲", impactClip, .65f, false);
         whistle = Source("落彈預警聲", whistleClip, .42f, false);
         flash = new GameObject("落彈瞬光", typeof(Light)).GetComponent<Light>();
@@ -66,7 +69,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Marker = new GameObject("落彈範圍與中心標記").AddComponent<Chapter4ImpactMarker>();
         Marker.transform.SetParent(transform, false); Marker.Initialize(flow.terrain);
         chapter.presentation.SetImpactTarget(chapter.player.view, Vector3.zero, 0, false, false);
-        nextImpact = 2; nextFlight = 0;
+        nextImpact = 2;
         initialized = true;
     }
 
@@ -87,7 +90,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         if (freeze != paused)
         {
             paused = freeze;
-            foreach (var source in new[] { Aircraft, Impacts, whistle })
+            foreach (var source in new[] { Aircraft, wingmanEngine, Impacts, whistle })
                 if (paused) source.Pause(); else source.UnPause();
         }
         if (paused)
@@ -102,11 +105,12 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         if (flow.PartyGathered)
         {
             chapter.presentation.SetThreatCue("", 0); warningRemaining = 0;
-            HideMarker(); Aircraft.Stop(); whistle.Stop(); plane.gameObject.SetActive(false); return;
+            HideMarker(); Aircraft.Stop(); wingmanEngine.Stop(); whistle.Stop(); plane.gameObject.SetActive(false); Wingman.gameObject.SetActive(false); return;
         }
         UpdateAircraft(dt);
         float duck = chapter.Voice.Speaking ? .58f : 1;
         Aircraft.volume = Mathf.MoveTowards(Aircraft.volume, .62f * duck, dt);
+        wingmanEngine.volume = Mathf.MoveTowards(wingmanEngine.volume, .48f * duck, dt);
         Impacts.volume = Mathf.MoveTowards(Impacts.volume, .65f * duck, dt);
         if (warningRemaining > 0)
         {
@@ -130,7 +134,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
         else if (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap) cue = "砲聲停了・在岩旁示意隊伍，一起穿過空地";
         else if (flow.BoundaryBlocked) cue = "別落下同伴・留在撤離通路接應";
-        else if (plane.gameObject.activeSelf && flightClock < 8) cue = "日軍飛機掠過前方上空・沿通路撤離";
+        else if (plane.gameObject.activeSelf && Mathf.Repeat(flightClock, 18) < 5) cue = AircraftDirectionCue();
         chapter.presentation.SetThreatCue(cue, IsTelegraphing ? .8f : ImpactPulse);
     }
 
@@ -193,33 +197,53 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
 
     void UpdateAircraft(float dt)
     {
-        nextFlight -= dt;
-        if (nextFlight <= 0)
-        {
-            nextFlight = 32; flightClock = 0; AircraftPasses++;
-            float progress = flow.ProjectProgress(chapter.player.transform.position, 0, flow.RouteLength);
-            flightForward = Vector3.ProjectOnPlane(flow.PointOnRoute(Mathf.Min(flow.RouteLength, progress + 10)) - flow.PointOnRoute(Mathf.Max(0, progress - 1)), Vector3.up).normalized;
-            if (flightForward.sqrMagnitude < .1f) flightForward = Vector3.forward;
-            flightRight = Vector3.Cross(Vector3.up, flightForward);
-            flightOrigin = chapter.player.transform.position;
-            plane.gameObject.SetActive(true); Aircraft.Play();
-        }
         flightClock += dt;
-        // Each pass has a fixed world-space track; it does not chase the camera.
-        Vector3 point = flightOrigin + flightForward * (76 - flightClock * 1.5f) + flightRight * (-38 + flightClock * 11);
-        float height = flightOrigin.y + 36 + Mathf.Abs(flightClock - 4) * .7f;
-        if (flow.terrain.Raycast(new Ray(point + Vector3.up * 100, Vector3.down), out var ground, 180)) height = Mathf.Max(height, ground.point.y + 26);
-        plane.position = new Vector3(point.x, height, point.z);
-        plane.rotation = Quaternion.LookRotation(flightRight * 11 - flightForward * 1.5f, Vector3.up) * Quaternion.Euler(0, 0, -7 * Mathf.Sin(flightClock * .4f));
-        Airframe.Tick(dt);
+        AircraftPasses = 1 + Mathf.FloorToInt(flightClock / FlightCycleSeconds);
+        // Both aircraft remain real world objects throughout the retreat. Their
+        // fixed valley circuit neither follows the camera nor respawns behind it.
+        FlyCircuit(Airframe, flightClock / FlightCycleSeconds * Mathf.PI * 2 - Mathf.PI * .5f, 0, dt);
+        FlyCircuit(Wingman, flightClock / FlightCycleSeconds * Mathf.PI * 2 + Mathf.PI * .5f, 7, dt);
         Aircraft.transform.position = plane.position;
-        if (flightClock > 12) { plane.gameObject.SetActive(false); Aircraft.Stop(); }
+        wingmanEngine.transform.position = Wingman.transform.position;
+        if (!Aircraft.isPlaying) Aircraft.Play();
+        if (!wingmanEngine.isPlaying) wingmanEngine.Play();
+    }
+
+    void FlyCircuit(Chapter4JapaneseAircraft aircraft, float angle, float extraHeight, float dt)
+    {
+        Vector3 point = flightOrigin + flightRight * (31 * Mathf.Cos(angle)) + flightForward * (78 * Mathf.Sin(angle));
+        float height = flightOrigin.y + 48 + extraHeight + Mathf.Sin(angle * 2) * 2;
+        if (flow.terrain.Raycast(new Ray(point + Vector3.up * 100, Vector3.down), out var ground, 180)) height = Mathf.Max(height, ground.point.y + 30);
+        point.y = height; aircraft.transform.position = point;
+        Vector3 tangent = -flightRight * (31 * Mathf.Sin(angle)) + flightForward * (78 * Mathf.Cos(angle));
+        aircraft.transform.rotation = Quaternion.LookRotation(tangent, Vector3.up) * Quaternion.Euler(0, 0, -12);
+        aircraft.Tick(dt);
+    }
+
+    string AircraftDirectionCue()
+    {
+        Vector3 eye = chapter.player.view.transform.position;
+        Vector3 target = (plane.position - eye).sqrMagnitude <= (Wingman.transform.position - eye).sqrMagnitude ? plane.position : Wingman.transform.position;
+        Vector3 forward = Vector3.ProjectOnPlane(chapter.player.view.transform.forward, Vector3.up);
+        if (forward.sqrMagnitude < .01f) forward = chapter.player.transform.forward;
+        float angle = Vector3.SignedAngle(forward, Vector3.ProjectOnPlane(target - eye, Vector3.up), Vector3.up);
+        string where = Mathf.Abs(angle) > 125 ? "後方" : angle < -35 ? "左側" : angle > 35 ? "右側" : "前方";
+        return "日軍飛機在" + where + "上空・抬頭可見機身";
     }
 
     void BuildAircraft()
     {
         Airframe = new GameObject("日軍雙座複葉偵察機（時代外形示意）").AddComponent<Chapter4JapaneseAircraft>();
         plane = Airframe.transform; plane.SetParent(transform, false); Airframe.Build();
+        plane.localScale = Vector3.one * 1.25f;
+        Wingman = new GameObject("日軍複葉機・山谷另一側巡航").AddComponent<Chapter4JapaneseAircraft>();
+        Wingman.transform.SetParent(transform, false); Wingman.Build(); Wingman.transform.localScale = Vector3.one * 1.15f;
+        Vector3 start = flow.BasePoint(0), end = flow.BasePoint(flow.RouteLength);
+        flightOrigin = (start + end) * .5f;
+        flightForward = Vector3.ProjectOnPlane(end - start, Vector3.up).normalized;
+        flightRight = Vector3.Cross(Vector3.up, flightForward);
+        FlyCircuit(Airframe, -Mathf.PI * .5f, 0, 0);
+        FlyCircuit(Wingman, Mathf.PI * .5f, 7, 0);
     }
     void HideMarker()
     { Marker.Hide(); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, 0, false, false); }
@@ -259,7 +283,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             RenderSettings.ambientLight = oldAmbient; RenderSettings.ambientIntensity = oldAmbientIntensity;
         }
         if (sun) { sun.intensity = oldSunIntensity; sun.color = oldSunColor; }
-        foreach (var source in new[] { Aircraft, Impacts, whistle }) if (source) source.Stop();
+        foreach (var source in new[] { Aircraft, wingmanEngine, Impacts, whistle }) if (source) source.Stop();
         foreach (var clip in new[] { engineClip, impactClip, whistleClip }) if (clip) Destroy(clip);
     }
 }
