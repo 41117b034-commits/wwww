@@ -15,7 +15,8 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
     }
     Chapter4Evacuation flow;
     ParticleSystem[] banks;
-    Material instanceMaterial;
+    ParticleSystem debris;
+    Material instanceMaterial, gasMaterial;
     Texture2D softParticle;
     AudioClip barrageClip, breathingClip;
     AudioSource breathing;
@@ -38,6 +39,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         }
         softParticle.SetPixels(pixels); softParticle.Apply(false, true);
         instanceMaterial.SetTexture("_BaseMap", softParticle);
+        gasMaterial = new Material(instanceMaterial);
         banks = new ParticleSystem[5];
         for (int i = 0; i < banks.Length; i++)
         {
@@ -49,7 +51,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
             main.startColor = new Color(.56f, .58f, .46f, .72f); main.maxParticles = 200;
             main.simulationSpace = ParticleSystemSimulationSpace.World; main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
             main.useUnscaledTime = false;
-            var emission = ps.emission; emission.rateOverTime = 7;
+            var emission = ps.emission; emission.rateOverTime = 0;
             var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(10, 2.6f, 5);
             var velocity = ps.velocityOverLifetime; velocity.enabled = true; velocity.y = .2f; velocity.space = ParticleSystemSimulationSpace.World;
             var color = ps.colorOverLifetime; color.enabled = true;
@@ -58,10 +60,15 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
                 new[] { new GradientAlphaKey(0, 0), new GradientAlphaKey(.9f, .2f), new GradientAlphaKey(.7f, .7f), new GradientAlphaKey(0, 1) });
             color.color = gradient;
             var renderer = ps.GetComponent<ParticleSystemRenderer>();
-            renderer.sharedMaterial = instanceMaterial; renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.sharedMaterial = gasMaterial; renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = false; renderer.maxParticleSize = .9f;
             banks[i] = ps;
         }
+        // Impact dust belongs to its own emitter, so clearing gas never hides
+        // a bullet strike or turns ordinary shell dust into a new gas wave.
+        debris = Instantiate(banks[0], transform);
+        debris.name = "落彈與子彈揚塵";
+        debris.GetComponent<ParticleSystemRenderer>().sharedMaterial = instanceMaterial;
         var sound = new GameObject("後方山林攻擊聲"); sound.transform.SetParent(transform, false);
         Barrage = sound.AddComponent<AudioSource>(); Rifles = sound.AddComponent<AudioSource>();
         foreach (var source in new[] { Barrage, Rifles })
@@ -86,21 +93,24 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         float duck = flow.chapter.Voice && flow.chapter.Voice.Speaking ? .32f : 1;
         Barrage.volume = Mathf.MoveTowards(Barrage.volume, .29f * duck, dt * .8f);
         Rifles.volume = Mathf.MoveTowards(Rifles.volume, .15f * duck, dt * .6f);
-        float proximity = Mathf.Clamp01((16 - (flow.PlayerProgress - front)) / 16);
+        float proximity = flow.chapter.gas.PlayerDensity;
         breathing.volume = Mathf.MoveTowards(breathing.volume, Mathf.Max(proximity * .2f, flow.chapter.gas.Exposure * .45f) * duck, dt * .2f);
         if (!active) return;
         if (!playing)
         {
             playing = true; Barrage.Play(); breathing.Play();
-            foreach (var ps in banks) ps.Play();
+            foreach (var ps in banks) ps.Play(); debris.Play();
         }
         if (pause != paused)
         {
             paused = pause;
-            if (paused) { Barrage.Pause(); Rifles.Pause(); breathing.Pause(); foreach (var ps in banks) ps.Pause(); }
-            else { Barrage.UnPause(); Rifles.UnPause(); breathing.UnPause(); foreach (var ps in banks) ps.Play(); }
+            if (paused) { Barrage.Pause(); Rifles.Pause(); breathing.Pause(); foreach (var ps in banks) ps.Pause(); debris.Pause(); }
+            else { Barrage.UnPause(); Rifles.UnPause(); breathing.UnPause(); foreach (var ps in banks) ps.Play(); debris.Play(); }
         }
         if (paused) return;
+        float strength = flow.chapter.gas.WaveStrength;
+        gasMaterial.SetColor("_BaseColor", new Color(1, 1, 1, strength));
+        foreach (var ps in banks) { var emission = ps.emission; emission.rateOverTime = 7 * strength; }
         shotClock -= dt;
         if (shotClock <= 0 && rifleReport)
         {
@@ -112,7 +122,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
     {
         for (int i = 0; i < banks.Length; i++)
         {
-            banks[i].transform.position = Extended(front - i * 8) + Vector3.up * (i % 2 == 0 ? 1.4f : 2.6f);
+            banks[i].transform.position = (i == 0 && flow.chapter.gas.GasWaveActive ? flow.chapter.gas.GasOrigin : Extended(front - i * 8)) + Vector3.up * (i % 2 == 0 ? 1.4f : 2.6f);
             banks[i].transform.rotation = Quaternion.LookRotation(Extended(front - i * 8 + 1) - Extended(front - i * 8));
         }
         if (Barrage) Barrage.transform.position = Extended(front - 25) + Vector3.up * 3;
@@ -126,10 +136,28 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
 
     public void WispAt(Vector3 position)
     {
-        if (banks == null) return;
+        if (banks == null || !flow.chapter.gas.GasWaveActive) return;
         var emit = new ParticleSystem.EmitParams { position = position + Vector3.up * .9f,
             startSize = 5, startLifetime = 5, startColor = new Color(.64f, .66f, .54f, .25f), velocity = Vector3.up * .12f };
         banks[0].Emit(emit, 4);
+    }
+
+    public void GasAt(Vector3 position)
+    {
+        if (banks == null) return;
+        foreach (var ps in banks) ps.Clear();
+        gasMaterial.SetColor("_BaseColor", new Color(1, 1, 1, 0));
+        for (int i = 0; i < 48; i++)
+        {
+            float angle = i * 2.39996f;
+            var emit = new ParticleSystem.EmitParams {
+                position = position + new Vector3(Mathf.Cos(angle) * (i % 5), .5f + i % 3 * .4f, Mathf.Sin(angle) * (i % 5)),
+                startSize = 5 + i % 4, startLifetime = Chapter4GasSequence.WaveDuration,
+                startColor = new Color(.63f, .65f, .55f, .65f),
+                velocity = new Vector3(Mathf.Cos(angle) * .65f, .08f, Mathf.Sin(angle) * .65f)
+            };
+            banks[0].Emit(emit, 1);
+        }
     }
 
     public void BlastAt(Vector3 position, bool warning)
@@ -146,7 +174,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
                 startColor = warning ? new Color(.59f, .48f, .32f, .7f) : new Color(.32f, .28f, .22f, .65f),
                 velocity = warning ? Vector3.up * .8f : new Vector3(Mathf.Cos(angle) * 3, 2.1f + i % 5, Mathf.Sin(angle) * 3)
             };
-            banks[0].Emit(emit, 1);
+            debris.Emit(emit, 1);
         }
     }
     public void BulletAt(Vector3 position)
@@ -154,7 +182,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         if (banks == null) return;
         var emit = new ParticleSystem.EmitParams { position = position, startSize = .3f, startLifetime = .5f,
             startColor = new Color(.57f, .49f, .36f, .8f), velocity = Vector3.up * 1.5f };
-        banks[0].Emit(emit, 3);
+        debris.Emit(emit, 3);
     }
 
     public void ResetSmoke(float front)
@@ -164,15 +192,11 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         foreach (var ps in banks)
         {
             ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            // Seed the already gas-filled valley; it must not begin as an empty particle emitter.
-            for (int i = 0; i < 36; i++)
-            {
-                var emit = new ParticleSystem.EmitParams { position = ps.transform.position + ps.transform.right * Mathf.Sin(i * 2.4f) * 4 + ps.transform.forward * Mathf.Cos(i * 2.4f) * 2,
-                    startLifetime = 7 + i % 5, startSize = 6 + i % 3, startColor = new Color(.56f, .58f, .46f, .6f) };
-                ps.Emit(emit, 1);
-            }
+            var emission = ps.emission; emission.rateOverTime = 0;
             if (playing && !paused) ps.Play();
         }
+        gasMaterial.SetColor("_BaseColor", new Color(1, 1, 1, 0));
+        debris.Clear();
         shotClock = 1;
     }
     static AudioClip BuildBreathing()
@@ -217,6 +241,7 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         if (barrageClip) Destroy(barrageClip);
         if (breathingClip) Destroy(breathingClip);
         if (instanceMaterial) Destroy(instanceMaterial);
+        if (gasMaterial) Destroy(gasMaterial);
         if (softParticle) Destroy(softParticle);
     }
 }

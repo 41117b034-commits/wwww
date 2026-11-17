@@ -15,6 +15,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     public const float WarningDuration = 4.5f;
     public float ImpactPulse { get; private set; }
     public bool IsTelegraphing => warningRemaining > 0;
+    public bool GasIncoming => IsTelegraphing && warningGas;
     public float SecondsToImpact => Mathf.Max(0, warningRemaining);
     public bool PlayerInsideBlast => Chapter4Evacuation.FlatDistance(ImpactPosition, chapter.player.transform.position) < BlastRadius;
     public Chapter4ImpactMarker Marker { get; private set; }
@@ -31,12 +32,12 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     Chapter4Evacuation flow;
     Transform plane;
     Light flash;
-    AudioClip engineClip, impactClip, whistleClip;
+    AudioClip engineClip, impactClip, whistleClip, gasClip;
     AudioSource whistle, wingmanEngine;
     Vector3 flightOrigin, flightForward, flightRight;
     float warningRemaining, nextImpact, flightClock, flashClock;
     public const float FlightCycleSeconds = 36;
-    bool warningHarmless, initialized, paused;
+    bool warningHarmless, warningGas, attackGas, initialized, paused;
     Color oldFogColor, oldAmbient;
     float oldFogDensity, oldAmbientIntensity;
     bool oldFog;
@@ -68,6 +69,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         engineClip = BuildSound("Distant aircraft engine", 12, 0);
         impactClip = BuildSound("Forest shell impact", 2.5f, 1);
         whistleClip = BuildSound("Incoming shell cue", WarningDuration, 2);
+        gasClip = BuildSound("Gas shell release - dramatised", 3.5f, 3);
         Aircraft = Source("遠方飛機聲", engineClip, .62f, true);
         wingmanEngine = Source("另一架日軍飛機引擎", engineClip, .48f, true);
         Impacts = Source("近處落彈聲", impactClip, .65f, false);
@@ -78,7 +80,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         BuildAircraft();
         var bomb = GameObject.CreatePrimitive(PrimitiveType.Capsule); bomb.name = "空襲落彈・演出示意";
         Destroy(bomb.GetComponent<Collider>()); fallingBomb = bomb.transform; fallingBomb.SetParent(transform, false);
-        fallingBomb.localScale = new Vector3(.23f, .48f, .23f);
+        fallingBomb.localScale = new Vector3(.3f, .58f, .3f);
         bombMaterial = new Material(Shader.Find("Universal Render Pipeline/Simple Lit")); bombMaterial.color = new Color(.12f, .13f, .12f);
         bomb.GetComponent<Renderer>().sharedMaterial = bombMaterial; bomb.SetActive(false);
         Marker = new GameObject("落彈範圍與中心標記").AddComponent<Chapter4ImpactMarker>();
@@ -114,6 +116,9 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             return;
         }
         float dt = Time.deltaTime;
+        float mist = chapter.gas.PlayerDensity;
+        RenderSettings.fogDensity = .017f + mist * .055f;
+        RenderSettings.fogColor = Color.Lerp(new Color(.34f, .36f, .33f), new Color(.55f, .56f, .48f), mist * .75f);
         Elapsed += dt; ImpactPulse = Mathf.MoveTowards(ImpactPulse, 0, dt * 1.25f);
         flashClock = Mathf.Max(0, flashClock - dt); flash.enabled = flashClock > 0;
         if (flash.enabled) flash.intensity = flashClock * 20;
@@ -132,7 +137,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         {
             warningRemaining -= dt;
             if (warningRemaining <= 0) Detonate();
-            else { Marker.Pulse(warningRemaining); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, warningRemaining, true, PlayerInsideBlast); }
+            else { Marker.Pulse(warningRemaining); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, warningRemaining, true, PlayerInsideBlast, warningGas); }
         }
         else if (!AirAttackActive && Flight == FlightState.Patrol && (flow.Action == null || !flow.Action.ControlsShells))
         {
@@ -145,7 +150,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             Vector3 direction = ImpactPosition - chapter.player.transform.position;
             float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(chapter.player.view.transform.forward, Vector3.up), Vector3.ProjectOnPlane(direction, Vector3.up), Vector3.up);
             string where = Mathf.Abs(angle) > 110 ? "後方" : angle < -25 ? "左前方" : angle > 25 ? "右前方" : "前方";
-            cue = (Flight == FlightState.Strike ? "飛機投彈・" : "砲擊・") + where + " " + warningRemaining.ToString("0.0") + " 秒・" + (PlayerInsideBlast ? "立刻移出警戒線！" : "已在範圍外，繼續撤離");
+            cue = (warningGas ? "飛機投下瓦斯彈・" : Flight == FlightState.Strike ? "飛機投彈・" : "砲擊・") + where + " " + warningRemaining.ToString("0.0") + " 秒・" + (warningGas ? "煙霧即將擴散，向前撤離！" : PlayerInsideBlast ? "立刻移出警戒線！" : "已在範圍外，繼續撤離");
         }
         else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
         else if (Flight == FlightState.Approach) cue = "引擎聲逼近！飛機正在轉入山谷・留意前方空地";
@@ -161,18 +166,19 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Vector3 direction = flow.PointOnRoute(distance + 1) - flow.PointOnRoute(distance - 1);
         Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
         attackPoint = flow.PointOnRoute(distance) + right * (AttackRuns % 2 == 0 ? 1.8f : -1.8f);
+        attackGas = AttackRuns % 2 == 0;
         Vector3 runForward = flightForward * (AttackRuns % 2 == 0 ? 1 : -1);
         runStart = attackPoint - runForward * 42 + Vector3.up * 31;
         runEnd = attackPoint + runForward * 70 + Vector3.up * 35;
         Flight = FlightState.Approach; runClock = bombClock = 0; bombReleased = false;
     }
 
-    public bool ScheduleImpact(Vector3 point, bool harmless, bool aircraft = false)
+    public bool ScheduleImpact(Vector3 point, bool harmless, bool aircraft = false, bool gas = false)
     {
         if (!initialized || IsTelegraphing || chapter.WorldFrozen || chapter.gas.IsCollapsed || AirAttackActive && !aircraft) return false;
         ImpactPosition = point;
         if (flow.terrain.Raycast(new Ray(point + Vector3.up * 20, Vector3.down), out var hit, 40)) ImpactPosition = hit.point;
-        warningRemaining = WarningDuration; warningHarmless = harmless;
+        warningRemaining = WarningDuration; warningHarmless = harmless; warningGas = gas;
         Marker.Show(ImpactPosition, BlastRadius);
         whistle.transform.position = ImpactPosition + Vector3.up * 5; whistle.Play();
         chapter.gas.atmosphere.BlastAt(ImpactPosition, true); return true;
@@ -181,7 +187,19 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     void Detonate()
     {
         HideMarker();
-        ImpactCount++; ImpactPulse = 1; flashClock = .28f;
+        ImpactCount++;
+        fallingBomb.gameObject.SetActive(false);
+        if (warningGas)
+        {
+            // A gas landing releases a cloud, not the explosive shell's blast
+            // damage/fire flash. First sortie teaches the visible wave safely.
+            ImpactPulse = .25f; flashClock = 0;
+            Impacts.transform.position = ImpactPosition; Impacts.PlayOneShot(gasClip, .7f);
+            chapter.gas.ReleaseGasAt(ImpactPosition, warningHarmless);
+            nextImpact = 9;
+            return;
+        }
+        ImpactPulse = 1; flashClock = .28f;
         flash.transform.position = ImpactPosition + Vector3.up * 2;
         Impacts.transform.position = ImpactPosition; Impacts.Play();
         chapter.gas.atmosphere.BlastAt(ImpactPosition, false);
@@ -227,7 +245,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         else if (Flight == FlightState.Approach)
         {
             MoveAircraft(runStart, 25, dt);
-            if (Vector3.Distance(plane.position, runStart) < .1f && ScheduleImpact(attackPoint, AttackRuns == 0, true))
+            if (Vector3.Distance(plane.position, runStart) < .1f && ScheduleImpact(attackPoint, AttackRuns == 0, true, attackGas))
             { Flight = FlightState.Strike; AttackRuns++; runClock = 0; }
         }
         else if (Flight == FlightState.Strike)
@@ -244,6 +262,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
                 bombClock += dt;
                 float t = Mathf.Clamp01(bombClock / (WarningDuration - 2.2f));
                 fallingBomb.position = Vector3.Lerp(bombStart, ImpactPosition, t * t);
+                fallingBomb.rotation = Quaternion.FromToRotation(Vector3.up, bombStart - ImpactPosition);
             }
             if (runClock >= 6 && !IsTelegraphing) Flight = FlightState.Rejoin;
         }
@@ -314,6 +333,8 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     public void ResetAfterRetry()
     {
         warningRemaining = 0; nextImpact = 7; ImpactPulse = flashClock = 0;
+        warningGas = attackGas = false;
+        RenderSettings.fogDensity = .017f; RenderSettings.fogColor = new Color(.34f, .36f, .33f);
         Flight = FlightState.Rejoin; runClock = bombClock = 0; bombReleased = false; fallingBomb.gameObject.SetActive(false);
         HideMarker();
         whistle.Stop(); Impacts.Stop(); flash.enabled = false;
@@ -331,7 +352,8 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             low = Mathf.Lerp(low, noise, .09f);
             float value = kind == 0 ? (.22f * Mathf.Sin(t * 2 * Mathf.PI * 93) + .15f * Mathf.Sin(t * 2 * Mathf.PI * 141) + low * .5f) * (.7f + .3f * Mathf.Sin(t * 2 * Mathf.PI * 11))
                 : kind == 1 ? (low * 2.6f + .27f * Mathf.Sin(t * 2 * Mathf.PI * 48)) * Mathf.Exp(-t * 2.2f) * Mathf.Min(1, t * 140)
-                : Mathf.Sin(2 * Mathf.PI * (1250 * t - 115 * t * t)) * .2f * Mathf.Sin(Mathf.PI * t / seconds);
+                : kind == 2 ? Mathf.Sin(2 * Mathf.PI * (1250 * t - 115 * t * t)) * .2f * Mathf.Sin(Mathf.PI * t / seconds)
+                : (low * .8f + noise * .12f) * Mathf.Exp(-t * .85f) * Mathf.Min(1, t * 25);
             samples[i] = Mathf.Clamp(value * Mathf.Min(1, Mathf.Min(t, seconds - t) * 30), -.8f, .8f);
         }
         var clip = AudioClip.Create(name, samples.Length, 1, rate, false); clip.SetData(samples, 0); return clip;
@@ -348,7 +370,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         }
         if (sun) { sun.intensity = oldSunIntensity; sun.color = oldSunColor; }
         foreach (var source in new[] { Aircraft, wingmanEngine, Impacts, whistle }) if (source) source.Stop();
-        foreach (var clip in new[] { engineClip, impactClip, whistleClip }) if (clip) Destroy(clip);
+        foreach (var clip in new[] { engineClip, impactClip, whistleClip, gasClip }) if (clip) Destroy(clip);
         if (bombMaterial) Destroy(bombMaterial);
     }
 }

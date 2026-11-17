@@ -196,7 +196,15 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         RunArm(true, swing, supported, forward, right);
         RunArm(false, -swing, supported, forward, right);
         if (actor.wounded)
-            Arm(true, spine.position + forward * .18f + right * .08f - Vector3.up * .08f, -forward + Vector3.down);
+        {
+            // Keep both elbow and wrist in front of/outside the heavy tunic.
+            // The old waist-centred target hid the whole forearm inside cloth,
+            // leaving a seemingly detached hand visible on the chest.
+            float reach = Vector3.Distance(leftArm.position, leftElbow.position) + Vector3.Distance(leftElbow.position, leftHand.position);
+            Vector3 hold = leftArm.position + forward * reach * .74f + right * reach * .12f - Vector3.up * reach * .42f;
+            Arm(true, hold, -right + forward * .35f - Vector3.up * .2f);
+            OrientPalm(true, leftHand.position - leftElbow.position, -forward);
+        }
         if (supported) return; // Authored paired hand contacts are applied next.
         // Stagger, recover and look back at different times for each person.
         // A warning raises a protecting forearm without sinking the whole body.
@@ -204,7 +212,7 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         {
             Arm(false, Vector3.Lerp(rightHand.position, rightArm.position + right * height * .23f + forward * height * .12f - Vector3.up * height * .11f, RecoveryWeight), -forward);
         }
-        float gas = chapter && chapter.gas ? Mathf.InverseLerp(20, 3, actor.Progress - chapter.gas.FrontDistance) : 0;
+        float gas = chapter && chapter.gas ? chapter.gas.DensityAt(actor.transform.position) : 0;
         float cough = gas * Beat(escapeClock + seed, 4.6f, 1.1f);
         float guard = Mathf.Clamp01(Mathf.Max(flinch, actor.CoverCrouch * .85f));
         float protect = Mathf.Max(cough, guard);

@@ -131,13 +131,15 @@ public sealed class Chapter4Presentation : MonoBehaviour
         menuPanel.transform.SetAsLastSibling();
     }
 
-    public void SetGasStatus(string text, float exposure, float collapse)
+    public void SetGasStatus(string text, float exposure, float collapse, float mist = 0)
     {
         if (!gasStatus) return;
         gasStatus.text = text;
         gasStatus.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
         gasStatus.color = exposure > .65f ? new Color(1, .73f, .52f) : new Color(.91f, .88f, .72f);
-        gasVeil.color = new Color(.16f, .19f, .13f, Mathf.Max(exposure * .26f, collapse * .82f));
+        Color tint = Color.Lerp(new Color(.16f, .19f, .13f), new Color(.58f, .59f, .51f), mist);
+        tint.a = Mathf.Max(exposure * .20f, collapse * .82f, mist * .18f);
+        gasVeil.color = tint;
     }
 
     public void EnsureRetreatUI()
@@ -179,7 +181,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         retreatWarning.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
     }
 
-    public void SetImpactTarget(Camera view, Vector3 position, float seconds, bool active, bool inside)
+    public void SetImpactTarget(Camera view, Vector3 position, float seconds, bool active, bool inside, bool gas = false)
     {
         if (!impactTarget)
         {
@@ -200,7 +202,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         var rect = (RectTransform)impactTarget.transform.parent;
         rect.anchorMin = rect.anchorMax = anchor; rect.anchoredPosition = Vector2.zero;
         string direction = behind ? "後方落點" : point.x < 0 ? "← 左側落點" : point.x > 1 ? "右側落點 →" : "▼ 落點";
-        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (inside ? "危險範圍內・往外移動" : "已在爆炸範圍外");
+        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (gas ? "瓦斯彈・煙霧將向外擴散" : inside ? "危險範圍內・往外移動" : "已在爆炸範圍外");
         impactTarget.color = inside ? new Color(.93f, .88f, .76f) : new Color(.78f, .82f, .74f);
     }
 

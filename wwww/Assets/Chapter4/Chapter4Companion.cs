@@ -40,7 +40,6 @@ public sealed class Chapter4Companion : MonoBehaviour
     Chapter4Companion ahead;
     float destination, releaseAt, travelClock;
     Vector3 previousPosition;
-    Transform upperArm, elbow, hand, spine;
     readonly Collider[] laneHits = new Collider[24];
     SkinnedMeshRenderer[] faces;
     static readonly float[] pairLanes = { 0, .35f, -.65f, .65f, -.9f };
@@ -64,10 +63,6 @@ public sealed class Chapter4Companion : MonoBehaviour
         Rig.Ground(transform.position.y);
         Pose = gameObject.AddComponent<Chapter4CompanionPose>();
         Pose.Initialize(this, animator);
-        upperArm = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftUpperArm, "L_Upperarm", "LeftArm");
-        elbow = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftLowerArm, "L_Forearm", "LeftForeArm");
-        hand = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftHand, "L_Hand", "LeftHand");
-        spine = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.Spine, "Spine", "Spine1", "Spine01");
         previousPosition = transform.position;
         faces = model.GetComponentsInChildren<SkinnedMeshRenderer>(true);
         // Player and companions may share a narrow path without creating an
@@ -279,12 +274,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     void LateUpdate()
     {
         AnimateSpeech();
-        // An injured arm stays supported while the existing gait moves the legs.
-        if (!wounded || !Rig || !upperArm || !elbow || !hand) return;
-        Vector3 forward = Rig.Forward;
-        Vector3 right = Vector3.Cross(Vector3.up, forward);
-        Vector3 target = upperArm.position + right * .22f + forward * .13f + Vector3.down * .26f;
-        Chapter1IncidentRig.Solve(upperArm, elbow, hand, target, -forward + Vector3.down);
-        if (spine) spine.rotation = Quaternion.AngleAxis(5, right) * spine.rotation;
+        // All limb posing belongs to Chapter4CompanionPose. A second injured
+        // arm solve here folded the sleeve into the torso before the escape pose.
     }
 }

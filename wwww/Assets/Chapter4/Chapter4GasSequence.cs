@@ -24,6 +24,15 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     public float Elapsed { get; private set; }
     public int RetryCount { get; private set; }
     public int CheckpointCount { get; private set; }
+    public const float WaveDuration = 24;
+    public float WaveAge { get; private set; } = WaveDuration;
+    public int GasWaves { get; private set; }
+    public Vector3 GasOrigin { get; private set; }
+    public float PlayerDensity { get; private set; }
+    public bool GasWaveActive => WaveAge < WaveDuration;
+    public float WaveStrength => WaveAge < 2 ? Mathf.SmoothStep(0, 1, WaveAge / 2) :
+        WaveAge < 11 ? 1 : 1 - Mathf.SmoothStep(0, 1, (WaveAge - 11) / (WaveDuration - 11));
+    bool waveHarmless;
     public int CheckpointLeg => checkpoint == null ? 0 : checkpoint.leg;
     public bool Active => initialized;
     public bool BlocksPartyAdvance => GumuStage != RescueStage.Waiting && GumuStage != RescueStage.WalkingTogether || ObingSeparated && !ObingSeated;
@@ -69,7 +78,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-        atmosphere.Tick(FrontDistance, Active, chapter.WorldFrozen || IsCollapsed, Time.deltaTime);
+        if (chapter.WorldFrozen || IsCollapsed) atmosphere.Tick(FrontDistance, Active, true, 0);
         if (IsCollapsed)
         {
             collapseClock += Time.unscaledDeltaTime;
@@ -86,6 +95,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         }
         if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
+        WaveAge = flow.PartyGathered ? WaveDuration : Mathf.Min(WaveDuration, WaveAge + dt);
         Elapsed += dt;
         bool deciding = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
             flow.Action.Rockfall && flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided);
@@ -102,23 +112,47 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
         UpdateObing(dt);
-        float playerDistance = flow.ProjectProgress(chapter.player.transform.position, 0, flow.RouteLength);
-        float density = Mathf.Clamp01((FrontDistance + 3 - playerDistance) / 8);
-        Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && density > 0 ? exposurePerSecond * density : -.13f) * dt);
+        PlayerDensity = DensityAt(chapter.player.transform.position);
+        atmosphere.Tick(FrontDistance, Active, false, dt);
+        // A player actively trying to advance at the formation tether cannot
+        // outrun a new cloud until the injured companions catch up. Preserve
+        // the same recovery pocket as automatic lifting; voluntary lingering
+        // elsewhere still accumulates the full wave's exposure.
+        bool waitingForParty = flow.BoundaryBlocked && flow.PlayerProgress >= flow.RearProgress + 23.5f;
+        bool assisting = BlocksPartyAdvance || chapter.contact.CurrentState == Chapter4Contact.State.Rising || waitingForParty;
+        Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && !waveHarmless && !assisting && PlayerDensity > .06f ? exposurePerSecond * PlayerDensity : -.13f) * dt);
         BlastStress = Mathf.Max(0, BlastStress - .012f * dt);
         string status = Exposure > .02f ? "毒氣中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開毒氣" :
             BlastStress > .08f ? ImpactCause + " " + Mathf.CeilToInt(BlastStress * 100) + "%・利用岩石掩蔽，別停在火線" :
-            "毒氣正吞沒退路・距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
-        if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！抓住砲火空檔，帶著隊伍離開";
+            GasWaveActive ? (WaveAge < 11 ? "瓦斯彈煙霧正在擴散・離開濃霧，沿路撤離" : "這波煙霧正在消散・趁視線恢復繼續撤離") :
+            "煙霧暫時散去・留意上空下一次投彈";
+        if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "追兵正逼近！抓住砲火空檔，帶著隊伍離開";
         if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";
         else if (GumuStage != RescueStage.Waiting) status += "\n古慕咳嗽倒下・露比正在照應";
-        chapter.presentation.SetGasStatus(status, Mathf.Max(Exposure, BlastStress), 0);
+        chapter.presentation.SetGasStatus(status, Mathf.Max(Exposure, BlastStress), 0, PlayerDensity);
         if (Exposure >= 1 || BlastStress >= .99f)
         {
             IsCollapsed = true; collapseClock = 0;
             chapter.Voice.Stop();
             chapter.BeginGasCollapse();
         }
+    }
+
+    public void ReleaseGasAt(Vector3 point, bool harmless)
+    {
+        if (!initialized || chapter.WorldFrozen || IsCollapsed || flow.PartyGathered) return;
+        GasOrigin = point; WaveAge = 0; GasWaves++; waveHarmless = harmless;
+        atmosphere.GasAt(point);
+    }
+
+    public float DensityAt(Vector3 point)
+    {
+        if (!initialized || !GasWaveActive) return 0;
+        float radius = Mathf.Lerp(9, 25, Mathf.Clamp01(WaveAge / 5));
+        float local = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(radius * .35f, radius, Chapter4Evacuation.FlatDistance(point, GasOrigin)));
+        float progress = flow.ProjectProgress(point, 0, flow.RouteLength);
+        float rear = Mathf.Clamp01((FrontDistance + 3 - progress) / 8);
+        return WaveStrength * Mathf.Max(local, rear);
     }
 
     void UpdateGumu(float dt)
@@ -220,6 +254,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         rescueClock = checkpoint.rescueClock; obingClock = checkpoint.obingClock;
         FrontDistance = Mathf.Min(checkpoint.front, checkpoint.distance - 18);
         Elapsed = checkpoint.elapsed; Exposure = BlastStress = DecisionClock = collapseClock = 0; grace = 6; ImpactCause = "落彈衝擊";
+        WaveAge = WaveDuration; PlayerDensity = 0; waveHarmless = false;
         IsCollapsed = failureMenuShown = false; RetryCount++;
         retryAnchor.position = flow.PointOnRoute(checkpoint.distance) + Vector3.up * .06f;
         Vector3 forward = flow.PointOnRoute(checkpoint.distance + 1) - flow.PointOnRoute(checkpoint.distance);
