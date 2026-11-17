@@ -16,7 +16,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     public bool ObingSeated { get; private set; }
     public bool IsCollapsed { get; private set; }
     public bool CanRetry => IsCollapsed && collapseClock >= 1.6f;
-    public float FrontDistance { get; private set; } = -18;
+    public float FrontDistance { get; private set; } = -12;
     public float Exposure { get; private set; }
     public float BlastStress { get; private set; }
     public string ImpactCause { get; private set; } = "落彈衝擊";
@@ -69,7 +69,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-        atmosphere.Tick(FrontDistance, Active, chapter.WorldFrozen, Time.deltaTime);
+        atmosphere.Tick(FrontDistance, Active, chapter.WorldFrozen || IsCollapsed, Time.deltaTime);
         if (IsCollapsed)
         {
             collapseClock += Time.unscaledDeltaTime;
@@ -90,14 +90,13 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         bool deciding = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
             flow.Action.Rockfall && flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided);
         DecisionClock = deciding ? DecisionClock + dt : 0;
-        float advance = frontSpeed + Mathf.Clamp((DecisionClock - 25) * .035f, 0, 1.6f);
+        float gap = flow.PlayerProgress - FrontDistance;
+        float advance = frontSpeed * 1.7f + Mathf.Clamp((gap - 23) * .035f, 0, .5f) + Mathf.Clamp((DecisionClock - 20) * .025f, 0, .45f);
         // No permanent rear-of-party safety leash. During automatic assistance
         // and actual following the rally point offers a pocket, but an ignored
         // signal lets smoke sweep through that pocket too.
         float ceiling = flow.PartyGathered ? flow.RouteLength - 18 : flow.RouteLength;
-        if (BlocksPartyAdvance)
-            ceiling = Mathf.Min(ceiling, flow.RearProgress - 10);
-        if (chapter.RearGuard && chapter.RearGuard.Holding)
+        if (BlocksPartyAdvance || chapter.contact.CurrentState == Chapter4Contact.State.Rising)
             ceiling = Mathf.Min(ceiling, flow.RearProgress - 10, flow.PlayerProgress - 10);
         FrontDistance = Mathf.Max(FrontDistance, Mathf.Min(ceiling, FrontDistance + advance * dt));
         grace = Mathf.Max(0, grace - dt);
@@ -107,9 +106,9 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         float density = Mathf.Clamp01((FrontDistance + 3 - playerDistance) / 8);
         Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && density > 0 ? exposurePerSecond * density : -.13f) * dt);
         BlastStress = Mathf.Max(0, BlastStress - .012f * dt);
-        string status = Exposure > .02f ? "煙霧中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開濃煙" :
+        string status = Exposure > .02f ? "毒氣中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開毒氣" :
             BlastStress > .08f ? ImpactCause + " " + Mathf.CeilToInt(BlastStress * 100) + "%・利用岩石掩蔽，別停在火線" :
-            "日軍砲火持續・後方濃煙距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
+            "毒氣正吞沒退路・距你 " + Mathf.Max(0, Mathf.CeilToInt(playerDistance - FrontDistance)) + " 公尺";
         if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "濃煙正追上來！抓住砲火空檔，帶著隊伍離開";
         if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";
         else if (GumuStage != RescueStage.Waiting) status += "\n古慕咳嗽倒下・露比正在照應";

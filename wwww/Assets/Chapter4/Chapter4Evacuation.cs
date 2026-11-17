@@ -233,10 +233,9 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         if (chapter.RearGuard && !string.IsNullOrEmpty(chapter.RearGuard.Status)) status = chapter.RearGuard.Status;
         ui.SetPartyStatus(status + (separated ? "・歐冰落在後方" : ""));
         bool tether = PlayerProgress >= RearProgress + 23.7f && !PartyGathered;
-        contextualHint = PartyGathered ? "" : tether && !(chapter.RearGuard && chapter.RearGuard.Holding) ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
+        contextualHint = PartyGathered ? "" : tether ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
         ui.SetInteraction(contextualHint, !PartyGathered && Action.CanSignal);
         ui.SetNavigation(chapter.player.view, Action.NavigationTarget, !PartyGathered,
-            chapter.RearGuard && chapter.RearGuard.Holding ? "就近岩後掩護" :
             Action.Rockfall && Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided ? "從岩石兩側繞行" : "沿路撤離");
     }
     public Vector3 PointOnRoute(float distance) => Action == null ? BasePoint(distance) : Action.MapPoint(distance, BasePoint(distance));

@@ -15,7 +15,7 @@ public sealed class Chapter4RetreatAction
     public bool Rockfall { get; private set; }
     public int CrossingsSignalled { get; private set; }
     Chapter4RearGuard Combat => flow.chapter.RearGuard;
-    public bool ControlsShells => Combat && (Combat.Holding || Combat.CurrentPhase == Chapter4RearGuard.Phase.ForcedWithdrawal) || Rockfall && flow.PlayerProgress < ForkEnd + 3;
+    public bool ControlsShells => Rockfall && flow.PlayerProgress < ForkEnd + 3;
     public bool CanSignal => false;
     public float PartyLimit => Choice == RouteChoice.Undecided ? ForkStart - 1 : flow.RouteLength;
     public float MinimumPartyAdvance => Combat ? Combat.PartyAdvance : 12;
@@ -56,8 +56,7 @@ public sealed class Chapter4RetreatAction
         if (Combat)
         {
             Clock = Combat.Clock;
-            Crossing = Combat.CurrentPhase == Chapter4RearGuard.Phase.OpeningCover ? CrossingState.UnderFire :
-                Combat.CurrentPhase == Chapter4RearGuard.Phase.ForcedWithdrawal ? CrossingState.Crossing : CrossingState.Clear;
+            Crossing = CrossingState.Clear;
         }
         if (!Rockfall && player >= 58)
         {
@@ -82,7 +81,7 @@ public sealed class Chapter4RetreatAction
     }
 
     public bool Signal() => false;
-    public Vector3 NavigationTarget => Combat && Combat.Holding ? Combat.NavigationTarget :
+    public Vector3 NavigationTarget =>
         Rockfall && Choice == RouteChoice.Undecided ? flow.BasePoint(ForkStart + 1) :
         flow.PointOnRoute(Mathf.Min(flow.AdvanceLimit, flow.PlayerProgress + 6));
     public Vector3 MapPoint(float distance, Vector3 original) => Choice == RouteChoice.Undecided || distance <= ForkStart || distance >= ForkEnd

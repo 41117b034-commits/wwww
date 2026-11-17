@@ -14,7 +14,7 @@ public sealed class Chapter4Rifle : MonoBehaviour
     public int Reserve { get; private set; } = 10;
     public int Shots { get; private set; }
     public int Reloads { get; private set; }
-    public string Feedback { get; private set; } = "左鍵射擊・R 裝填・掩護傷患通過";
+    public string Feedback { get; private set; } = "跟著隊伍撤離・必要時回身射擊";
     public bool Aiming { get; private set; }
     public bool Ready => owner && !owner.Frozen && owner.Chapter.player.canMove && busy <= 0 && !Reloading;
     public Ray AimRay { get; private set; }
@@ -102,7 +102,7 @@ public sealed class Chapter4Rifle : MonoBehaviour
         float progress = Reloading ? 1 - reloadClock / ReloadSeconds : 0;
         float tilt = Mathf.Sin(progress * Mathf.PI), kick = recoil / .24f;
         rifle.localPosition = p.IsVR ? new Vector3(0, -.065f, .32f) :
-            Vector3.Lerp(new Vector3(.22f, -.22f, .85f), new Vector3(0, -.115f, .95f), aim);
+            Vector3.Lerp(new Vector3(.27f, -.32f, .85f), new Vector3(0, -.115f, .95f), aim);
         rifle.localPosition += new Vector3(0, -tilt * .08f, -kick * .065f);
         rifle.localRotation = Quaternion.Euler(-kick * 3, -tilt * 13, tilt * 18);
         if (flash) flash.SetActive(recoil > .185f && !owner.Frozen);
@@ -134,6 +134,6 @@ public sealed class Chapter4Rifle : MonoBehaviour
         if (s == null) return;
         Loaded = s.loaded; Reserve = s.reserve; Shots = s.shots; Reloads = s.reloads;
         reloadClock = s.reload; busy = s.busy; recoil = aim = 0; Aiming = false;
-        audioSource.Stop(); Notice("回到掩護位置・留意左右追兵", 4);
+        audioSource.Stop(); Notice("回到接應處・沿路撤離", 4);
     }
 }

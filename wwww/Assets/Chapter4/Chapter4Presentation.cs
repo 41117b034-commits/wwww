@@ -68,7 +68,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     {
         if (!rifleStatus) return;
         rifleStatus.transform.parent.gameObject.SetActive(visible);
-        rifleReticle.gameObject.SetActive(visible && !vr);
+        rifleReticle.gameObject.SetActive(visible && !vr && gun.Aiming);
         if (!visible) return;
         rifleStatus.text = "步槍　" + (gun.Loaded ? "1" : "0") + "／1　備彈 " + gun.Reserve + (gun.Reloading ? "　裝填中" : "") + "\n" + gun.Feedback;
     }

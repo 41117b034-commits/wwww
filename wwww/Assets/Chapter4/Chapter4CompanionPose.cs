@@ -18,6 +18,15 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
     Vector3 baseModelPosition;
     Quaternion baseModelRotation;
     bool modelPosed;
+    Vector3 leftAnkle, rightAnkle;
+    Quaternion leftSole, rightSole;
+    float leftClearance, rightClearance, seed, escapeClock, cycle, motionWeight;
+    public float EscapeCycle => cycle;
+    public float MotionWeight => motionWeight;
+    public float RecoveryWeight { get; private set; }
+    public float LookBackWeight { get; private set; }
+    public float Pace => CurrentState != State.Normal || !actor || actor.wounded ? 1 :
+        Mathf.Clamp(.94f + .06f * Mathf.Sin(escapeClock * 1.7f + seed) - RecoveryWeight * .24f, .7f, 1);
 
     public void Initialize(Chapter4Companion companion, Animator animator)
     {
@@ -36,6 +45,16 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         rightThigh = B(HumanBodyBones.RightUpperLeg, "R_Thigh", "RightUpLeg");
         rightCalf = B(HumanBodyBones.RightLowerLeg, "R_Calf", "RightLeg");
         rightFoot = B(HumanBodyBones.RightFoot, "R_Foot", "RightFoot");
+        leftAnkle = actor.model.InverseTransformPoint(leftFoot.position);
+        rightAnkle = actor.model.InverseTransformPoint(rightFoot.position);
+        leftSole = Quaternion.Inverse(actor.model.rotation) * leftFoot.rotation;
+        rightSole = Quaternion.Inverse(actor.model.rotation) * rightFoot.rotation;
+        leftClearance = leftFoot.position.y - actor.transform.position.y;
+        rightClearance = rightFoot.position.y - actor.transform.position.y;
+        int identity = 0;
+        foreach (char letter in actor.actorId) identity = (identity * 31 + letter) % 997;
+        seed = identity * .037f;
+        cycle = Mathf.Repeat(seed, 1);
     }
 
     public void Set(State state, float weight = 1, float clock = 0)
@@ -59,27 +78,13 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
     {
         if (!actor || !actor.Rig || !spine || !leftThigh || !rightThigh) return;
         if (!actor.IsPaused) Clock += Time.deltaTime;
+        if (CurrentState == State.Normal || CurrentState == State.Supported || CurrentState == State.Supporting)
+            EscapeGait();
         if (CurrentState == State.Normal)
         {
-            if (actor.CoverCrouch > .001f)
-            {
-                baseModelPosition = actor.model.localPosition; baseModelRotation = actor.model.localRotation; modelPosed = true;
-                Vector3 left = leftFoot.position, rightFootTarget = rightFoot.position;
-                actor.model.position -= Vector3.up * (.32f * actor.CoverCrouch);
-                Plant(leftThigh, leftCalf, leftFoot, left, actor.Rig.Forward, 1);
-                Plant(rightThigh, rightCalf, rightFoot, rightFootTarget, actor.Rig.Forward, 1);
-            }
-            var chapter = actor.RetreatChapter;
-            float flinch = chapter && chapter.Retreat ? chapter.Retreat.ImpactPulse : 0;
-            Vector3 travel = actor.Rig.Forward, side = Vector3.Cross(Vector3.up, travel);
-            spine.rotation = Quaternion.AngleAxis((actor.Walking ? 15 : 5) + flinch * 10 + actor.CoverCrouch * 25, side) * spine.rotation;
-            if (flinch > .08f)
-                Arm(false, Vector3.Lerp(rightHand.position, actor.Rig.Head.position + travel * .1f - Vector3.up * .12f, flinch), -travel + Vector3.down);
             return;
         }
-        baseModelPosition = actor.model.localPosition;
-        baseModelRotation = actor.model.localRotation;
-        modelPosed = true;
+        SaveModelBase();
         var rig = actor.Rig;
         Vector3 forward = rig.Forward, right = Vector3.Cross(Vector3.up, forward);
         Vector3 origin = actor.transform.position;
@@ -138,6 +143,145 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
             }
         }
         else Cough(forward, right, w);
+    }
+
+    void SaveModelBase()
+    {
+        if (modelPosed) return;
+        baseModelPosition = actor.model.localPosition;
+        baseModelRotation = actor.model.localRotation;
+        modelPosed = true;
+    }
+
+    // Distance-driven stance prevents skating: its ankle travels backwards by
+    // the exact root displacement. The shortened support phase, heel recovery
+    // and bent-arm counter-swing make this a run instead of a lowered walk.
+    // Only the rendered model moves vertically/rolls; its motor stays grounded.
+    void EscapeGait()
+    {
+        SaveModelBase();
+        var rig = actor.Rig;
+        var chapter = actor.RetreatChapter;
+        bool supported = CurrentState == State.Supported || CurrentState == State.Supporting;
+        bool hurt = actor.wounded || CurrentState == State.Supported;
+        float height = rig.Height;
+        float stride = height * (supported ? .62f : hurt ? .70f : .96f);
+        float stance = supported ? .64f : hurt ? .56f : .43f;
+        if (!actor.IsPaused)
+        {
+            escapeClock += Time.deltaTime;
+            motionWeight = Mathf.MoveTowards(motionWeight, actor.Walking ? 1 : 0, Time.deltaTime * 5);
+            cycle = Mathf.Repeat(cycle + actor.StepDistance / Mathf.Max(.5f, stride), 1);
+            RecoveryWeight = supported || hurt ? 0 : Beat(escapeClock + seed, 9.7f + seed % 3, .72f) * motionWeight;
+            LookBackWeight = supported ? 0 : Beat(escapeClock + seed * 2, 5.9f + seed % 2, 1.15f) * (1 - RecoveryWeight);
+        }
+        float flinch = chapter && chapter.Retreat ? chapter.Retreat.ImpactPulse : 0;
+        float swing = Mathf.Cos(cycle * Mathf.PI * 2);
+        Vector3 forward = rig.Forward, right = Vector3.Cross(Vector3.up, forward).normalized;
+        Vector3 leftRest = actor.model.TransformPoint(leftAnkle), rightRest = actor.model.TransformPoint(rightAnkle);
+        Quaternion leftRotation = actor.model.rotation * leftSole, rightRotation = actor.model.rotation * rightSole;
+        float flight = !hurt && !supported ? Mathf.Pow(Mathf.Abs(Mathf.Sin(cycle * Mathf.PI * 2)), 4) : 0;
+        float bob = motionWeight * height * (-.04f + .04f * flight - RecoveryWeight * .022f);
+        actor.model.position += Vector3.up * bob + right * (height * .008f * swing * motionWeight);
+        actor.model.RotateAround(rig.Hips.position, right, (supported ? 2 : 5) * motionWeight);
+        float shoulderRoll = (hurt ? 4 : 2.5f) * swing * motionWeight + RecoveryWeight * 8;
+        spine.rotation = Quaternion.AngleAxis(shoulderRoll, forward) *
+            Quaternion.AngleAxis((supported ? 3 : 9) * motionWeight + RecoveryWeight * 12 + flinch * 6, right) * spine.rotation;
+        float glanceSide = seed % 2 < 1 ? -1 : 1;
+        spine.rotation = Quaternion.AngleAxis(LookBackWeight * glanceSide * 12, Vector3.up) * spine.rotation;
+        rig.Head.rotation = Quaternion.AngleAxis(LookBackWeight * glanceSide * 55, Vector3.up) *
+            Quaternion.AngleAxis(-5 * motionWeight, right) * rig.Head.rotation;
+        RunLeg(true, cycle, stride, stance, hurt, supported, leftRest, leftRotation, forward, right);
+        RunLeg(false, Mathf.Repeat(cycle + .5f, 1), stride, stance, hurt, supported, rightRest, rightRotation, forward, right);
+        RunArm(true, swing, supported, forward, right);
+        RunArm(false, -swing, supported, forward, right);
+        if (actor.wounded)
+            Arm(true, spine.position + forward * .18f + right * .08f - Vector3.up * .08f, -forward + Vector3.down);
+        if (supported) return; // Authored paired hand contacts are applied next.
+        // Stagger, recover and look back at different times for each person.
+        // A warning raises a protecting forearm without sinking the whole body.
+        if (RecoveryWeight > .001f)
+        {
+            Arm(false, Vector3.Lerp(rightHand.position, rightArm.position + right * height * .23f + forward * height * .12f - Vector3.up * height * .11f, RecoveryWeight), -forward);
+        }
+        float gas = chapter && chapter.gas ? Mathf.InverseLerp(20, 3, actor.Progress - chapter.gas.FrontDistance) : 0;
+        float cough = gas * Beat(escapeClock + seed, 4.6f, 1.1f);
+        float guard = Mathf.Clamp01(Mathf.Max(flinch, actor.CoverCrouch * .85f));
+        float protect = Mathf.Max(cough, guard);
+        if (protect > .001f)
+        {
+            Vector3 target = rig.Head.position + forward * .12f - Vector3.up * (guard > cough ? .02f : .13f);
+            Arm(false, Vector3.Lerp(rightHand.position, target, protect), right * .35f - forward + Vector3.down);
+            OrientPalm(false, forward - Vector3.up * .6f, -forward);
+        }
+    }
+
+    void RunLeg(bool left, float phase, float stride, float stance, bool hurt, bool supported,
+        Vector3 rest, Quaternion rotation, Vector3 forward, Vector3 right)
+    {
+        float halfStride = stride * stance * .5f;
+        float offset, lift = 0, toe = 0;
+        if (phase < stance)
+        {
+            offset = Mathf.Lerp(halfStride, -halfStride, phase / stance);
+            toe = 12 * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(stance * .65f, stance, phase));
+        }
+        else
+        {
+            float t = (phase - stance) / (1 - stance);
+            // Hermite tangents match the planted foot's velocity at both ends.
+            float tangent = -stride * (1 - stance);
+            offset = (2*t*t*t-3*t*t+1)*-halfStride + (t*t*t-2*t*t+t)*tangent +
+                (-2*t*t*t+3*t*t)*halfStride + (t*t*t-t*t)*tangent;
+            float recovery = Mathf.Sin(t * Mathf.PI);
+            lift = actor.Rig.Height * (supported ? .055f : hurt ? (left ? .065f : .11f) : .17f) * recovery * recovery;
+            toe = Mathf.Lerp(12, -12, t) * recovery;
+        }
+        Vector3 target = rest + forward * (offset * motionWeight);
+        var terrain = actor.RetreatChapter.evacuation.terrain;
+        if (terrain && terrain.Raycast(new Ray(target + Vector3.up * 5, Vector3.down), out var hit, 10))
+            target.y = hit.point.y + (left ? leftClearance : rightClearance);
+        target.y += lift * motionWeight;
+        var thigh = left ? leftThigh : rightThigh;
+        var calf = left ? leftCalf : rightCalf;
+        var foot = left ? leftFoot : rightFoot;
+        Plant(thigh, calf, foot, target, forward + right * (left ? -.08f : .08f), 1);
+        foot.rotation = Quaternion.AngleAxis(toe * motionWeight, right) * rotation;
+    }
+
+    void RunArm(bool left, float swing, bool supported, Vector3 forward, Vector3 right)
+    {
+        var arm = left ? leftArm : rightArm;
+        var elbow = left ? leftElbow : rightElbow;
+        var hand = left ? leftHand : rightHand;
+        Vector3 side = right * (left ? -1 : 1);
+        float length = Vector3.Distance(arm.position, elbow.position) + Vector3.Distance(elbow.position, hand.position);
+        Vector3 target = arm.position + Vector3.down * length * .61f + side * length * .10f +
+            forward * length * (.10f - swing * (supported ? .21f : .50f));
+        Vector3 waiting = arm.position + Vector3.down * length * .83f + side * length * .08f + forward * length * .14f;
+        Arm(left, Vector3.Lerp(waiting, target, motionWeight), -forward + side * .4f + Vector3.down * .35f);
+        OrientPalm(left, hand.position - elbow.position, -side);
+    }
+
+    static float Beat(float time, float period, float duration)
+    {
+        float t = Mathf.Repeat(time, period) / duration;
+        return t < 1 ? Mathf.Sin(t * Mathf.PI) * Mathf.Sin(t * Mathf.PI) : 0;
+    }
+
+    public sealed class EscapeSnapshot
+    {
+        public float clock, cycle, weight, recovery, look;
+    }
+    public EscapeSnapshot CaptureEscape() => new EscapeSnapshot { clock = escapeClock, cycle = cycle,
+        weight = motionWeight, recovery = RecoveryWeight, look = LookBackWeight };
+    public void RestoreEscape(EscapeSnapshot saved)
+    {
+        escapeClock = saved != null ? saved.clock : 0;
+        cycle = saved != null ? saved.cycle : Mathf.Repeat(seed, 1);
+        motionWeight = saved != null ? saved.weight : 0;
+        RecoveryWeight = saved != null ? saved.recovery : 0;
+        LookBackWeight = saved != null ? saved.look : 0;
     }
 
     void Cough(Vector3 forward, Vector3 right, float weight)

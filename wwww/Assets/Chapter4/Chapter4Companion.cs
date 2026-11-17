@@ -14,8 +14,8 @@ public sealed class Chapter4Companion : MonoBehaviour
     public float Progress { get; private set; }
     public bool JoinedRoute { get; private set; }
     public bool Walking { get; private set; }
+    public float StepDistance { get; private set; }
     public bool Speaking { get; set; }
-    public bool PinnedByFire => owner && owner.chapter.RearGuard && owner.chapter.RearGuard.ShouldPin(this);
     public float CoverCrouch { get; private set; }
     public Chapter1IncidentRig Rig { get; private set; }
     public CharacterController Motor { get; private set; }
@@ -49,15 +49,16 @@ public sealed class Chapter4Companion : MonoBehaviour
     public void Initialize(Chapter4Evacuation flow, Chapter4Companion predecessor, int order)
     {
         owner = flow;
-        walkSpeed = wounded ? 1.7f : 2.15f;
+        walkSpeed = wounded ? 1.7f : 2.6f;
         ahead = predecessor;
         Motor = GetComponent<CharacterController>();
         var animator = model.GetComponentInChildren<Animator>();
         Rig = model.gameObject.AddComponent<Chapter1IncidentRig>();
         Rig.Initialize(animator, false);
         Rig.batonVisible = false;
-        Rig.smoothLocomotion = true;
-        Rig.BeginDepartureWalk(order * .72f);
+        // The shared rig supplies calibrated neutral bones. Chapter 4 owns its
+        // escape gait; layering a crouch over the donor's walk looked stealthy.
+        Rig.smoothLocomotion = false;
         Rig.walking = false;
         Rig.Face(flow.PointOnRoute(6) - flow.PointOnRoute(0));
         Rig.Ground(transform.position.y);
@@ -87,7 +88,13 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (!owner || !Rig) return;
         Pose.RestoreModelBase();
         Walking = false;
-        if (!IsPaused) CoverCrouch = Mathf.MoveTowards(CoverCrouch, PinnedByFire ? 1 : 0, Time.deltaTime * 4);
+        StepDistance = 0;
+        if (!IsPaused)
+        {
+            var pressure = owner.chapter.Retreat;
+            bool nearBlast = pressure && pressure.IsTelegraphing && Chapter4Evacuation.FlatDistance(transform.position, pressure.ImpactPosition) < 12;
+            CoverCrouch = Mathf.MoveTowards(CoverCrouch, nearBlast ? .65f : 0, Time.deltaTime * 4);
+        }
         if (!IsPaused)
         {
             travelClock += Time.deltaTime;
@@ -98,7 +105,8 @@ public sealed class Chapter4Companion : MonoBehaviour
                     Walk(Time.deltaTime);
             }
         }
-        Rig.walking = Walking;
+        StepDistance = IsPaused ? 0 : Chapter4Evacuation.FlatDistance(transform.position, previousPosition);
+        Rig.walking = false;
         Rig.frozen = IsPaused;
         Rig.speakingWeight = Speaking && !IsPaused ? .6f : 0;
         Rig.Ground(transform.position.y);
@@ -129,19 +137,22 @@ public sealed class Chapter4Companion : MonoBehaviour
             Progress = Mathf.Max(Progress, owner.ProjectProgress(transform.position, Progress, Mathf.Min(Destination, Progress + 1.5f)));
             return;
         }
-        if (PinnedByFire)
-        {
-            // Reach the roadside by ordinary movement instead of freezing upright in the lane.
-            StepToward(owner.PointOnRoute(Progress) - RouteRight(Progress) * (SupportFollower ? 1f : 1.3f), deltaTime);
-            return;
-        }
         if (SupportFollower && Chapter4Evacuation.FlatDistance(transform.position, SupportFollower.transform.position) > 1.12f) return;
         // At the first shelling everyone leaves their own camp position.
         // Do not make the whole cast wait for the wounded leader to join a queue.
         bool rushing = owner.OpeningRush;
         if (!rushing && ahead && (!ahead.JoinedRoute || ahead.Progress < .9f)) return;
         float limit = ahead && !rushing ? Mathf.Min(destination, ahead.Progress - 1.35f) : destination;
-        if (JoinedRoute && Progress >= limit - .06f) return;
+        if (JoinedRoute && Progress >= limit - .06f)
+        {
+            // Longitudinal progress can reach the endpoint before the leader's
+            // lateral arrival slot. Finish that short physical step instead of
+            // leaving the entire party waiting under pursuit fire forever.
+            if (destination >= owner.RouteLength - 12 && limit >= destination - .06f &&
+                Chapter4Evacuation.FlatDistance(transform.position, RouteTarget(destination)) > .25f)
+                StepToward(RouteTarget(destination), deltaTime);
+            return;
+        }
         if (SupportFollower && JoinedRoute) SelectPairLane(limit);
         else if (JoinedRoute) SelectSingleLane(limit);
         float entry = rushing ? owner.ProjectProgress(transform.position, 0, destination) : 0;
@@ -161,7 +172,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         Vector3 delta = Vector3.ProjectOnPlane(target - transform.position, Vector3.up);
         if (delta.magnitude > .025f)
         {
-            float step = Mathf.Min(delta.magnitude, walkSpeed * deltaTime);
+            float step = Mathf.Min(delta.magnitude, walkSpeed * Pose.Pace * deltaTime);
             Motor.Move(delta.normalized * step + Vector3.down * (2f * deltaTime));
             Vector3 moved = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up);
             Walking = moved.magnitude > .0005f;
@@ -243,12 +254,13 @@ public sealed class Chapter4Companion : MonoBehaviour
         public Chapter4Companion partner, follower;
         public Chapter4CompanionPose.State pose;
         public float poseWeight, poseClock;
+        public Chapter4CompanionPose.EscapeSnapshot escape;
     }
 
     public Snapshot Capture() => new Snapshot { position = transform.position, forward = Rig.Forward,
         progress = Progress, destination = destination, speed = walkSpeed, offset = RouteOffset,
         joined = JoinedRoute, held = MotionHeld, independent = IndependentFollow, partner = SupportPartner, follower = SupportFollower,
-        pose = Pose.CurrentState, poseWeight = Pose.Weight, poseClock = Pose.Clock };
+        pose = Pose.CurrentState, poseWeight = Pose.Weight, poseClock = Pose.Clock, escape = Pose.CaptureEscape() };
 
     public void Restore(Snapshot saved)
     {
@@ -257,9 +269,10 @@ public sealed class Chapter4Companion : MonoBehaviour
         Progress = saved.progress; destination = saved.destination; walkSpeed = saved.speed; RouteOffset = saved.offset;
         JoinedRoute = saved.joined; MotionHeld = saved.held; SupportPartner = saved.partner; SupportFollower = saved.follower;
         IndependentFollow = saved.independent;
-        AssistTarget = null; Walking = Speaking = false; releaseAt = travelClock = 0;
+        AssistTarget = null; Walking = Speaking = false; StepDistance = CoverCrouch = 0; releaseAt = travelClock = 0;
         Rig.Face(saved.forward); Rig.Ground(transform.position.y); Rig.walking = false;
         Pose.Set(saved.pose, saved.poseWeight, saved.poseClock);
+        Pose.RestoreEscape(saved.escape);
         previousPosition = transform.position;
     }
 
