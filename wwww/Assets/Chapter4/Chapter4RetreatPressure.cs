@@ -155,7 +155,6 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
         else if (Flight == FlightState.Approach) cue = "引擎聲逼近！飛機正在轉入山谷・留意前方空地";
         else if (flow.BoundaryBlocked) cue = "別落下同伴・留在撤離通路接應";
-        else if (plane.gameObject.activeSelf && Mathf.Repeat(flightClock, 18) < 5) cue = AircraftDirectionCue();
         chapter.presentation.SetThreatCue(cue, IsTelegraphing ? .8f : ImpactPulse);
     }
 
@@ -300,17 +299,6 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         if (delta.sqrMagnitude > .001f)
             plane.rotation = Quaternion.RotateTowards(plane.rotation, Quaternion.LookRotation(delta, Vector3.up), dt * 80);
         plane.position = Vector3.MoveTowards(plane.position, target, speed * dt);
-    }
-
-    string AircraftDirectionCue()
-    {
-        Vector3 eye = chapter.player.view.transform.position;
-        Vector3 target = (plane.position - eye).sqrMagnitude <= (Wingman.transform.position - eye).sqrMagnitude ? plane.position : Wingman.transform.position;
-        Vector3 forward = Vector3.ProjectOnPlane(chapter.player.view.transform.forward, Vector3.up);
-        if (forward.sqrMagnitude < .01f) forward = chapter.player.transform.forward;
-        float angle = Vector3.SignedAngle(forward, Vector3.ProjectOnPlane(target - eye, Vector3.up), Vector3.up);
-        string where = Mathf.Abs(angle) > 125 ? "後方" : angle < -35 ? "左側" : angle > 35 ? "右側" : "前方";
-        return "日軍飛機在" + where + "上空・抬頭可見機身";
     }
 
     void BuildAircraft()

@@ -383,23 +383,26 @@ public static class Chapter4SceneAuthoring
         Barrel(clearing, new Vector3(28.9f, 7.2f, 140.3f));
         Rock(clearing, new Vector3(13.3f, 0, 145.8f), new Vector3(4, 3.5f, 4.6f), -20);
         Rock(clearing, new Vector3(22.4f, 0, 149.6f), new Vector3(5.2f, 4.2f, 4.3f), 22);
-        var sign = Group("集合處木牌", clearing);
+        var sign = Group("林間會合布記", clearing);
         sign.position = new Vector3(17.3f, SurfaceHeight(17.3f, 136), 136);
-        sign.localRotation = Quaternion.Euler(0, 17, 0);
-        Box("木牌柱", sign, new Vector3(0, .76f, 0), new Vector3(.12f, 1.52f, .13f), timber);
-        Box("集合處牌面", sign, new Vector3(0, 1.28f, -.03f), new Vector3(1.32f, .43f, .11f), boards);
-        var label = new GameObject("集合處", typeof(TextMesh)).GetComponent<TextMesh>();
-        label.transform.SetParent(sign, false); label.transform.localPosition = new Vector3(0, 1.28f, -.095f);
-        label.font = font; label.fontSize = 56; label.characterSize = .125f;
-        label.anchor = TextAnchor.MiddleCenter; label.alignment = TextAlignment.Center;
-        label.text = "集合處"; label.color = new Color(.13f, .12f, .08f);
-        var textMaterial = new Material(Shader.Find("Chapter3/School World Text") ?? font.material.shader);
-        textMaterial.name = "Gathering sign text"; textMaterial.mainTexture = font.material.mainTexture;
-        string textPath = Folder + "/Gathering sign text.mat";
-        var prior = AssetDatabase.LoadAssetAtPath<Material>(textPath);
-        if (prior) { Object.DestroyImmediate(textMaterial); textMaterial = prior; }
-        else AssetDatabase.CreateAsset(textMaterial, textPath);
-        label.GetComponent<Renderer>().sharedMaterial = textMaterial;
+        sign.localRotation = Quaternion.Euler(0, -32, 0);
+        DressRallyMarker(sign.gameObject);
+    }
+
+    internal static void DressRallyMarker(GameObject marker)
+    {
+        const string path = Folder + "/Rally Marker/Rally marker";
+        var model = AssetDatabase.LoadAssetAtPath<GameObject>(path + ".obj");
+        var mesh = model ? model.GetComponentInChildren<MeshFilter>(true) : null;
+        var fabric = AssetDatabase.LoadAssetAtPath<Material>(path + ".mat");
+        if (!mesh || !mesh.sharedMesh || !fabric) throw new InvalidOperationException("Missing Chapter 4 rally marker artwork.");
+        marker.AddComponent<MeshFilter>().sharedMesh = mesh.sharedMesh;
+        marker.AddComponent<MeshRenderer>().sharedMaterial = fabric;
+        foreach (Vector3 basePoint in new[] { new Vector3(-.95f, .65f, .05f), new Vector3(.96f, .60f, .05f) })
+        {
+            var stake = marker.AddComponent<CapsuleCollider>();
+            stake.center = basePoint; stake.radius = .075f; stake.height = basePoint.y * 2 + .18f;
+        }
     }
 
     static void Shelter(Transform parent, Vector3 position, float yaw, string name)
