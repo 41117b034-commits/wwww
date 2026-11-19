@@ -19,7 +19,7 @@ public sealed class Chapter4RetreatAction
     public bool CanSignal => false;
     public float PartyLimit => Choice == RouteChoice.Undecided ? ForkStart - 1 : flow.RouteLength;
     public float MinimumPartyAdvance => Combat ? Combat.PartyAdvance : 12;
-    public float PlayerLimit => Mathf.Min(Combat ? Combat.PlayerLimit : 43, Choice == RouteChoice.Undecided ? ForkStart + 10 : flow.RouteLength);
+    public float PlayerLimit => Combat ? Combat.PlayerLimit : flow.RouteLength;
     public string Objective => Combat && !string.IsNullOrEmpty(Combat.Objective) ? Combat.Objective :
         Rockfall && Choice == RouteChoice.Undecided ? "前路被落石截斷・從岩石兩側繞行" :
         Choice != RouteChoice.Undecided && flow.PlayerProgress < ForkEnd ?
@@ -45,7 +45,7 @@ public sealed class Chapter4RetreatAction
             {
                 float d = ForkStart + i, t = i / 25f;
                 float bend = Mathf.Min(1, Mathf.Sin(t * Mathf.PI) * 1.6f);
-                branches[side][i] = Ground(flow.BasePoint(d) + Right(d) * (side == 0 ? -4.8f : 3.1f) * bend);
+                branches[side][i] = Ground(flow.BasePoint(d) + Right(d) * (side == 0 ? -5.1f : 4.25f) * bend);
             }
         BuildLandmarks();
     }
@@ -68,10 +68,12 @@ public sealed class Chapter4RetreatAction
             fallClock = Mathf.Min(1.3f, fallClock + dt);
             rubble.position = rubbleRest + Vector3.up * (2.5f * (1 - Mathf.SmoothStep(0, 1, fallClock / 1.3f)));
         }
-        if (Rockfall && Choice == RouteChoice.Undecided && player >= ForkStart + 2)
+        if (Rockfall && Choice == RouteChoice.Undecided && player >= 71.5f)
         {
-            float side = Vector3.Dot(flow.chapter.player.transform.position - flow.BasePoint(player), Right(player));
-            if (Mathf.Abs(side) > 1.1f) Choice = side < 0 ? RouteChoice.Sheltered : RouteChoice.Exposed;
+            Vector3 feet = flow.chapter.player.transform.position;
+            float left = DistanceToBranch(feet, branches[0]), right = DistanceToBranch(feet, branches[1]);
+            if (Mathf.Min(left, right) <= CorridorWidth(player) && Mathf.Abs(left - right) > .45f)
+                Choice = left < right ? RouteChoice.Sheltered : RouteChoice.Exposed;
         }
         if (Rockfall && player >= ForkStart - 3 && player < ForkEnd + 3)
         {
@@ -81,9 +83,8 @@ public sealed class Chapter4RetreatAction
     }
 
     public bool Signal() => false;
-    public Vector3 NavigationTarget =>
-        Rockfall && Choice == RouteChoice.Undecided ? flow.BasePoint(ForkStart + 1) :
-        flow.PointOnRoute(Mathf.Min(flow.AdvanceLimit, flow.PlayerProgress + 6));
+    public bool AtOpenFork => Rockfall && Choice == RouteChoice.Undecided;
+    public Vector3 NavigationTarget => flow.PointOnRoute(Mathf.Min(flow.AdvanceLimit, flow.PlayerProgress + 6));
     public Vector3 MapPoint(float distance, Vector3 original) => Choice == RouteChoice.Undecided || distance <= ForkStart || distance >= ForkEnd
         ? original : BranchPoint(distance, Choice);
     public Vector3 BranchPoint(float d, RouteChoice choice)
@@ -91,10 +92,17 @@ public sealed class Chapter4RetreatAction
         float p = Mathf.Clamp(d - ForkStart, 0, 25); int i = Mathf.Min(24, Mathf.FloorToInt(p));
         var route = branches[choice == RouteChoice.Sheltered ? 0 : 1]; return Vector3.Lerp(route[i], route[i + 1], p - i);
     }
-    public float BranchDistance(Vector3 position)
+    public static float CorridorWidth(float progress)
+    {
+        float interior = Mathf.Min(Mathf.InverseLerp(ForkStart, 74, progress), Mathf.InverseLerp(ForkEnd, 83, progress));
+        return Mathf.Lerp(4.6f, 2.55f, Mathf.SmoothStep(0, 1, interior));
+    }
+    public float BranchDistance(Vector3 position) =>
+        Mathf.Min(DistanceToBranch(position, branches[0]), DistanceToBranch(position, branches[1]));
+    static float DistanceToBranch(Vector3 position, Vector3[] branch)
     {
         float closest = float.MaxValue;
-        foreach (var branch in branches) for (int i = 1; i < branch.Length; i++)
+        for (int i = 1; i < branch.Length; i++)
         {
             Vector3 a = branch[i - 1], v = Vector3.ProjectOnPlane(branch[i] - a, Vector3.up);
             float t = Mathf.Clamp01(Vector3.Dot(Vector3.ProjectOnPlane(position - a, Vector3.up), v) / Mathf.Max(.001f, v.sqrMagnitude));
@@ -172,7 +180,7 @@ public sealed class Chapter4RetreatAction
             for (int j = 0; j < columns; j++)
             {
                 int v = i * columns + j;
-                vertices[v] = Ground(point + right * Mathf.Lerp(-.9f, .9f, j / 6f));
+                vertices[v] = Ground(point + right * Mathf.Lerp(-1.55f, 1.55f, j / 6f));
                 uv[v] = new Vector2(j / 6f, p / 3);
                 if (i == 0 || j == 0) continue;
                 triangles.Add(v - columns - 1); triangles.Add(v - 1); triangles.Add(v - columns);

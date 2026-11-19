@@ -93,6 +93,13 @@ public static class Chapter4CastAuthoring
         var animator = model.GetComponentInChildren<Animator>();
         if (!animator) throw new InvalidOperationException("Character has no existing skeletal animation rig: " + name);
         animator.applyRootMotion = false;
+        if (id == "obing")
+        {
+            var cloth = AssetDatabase.LoadAssetAtPath<Material>("Assets/Chapter4/Environment/Obing travel cloth.mat");
+            var body = renderers.OfType<SkinnedMeshRenderer>().Single(r => r.sharedMesh && AssetDatabase.GetAssetPath(r.sharedMesh).EndsWith(".fbx", StringComparison.OrdinalIgnoreCase));
+            if (!cloth) throw new InvalidOperationException("Chapter 4 Obing travel cloth is missing.");
+            body.sharedMaterial = cloth;
+        }
         actor.model = model.transform;
         return actor;
     }

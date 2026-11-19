@@ -53,11 +53,14 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "643941233c59d629549303f7e23afff34921b9671495a01f26d7ab5236ab519e",
+      "mandarinSha256": "1fc6755cea00f5bc97ff3d3433ea25d03cfe76d8ba8628955108c3226bfec13f",
       "translationInput": "Gumu，坐穩了再鬆手。我在你旁邊，你先慢慢把氣喘勻。",
       "ttsText": "tloong hari han komo. ni ko siyo so, thowe naq hengak han.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSourceSha256": "643941233c59d629549303f7e23afff34921b9671495a01f26d7ab5236ab519e",
+      "mandarinMastering": "trail_partner_local_v1",
+      "preserveMandarinPauses": true
     },
     {
       "role": "gumu",
@@ -376,11 +379,14 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "0a613a5d59adcd72cbf26d3bfa30131c5617a71ac375d8448abcfc78d1724846",
+      "mandarinSha256": "4cdf4314ffb3fc8e5095054c3a8db82590387547e80579b72a38bc738d2cce61",
       "translationInput": "Gumu，把重量靠過來。腳下有突出的石頭，我們一步一步跨過去，不用趕著追。",
       "ttsText": "gomo, eyah smdaling hini chedil na. niqan btunux tkriyak ka toma papak, kkkesa ta moda hiya, iya mhero mhero.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSourceSha256": "0a613a5d59adcd72cbf26d3bfa30131c5617a71ac375d8448abcfc78d1724846",
+      "mandarinMastering": "trail_partner_local_v1",
+      "preserveMandarinPauses": true
     },
     {
       "role": "gumu",
@@ -433,11 +439,14 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "dd1fb9e60d424610902f546effb0804521961be5230e5826cbadce9aa393e64d",
+      "mandarinSha256": "fa320a87f07a88804ae0b7ed24a92cc1a218065d6579d1ae2938b94e9020bfd1",
       "translationInput": "這一段終於走過來了。Gumu，先站穩，抓好我的肩，我不會把你留在這裡。",
       "ttsText": "nii ka qnhdean na di. gomo, knbeyax mheyo han, qmerac ahing mo, oxe so mo htiyon hini.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSourceSha256": "dd1fb9e60d424610902f546effb0804521961be5230e5826cbadce9aa393e64d",
+      "mandarinMastering": "trail_partner_local_v1",
+      "preserveMandarinPauses": true
     },
     {
       "role": "gumu",
@@ -528,11 +537,14 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "a7cf93859a1bfb2a0ddf0d68934025cdf61dd145dd4436693b5d5ecb95b408c2",
+      "mandarinSha256": "b559843b02f892eca7912bed31974e46b396e6af3903123ba05f7d4f8554586d",
       "translationInput": "Gumu，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。",
       "ttsText": "gomo, qntaan mo ka pssliyan di. sdahar yako ka hei mo, iya mrrudu papak, mhedu ta mkkesa.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSourceSha256": "a7cf93859a1bfb2a0ddf0d68934025cdf61dd145dd4436693b5d5ecb95b408c2",
+      "mandarinMastering": "trail_partner_local_v1",
+      "preserveMandarinPauses": true
     },
     {
       "role": "gumu",
@@ -585,11 +597,14 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "2eedaec25ef09774a833584bb5df7286ed35f33fdc023bb9013c96b043f3d271",
+      "mandarinSha256": "bc30ff8097cb92a211653cd2030e33bac64b1944342af92bc4c39f25718b30a1",
       "translationInput": "Gumu，靠著我。慢慢起來，我扶你一起走。",
       "ttsText": "sdahar yako ga komo. thowe hari tutuy, dyago sumu.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSourceSha256": "2eedaec25ef09774a833584bb5df7286ed35f33fdc023bb9013c96b043f3d271",
+      "mandarinMastering": "trail_partner_local_v1",
+      "preserveMandarinPauses": true
     },
     {
       "role": "bawan",

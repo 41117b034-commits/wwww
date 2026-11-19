@@ -57,6 +57,12 @@ async def mandarin():
             text=entry['chinese'].replace('1930','一九三零').replace('1931','一九三一')
             mp3=work/(key+'.mp3')
             choice=worker.settings(text,entry['role'],config)
+            if entry['role']=='lubi':
+                import chapter4_lubi
+                if entry.get('mandarinMastering')!=chapter4_lubi.REVISION or not dest.is_file() or hashlib.sha256(dest.read_bytes()).hexdigest()!=entry.get('mandarinSha256'):
+                    staged,_=chapter4_lubi.render_entry(entry,dest,work/'lubi')
+                    dest.write_bytes(staged.read_bytes())
+                return
             if dest.exists() and entry.get('mandarinVoice') == choice and entry.get('mandarinSha256') == hashlib.sha256(dest.read_bytes()).hexdigest():
                 entry['mandarin']=resource
                 return

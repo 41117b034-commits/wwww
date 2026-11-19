@@ -218,7 +218,10 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         float distance = FlatDistance(candidate, PointOnRoute(progress));
         float oldDistance = FlatDistance(from, PointOnRoute(current));
         if (Action != null && Action.Rockfall && progress > Chapter4RetreatAction.ForkStart && progress < Chapter4RetreatAction.ForkEnd)
-            return Action.BranchDistance(candidate) <= 1.8f || Action.BranchDistance(candidate) < Action.BranchDistance(from);
+        {
+            float excess = Action.BranchDistance(candidate) - Chapter4RetreatAction.CorridorWidth(progress);
+            return excess <= 0 || excess < Action.BranchDistance(from) - Chapter4RetreatAction.CorridorWidth(current);
+        }
         bool camp = LegIndex == 0 && progress < 3 && FlatDistance(candidate, PointOnRoute(0)) < 12;
         return camp || distance <= 4.6f || distance < oldDistance;
     }
@@ -235,8 +238,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         bool tether = PlayerProgress >= RearProgress + 23.7f && !PartyGathered;
         contextualHint = PartyGathered ? "" : tether ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
         ui.SetInteraction(contextualHint, !PartyGathered && Action.CanSignal);
-        ui.SetNavigation(chapter.player.view, Action.NavigationTarget, !PartyGathered,
-            Action.Rockfall && Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided ? "從岩石兩側繞行" : "沿路撤離");
+        ui.SetNavigation(chapter.player.view, Action.NavigationTarget, !PartyGathered && !Action.AtOpenFork, "沿路撤離");
     }
     public Vector3 PointOnRoute(float distance) => Action == null ? BasePoint(distance) : Action.MapPoint(distance, BasePoint(distance));
 

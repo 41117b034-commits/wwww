@@ -7,7 +7,7 @@ using UnityEngine;
 [DefaultExecutionOrder(90)]
 public sealed class Chapter4Voice : MonoBehaviour
 {
-    [Serializable] public sealed class Entry { public string role, chinese, mandarin, seediq, translation; public bool reviewed; }
+    [Serializable] public sealed class Entry { public string role, chinese, mandarin, seediq, translation; public bool reviewed, preserveMandarinPauses; }
     [Serializable] public sealed class Bank { public Entry[] entries; }
     sealed class Line { public string role, text; public float minimum; public bool card; }
     readonly Dictionary<string, Entry> entries = new Dictionary<string, Entry>();
@@ -72,7 +72,9 @@ public sealed class Chapter4Voice : MonoBehaviour
             if (!clips.TryGetValue(CurrentResource, out var clip))
             {
                 var original = Resources.Load<AudioClip>(CurrentResource);
-                clip = GameLanguageSettings.ChineseVoice ? ChineseSpeechPacing.Prepare(original) : Chapter3VoiceTone.Prepare(original);
+                clip = GameLanguageSettings.ChineseVoice
+                    ? (entry.preserveMandarinPauses ? original : ChineseSpeechPacing.Prepare(original))
+                    : Chapter3VoiceTone.Prepare(original);
                 clips[CurrentResource] = clip;
                 if (clip && clip != original) preparedClips.Add(clip);
             }

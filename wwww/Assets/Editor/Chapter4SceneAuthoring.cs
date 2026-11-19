@@ -352,8 +352,8 @@ public static class Chapter4SceneAuthoring
     static void RestClearings(Transform parent)
     {
         var first = Group("途中 · 可回望的休息空地", parent);
-        Rock(first, new Vector3(23.8f, 0, 64.5f), new Vector3(3.5f, 2.7f, 4.4f), 35);
-        Rock(first, new Vector3(20.5f, 0, 68.5f), new Vector3(2.5f, 1.5f, 2.8f), -5);
+        Rock(first, new Vector3(27.9f, 0, 68f), new Vector3(3.5f, 2.7f, 4.4f), 35);
+        Rock(first, new Vector3(24.6f, 0, 72f), new Vector3(2.5f, 1.5f, 2.8f), -5);
         var second = Group("途中 · 岩肩空地", parent);
         Rock(second, new Vector3(2, 0, 101.8f), new Vector3(4.3f, 3.2f, 4.1f), -25);
         Rock(second, new Vector3(9.7f, 0, 104.2f), new Vector3(3.2f, 2, 3.4f), 38);
