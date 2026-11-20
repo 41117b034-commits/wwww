@@ -24,6 +24,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Text contactText;
     public GameObject endingPanel;
     public Text endingKicker, endingTitle, endingBody, endingFooter;
+    Chapter4EpilogueFilm endingFilm;
     public Text retreatWarning;
     public Text impactTarget;
     public Text rifleStatus, rifleReticle;
@@ -113,10 +114,40 @@ public sealed class Chapter4Presentation : MonoBehaviour
         contactButton.GetComponent<Image>().raycastTarget = ready;
     }
 
-    public void ShowEnding(string kicker, string title, string body, string footer)
+    public void ShowEnding(Chapter4SceneController chapter, string kicker, string title, string body, string footer)
     {
-        endingKicker.text = kicker; endingTitle.text = title; endingBody.text = body; endingFooter.text = footer;
         endingPanel.SetActive(true);
+        if (!endingFilm)
+        {
+            endingPanel.GetComponent<Image>().color = new Color(.16f, .17f, .15f);
+            var card = (RectTransform)endingBody.transform.parent;
+            card.GetComponent<Image>().color = Color.clear;
+            Place(card, 0, 0, 1, 1);
+            Place(endingKicker.transform, .076f, .79f, .91f, .88f);
+            Place(endingTitle.transform, .075f, .66f, .93f, .79f);
+            Place(endingBody.transform, .078f, .20f, .81f, .64f);
+            Place(endingFooter.transform, .078f, .115f, .96f, .175f);
+            endingBody.lineSpacing = 1.18f;
+            endingBody.resizeTextForBestFit = false;
+            endingBody.fontSize = 30;
+            endingBody.fontStyle = FontStyle.Normal;
+            endingBody.horizontalOverflow = HorizontalWrapMode.Wrap;
+            endingKicker.color = new Color(.88f, .85f, .72f);
+            endingFooter.color = new Color(.86f, .85f, .79f);
+            var filmCredit = Label(card, "", endingBody.font, 19, new Vector2(.078f, .046f), new Vector2(.97f, .106f));
+            filmCredit.color = new Color(.83f, .82f, .77f);
+            foreach (var text in new[] { endingKicker, endingTitle, endingBody, endingFooter, filmCredit })
+            {
+                var shadow = text.gameObject.AddComponent<Shadow>();
+                shadow.effectColor = new Color(0, 0, 0, .62f);
+                shadow.effectDistance = new Vector2(1, -1);
+            }
+            endingFilm = endingPanel.AddComponent<Chapter4EpilogueFilm>();
+            endingFilm.Initialize(chapter, filmCredit);
+        }
+        bool historical = chapter.ending.CurrentStage == Chapter4Ending.Stage.History1930;
+        endingFilm.Show(historical);
+        endingKicker.text = kicker; endingTitle.text = title; endingBody.text = body; endingFooter.text = footer;
         if (vr) PlaceVRCanvas();
     }
 

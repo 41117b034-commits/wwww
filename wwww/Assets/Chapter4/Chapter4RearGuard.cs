@@ -39,6 +39,9 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     }
     readonly List<Chapter4Pursuer> enemies = new List<Chapter4Pursuer>();
     readonly List<Transform> supplies = new List<Transform>();
+    readonly List<Chapter4CompanionRifle> escorts = new List<Chapter4CompanionRifle>();
+    int nextEscort;
+    float nextReport = 14;
     Transform world;
     LineRenderer tracer;
     Material tracerMaterial;
@@ -53,6 +56,15 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         var supply = Resources.Load<GameObject>("Chapter4Combat/Supply");
         if (!weapon || !pursuer || !supply) throw new InvalidOperationException("Chapter4 combat prefabs are missing.");
         Gun = Instantiate(weapon); Gun.Initialize(this);
+        foreach (string id in new[] { "bawan", "tado" })
+        {
+            var companion = Array.Find(chapter.evacuation.cast, member => member.actorId == id);
+            if (!companion || !companion.isActiveAndEnabled || companion.wounded) continue;
+            var escort = companion.gameObject.AddComponent<Chapter4CompanionRifle>();
+            escort.Initialize(companion, this, pursuer.GetComponent<Chapter2Rifle>());
+            companion.EscortRifle = escort;
+            escorts.Add(escort);
+        }
         // All opponents start behind the camp and traverse the same physical world.
         for (int i = 0; i < 6; i++)
         {
@@ -107,6 +119,12 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         if (!Frozen)
         {
             var flow = Chapter.evacuation;
+            if (!Assisting && Clock >= nextReport && escorts.Count > 0)
+            {
+                bool started = escorts[nextEscort].TryTurn();
+                nextEscort = (nextEscort + 1) % escorts.Count;
+                nextReport = Clock + (started ? 19 : 1.5f);
+            }
             if (CurrentPhase == Phase.LeavingCamp && flow.PlayerProgress >= 28)
             {
                 CurrentPhase = Phase.Pursued;
@@ -168,19 +186,25 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     }
     [Serializable] public sealed class Snapshot
     {
-        public Phase phase; public float clock; public int suppressingShots, hits;
+        public Phase phase; public float clock, nextReport; public int suppressingShots, hits, nextEscort;
         public Chapter4Rifle.Snapshot gun; public Chapter4Pursuer.Snapshot[] enemies;
+        public Chapter4CompanionRifle.Snapshot[] escorts;
     }
     public Snapshot Capture()
     {
         var s = new Snapshot { phase = CurrentPhase, clock = Clock, suppressingShots = SuppressingShots, hits = Hits, gun = Gun.Capture(), enemies = new Chapter4Pursuer.Snapshot[enemies.Count] };
-        for (int i = 0; i < enemies.Count; i++) s.enemies[i] = enemies[i].Capture(); return s;
+        for (int i = 0; i < enemies.Count; i++) s.enemies[i] = enemies[i].Capture();
+        s.nextEscort = nextEscort; s.nextReport = nextReport;
+        s.escorts = escorts.ConvertAll(escort => escort.Capture()).ToArray();
+        return s;
     }
     public void Restore(Snapshot s)
     {
         if (s == null) return;
         CurrentPhase = s.phase; Clock = s.clock; SuppressingShots = s.suppressingShots; Hits = s.hits;
         Gun.Restore(s.gun); for (int i = 0; i < enemies.Count; i++) enemies[i].Restore(s.enemies[i]); tracerClock = 0;
+        nextEscort = s.nextEscort; nextReport = s.nextReport;
+        for (int i = 0; i < escorts.Count; i++) escorts[i].Restore(s.escorts != null && i < s.escorts.Length ? s.escorts[i] : null);
     }
     void OnDestroy() { if (Gun) Destroy(Gun.gameObject); if (tracerMaterial) Destroy(tracerMaterial); }
 }

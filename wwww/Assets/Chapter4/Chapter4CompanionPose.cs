@@ -20,6 +20,8 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
     bool modelPosed;
     Vector3 leftAnkle, rightAnkle;
     Quaternion leftSole, rightSole;
+    Quaternion leftWristRest, rightWristRest;
+    Chapter3HandPose.Calibration palms;
     float leftClearance, rightClearance, seed, escapeClock, cycle, motionWeight;
     bool guardsLeft;
     public float EscapeCycle => cycle;
@@ -40,6 +42,13 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         rightArm = B(HumanBodyBones.RightUpperArm, "R_Upperarm", "RightArm");
         rightElbow = B(HumanBodyBones.RightLowerArm, "R_Forearm", "RightForeArm");
         rightHand = B(HumanBodyBones.RightHand, "R_Hand", "RightHand");
+        leftWristRest = Quaternion.Inverse(leftElbow.rotation) * leftHand.rotation;
+        rightWristRest = Quaternion.Inverse(rightElbow.rotation) * rightHand.rotation;
+        if (!Chapter3HandPose.TryGetCalibration(animator, out palms))
+        {
+            palms.left = actor.Rig.PalmFrame(true); palms.right = actor.Rig.PalmFrame(false);
+            palms.leftLength = palms.rightLength = .1f;
+        }
         leftThigh = B(HumanBodyBones.LeftUpperLeg, "L_Thigh", "LeftUpLeg");
         leftCalf = B(HumanBodyBones.LeftLowerLeg, "L_Calf", "LeftLeg");
         leftFoot = B(HumanBodyBones.LeftFoot, "L_Foot", "LeftFoot");
@@ -212,10 +221,10 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
             var hand = guardsLeft ? leftHand : rightHand;
             Vector3 outside = guardsLeft ? -right : right;
             float reach = Vector3.Distance(shoulder.position, elbow.position) + Vector3.Distance(elbow.position, hand.position);
-            Vector3 hold = shoulder.position + reach * (forward * (.42f + .025f * swing * motionWeight)
-                - outside * .095f - Vector3.up * .56f);
-            Arm(guardsLeft, hold, outside * .73f + Vector3.down * .67f + forward * .19f);
-            OrientPalm(guardsLeft, hand.position - elbow.position, -forward - outside * .35f);
+            Vector3 hold = shoulder.position + reach * (forward * (.39f + .018f * swing * motionWeight)
+                - outside * .12f - Vector3.up * .52f);
+            Arm(guardsLeft, hold, Vector3.down + outside * .32f - forward * .28f);
+            SetInjuredWrist(guardsLeft, -forward - outside * .5f, 16);
         }
         if (supported) return; // Authored paired hand contacts are applied next.
         // Stagger, recover and look back at different times for each person.
@@ -230,10 +239,17 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         float protect = Mathf.Max(cough, guard);
         if (protect > .001f)
         {
-            Vector3 target = rig.Head.position + forward * .12f - Vector3.up * (guard > cough ? .02f : .13f);
             bool left = actor.wounded && !guardsLeft;
-            Arm(left, Vector3.Lerp(left ? leftHand.position : rightHand.position, target, protect), (left ? -right : right) * .35f - forward + Vector3.down);
-            OrientPalm(left, forward - Vector3.up * .6f, -forward);
+            Vector3 side = left ? -right : right;
+            Vector3 target = rig.Head.position + forward * .16f + side * .065f - Vector3.up * Mathf.Lerp(.13f, .02f, guard);
+            var shoulder = left ? leftArm : rightArm;
+            var elbow = left ? leftElbow : rightElbow;
+            var hand = left ? leftHand : rightHand;
+            Vector3 bend = Vector3.ProjectOnPlane(elbow.position - shoulder.position, hand.position - shoulder.position).normalized;
+            Arm(left, Vector3.Lerp(hand.position, target, protect), Vector3.Lerp(bend, side * .40f - forward * .45f + Vector3.down, protect));
+            if (actor.wounded) SetInjuredWrist(left, Vector3.Slerp(-side, -forward, protect), Mathf.Lerp(10, 20, protect));
+            else hand.rotation = Quaternion.Slerp(hand.rotation, Quaternion.LookRotation(forward - Vector3.up * .6f, -forward) *
+                Quaternion.Inverse(rig.PalmFrame(left)), protect);
         }
     }
 
@@ -283,8 +299,15 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
         Vector3 target = arm.position + Vector3.down * length * .61f + side * length * .10f +
             forward * length * (.10f - swing * (supported ? .21f : .50f));
         Vector3 waiting = arm.position + Vector3.down * length * .83f + side * length * .08f + forward * length * .14f;
-        if (actor.wounded && !supported && left != guardsLeft)
-            target = arm.position + length * (Vector3.down * (.58f + .07f * swing) + side * .12f + forward * (.18f - swing * .37f));
+        if (actor.wounded && !supported)
+        {
+            // The free elbow trails in the direction of travel. Keep it clear of
+            // the wrap without pushing it out sideways in the player's rear view.
+            target = arm.position + length * (Vector3.down * (.71f + .04f * swing) + side * .085f + forward * (.16f - swing * .40f));
+            Arm(left, Vector3.Lerp(waiting, target, motionWeight), -forward * .76f + side * .20f + Vector3.down * .65f);
+            SetInjuredWrist(left, -side, 10);
+            return;
+        }
         Arm(left, Vector3.Lerp(waiting, target, motionWeight), -forward + side * .4f + Vector3.down * .35f);
         OrientPalm(left, hand.position - elbow.position, -side);
     }
@@ -328,6 +351,40 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
     {
         var hand = left ? leftHand : rightHand;
         if (hand) hand.rotation = Quaternion.LookRotation(fingers, normal) * Quaternion.Inverse(actor.Rig.PalmFrame(left));
+    }
+
+    void SetInjuredWrist(bool left, Vector3 palmNormal, float allowance)
+    {
+        var elbow = left ? leftElbow : rightElbow;
+        var hand = left ? leftHand : rightHand;
+        Quaternion neutral = elbow.rotation * (left ? leftWristRest : rightWristRest);
+        Vector3 fingers = hand.position - elbow.position;
+        Quaternion basis = left ? palms.left : palms.right;
+        Quaternion straight = Quaternion.FromToRotation(neutral * (basis * Vector3.forward), fingers) * neutral;
+        Quaternion desired = Quaternion.LookRotation(fingers, palmNormal) * Quaternion.Inverse(basis);
+        hand.rotation = Quaternion.RotateTowards(straight, desired, allowance);
+    }
+
+    internal void HoldRifle(Transform weapon)
+    {
+        Vector3 forward = actor.Rig.Forward, side = Vector3.Cross(Vector3.up, forward);
+        var rear = new Vector3(0, -.045f, .24f);
+        var fore = new Vector3(0, -.028f, .40f);
+        // The two actors have different shoulder widths and arm lengths.
+        // Settle the rigid prop inside both arm spans before solving the palms.
+        FitReach(leftArm, leftElbow, leftHand, weapon.TransformPoint(fore));
+        FitReach(rightArm, rightElbow, rightHand, weapon.TransformPoint(rear));
+        Chapter3HandPose.PlaceGrip(rightArm, rightElbow, rightHand, palms.right, palms.rightLength, forward, weapon,
+            weapon.TransformPoint(rear), side * .55f + Vector3.down - forward * .25f, false);
+        Chapter3HandPose.PlaceGrip(leftArm, leftElbow, leftHand, palms.left, palms.leftLength, forward, weapon,
+            weapon.TransformPoint(fore), -side * .5f + Vector3.down, true);
+
+        void FitReach(Transform shoulder, Transform elbow, Transform wrist, Vector3 contact)
+        {
+            float reach = .90f * (Vector3.Distance(shoulder.position, elbow.position) + Vector3.Distance(elbow.position, wrist.position));
+            Vector3 span = contact - shoulder.position;
+            weapon.position += Vector3.ClampMagnitude(span, reach) - span;
+        }
     }
 
     static void Plant(Transform thigh, Transform calf, Transform foot, Vector3 target, Vector3 bend, float weight)

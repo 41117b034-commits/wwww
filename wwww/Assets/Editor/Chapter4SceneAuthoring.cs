@@ -375,34 +375,66 @@ public static class Chapter4SceneAuthoring
 
     static void Gathering(Transform parent)
     {
-        var clearing = Group("終點 · 林間集合地", parent);
-        Shelter(clearing, new Vector3(27.2f, 7.2f, 142), 14, "集合處遮棚");
-        Bench(clearing, new Vector3(14.2f, 7.2f, 141), -25);
-        Bench(clearing, new Vector3(19.2f, 7.2f, 145), 80);
-        Crate(clearing, new Vector3(28, 7.2f, 143.2f), 10);
-        Barrel(clearing, new Vector3(28.9f, 7.2f, 140.3f));
-        Rock(clearing, new Vector3(13.3f, 0, 145.8f), new Vector3(4, 3.5f, 4.6f), -20);
-        Rock(clearing, new Vector3(22.4f, 0, 149.6f), new Vector3(5.2f, 4.2f, 4.3f), 22);
-        var sign = Group("林間會合布記", clearing);
-        sign.position = new Vector3(17.3f, SurfaceHeight(17.3f, 136), 136);
-        sign.localRotation = Quaternion.Euler(0, -32, 0);
-        DressRallyMarker(sign.gameObject);
-    }
-
-    internal static void DressRallyMarker(GameObject marker)
-    {
-        const string path = Folder + "/Rally Marker/Rally marker";
-        var model = AssetDatabase.LoadAssetAtPath<GameObject>(path + ".obj");
-        var mesh = model ? model.GetComponentInChildren<MeshFilter>(true) : null;
-        var fabric = AssetDatabase.LoadAssetAtPath<Material>(path + ".mat");
-        if (!mesh || !mesh.sharedMesh || !fabric) throw new InvalidOperationException("Missing Chapter 4 rally marker artwork.");
-        marker.AddComponent<MeshFilter>().sharedMesh = mesh.sharedMesh;
-        marker.AddComponent<MeshRenderer>().sharedMaterial = fabric;
-        foreach (Vector3 basePoint in new[] { new Vector3(-.95f, .65f, .05f), new Vector3(.96f, .60f, .05f) })
+        var clearing = Group("終點 · 馬赫坡岩窟入口", parent);
+        var cliffMaterial = AssetDatabase.LoadAssetAtPath<Material>(Folder + "/Mehebu rock face.mat");
+        if (!cliffMaterial) throw new InvalidOperationException("Missing material for the Mehebu rock shelter.");
+        // One ledge projects out from the left wall. The sheltered recess opens
+        // onto the approach; party arrival slots and the main path stay clear.
+        void Ledge(string name, float x, float z, Vector3 size, float yaw, float elevation = 0, float bank = 0, bool innerWall = false)
         {
-            var stake = marker.AddComponent<CapsuleCollider>();
-            stake.center = basePoint; stake.radius = .075f; stake.height = basePoint.y * 2 + .18f;
+            var piece = Object.Instantiate(rockPrefab, clearing).transform;
+            piece.name = name; piece.gameObject.SetActive(true);
+            StripBehavioursAndColliders(piece);
+            // The imported prefab is rotated onto its side. Fit the mesh in
+            // upright axes before turning it to form a horizontal stratum.
+            piece.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            var native = Bounds(piece).size;
+            piece.localScale = Vector3.Scale(piece.localScale, new Vector3(size.x / native.x, size.y / native.y, size.z / native.z));
+            piece.rotation = Quaternion.Euler(0, yaw, bank);
+            var points = Chapter4Grounding.BasePoints(piece, Vector3.up, 1, 0);
+            Bounds shape = new Bounds(points[0], Vector3.zero);
+            foreach (var point in points) shape.Encapsulate(point);
+            piece.position += new Vector3(x - shape.center.x, 0, z - shape.center.z);
+            var baseBand = Chapter4Grounding.BasePoints(piece, Vector3.up, elevation > 0 ? .02f : .12f, .04f);
+            piece.position += Vector3.up * (baseBand.Min(p => SurfaceHeight(p.x, p.z) - p.y) + elevation - .08f);
+            foreach (var renderer in piece.GetComponentsInChildren<Renderer>()) renderer.sharedMaterial = innerWall ? rock : cliffMaterial;
+            foreach (var filter in piece.GetComponentsInChildren<MeshFilter>())
+                filter.gameObject.AddComponent<MeshCollider>().sharedMesh = filter.sharedMesh;
         }
+        Ledge("岩窟後壁", 18.4f, 148.1f, new Vector3(16, 6.8f, 6.8f), -11, innerWall: true);
+        Ledge("左側連岩", 11.1f, 142.4f, new Vector3(10.8f, 7.1f, 9), 18);
+        Ledge("向山徑伸出的岩簷", 16.8f, 143.4f, new Vector3(15.5f, 3.4f, 9), -7, 2.15f, -8);
+        Ledge("右側岩肩", 29, 149.1f, new Vector3(8.2f, 4.5f, 7.6f), 35);
+        Ledge("左坡嵌岩", 11.4f, 136.9f, new Vector3(6.1f, 2.9f, 4.3f), 23);
+        Ledge("岩簷下碎石", 15.9f, 138.7f, new Vector3(2.1f, .65f, 1.4f), -18);
+        Ledge("碎石旁薄片", 16.7f, 138.1f, new Vector3(.85f, .29f, .68f), 31);
+        Ledge("後壁岩層", 19.3f, 151.1f, new Vector3(20, 8.2f, 8.5f), 9);
+        Ledge("岩壁上層", 13.6f, 146.1f, new Vector3(16.8f, 3.7f, 9.2f), 7, 4.25f, -11);
+        Ledge("坡腳裂石", 25.9f, 144.8f, new Vector3(3.1f, 1.1f, 2), 28);
+
+        var fern = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Hipernt/Pine Pack/Prefabs/Plant2.prefab");
+        var leaf = AssetDatabase.LoadAssetAtPath<Material>("Assets/Chapter2/Environment/RichForest/Materials/Woodland Plant.mat");
+        if (!fern || !leaf) throw new InvalidOperationException("Missing forest fern for the rock shelter.");
+        var rocks = clearing.GetComponentsInChildren<MeshCollider>();
+        Physics.SyncTransforms();
+        // Grow small clusters in the rock seams and beside the path.
+        void Fern(float x, float z, float height, float yaw)
+        {
+            float y = SurfaceHeight(x, z);
+            var ray = new Ray(new Vector3(x, y + 24, z), Vector3.down);
+            foreach (var face in rocks) if (face.Raycast(ray, out var hit, 28)) y = Mathf.Max(y, hit.point.y);
+            var plant = Object.Instantiate(fern, clearing).transform;
+            plant.name = "岩縫山蕨"; plant.gameObject.SetActive(true);
+            StripBehavioursAndColliders(plant);
+            plant.rotation = Quaternion.Euler(0, yaw, 0);
+            plant.localScale *= height / Bounds(plant).size.y;
+            GroundObject(plant, new Vector3(x, y - .035f, z));
+            plant.GetComponentInChildren<Renderer>().sharedMaterial = leaf;
+        }
+        Fern(13, 136.3f, .52f, 17); Fern(13.4f, 136.1f, .32f, 83);
+        Fern(14.5f, 143.1f, .57f, 155); Fern(15, 143.4f, .36f, 76);
+        Fern(18.6f, 144, .40f, 41); Fern(25.7f, 144.5f, .68f, 105);
+        Fern(26.3f, 143.8f, .38f, 11); Fern(26.7f, 144.4f, .49f, 67);
     }
 
     static void Shelter(Transform parent, Vector3 position, float yaw, string name)

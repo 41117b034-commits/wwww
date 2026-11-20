@@ -21,6 +21,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     public CharacterController Motor { get; private set; }
     public Chapter4CompanionPose Pose { get; private set; }
     public bool MotionHeld { get; set; }
+    public Chapter4CompanionRifle EscortRifle { get; internal set; }
     public bool IndependentFollow { get; set; }
     public float RouteOffset { get; set; }
     public Chapter4Companion SupportPartner { get; set; }
@@ -82,6 +83,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     {
         if (!owner || !Rig) return;
         Pose.RestoreModelBase();
+        if (EscortRifle) EscortRifle.Advance(Time.deltaTime);
         Walking = false;
         StepDistance = 0;
         if (!IsPaused)
@@ -93,7 +95,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (!IsPaused)
         {
             travelClock += Time.deltaTime;
-            if (!MotionHeld)
+            if (!MotionHeld && !(EscortRifle && EscortRifle.Turning))
             {
                 if (AssistTarget.HasValue) StepToward(AssistTarget.Value, Time.deltaTime);
                 else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || owner.OpeningRush || IndependentFollow) && travelClock >= releaseAt)

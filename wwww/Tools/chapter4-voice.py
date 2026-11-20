@@ -8,6 +8,7 @@ OUT = ROOT/'Assets/Resources/Chapter4Voice'
 parser = argparse.ArgumentParser()
 parser.add_argument('mode', choices=['inventory', 'mandarin', 'verify'])
 parser.add_argument('--work', required=True)
+parser.add_argument('--narrator-only', action='store_true', help='Refresh only the ending cards, retaining all companion recordings.')
 args = parser.parse_args()
 work = Path(args.work); work.mkdir(parents=True, exist_ok=True)
 catalog_path = OUT/'catalog.json'
@@ -22,17 +23,17 @@ def inventory():
         ident=hashlib.sha256((role+'|'+text).encode()).hexdigest()[:20]
         resource='Chapter4Voice/Mandarin/'+ident
         if (ROOT/'Assets/Resources'/(resource+'.wav')).exists(): entries[key]['mandarin']=resource
-    for name in ['Chapter4Evacuation.cs','Chapter4GasSequence.cs','Chapter4Contact.cs']:
+    if args.narrator_only:
+        entries.update({k:v for k,v in existing.items() if k[0]!='narrator'})
+    for name in ([] if args.narrator_only else ['Chapter4Evacuation.cs','Chapter4GasSequence.cs','Chapter4Contact.cs']):
         source=(ROOT/'Assets/Chapter4'/name).read_text('utf-8-sig')
         for m in re.finditer(r'(?:Say|flow\.Announce)\("(\w+)",([\s\S]*?);',source):
             for literal in re.findall(r'"(?:[^"\\]|\\.)*"',m[2]):
                 text=json.loads(literal)
                 if re.search('[\u4e00-\u9fff]',text): add(m[1],text)
     source=(ROOT/'Assets/Chapter4/Chapter4Ending.cs').read_text('utf-8-sig')
-    for literal in re.findall(r'const string History\d+ = ("(?:[^"\\]|\\.)*")',source): add('narrator',json.loads(literal))
-    for outcome in ['歐冰循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。','兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，歐冰未歸。她的去向仍不明。']:
-        for bihu in ['比胡獲救的結果，承接自第三章。','比胡已於第三章死亡；這份記憶也隨你留下。','缺少有效的第三章紀錄，比胡的狀態仍未確認。']:
-            add('narrator',outcome+'\n\n露比扶著古慕，兩人都已抵達。\n\n'+bihu)
+    for literal in re.findall(r'const string \w+ = ("(?:[^"\\]|\\.)*");',source):
+        add('narrator',json.loads(literal))
     OUT.mkdir(parents=True,exist_ok=True)
     catalog={'version':1,'seediqAttribution':'ILRDF AI Tgdaya draft, teacher review pending','entries':list(entries.values())}
     catalog_path.write_text(json.dumps(catalog,ensure_ascii=False,indent=2),'utf-8')
@@ -46,7 +47,7 @@ async def mandarin():
         'gumu':dict(voice='zh-TW-HsiaoChenNeural',rate=-8,pitch=-8),
         'lubi':dict(voice='zh-TW-HsiaoYuNeural',rate=-5,pitch=-6),
         'obing':dict(voice='zh-CN-XiaoxiaoNeural',rate=-5,pitch=-8),
-        'narrator':dict(voice='zh-TW-YunJheNeural',rate=-8,pitch=-14)})
+        'narrator':dict(voice='zh-TW-YunJheNeural',rate=-4,pitch=-6)})
     (OUT/'delivery.json').write_text(json.dumps(config,ensure_ascii=False,indent=2),'utf-8')
     bank=json.loads(catalog_path.read_text('utf-8')); sem=asyncio.Semaphore(3)
     (OUT/'Mandarin').mkdir(exist_ok=True)
@@ -84,11 +85,11 @@ async def mandarin():
                                 await asyncio.sleep(2+attempt*2)
                     sound=miniaudio.decode(segment.read_bytes(),output_format=miniaudio.SampleFormat.SIGNED16,nchannels=1,sample_rate=24000)
                     if len(sound.samples)<2400 or max(abs(x) for x in sound.samples)<164:raise ValueError('Empty paragraph')
-                    if frames:frames.append(b'\x00\x00'*6000)
+                    if frames:frames.append(b'\x00\x00'*10080)
                     frames.append(sound.samples.tobytes())
                 with wave.open(str(dest),'wb') as w:
                     w.setnchannels(1);w.setsampwidth(2);w.setframerate(24000);w.writeframes(b''.join(frames))
-                entry.update(mandarin=resource,mandarinVoice=choice,mandarinSha256=hashlib.sha256(dest.read_bytes()).hexdigest(),mandarinSegments=text.split('\n\n'))
+                entry.update(mandarin=resource,mandarinVoice=choice,mandarinSha256=hashlib.sha256(dest.read_bytes()).hexdigest(),mandarinSegments=text.split('\n\n'),preserveMandarinPauses=True)
                 print('Mandarin paragraphs',key,flush=True)
                 return
             sidecar=work/(key+'.complete.json')
@@ -110,7 +111,7 @@ async def mandarin():
             entry['mandarin']=resource; entry['mandarinVoice']=choice
             entry['mandarinSha256']=hashlib.sha256(dest.read_bytes()).hexdigest()
             print('Mandarin',entry['role'],key,flush=True)
-    results=await asyncio.gather(*(one(e) for e in bank['entries']),return_exceptions=True)
+    results=await asyncio.gather(*(one(e) for e in bank['entries'] if not args.narrator_only or e['role']=='narrator'),return_exceptions=True)
     catalog_path.write_text(json.dumps(bank,ensure_ascii=False,indent=2),'utf-8')
     errors=[str(r) for r in results if isinstance(r,Exception)]
     if errors: raise RuntimeError(errors)

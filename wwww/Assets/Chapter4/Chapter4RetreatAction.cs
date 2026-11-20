@@ -23,7 +23,8 @@ public sealed class Chapter4RetreatAction
     public string Objective => Combat && !string.IsNullOrEmpty(Combat.Objective) ? Combat.Objective :
         Rockfall && Choice == RouteChoice.Undecided ? "前路被落石截斷・從岩石兩側繞行" :
         Choice != RouteChoice.Undecided && flow.PlayerProgress < ForkEnd ?
-            (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") : "接應同伴，往上坡撤離";
+            (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") :
+        flow.PlayerProgress >= flow.RouteLength - 30 ? "沿山徑前往馬赫坡岩窟入口" : "接應同伴，往上坡撤離";
     public string Hint => Combat && !string.IsNullOrEmpty(Combat.Hint) ? Combat.Hint :
         Rockfall && Choice == RouteChoice.Undecided ? "左側貼岩：多繞幾步、有掩護　／　右側短路：較暴露・直接走入你選的路" :
         flow.chapter.contact && flow.chapter.contact.Responded && !flow.chapter.contact.Reunited ? "歐冰已回應・留在附近接應，她正沿剛才的路追上" :

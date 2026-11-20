@@ -37,6 +37,7 @@ function combine(parts){
 }
 let failed=0;
 for(const entry of bank.entries){
+  if(process.argv.includes('--narrator-only') && entry.role!=='narrator')continue;
   if(entry.seediq && (entry.role!=='narrator' || Array.isArray(entry.translationParts)))continue;
   try{
     entry.translationInput=entry.chinese.replaceAll('1930','一九三零').replaceAll('1931','一九三一').replaceAll('莫那・魯道','Mona Rudao').replaceAll('莫那','Mona').replaceAll('巴萬','Bawan').replaceAll('比胡','Pihu').replaceAll('達多','Tado').replaceAll('古慕','Gumu').replaceAll('露比','Lubi').replaceAll('歐冰','Obing');

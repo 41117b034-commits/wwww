@@ -48,8 +48,8 @@
     },
     "narrator": {
       "voice": "zh-TW-YunJheNeural",
-      "rate": -8,
-      "pitch": -14
+      "rate": -4,
+      "pitch": -6
     }
   },
   "delivery": [

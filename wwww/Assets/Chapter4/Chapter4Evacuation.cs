@@ -230,7 +230,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     {
         var ui = chapter.presentation;
         bool separated = chapter.gas && chapter.gas.ObingSeparated;
-        ui.SetObjective(PartyGathered ? "隊伍已抵達集合地" : Action.Objective);
+        ui.SetObjective(PartyGathered ? "已抵達馬赫坡岩窟入口" : Action.Objective);
         string status = PartyGathered ? "主隊集結　" + RequiredPartyCount + "／" + RequiredPartyCount :
             "隊伍持續跟隨・距隊尾 " + Mathf.CeilToInt(Mathf.Max(0, PlayerProgress - RearProgress)) + " 公尺";
         if (chapter.RearGuard && !string.IsNullOrEmpty(chapter.RearGuard.Status)) status = chapter.RearGuard.Status;

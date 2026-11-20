@@ -722,296 +722,291 @@
     },
     {
       "role": "narrator",
-      "chinese": "霧社事件爆發後，日本當局調集軍警，\n使用飛機、山砲與毒氣等武器鎮壓。\n\n戰局轉趨不利，莫那・魯道於同年自盡。\n\n本作這段撤離的結束，並不代表戰爭已經結束。",
-      "mandarin": "Chapter4Voice/Mandarin/605a602ae2a5b9d43157",
-      "seediq": "Chapter4Voice/Seediq/605a602ae2a5b9d43157",
-      "translation": "Bobo ndaan Musya jikeng, pssliun knsat ka Tanah Tunux, mangal sapah skiya, halung ma qyqeya mccebu.\n\nwada mhuqil knkawas ciida ka mona rudaw.\n\nqnhdean na mlatac nii, uxe pneeyah mhedu mccebu di.",
+      "chinese": "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。\n\n那一年，帶領族人起事的莫那・魯道在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。",
+      "mandarin": "Chapter4Voice/Mandarin/ac5c41173b707a092caf",
+      "seediq": "Chapter4Voice/Seediq/ac5c41173b707a092caf",
+      "translation": "idas maxal mpusan mpitu ali, mmteru alang seediq ga paran, tbrinah qmlahang tanah tunux. meyah mremux lmiqu ka seediq alang, meluk eluw ka knsat tanah tunux, qmada bbali bobo ayu ka sapah skiya, mangal halung ma beyuq qbulic cmebu seediq mremux lhengo ka supi tanah tunux duri.\n\nknkawas ciida, wada mgedang lmiqu ka mona rudao mdudul seediq alang. wada ssaan sapah psliyan hiya ka seediq mnsngari. wada misan hiya di.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
-        "rate": -8,
-        "pitch": -14,
+        "rate": -4,
+        "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "ca560ca948487417f022f0c45126675c9eff7ae5035b9c60c1da54d98b7ef01a",
+      "mandarinSha256": "ff17a5cdb8595ef1b3f9d8b54dbcd621b1c98df1037ca3ac7d80fd3c67a1499b",
       "mandarinSegments": [
-        "霧社事件爆發後，日本當局調集軍警，\n使用飛機、山砲與毒氣等武器鎮壓。",
-        "戰局轉趨不利，莫那・魯道於同年自盡。",
-        "本作這段撤離的結束，並不代表戰爭已經結束。"
+        "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。",
+        "那一年，帶領族人起事的莫那・魯道在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。"
       ],
-      "translationInput": "霧社事件爆發後，日本當局調集軍警，\n使用飛機、山砲與毒氣等武器鎮壓。\n\n戰局轉趨不利，Mona Rudao於同年自盡。\n\n本作這段撤離的結束，並不代表戰爭已經結束。",
-      "ttsText": "Bobo ndaan Musya jikeng, pssliun knsat ka Tanah Tunux, mangal sapah skiya, halung ma qyqeya mccebu.\n\nwada mhuqil knkawas ciida ka mona rudaw.\n\nqnhdean na mlatac nii, uxe pneeyah mhedu mccebu di.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "preserveMandarinPauses": true,
+      "translationInput": "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。\n\n那一年，帶領族人起事的Mona Rudao在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。",
       "translationParts": [
         {
-          "input": "霧社事件爆發後，日本當局調集軍警，\n使用飛機、山砲與毒氣等武器鎮壓。",
-          "translation": "Bobo ndaan Musya jikeng, pssliun knsat ka Tanah Tunux, mangal sapah skiya, halung ma qyqeya mccebu.",
-          "ttsText": "Bobo ndaan Musya jikeng, pssliun knsat ka Tanah Tunux, mangal sapah skiya, halung ma qyqeya mccebu."
+          "input": "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。",
+          "translation": "idas maxal mpusan mpitu ali, mmteru alang seediq ga paran, tbrinah qmlahang tanah tunux. meyah mremux lmiqu ka seediq alang, meluk eluw ka knsat tanah tunux, qmada bbali bobo ayu ka sapah skiya, mangal halung ma beyuq qbulic cmebu seediq mremux lhengo ka supi tanah tunux duri.",
+          "ttsText": "idas maxal mpusan mpitu ali, mmteru alang seediq ga paran, tbrinah qmlahang tanah tunux. meyah mremux lmiqu ka seediq alang, meluk eluw ka knsat tanah tunux, qmada bbali bobo ayu ka sapah skiya, mangal halung ma beyuq qbulic cmebu seediq mremux lhengo ka supi tanah tunux duri."
         },
         {
-          "input": "戰局轉趨不利，Mona Rudao於同年自盡。",
-          "translation": "wada mhuqil knkawas ciida ka mona rudaw.",
-          "ttsText": "wada mhuqil knkawas ciida ka mona rudaw."
-        },
-        {
-          "input": "本作這段撤離的結束，並不代表戰爭已經結束。",
-          "translation": "qnhdean na mlatac nii, uxe pneeyah mhedu mccebu di.",
-          "ttsText": "qnhdean na mlatac nii, uxe pneeyah mhedu mccebu di."
-        }
-      ]
-    },
-    {
-      "role": "narrator",
-      "chinese": "1931 年 4 月，第二次霧社事件發生，收容所中的倖存者再遭攻擊。\n\n其後，倖存族人被日本當局強制遷往川中島（今清流部落），離開原居地。\n\n川中島是後來的強制遷居地，並非 1930 年撤離途中可抵達的自由避難終點。",
-      "mandarin": "Chapter4Voice/Mandarin/1820614432c842d1ffa5",
-      "seediq": "Chapter4Voice/Seediq/1820614432c842d1ffa5",
-      "translation": "Tgkingal kawas mngari teru, kingal knkawas sepac idas, tgdaha ndaan Musya jikeng, wada daha kmremux dungal ka seediq mnsngari.\n\nbobo na, wada qrapun qmlahang Tanah Tunux musa theruy dxeral Cwow-cu-cu (alang Gluban saya), kndalax nniqan daha.\n\ndxeral tnheruy mquri bukuy ka Cwow-cyu-can, uxe kingal kbekuy maxal mngari kbekuy teru kmxalan knkawas pqduriq peeyah eluw qduriq dhekun dehuk qduri qduri.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -8,
-        "pitch": -14,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "af44a04ccc6d497f2fc35e3b4bb485c89001589f4dd6e361f01dc19312bb041b",
-      "translationInput": "一九三一 年 4 月，第二次霧社事件發生，收容所中的倖存者再遭攻擊。\n\n其後，倖存族人被日本當局強制遷往川中島（今清流部落），離開原居地。\n\n川中島是後來的強制遷居地，並非 一九三零 年撤離途中可抵達的自由避難終點。",
-      "ttsText": "Tgkingal kawas mngari teru, kingal knkawas sepac idas, tgdaha ndaan Musya jikeng, wada daha kmremux dungal ka seediq mnsngari.\n\nbobo na, wada qrapun qmlahang Tanah Tunux musa theruy dxeral Cwow-cu-cu alang Gluban saya, kndalax nniqan daha.\n\ndxeral tnheruy mquri bukuy ka Cwow-cyu-can, uxe kingal kbekuy maxal mngari kbekuy teru kmxalan knkawas pqduriq peeyah eluw qduriq dhekun dehuk qduri qduri.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "translationParts": [
-        {
-          "input": "一九三一 年 4 月，第二次霧社事件發生，收容所中的倖存者再遭攻擊。",
-          "translation": "Tgkingal kawas mngari teru, kingal knkawas sepac idas, tgdaha ndaan Musya jikeng, wada daha kmremux dungal ka seediq mnsngari.",
-          "ttsText": "Tgkingal kawas mngari teru, kingal knkawas sepac idas, tgdaha ndaan Musya jikeng, wada daha kmremux dungal ka seediq mnsngari."
-        },
-        {
-          "input": "其後，倖存族人被日本當局強制遷往川中島（今清流部落），離開原居地。",
-          "translation": "bobo na, wada qrapun qmlahang Tanah Tunux musa theruy dxeral Cwow-cu-cu (alang Gluban saya), kndalax nniqan daha.",
-          "ttsText": "bobo na, wada qrapun qmlahang Tanah Tunux musa theruy dxeral Cwow-cu-cu alang Gluban saya, kndalax nniqan daha."
-        },
-        {
-          "input": "川中島是後來的強制遷居地，並非 一九三零 年撤離途中可抵達的自由避難終點。",
-          "translation": "dxeral tnheruy mquri bukuy ka Cwow-cyu-can, uxe kingal kbekuy maxal mngari kbekuy teru kmxalan knkawas pqduriq peeyah eluw qduriq dhekun dehuk qduri qduri.",
-          "ttsText": "dxeral tnheruy mquri bukuy ka Cwow-cyu-can, uxe kingal kbekuy maxal mngari kbekuy teru kmxalan knkawas pqduriq peeyah eluw qduriq dhekun dehuk qduri qduri."
+          "input": "那一年，帶領族人起事的Mona Rudao在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。",
+          "translation": "knkawas ciida, wada mgedang lmiqu ka mona rudao mdudul seediq alang. wada ssaan sapah psliyan hiya ka seediq mnsngari. wada misan hiya di.",
+          "ttsText": "knkawas ciida, wada mgedang lmiqu ka mona rudao mdudul seediq alang. wada ssaan sapah psliyan hiya ka seediq mnsngari. wada misan hiya di."
         }
       ],
+      "ttsText": "idas maxal mpusan mpitu ali, mmteru alang seediq ga paran, tbrinah qmlahang tanah tunux. meyah mremux lmiqu ka seediq alang, meluk eluw ka knsat tanah tunux, qmada bbali bobo ayu ka sapah skiya, mangal halung ma beyuq qbulic cmebu seediq mremux lhengo ka supi tanah tunux duri.\n\nknkawas ciida, wada mgedang lmiqu ka mona rudao mdudul seediq alang. wada ssaan sapah psliyan hiya ka seediq mnsngari. wada misan hiya di.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "歐冰循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\n露比扶著古慕，兩人都已抵達。\n\n比胡獲救的結果，承接自第三章。",
-      "mandarin": "Chapter4Voice/Mandarin/5a98b44122443a4be08f",
-      "seediq": "Chapter4Voice/Seediq/5a98b44122443a4be08f",
-      "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
+      "chinese": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
+      "mandarin": "Chapter4Voice/Mandarin/22068bfbd28359c3750a",
+      "seediq": "Chapter4Voice/Seediq/22068bfbd28359c3750a",
+      "translation": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha \"musya kusya\".\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
         "rate": -8,
-        "pitch": -14,
-        "delivery": "steady"
+        "pitch": -8,
+        "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "daebd2a796d6e784053b6d5d237e422479700f09b5a3d7a8499745b951126b82",
-      "translationInput": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\nLubi扶著Gumu，兩人都已抵達。\n\nPihu獲救的結果，承接自第三章。",
-      "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "17492a3d53510a33cf3f5c6ef38f0eb842b4dda9d48f532da2e1cefcd5f8ef68",
+      "mandarinSegments": [
+        "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。",
+        "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
       "translationParts": [
         {
-          "input": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。",
-          "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.",
-          "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan."
+          "input": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。",
+          "translation": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha \"musya kusya\".",
+          "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "Pihu獲救的結果，承接自第三章。",
-          "translation": "wada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
-          "ttsText": "wada mangal baga na ka pihu, ma wada mangal tgteru patis nii."
+          "input": "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
+          "translation": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
+          "ttsText": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana."
         }
-      ]
+      ],
+      "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya.\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "歐冰循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\n露比扶著古慕，兩人都已抵達。\n\n比胡已於第三章死亡；這份記憶也隨你留下。",
-      "mandarin": "Chapter4Voice/Mandarin/3f3c5c3bd9fe71921393",
-      "seediq": "Chapter4Voice/Seediq/3f3c5c3bd9fe71921393",
-      "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mgedang tgteru patis nii ka piho di; ga so sbleqon iso ka lnglongan nii dori.",
+      "chinese": "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
+      "mandarin": "Chapter4Voice/Mandarin/94e8bfe80b3c32fad7a6",
+      "seediq": "Chapter4Voice/Seediq/94e8bfe80b3c32fad7a6",
+      "translation": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
-        "rate": -8,
-        "pitch": -14,
+        "rate": -4,
+        "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "c3419f0247393bddd0ed197ccf7c07f5a21d04ef3636bdc7e5eadd7f2844462e",
-      "translationInput": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\nLubi扶著Gumu，兩人都已抵達。\n\nPihu已於第三章死亡；這份記憶也隨你留下。",
-      "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mgedang tgteru patis nii ka piho di, ga so sbleqon iso ka lnglongan nii dori.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "ce2bc21fe9aa130c9211d1170368c936256b69dcf9c7afa9849501437562c218",
+      "mandarinSegments": [
+        "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。",
+        "是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "Lubi扶著Gumu走進馬赫坡岩窟。Pihu已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
       "translationParts": [
         {
-          "input": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。",
-          "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.",
-          "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan."
+          "input": "Lubi扶著Gumu走進馬赫坡岩窟。Pihu已經坐下來了，聽見腳步，又朝洞口望了一眼。",
+          "translation": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.",
+          "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "Pihu已於第三章死亡；這份記憶也隨你留下。",
-          "translation": "wada mgedang tgteru patis nii ka piho di; ga so sbleqon iso ka lnglongan nii dori.",
-          "ttsText": "wada mgedang tgteru patis nii ka piho di, ga so sbleqon iso ka lnglongan nii dori."
+          "input": "是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
+          "translation": "obing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
+          "ttsText": "obing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil."
         }
-      ]
+      ],
+      "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "歐冰循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\n露比扶著古慕，兩人都已抵達。\n\n缺少有效的第三章紀錄，比胡的狀態仍未確認。",
-      "mandarin": "Chapter4Voice/Mandarin/47c50559cf22e56be173",
-      "seediq": "Chapter4Voice/Seediq/47c50559cf22e56be173",
-      "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nuka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
+      "chinese": "露比扶著古慕走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。歐冰循著你的呼喊，終於追上了大家。\n\n比胡雖然在戰爭中犧牲了，但我們仍會記得他。",
+      "mandarin": "Chapter4Voice/Mandarin/cf8fcef3155555202ae0",
+      "seediq": "Chapter4Voice/Seediq/cf8fcef3155555202ae0",
+      "translation": "dmanga gumo mremux lhengo mahu ka lubi. ini qbsiyaq, hmrenang knksaan ka beling dungal. smnegul hrenang su ka obing, wada smdurak kana seediq di.\n\nani naq wada mgedang mccebo ka piho we, maha ta klaon ka heya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
-        "rate": -8,
-        "pitch": -14,
+        "rate": -4,
+        "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "97fcedd24b193e367490097747d988acddc509fe51200667d19137c1223e2701",
-      "translationInput": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。\n\nLubi扶著Gumu，兩人都已抵達。\n\n缺少有效的第三章紀錄，Pihu的狀態仍未確認。",
-      "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nuka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "6eef6b5357bb5af7ac48d65fa5b5e429ac13321490c78d95bd1a1b561ef1c677",
+      "mandarinSegments": [
+        "露比扶著古慕走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。歐冰循著你的呼喊，終於追上了大家。",
+        "比胡雖然在戰爭中犧牲了，但我們仍會記得他。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "Lubi扶著Gumu走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。Obing循著你的呼喊，終於追上了大家。\n\nPihu雖然在戰爭中犧牲了，但我們仍會記得他。",
       "translationParts": [
         {
-          "input": "Obing循著你告訴她的通路，實際走回隊伍。你們在集合地再次會合。",
-          "translation": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan.",
-          "ttsText": "snegon elow rnengo so obing ga, bale ba osa msseli. psterong namo pssliyan hiya dongan."
+          "input": "Lubi扶著Gumu走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。Obing循著你的呼喊，終於追上了大家。",
+          "translation": "dmanga gumo mremux lhengo mahu ka lubi. ini qbsiyaq, hmrenang knksaan ka beling dungal. smnegul hrenang su ka obing, wada smdurak kana seediq di.",
+          "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ini qbsiyaq, hmrenang knksaan ka beling dungal. smnegul hrenang su ka obing, wada smdurak kana seediq di."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "缺少有效的第三章紀錄，Pihu的狀態仍未確認。",
-          "translation": "uka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
-          "ttsText": "uka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana."
+          "input": "Pihu雖然在戰爭中犧牲了，但我們仍會記得他。",
+          "translation": "ani naq wada mgedang mccebo ka piho we, maha ta klaon ka heya nana.",
+          "ttsText": "ani naq wada mgedang mccebo ka piho we, maha ta klaon ka heya nana."
         }
-      ]
+      ],
+      "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ini qbsiyaq, hmrenang knksaan ka beling dungal. smnegul hrenang su ka obing, wada smdurak kana seediq di.\n\nani naq wada mgedang mccebo ka piho we, maha ta klaon ka heya nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，歐冰未歸。她的去向仍不明。\n\n露比扶著古慕，兩人都已抵達。\n\n比胡獲救的結果，承接自第三章。",
-      "mandarin": "Chapter4Voice/Mandarin/1dccc61ed8e5c474dfce",
-      "seediq": "Chapter4Voice/Seediq/1dccc61ed8e5c474dfce",
-      "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
+      "chinese": "到了馬赫坡岩窟，露比才扶著古慕坐下。比胡也活著走到了這裡。大家望向來時的山路，始終沒能等到歐冰。\n\n歐冰雖然在戰爭中犧牲了，但我們仍會記得她。",
+      "mandarin": "Chapter4Voice/Mandarin/7aca0951cef7b5b4f418",
+      "seediq": "Chapter4Voice/Seediq/7aca0951cef7b5b4f418",
+      "translation": "dehuk lhengo mahupo, kiya ka dmayo tloong na ka lubi. muudus musa hini ka pihu duri. qmita mquri hini ka kana seediq, ani si ini dehuk obing.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
         "rate": -8,
-        "pitch": -14,
-        "delivery": "steady"
+        "pitch": -8,
+        "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "2d4b3d7bda242cf49bcc378e110391cfafcd46356db714f9f82c12dfa8c9f09e",
-      "translationInput": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。\n\nLubi扶著Gumu，兩人都已抵達。\n\nPihu獲救的結果，承接自第三章。",
-      "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "fb165ccc283618a488fdcb590bc9805df6f46a8b87e6f51ebb088c40297593ac",
+      "mandarinSegments": [
+        "到了馬赫坡岩窟，露比才扶著古慕坐下。比胡也活著走到了這裡。大家望向來時的山路，始終沒能等到歐冰。",
+        "歐冰雖然在戰爭中犧牲了，但我們仍會記得她。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "到了馬赫坡岩窟，Lubi才扶著Gumu坐下。Pihu也活著走到了這裡。大家望向來時的山路，始終沒能等到Obing。\n\nObing雖然在戰爭中犧牲了，但我們仍會記得她。",
       "translationParts": [
         {
-          "input": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。",
-          "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.",
-          "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana."
+          "input": "到了馬赫坡岩窟，Lubi才扶著Gumu坐下。Pihu也活著走到了這裡。大家望向來時的山路，始終沒能等到Obing。",
+          "translation": "dehuk lhengo mahupo, kiya ka dmayo tloong na ka lubi. muudus musa hini ka pihu duri. qmita mquri hini ka kana seediq, ani si ini dehuk obing.",
+          "ttsText": "dehuk lhengo mahupo, kiya ka dmayo tloong na ka lubi. muudus musa hini ka pihu duri. qmita mquri hini ka kana seediq, ani si ini dehuk obing."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "Pihu獲救的結果，承接自第三章。",
-          "translation": "wada mangal baga na ka pihu, ma wada mangal tgteru patis nii.",
-          "ttsText": "wada mangal baga na ka pihu, ma wada mangal tgteru patis nii."
+          "input": "Obing雖然在戰爭中犧牲了，但我們仍會記得她。",
+          "translation": "ani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
+          "ttsText": "ani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana."
         }
-      ]
+      ],
+      "ttsText": "dehuk lhengo mahupo, kiya ka dmayo tloong na ka lubi. muudus musa hini ka pihu duri. qmita mquri hini ka kana seediq, ani si ini dehuk obing.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，歐冰未歸。她的去向仍不明。\n\n露比扶著古慕，兩人都已抵達。\n\n比胡已於第三章死亡；這份記憶也隨你留下。",
-      "mandarin": "Chapter4Voice/Mandarin/cb863fb1e890d685662c",
-      "seediq": "Chapter4Voice/Seediq/cb863fb1e890d685662c",
-      "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mgedang tgteru patis nii ka piho di; ga so sbleqon iso ka lnglongan nii dori.",
+      "chinese": "露比攙著古慕，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。\n\n歐冰和比胡雖然都在戰爭中犧牲了，但我們仍會記得他們。",
+      "mandarin": "Chapter4Voice/Mandarin/818307fe4a38bc0d6454",
+      "seediq": "Chapter4Voice/Seediq/818307fe4a38bc0d6454",
+      "translation": "mapa gomo ka lubi ma, mremux beling mahu. mteetu tloong ka daha seediq, niqan daha dheran ka ssiyo na nana.\n\nani naq wada mgedang mccebo ka obing daka piho, ani si maha ta lngelong dheya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
-        "rate": -8,
-        "pitch": -14,
+        "rate": -4,
+        "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "ab7ba9c749c661b5621be4855fb3338f4fa231ef0933099ff44bf115f96e10ed",
-      "translationInput": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。\n\nLubi扶著Gumu，兩人都已抵達。\n\nPihu已於第三章死亡；這份記憶也隨你留下。",
-      "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nwada mgedang tgteru patis nii ka piho di, ga so sbleqon iso ka lnglongan nii dori.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "1aad6db56fcd38dc0a264842107725d3fbce11c239f90cd3576fd6dc48ed014f",
+      "mandarinSegments": [
+        "露比攙著古慕，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。",
+        "歐冰和比胡雖然都在戰爭中犧牲了，但我們仍會記得他們。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "Lubi攙著Gumu，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。\n\nObing和Pihu雖然都在戰爭中犧牲了，但我們仍會記得他們。",
       "translationParts": [
         {
-          "input": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。",
-          "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.",
-          "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana."
+          "input": "Lubi攙著Gumu，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。",
+          "translation": "mapa gomo ka lubi ma, mremux beling mahu. mteetu tloong ka daha seediq, niqan daha dheran ka ssiyo na nana.",
+          "ttsText": "mapa gomo ka lubi ma, mremux beling mahu. mteetu tloong ka daha seediq, niqan daha dheran ka ssiyo na nana."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "Pihu已於第三章死亡；這份記憶也隨你留下。",
-          "translation": "wada mgedang tgteru patis nii ka piho di; ga so sbleqon iso ka lnglongan nii dori.",
-          "ttsText": "wada mgedang tgteru patis nii ka piho di, ga so sbleqon iso ka lnglongan nii dori."
+          "input": "Obing和Pihu雖然都在戰爭中犧牲了，但我們仍會記得他們。",
+          "translation": "ani naq wada mgedang mccebo ka obing daka piho, ani si maha ta lngelong dheya nana.",
+          "ttsText": "ani naq wada mgedang mccebo ka obing daka piho, ani si maha ta lngelong dheya nana."
         }
-      ]
+      ],
+      "ttsText": "mapa gomo ka lubi ma, mremux beling mahu. mteetu tloong ka daha seediq, niqan daha dheran ka ssiyo na nana.\n\nani naq wada mgedang mccebo ka obing daka piho, ani si maha ta lngelong dheya nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，歐冰未歸。她的去向仍不明。\n\n露比扶著古慕，兩人都已抵達。\n\n缺少有效的第三章紀錄，比胡的狀態仍未確認。",
-      "mandarin": "Chapter4Voice/Mandarin/33256740bacc8c9a69f7",
-      "seediq": "Chapter4Voice/Seediq/33256740bacc8c9a69f7",
-      "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nuka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
+      "chinese": "露比扶著古慕走進馬赫坡岩窟。歐冰聽見你的呼喊，也沿著山路趕了上來。\n\n至於比胡，那一天的下落，我們還不知道。",
+      "mandarin": "Chapter4Voice/Mandarin/6836fcb28eeeeea5f471",
+      "seediq": "Chapter4Voice/Seediq/6836fcb28eeeeea5f471",
+      "translation": "dmanga gumo mremux lhengo mahu ka lubi. mbahang diras su ka obing, ma smnegul eluw lmiqu meyah duri.\n\nma piho ge, ini ta klai mmaha hido ka ali ciida nana.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-YunJheNeural",
+        "rate": -4,
+        "pitch": -6,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "5a72524ee6d0b16d67ed399c9fe47c4f369af0e7610874da6396d3d9a7301204",
+      "mandarinSegments": [
+        "露比扶著古慕走進馬赫坡岩窟。歐冰聽見你的呼喊，也沿著山路趕了上來。",
+        "至於比胡，那一天的下落，我們還不知道。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "Lubi扶著Gumu走進馬赫坡岩窟。Obing聽見你的呼喊，也沿著山路趕了上來。\n\n至於Pihu，那一天的下落，我們還不知道。",
+      "translationParts": [
+        {
+          "input": "Lubi扶著Gumu走進馬赫坡岩窟。Obing聽見你的呼喊，也沿著山路趕了上來。",
+          "translation": "dmanga gumo mremux lhengo mahu ka lubi. mbahang diras su ka obing, ma smnegul eluw lmiqu meyah duri.",
+          "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. mbahang diras su ka obing, ma smnegul eluw lmiqu meyah duri."
+        },
+        {
+          "input": "至於Pihu，那一天的下落，我們還不知道。",
+          "translation": "ma piho ge, ini ta klai mmaha hido ka ali ciida nana.",
+          "ttsText": "ma piho ge, ini ta klai mmaha hido ka ali ciida nana."
+        }
+      ],
+      "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. mbahang diras su ka obing, ma smnegul eluw lmiqu meyah duri.\n\nma piho ge, ini ta klai mmaha hido ka ali ciida nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "narrator",
+      "chinese": "到了馬赫坡岩窟，露比扶著古慕坐下。比胡的下落，我們還不知道。歐冰也沒能從那條山路上走回來。\n\n歐冰雖然在戰爭中犧牲了，但我們仍會記得她。",
+      "mandarin": "Chapter4Voice/Mandarin/f6adadb78057380ecb81",
+      "seediq": "Chapter4Voice/Seediq/f6adadb78057380ecb81",
+      "translation": "dehuk btunux mahu, dmayo tloung ka lubi. hmeruc pihu, ini miyan klai nana. ini dehuk mkkesa kndalax eluw lmiqu waga ka obing duri.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
         "rate": -8,
-        "pitch": -14,
-        "delivery": "steady"
+        "pitch": -8,
+        "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "8331420c0b4cde517308ed661c037bda480899e858a0dbc654884f2db51b447b",
-      "translationInput": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。\n\nLubi扶著Gumu，兩人都已抵達。\n\n缺少有效的第三章紀錄，Pihu的狀態仍未確認。",
-      "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.\n\nga dmayo komo ka lobi ma, dehok kanna daha di.\n\nuka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinSha256": "847812f59b1a3c6ae3a303d8c71c32ca24651acd2a28eeddca2226d41b212487",
+      "mandarinSegments": [
+        "到了馬赫坡岩窟，露比扶著古慕坐下。比胡的下落，我們還不知道。歐冰也沒能從那條山路上走回來。",
+        "歐冰雖然在戰爭中犧牲了，但我們仍會記得她。"
+      ],
+      "preserveMandarinPauses": true,
+      "translationInput": "到了馬赫坡岩窟，Lubi扶著Gumu坐下。Pihu的下落，我們還不知道。Obing也沒能從那條山路上走回來。\n\nObing雖然在戰爭中犧牲了，但我們仍會記得她。",
       "translationParts": [
         {
-          "input": "兩處聯絡點都沒有傳出你的呼喊。主隊完成撤離，Obing未歸。她的去向仍不明。",
-          "translation": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana.",
-          "ttsText": "ini daha bhangi ka pnlawa su. mhedu mlatac ka tnpusu supi de, ini eyah ka obing. ini klai mmaha ka heya nana."
+          "input": "到了馬赫坡岩窟，Lubi扶著Gumu坐下。Pihu的下落，我們還不知道。Obing也沒能從那條山路上走回來。",
+          "translation": "dehuk btunux mahu, dmayo tloung ka lubi. hmeruc pihu, ini miyan klai nana. ini dehuk mkkesa kndalax eluw lmiqu waga ka obing duri.",
+          "ttsText": "dehuk btunux mahu, dmayo tloung ka lubi. hmeruc pihu, ini miyan klai nana. ini dehuk mkkesa kndalax eluw lmiqu waga ka obing duri."
         },
         {
-          "input": "Lubi扶著Gumu，兩人都已抵達。",
-          "translation": "ga dmayo komo ka lobi ma, dehok kanna daha di.",
-          "ttsText": "ga dmayo komo ka lobi ma, dehok kanna daha di."
-        },
-        {
-          "input": "缺少有效的第三章紀錄，Pihu的狀態仍未確認。",
-          "translation": "uka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana.",
-          "ttsText": "uka pnatis patis tgteru patis nii, ini klai mesa ga pihu nana."
+          "input": "Obing雖然在戰爭中犧牲了，但我們仍會記得她。",
+          "translation": "ani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
+          "ttsText": "ani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana."
         }
-      ]
+      ],
+      "ttsText": "dehuk btunux mahu, dmayo tloung ka lubi. hmeruc pihu, ini miyan klai nana. ini dehuk mkkesa kndalax eluw lmiqu waga ka obing duri.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     }
   ]
 }

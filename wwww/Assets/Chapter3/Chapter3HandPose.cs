@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 [DefaultExecutionOrder(4700)]
 public sealed class Chapter3HandPose : MonoBehaviour
 {
-    struct Calibration
+    internal struct Calibration
     {
         public string mesh;
         public Quaternion left,right;
@@ -72,17 +72,7 @@ public sealed class Chapter3HandPose : MonoBehaviour
         if(!actor)actor=GetComponent<Chapter2Actor>();
         if(!rig)rig=actor?actor.Rig:GetComponent<Chapter1IncidentRig>();
         if(!rig||!rig.animator||!rig.LeftHand||!rig.RightHand)return false;
-        var skins=rig.animator.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        Calibration calibration=default;bool found=false;
-        foreach(var skin in skins)
-        {
-            if(!skin.sharedMesh)continue;
-            foreach(var candidate in calibrations)
-                if(skin.sharedMesh.name==candidate.mesh||skin.sharedMesh.name==candidate.mesh+" incident grip")
-                {calibration=candidate;found=true;break;}
-            if(found)break;
-        }
-        if(!found)return false;
+        if(!TryGetCalibration(rig.animator,out var calibration))return false;
         hands[0]=rig.LeftHand;hands[1]=rig.RightHand;
         arms[0]=Bone(HumanBodyBones.LeftUpperArm,"L_Upperarm","LeftArm");
         arms[1]=Bone(HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
@@ -93,6 +83,18 @@ public sealed class Chapter3HandPose : MonoBehaviour
         lengths[0]=calibration.leftLength;lengths[1]=calibration.rightLength;
         ModelId=calibration.mesh;rifle=GetComponent<Chapter2Rifle>();
         prepared=true;return true;
+    }
+    internal static bool TryGetCalibration(Animator animator, out Calibration result)
+    {
+        foreach (var skin in animator.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!skin.sharedMesh) continue;
+            foreach (var candidate in calibrations)
+                if (skin.sharedMesh.name == candidate.mesh || skin.sharedMesh.name == candidate.mesh + " incident grip")
+                { result = candidate; return true; }
+        }
+        result = default;
+        return false;
     }
     Transform Bone(HumanBodyBones id,params string[] names)
     {
@@ -160,34 +162,40 @@ public sealed class Chapter3HandPose : MonoBehaviour
     }
     void Grip(int side,Transform weapon,Vector3 contact,Vector3 bend,bool support)
     {
-        Transform hand=hands[side];
-        Vector3 palm=bases[side]*Vector3.forward*(lengths[side]*.34f);
+        PlaceGrip(arms[side],elbows[side],hands[side],bases[side],lengths[side],rig.Forward,weapon,contact,bend,support);
+    }
+    internal static void PlaceGrip(Transform arm, Transform elbow, Transform hand, Quaternion basis, float length,
+        Vector3 forward, Transform weapon, Vector3 contact, Vector3 bend, bool support)
+    {
+        Vector3 palm=basis*Vector3.forward*(length*.34f);
         Vector3 preferred=support?weapon.right:weapon.forward-weapon.up*.35f;
         Vector3 normal=support?weapon.up:-weapon.right;
         // Solve the palm contact, not only the wrist bone. Re-evaluate the
         // forearm after IK so neither hand folds back to reach a fixed grip.
         for(int pass=0;pass<3;pass++)
         {
-            Vector3 along=hand.position-elbows[side].position;
+            Vector3 along=hand.position-elbow.position;
             Vector3 fingers=Vector3.RotateTowards(along.normalized,preferred.normalized,55*Mathf.Deg2Rad,0);
-            hand.rotation=Orientation(side,fingers,normal);
+            hand.rotation=Orientation(hand,basis,forward,fingers,normal);
             Vector3 target=contact-hand.TransformVector(palm);
-            float reach=(Vector3.Distance(arms[side].position,elbows[side].position)+Vector3.Distance(elbows[side].position,hand.position))*.98f;
-            target=arms[side].position+Vector3.ClampMagnitude(target-arms[side].position,reach);
+            float reach=(Vector3.Distance(arm.position,elbow.position)+Vector3.Distance(elbow.position,hand.position))*.98f;
+            target=arm.position+Vector3.ClampMagnitude(target-arm.position,reach);
             Quaternion wrist=hand.rotation;
-            Chapter1IncidentRig.Solve(arms[side],elbows[side],hand,target,bend);
+            Chapter1IncidentRig.Solve(arm,elbow,hand,target,bend);
             hand.rotation=wrist;
         }
-        Vector3 finalAlong=hand.position-elbows[side].position;
-        hand.rotation=Orientation(side,Vector3.RotateTowards(finalAlong.normalized,preferred.normalized,55*Mathf.Deg2Rad,0),normal);
+        Vector3 finalAlong=hand.position-elbow.position;
+        hand.rotation=Orientation(hand,basis,forward,Vector3.RotateTowards(finalAlong.normalized,preferred.normalized,55*Mathf.Deg2Rad,0),normal);
     }
     Quaternion Orientation(int side,Vector3 fingers,Vector3 normal)
+        => Orientation(hands[side],bases[side],rig.Forward,fingers,normal);
+    static Quaternion Orientation(Transform hand,Quaternion basis,Vector3 forward,Vector3 fingers,Vector3 normal)
     {
-        if(fingers.sqrMagnitude<.000001f)return hands[side].rotation;
+        if(fingers.sqrMagnitude<.000001f)return hand.rotation;
         normal=Vector3.ProjectOnPlane(normal,fingers);
-        if(normal.sqrMagnitude<.000001f)normal=Vector3.ProjectOnPlane(rig.Forward,fingers);
+        if(normal.sqrMagnitude<.000001f)normal=Vector3.ProjectOnPlane(forward,fingers);
         if(normal.sqrMagnitude<.000001f)normal=Vector3.ProjectOnPlane(Vector3.up,fingers);
-        return Quaternion.LookRotation(fingers,normal)*Quaternion.Inverse(bases[side]);
+        return Quaternion.LookRotation(fingers,normal)*Quaternion.Inverse(basis);
     }
     float Angle(int side)=>prepared?Vector3.Angle(hands[side].position-elbows[side].position,hands[side].rotation*(bases[side]*Vector3.forward)):float.NaN;
     void OnDisable()
