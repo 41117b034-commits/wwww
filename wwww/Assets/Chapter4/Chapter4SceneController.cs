@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Arrival starts the chapter ending only after the physically gathered party's
-// report. The ending owns the separate Chapter 4 completion transaction.
+// Crossing the cleared rear mouth starts the film. The ending owns the save.
 public sealed class Chapter4SceneController : MonoBehaviour
 {
     public Chapter4Player player;
@@ -136,7 +135,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         player.SetInputEnabled(false);
         presentation.ShowMenu(arrival ? (gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地") : "暫停",
             arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") :
-            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "避開空襲、毒氣和後方追兵，接應同伴持續撤離。\n帶著同伴穿過岩窟，在洞後左側的林徑會合。",
+            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "避開空襲、毒氣和後方追兵，接應同伴持續撤離。\n和族人搬開堵住後洞口的落石，一起逃出岩窟。",
             ending && ending.HasStarted ? "繼續閱讀" : arrival || HasArrived ? "繼續探索" : "繼續");
     }
 

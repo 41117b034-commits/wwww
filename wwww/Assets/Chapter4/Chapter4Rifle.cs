@@ -16,7 +16,8 @@ public sealed class Chapter4Rifle : MonoBehaviour
     public int Reloads { get; private set; }
     public string Feedback { get; private set; } = "跟著隊伍撤離・必要時回身射擊";
     public bool Aiming { get; private set; }
-    public bool Ready => owner && !owner.Frozen && owner.Chapter.player.canMove && busy <= 0 && !Reloading;
+    public bool Ready => owner && !owner.Frozen && owner.Chapter.player.canMove &&
+        !owner.Chapter.evacuation.CaveExit.Carrying && busy <= 0 && !Reloading;
     public Ray AimRay { get; private set; }
     Chapter4RearGuard owner;
     float busy, reloadClock, recoil, aim, feedbackClock = 5;
@@ -36,7 +37,7 @@ public sealed class Chapter4Rifle : MonoBehaviour
         if (!owner) return;
         bool frozen = owner.Frozen;
         if (pausedAudio != frozen) { pausedAudio = frozen; if (frozen) audioSource.Pause(); else audioSource.UnPause(); }
-        if (frozen) { Aiming = false; return; }
+        if (frozen || owner.Chapter.evacuation.CaveExit.Carrying) { Aiming = false; return; }
         var p = owner.Chapter.player;
         busy = Mathf.Max(0, busy - dt); recoil = Mathf.Max(0, recoil - dt);
         feedbackClock -= dt; if (feedbackClock <= 0) Feedback = "";
@@ -94,8 +95,20 @@ public sealed class Chapter4Rifle : MonoBehaviour
         if (!owner || !rifle) return;
         var p = owner.Chapter.player;
         bool visible = !owner.Chapter.ending.HasStarted && !owner.Chapter.gas.IsCollapsed;
-        rifle.gameObject.SetActive(visible); rightHand.gameObject.SetActive(visible); leftHand.gameObject.SetActive(visible);
+        Transform stone = owner.Chapter.evacuation.CaveExit?.HeldStone;
+        rifle.gameObject.SetActive(visible && !stone);
+        rightHand.gameObject.SetActive(visible);
+        leftHand.gameObject.SetActive(visible);
         if (!visible) return;
+        if (stone)
+        {
+            var facing = Quaternion.Euler(0, p.view.transform.eulerAngles.y, 0);
+            var side = facing * Vector3.right * .18f;
+            var underside = stone.position - Vector3.up * .075f - facing * Vector3.forward * .045f;
+            rightHand.SetPositionAndRotation(underside + side, facing * Quaternion.Euler(-64, -12, -25));
+            leftHand.SetPositionAndRotation(underside - side, facing * Quaternion.Euler(-64, 12, 65));
+            return;
+        }
         float dt = owner.Frozen ? 0 : Time.deltaTime;
         aim = Mathf.MoveTowards(aim, Aiming ? 1 : 0, dt * 6);
         if (!p.IsVR) p.view.fieldOfView = Mathf.Lerp(60, 46, aim);

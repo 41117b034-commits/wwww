@@ -32,7 +32,8 @@ public sealed class Chapter4Companion : MonoBehaviour
     public Chapter4Companion SupportPartner { get; set; }
     public Chapter4Companion SupportFollower { get; set; }
     public Vector3? AssistTarget { get; set; }
-    public bool IsPaused => owner && owner.chapter.WorldFrozen;
+    public Vector3? StoneContact { get; set; }
+    public bool IsPaused => owner && owner.chapter.WorldFrozen && (owner.chapter.IsPaused || !owner.FinishingEscape);
     public Chapter4SceneController RetreatChapter => owner ? owner.chapter : null;
     // A formation slot is an arrival area, not an exact point that can lie on
     // the edge of a roadside rock. Both route progress and physical distance
@@ -116,7 +117,12 @@ public sealed class Chapter4Companion : MonoBehaviour
             travelClock += Time.deltaTime;
             if (!MotionHeld)
             {
-                if (AssistTarget.HasValue) StepToward(AssistTarget.Value, Time.deltaTime);
+                if (AssistTarget.HasValue)
+                {
+                    StepToward(AssistTarget.Value, Time.deltaTime);
+                    if (actorId == "mona" && owner.CaveExit != null && Progress >= owner.CaveExit.BlockedAt - 12)
+                        Progress = owner.ProjectProgress(transform.position, Progress, Mathf.Min(owner.RouteLength, Progress + 1.5f));
+                }
                 else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || owner.OpeningRush || IndependentFollow) && travelClock >= releaseAt)
                     Walk(Time.deltaTime);
             }
@@ -129,7 +135,8 @@ public sealed class Chapter4Companion : MonoBehaviour
         Rig.Ground(transform.position.y);
         // Orders are called over the shoulder while retreating. Speech must not
         // turn an otherwise forward-facing body back toward the player.
-        if (SupportPartner && !AssistTarget.HasValue && !MotionHeld) Rig.Face(SupportPartner.Rig.Forward);
+        if (StoneContact.HasValue) Rig.Face(StoneContact.Value - transform.position);
+        else if (SupportPartner && !AssistTarget.HasValue && !MotionHeld) Rig.Face(SupportPartner.Rig.Forward);
         previousPosition = transform.position;
         // This companion left the camp already wounded. If protected on the way,
         // their earlier injury can still stop them on the last climb.

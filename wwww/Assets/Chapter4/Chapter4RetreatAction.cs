@@ -37,7 +37,7 @@ public sealed class Chapter4RetreatAction
     float shellClock;
 
 
-    public Chapter4RetreatAction(Chapter4Evacuation owner)
+    public Chapter4RetreatAction(Chapter4Evacuation owner, MeshFilter rockModel)
     {
         flow = owner;
         for (int side = 0; side < 2; side++)
@@ -47,7 +47,7 @@ public sealed class Chapter4RetreatAction
                 float bend = Mathf.Min(1, Mathf.Sin(t * Mathf.PI) * 1.6f);
                 branches[side][i] = Ground(flow.BasePoint(d) + Right(d) * (side == 0 ? -5.1f : 4.25f) * bend);
             }
-        BuildLandmarks();
+        BuildLandmarks(rockModel);
     }
 
     public void Tick(float dt)
@@ -107,13 +107,9 @@ public sealed class Chapter4RetreatAction
         if (flow.terrain.Raycast(new Ray(p + Vector3.up * 30, Vector3.down), out var hit, 60)) p.y = hit.point.y + .08f;
         return p;
     }
-    void BuildLandmarks()
+    void BuildLandmarks(MeshFilter donor)
     {
         geometry = new GameObject("撤離掩護與落石繞路").transform; geometry.SetParent(flow.transform, false);
-        MeshFilter donor = null;
-        foreach (var mesh in UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
-            if (mesh.name == "風化岩石" && mesh.sharedMesh && mesh.GetComponent<MeshRenderer>()) { donor = mesh; break; }
-        if (!donor) throw new InvalidOperationException("Chapter 4 weathered-rock donor missing.");
         Rock(donor, geometry, 3, -4.4f, new Vector3(2, 1.55f, 2.6f));
         Rock(donor, geometry, 111, -2.8f, new Vector3(2.2f, 1.8f, 3.2f));
         Rock(donor, geometry, 11, -2.8f, new Vector3(2.2f, 2, 3.3f));

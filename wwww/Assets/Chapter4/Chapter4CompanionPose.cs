@@ -5,7 +5,7 @@ using UnityEngine;
 [DefaultExecutionOrder(4700)]
 public sealed class Chapter4CompanionPose : MonoBehaviour
 {
-    public enum State { Normal, Coughing, SideFall, Helping, Supported, Supporting, Seated }
+    public enum State { Normal, Coughing, SideFall, Helping, Supported, Supporting, Seated, PushingStone }
     public State CurrentState { get; private set; }
     public float Weight { get; private set; }
     public float Clock { get; private set; }
@@ -109,6 +109,19 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
             Plant(rightThigh, rightCalf, rightFoot, origin + forward * .16f - right * .52f + Vector3.up * .12f, forward + Vector3.up, w);
             Arm(false, Vector3.Lerp(rightHand.position, origin + right * .63f + forward * .16f + Vector3.up * .13f, w), -forward);
             Arm(true, Vector3.Lerp(leftHand.position, rig.Head.position - forward * .08f + Vector3.up * .04f, w), forward);
+        }
+        else if (CurrentState == State.PushingStone && actor.StoneContact.HasValue)
+        {
+            Vector3 left = leftFoot.position, rightSole = rightFoot.position;
+            actor.model.position -= Vector3.up * height * .16f;
+            spine.rotation = Quaternion.AngleAxis(23, right) * spine.rotation;
+            Plant(leftThigh, leftCalf, leftFoot, left + forward * .08f, forward, 1);
+            Plant(rightThigh, rightCalf, rightFoot, rightSole - forward * .10f, forward, 1);
+            Vector3 contact = actor.StoneContact.Value;
+            Arm(true, contact - right * .16f, -right + Vector3.down);
+            Arm(false, contact + right * .16f, right + Vector3.down);
+            OrientPalm(true, Vector3.up, forward);
+            OrientPalm(false, Vector3.up, forward);
         }
         else if (CurrentState == State.Seated)
         {

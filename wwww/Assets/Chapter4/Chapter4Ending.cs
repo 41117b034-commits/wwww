@@ -34,16 +34,16 @@ public sealed class Chapter4Ending : MonoBehaviour
 
     public bool TryBegin()
     {
-        var flow = chapter.evacuation; var contact = chapter.contact; var gas = chapter.gas;
-        if (HasStarted || !flow.ArrivalReady || !gas.Gumu.AtDestination || !gas.Lubi.AtDestination ||
+        var flow = chapter.evacuation; var contact = chapter.contact;
+        if (HasStarted || !flow.ArrivalReady ||
             contact.Responded && !contact.Reunited || !contact.Responded && contact.OpportunityMask != 3) return false;
         Outcome = contact.Reunited ? Chapter4ResultStore.Outcome.Together : Chapter4ResultStore.Outcome.Memory;
         pending = new Chapter4ResultStore.Record { inheritedBihu = flow.InheritedBihu, outcome = Outcome,
             firstContact = contact.FirstContact, secondContact = contact.SecondContact, obingReunited = contact.Reunited,
             gumuArrived = true, lubiArrived = true, epilogueSeen = false,
-            departed = flow.DepartedCount, sheltered = flow.InsideCount, fallen = flow.FallenCount, fallenNames = flow.FallenNames };
+            departed = flow.DepartedCount, fallen = flow.FallenCount, fallenNames = flow.FallenNames };
         chapter.player.SetInputEnabled(false);
-        chapter.presentation.HideSpeech();
+        chapter.Voice.Stop();
         chapter.presentation.SetContactStatus("", false);
         chapter.presentation.SetGasVeil(0,0);
         CurrentStage = Stage.LeavingTrail;
@@ -63,7 +63,13 @@ public sealed class Chapter4Ending : MonoBehaviour
             chapter.presentation.SetFade(Mathf.SmoothStep(0,1,CardElapsed/duration));
             // Give the fully dark frame time to reach the display before changing scenes.
             if (CardElapsed < duration + .20f) return;
-            if (lastPage) { pending.epilogueSeen = true; RetrySave(); }
+            if (lastPage)
+            {
+                if (!chapter.evacuation.PartyGathered) return;
+                pending.sheltered = chapter.evacuation.InsideCount;
+                pending.epilogueSeen = true;
+                RetrySave();
+            }
             else Show(Stage.Personal);
             return;
         }
