@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public sealed class Chapter4RetreatPressure : MonoBehaviour
 {
     public enum FlightState { Patrol, Approach, Strike, Rejoin }
+    enum EffectSound { AirRush, Impact, ShellWhistle, Gas }
     public FlightState Flight { get; private set; }
     public int AttackRuns { get; private set; }
     public int BombsReleased { get; private set; }
@@ -32,8 +33,9 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
     Chapter4Evacuation flow;
     Transform plane;
     Light flash;
-    AudioClip engineClip, impactClip, whistleClip, gasClip;
+    AudioClip airRushClip, impactClip, whistleClip, gasClip;
     AudioSource whistle, wingmanEngine;
+    AudioLowPassFilter leadAirFilter, wingAirFilter;
     Vector3 flightOrigin, flightForward, flightRight;
     float warningRemaining, nextImpact, flightClock, flashClock;
     public const float FlightCycleSeconds = 36;
@@ -66,18 +68,20 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
             if (light.type == LightType.Directional && light.gameObject.scene == gameObject.scene)
             { sun = light; oldSunIntensity = sun.intensity; oldSunColor = sun.color; sun.intensity *= .58f; sun.color = new Color(.76f, .79f, .75f); break; }
 
-        engineClip = BuildSound("Distant aircraft engine", 12, 0);
-        impactClip = BuildSound("Forest shell impact", 2.5f, 1);
-        whistleClip = BuildSound("Incoming shell cue", WarningDuration, 2);
-        gasClip = BuildSound("Gas shell release - dramatised", 3.5f, 3);
-        Aircraft = Source("遠方飛機聲", engineClip, .62f, true);
-        wingmanEngine = Source("另一架日軍飛機引擎", engineClip, .48f, true);
+        airRushClip = BuildSound("Aircraft pass - air rush", WarningDuration, EffectSound.AirRush);
+        impactClip = BuildSound("Forest shell impact", 2.5f, EffectSound.Impact);
+        whistleClip = BuildSound("Incoming shell cue", WarningDuration, EffectSound.ShellWhistle);
+        gasClip = BuildSound("Gas shell release - dramatised", 3.5f, EffectSound.Gas);
+        Aircraft = EngineSource("遠方飛機聲", "Biplane_Main", out leadAirFilter);
+        wingmanEngine = EngineSource("另一架日軍飛機引擎", "Biplane_Wing", out wingAirFilter);
         Impacts = Source("近處落彈聲", impactClip, .65f, false);
         whistle = Source("落彈預警聲", whistleClip, .42f, false);
         flash = new GameObject("落彈瞬光", typeof(Light)).GetComponent<Light>();
         flash.transform.SetParent(transform, false); flash.type = LightType.Point;
         flash.color = new Color(1, .69f, .35f); flash.range = 16; flash.shadows = LightShadows.None; flash.enabled = false;
         BuildAircraft();
+        Aircraft.transform.position = plane.position;
+        wingmanEngine.transform.position = Wingman.transform.position;
         var bomb = GameObject.CreatePrimitive(PrimitiveType.Capsule); bomb.name = "空襲落彈・演出示意";
         Destroy(bomb.GetComponent<Collider>()); fallingBomb = bomb.transform; fallingBomb.SetParent(transform, false);
         fallingBomb.localScale = new Vector3(.3f, .58f, .3f);
@@ -97,6 +101,40 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         source.spatialBlend = .85f; source.dopplerLevel = .25f;
         source.minDistance = 15; source.maxDistance = 180; source.rolloffMode = AudioRolloffMode.Linear;
         return source;
+    }
+
+    AudioSource EngineSource(string name, string recording, out AudioLowPassFilter airFilter)
+    {
+        var clip = Resources.Load<AudioClip>("Chapter4Aircraft/" + recording);
+        var source = Source(name, clip, 0, true);
+        source.spatialBlend = 1;
+        source.dopplerLevel = 1;
+        source.velocityUpdateMode = AudioVelocityUpdateMode.Dynamic;
+        source.minDistance = 20;
+        source.maxDistance = 220;
+        source.rolloffMode = AudioRolloffMode.Logarithmic;
+        airFilter = source.gameObject.AddComponent<AudioLowPassFilter>();
+        airFilter.lowpassResonanceQ = 1;
+        airFilter.cutoffFrequency = 1100;
+        return source;
+    }
+
+    void MixEngine(AudioSource source, AudioLowPassFilter airFilter, float gain, bool sheltered, float dt)
+    {
+        float distance = Vector3.Distance(chapter.player.view.transform.position, source.transform.position);
+        float proximity = Mathf.InverseLerp(155, 25, distance);
+        float cutoff = sheltered ? 550 : Mathf.Lerp(850, 6200, proximity * proximity);
+        airFilter.cutoffFrequency = Mathf.Lerp(airFilter.cutoffFrequency, cutoff, 1 - Mathf.Exp(-6 * dt));
+        source.volume = Mathf.MoveTowards(source.volume, sheltered ? 0 : gain, dt * (sheltered ? 1 : 1.6f));
+        if (sheltered)
+        {
+            if (source.volume <= 0 && source.isPlaying) source.Stop();
+        }
+        else if (!source.isPlaying && source.clip)
+        {
+            source.time = Mathf.Repeat(flightClock, source.clip.length);
+            source.Play();
+        }
     }
 
     void Update()
@@ -121,16 +159,21 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Elapsed += dt; ImpactPulse = Mathf.MoveTowards(ImpactPulse, 0, dt * 1.25f);
         flashClock = Mathf.Max(0, flashClock - dt); flash.enabled = flashClock > 0;
         if (flash.enabled) flash.intensity = flashClock * 20;
-        if (flow.PlayerInShelter || flow.PartyGathered)
+        bool sheltered = flow.PlayerInShelter || flow.PartyGathered;
+        if (plane.gameObject.activeSelf == sheltered)
+        {
+            plane.gameObject.SetActive(!sheltered);
+            Wingman.gameObject.SetActive(!sheltered);
+        }
+        if (!sheltered) UpdateAircraft(dt);
+        float duck = chapter.Voice.Speaking ? .58f : 1;
+        MixEngine(Aircraft, leadAirFilter, .88f * duck, sheltered, dt);
+        MixEngine(wingmanEngine, wingAirFilter, .65f * duck, sheltered, dt);
+        if (sheltered)
         {
             warningRemaining = 0;
-            HideMarker(); fallingBomb.gameObject.SetActive(false); Aircraft.Stop(); wingmanEngine.Stop(); whistle.Stop(); plane.gameObject.SetActive(false); Wingman.gameObject.SetActive(false); return;
+            HideMarker(); fallingBomb.gameObject.SetActive(false); whistle.Stop(); return;
         }
-        UpdateAircraft(dt);
-        float duck = chapter.Voice.Speaking ? .58f : 1;
-        Aircraft.volume = Mathf.MoveTowards(Aircraft.volume, (AirAttackActive ? .95f : .62f) * duck, dt);
-        Aircraft.pitch = Mathf.MoveTowards(Aircraft.pitch, AirAttackActive ? 1.18f : 1, dt * .12f);
-        wingmanEngine.volume = Mathf.MoveTowards(wingmanEngine.volume, .48f * duck, dt);
         Impacts.volume = Mathf.MoveTowards(Impacts.volume, .65f * duck, dt);
         if (warningRemaining > 0)
         {
@@ -166,7 +209,9 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         if (flow.terrain.Raycast(new Ray(point + Vector3.up * 20, Vector3.down), out var hit, 40)) ImpactPosition = hit.point;
         warningRemaining = WarningDuration; warningHarmless = harmless; warningGas = gas;
         Marker.Show(ImpactPosition, BlastRadius);
-        whistle.transform.position = ImpactPosition + Vector3.up * 5; whistle.Play();
+        whistle.transform.position = ImpactPosition + Vector3.up * 5;
+        whistle.clip = aircraft ? airRushClip : whistleClip;
+        whistle.Play();
         chapter.gas.atmosphere.BlastAt(ImpactPosition, true); return true;
     }
 
@@ -262,8 +307,6 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         FlyCircuit(Wingman, flightClock / FlightCycleSeconds * Mathf.PI * 2 + Mathf.PI * .5f, 7, dt);
         Aircraft.transform.position = plane.position;
         wingmanEngine.transform.position = Wingman.transform.position;
-        if (!Aircraft.isPlaying) Aircraft.Play();
-        if (!wingmanEngine.isPlaying) wingmanEngine.Play();
     }
 
     void FlyCircuit(Chapter4JapaneseAircraft aircraft, float angle, float extraHeight, float dt)
@@ -315,19 +358,32 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         whistle.Stop(); Impacts.Stop(); flash.enabled = false;
     }
 
-    static AudioClip BuildSound(string name, float seconds, int kind)
+    static AudioClip BuildSound(string name, float seconds, EffectSound kind)
     {
         const int rate = 22050;
-        var samples = new float[Mathf.CeilToInt(rate * seconds)]; var random = new System.Random(1930 + kind);
-        float low = 0;
+        var samples = new float[Mathf.CeilToInt(rate * seconds)]; var random = new System.Random(1930 + (int)kind);
+        float low = 0, rumble = 0;
         for (int i = 0; i < samples.Length; i++)
         {
             float t = i / (float)rate, noise = (float)random.NextDouble() * 2 - 1;
             low = Mathf.Lerp(low, noise, .09f);
-            float value = kind == 0 ? (.22f * Mathf.Sin(t * 2 * Mathf.PI * 93) + .15f * Mathf.Sin(t * 2 * Mathf.PI * 141) + low * .5f) * (.7f + .3f * Mathf.Sin(t * 2 * Mathf.PI * 11))
-                : kind == 1 ? (low * 2.6f + .27f * Mathf.Sin(t * 2 * Mathf.PI * 48)) * Mathf.Exp(-t * 2.2f) * Mathf.Min(1, t * 140)
-                : kind == 2 ? Mathf.Sin(2 * Mathf.PI * (1250 * t - 115 * t * t)) * .2f * Mathf.Sin(Mathf.PI * t / seconds)
-                : (low * .8f + noise * .12f) * Mathf.Exp(-t * .85f) * Mathf.Min(1, t * 25);
+            float value;
+            switch (kind)
+            {
+                case EffectSound.AirRush:
+                    rumble = Mathf.Lerp(rumble, low, .022f);
+                    value = (low - .75f * rumble) * 1.35f * Mathf.SmoothStep(.08f, 1, t / seconds);
+                    break;
+                case EffectSound.Impact:
+                    value = (low * 2.6f + .27f * Mathf.Sin(t * 2 * Mathf.PI * 48)) * Mathf.Exp(-t * 2.2f) * Mathf.Min(1, t * 140);
+                    break;
+                case EffectSound.ShellWhistle:
+                    value = Mathf.Sin(2 * Mathf.PI * (1250 * t - 115 * t * t)) * .2f * Mathf.Sin(Mathf.PI * t / seconds);
+                    break;
+                default:
+                    value = (low * .8f + noise * .12f) * Mathf.Exp(-t * .85f) * Mathf.Min(1, t * 25);
+                    break;
+            }
             samples[i] = Mathf.Clamp(value * Mathf.Min(1, Mathf.Min(t, seconds - t) * 30), -.8f, .8f);
         }
         var clip = AudioClip.Create(name, samples.Length, 1, rate, false); clip.SetData(samples, 0); return clip;
@@ -344,7 +400,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         }
         if (sun) { sun.intensity = oldSunIntensity; sun.color = oldSunColor; }
         foreach (var source in new[] { Aircraft, wingmanEngine, Impacts, whistle }) if (source) source.Stop();
-        foreach (var clip in new[] { engineClip, impactClip, whistleClip, gasClip }) if (clip) Destroy(clip);
+        foreach (var clip in new[] { airRushClip, impactClip, whistleClip, gasClip }) if (clip) Destroy(clip);
         if (bombMaterial) Destroy(bombMaterial);
     }
 }

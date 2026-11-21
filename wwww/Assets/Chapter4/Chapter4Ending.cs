@@ -88,9 +88,7 @@ public sealed class Chapter4Ending : MonoBehaviour
             chapter.presentation.ShowEnding(chapter,
                 pending.obingReunited && pending.inheritedBihu != Chapter4Evacuation.BihuState.Dead ? "一起走到了岩窟" : "我們仍會記得",
                 PersonalBody(pending.obingReunited, pending.inheritedBihu),
-                $"同行 {pending.departed} 人，走到洞後林徑 {pending.sheltered} 人。" +
-                (pending.fallen > 0 ? $"　途中受傷倒下的同伴：{pending.fallenNames}。" : "") +
-                "\n人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
+                "人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
         else chapter.presentation.ShowEnding(chapter,
             stage == Stage.History1930 ? "1930 年 · 戰火追進了山裡" : "1931 年 · 從霧社到川中島",
             stage == Stage.History1930 ? History1930 : History1931);
