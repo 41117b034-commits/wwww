@@ -61,7 +61,7 @@ public static class Chapter4Grounding
         return report;
     }
 
-    static Placement SeatTree(Transform wrapper, MeshCollider ground)
+    internal static Placement SeatTree(Transform wrapper, MeshCollider ground)
     {
         if (wrapper.childCount != 1) throw new InvalidOperationException("Unexpected tree hierarchy: " + wrapper.name);
         var model = wrapper.GetChild(0);

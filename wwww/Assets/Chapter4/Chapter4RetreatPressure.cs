@@ -85,7 +85,6 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         bomb.GetComponent<Renderer>().sharedMaterial = bombMaterial; bomb.SetActive(false);
         Marker = new GameObject("落彈範圍與中心標記").AddComponent<Chapter4ImpactMarker>();
         Marker.transform.SetParent(transform, false); Marker.Initialize(flow.terrain);
-        chapter.presentation.SetImpactTarget(chapter.player.view, Vector3.zero, 0, false, false);
         nextImpact = 2;
         initialized = true;
     }
@@ -124,7 +123,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         if (flash.enabled) flash.intensity = flashClock * 20;
         if (flow.PlayerInShelter || flow.PartyGathered)
         {
-            chapter.presentation.SetThreatCue("", 0); warningRemaining = 0;
+            warningRemaining = 0;
             HideMarker(); fallingBomb.gameObject.SetActive(false); Aircraft.Stop(); wingmanEngine.Stop(); whistle.Stop(); plane.gameObject.SetActive(false); Wingman.gameObject.SetActive(false); return;
         }
         UpdateAircraft(dt);
@@ -137,31 +136,19 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         {
             warningRemaining -= dt;
             if (warningRemaining <= 0) Detonate();
-            else { Marker.Pulse(warningRemaining); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, warningRemaining, true, PlayerInsideBlast, warningGas); }
+            else Marker.Pulse(warningRemaining);
         }
         else if (!AirAttackActive && Flight == FlightState.Patrol && (flow.Action == null || !flow.Action.ControlsShells))
         {
             nextImpact -= dt;
             if (nextImpact <= 0) BeginAttackRun();
         }
-        string cue = "";
-        if (IsTelegraphing)
-        {
-            Vector3 direction = ImpactPosition - chapter.player.transform.position;
-            float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(chapter.player.view.transform.forward, Vector3.up), Vector3.ProjectOnPlane(direction, Vector3.up), Vector3.up);
-            string where = Mathf.Abs(angle) > 110 ? "後方" : angle < -25 ? "左前方" : angle > 25 ? "右前方" : "前方";
-            cue = (warningGas ? "飛機投下瓦斯彈・" : Flight == FlightState.Strike ? "飛機投彈・" : "砲擊・") + where + " " + warningRemaining.ToString("0.0") + " 秒・" + (warningGas ? "煙霧即將擴散，向前撤離！" : PlayerInsideBlast ? "立刻移出警戒線！" : "已在範圍外，繼續撤離");
-        }
-        else if (ImpactPulse > .35f) cue = chapter.player.IsVR ? "砲火逼近！握住右握把低身、沿通路撤離" : "砲火逼近！按住 Ctrl 低身、沿通路撤離";
-        else if (Flight == FlightState.Approach) cue = "引擎聲逼近！飛機正在轉入山谷・留意前方空地";
-        else if (flow.BoundaryBlocked) cue = "別落下同伴・留在撤離通路接應";
-        chapter.presentation.SetThreatCue(cue, IsTelegraphing ? .8f : ImpactPulse);
     }
 
     void BeginAttackRun()
     {
         float player = flow.ProjectProgress(chapter.player.transform.position, 0, flow.RouteLength);
-        float distance = Mathf.Clamp(player + 10, 2, flow.RouteLength - 12);
+        float distance = Mathf.Clamp(player + 10, 2, flow.ApproachLength - 12);
         Vector3 direction = flow.PointOnRoute(distance + 1) - flow.PointOnRoute(distance - 1);
         Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
         attackPoint = flow.PointOnRoute(distance) + right * (AttackRuns % 2 == 0 ? 1.8f : -1.8f);
@@ -308,7 +295,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         plane.localScale = Vector3.one * 1.5f;
         Wingman = new GameObject("日軍複葉機・山谷另一側巡航").AddComponent<Chapter4JapaneseAircraft>();
         Wingman.transform.SetParent(transform, false); Wingman.Build(); Wingman.transform.localScale = Vector3.one * 1.15f;
-        Vector3 start = flow.BasePoint(0), end = flow.BasePoint(flow.RouteLength);
+        Vector3 start = flow.BasePoint(0), end = flow.BasePoint(flow.ApproachLength);
         flightOrigin = (start + end) * .5f;
         flightForward = Vector3.ProjectOnPlane(end - start, Vector3.up).normalized;
         flightRight = Vector3.Cross(Vector3.up, flightForward);
@@ -316,7 +303,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         FlyCircuit(Wingman, Mathf.PI * .5f, 7, 0);
     }
     void HideMarker()
-    { Marker.Hide(); chapter.presentation.SetImpactTarget(chapter.player.view, ImpactPosition, 0, false, false); }
+    { Marker.Hide(); }
 
     public void ResetAfterRetry()
     {
@@ -326,7 +313,6 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Flight = FlightState.Rejoin; runClock = bombClock = 0; bombReleased = false; fallingBomb.gameObject.SetActive(false);
         HideMarker();
         whistle.Stop(); Impacts.Stop(); flash.enabled = false;
-        chapter.presentation.SetThreatCue("已回到接應處・留意砲火空檔，帶著同伴撤離", 0);
     }
 
     static AudioClip BuildSound(string name, float seconds, int kind)

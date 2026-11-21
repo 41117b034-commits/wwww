@@ -71,8 +71,8 @@ public static class Chapter4SceneAuthoring
             Camp(props);
             RestClearings(props);
             BlockedBranches(props);
-            Gathering(props);
             Forest(treeDonors, plantDonors);
+            Gathering(props);
             LightingAndAmbience();
             CreatePlayerAndPresentation();
             Chapter4Grounding.Apply(scene);
@@ -191,7 +191,8 @@ public static class Chapter4SceneAuthoring
         // The outer ridge is continuous solid terrain, not a visible square ground edge.
         rise += Mathf.SmoothStep(0, 1, Mathf.InverseLerp(28, 43, clearance)) * (26 + noise * 8);
         float texture = Mathf.PerlinNoise(x * .13f + 2, z * .12f + 9) - .5f;
-        return height + rise + texture * .5f * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1, 7, clearance));
+        float ground = height + rise + texture * .5f * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1, 7, clearance));
+        return Chapter4CaveAuthoring.RearValleyHeight(x,z,ground);
     }
 
     static float Flat(Vector3 a, Vector3 b) => Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));

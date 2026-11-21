@@ -24,7 +24,7 @@ public sealed class Chapter4RetreatAction
         Rockfall && Choice == RouteChoice.Undecided ? "山道中央有巨石・從兩側繞行" :
         Choice != RouteChoice.Undecided && flow.PlayerProgress < ForkEnd ?
             (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") :
-        flow.PlayerProgress >= flow.RouteLength - 30 ? "沿山徑進入馬赫坡岩窟深處" : "接應同伴，往上坡撤離";
+        flow.PlayerProgress >= flow.ApproachLength - 30 ? "帶著同伴走進馬赫坡岩窟" : "接應同伴，往上坡撤離";
     public string Hint => Combat && !string.IsNullOrEmpty(Combat.Hint) ? Combat.Hint :
         Rockfall && Choice == RouteChoice.Undecided ? "左側貼岩：多繞幾步、有掩護　／　右側短路：較暴露・直接走入你選的路" :
         flow.chapter.contact && flow.chapter.contact.Responded && !flow.chapter.contact.Reunited ? "歐冰已回應・留在附近接應，她正沿剛才的路追上" :

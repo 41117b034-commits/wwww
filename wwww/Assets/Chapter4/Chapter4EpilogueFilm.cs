@@ -6,43 +6,41 @@ using UnityEngine.Video;
 public sealed class Chapter4EpilogueFilm : MonoBehaviour
 {
     const string Folder = "Chapter4Epilogue/";
-    const string FilmCredit = "2015 年，清流部落　｜　安安女王《霧社事件的餘生後裔》／PeoPo　CC BY 3.0 TW";
     sealed class Shot
     {
         public readonly float start, focusY;
-        public readonly string resource, caption;
-        public Shot(float start, string resource, string caption, float focusY = .5f)
+        public readonly string resource;
+        public Shot(float start, string resource, float focusY = .5f)
         {
-            this.start = start; this.resource = resource; this.caption = caption; this.focusY = focusY;
+            this.start = start; this.resource = resource; this.focusY = focusY;
         }
     }
 
     static readonly Shot[] personal =
     {
-        new Shot(0, "WushePanorama", "日治時期，霧社全景　｜　臺北折井寫真館／國立臺灣歷史博物館"),
-        new Shot(.36f, "WusheStreet", "日治時期，霧社街道　｜　國立臺灣歷史博物館典藏"),
-        new Shot(.70f, "MhebuMountain", "1930 年，從霧卡散附近望向馬海僕富士山　｜　《霧社討伐寫真帖》", .74f)
+        new Shot(0, "WushePanorama"),
+        new Shot(.36f, "WusheStreet"),
+        new Shot(.70f, "MhebuMountain", .74f)
     };
     static readonly Shot[] history1930 =
     {
-        new Shot(0, "SchoolCourtyard", "1930 年 10 月 29 日，事發兩天後的霧社公學校操場　｜　《霧社討伐寫真帖》"),
-        new Shot(.25f, "PuliAirfield", "1930 年，埔里臨時飛行場的日軍飛行員與偵察機　｜　《霧社討伐寫真帖》"),
-        new Shot(.39f, "AfterAirRaid", "1930 年，日軍飛機投彈後的山區　｜　《霧社討伐寫真帖》"),
-        new Shot(.53f, "TruwanSmoke", "1930 年，塔羅灣社遭日軍砲擊後升起的濃煙　｜　《霧社討伐寫真帖》"),
-        new Shot(.66f, "MhebuAerial", "1930 年，日軍從空中拍下馬赫坡岩窟一帶　｜　《霧社討伐寫真帖》"),
-        new Shot(.83f, "BoaalonVillage", "1930 年，日軍占領後的波阿倫社　｜　《第一第二霧社事件誌》")
+        new Shot(0, "SchoolCourtyard"),
+        new Shot(.25f, "PuliAirfield"),
+        new Shot(.39f, "AfterAirRaid"),
+        new Shot(.53f, "TruwanSmoke"),
+        new Shot(.66f, "MhebuAerial"),
+        new Shot(.83f, "BoaalonVillage")
     };
     static readonly Shot[] history1931 =
     {
-        new Shot(0, "RodovRuins", "1931 年，羅多夫社遇襲後留下的屋址　｜　《第一第二霧社事件誌》"),
-        new Shot(.25f, "Survivors1931", "1931 年，第二次霧社事件後被收容的倖存者　｜　《第一第二霧社事件誌》", .68f),
-        new Shot(.53f, "Kawanakajima1931", "1931 年，川中島，被召集參加「和解式」的族人　｜　《第一第二霧社事件誌》", .62f),
-        new Shot(.70f, "QingliuStill", FilmCredit)
+        new Shot(0, "RodovRuins"),
+        new Shot(.25f, "Survivors1931", .68f),
+        new Shot(.53f, "Kawanakajima1931", .62f),
+        new Shot(.70f, "QingliuStill")
     };
 
     Chapter4SceneController chapter;
     RawImage front, back;
-    Text credit;
     VideoPlayer projector;
     Shot[] sequence;
     Texture2D[] stills;
@@ -50,10 +48,9 @@ public sealed class Chapter4EpilogueFilm : MonoBehaviour
     float progress;
     bool startedVideo, videoFinished, videoFailed;
 
-    public void Initialize(Chapter4SceneController owner, Text sourceCredit)
+    public void Initialize(Chapter4SceneController owner)
     {
         chapter = owner;
-        credit = sourceCredit;
         Layer("映幕暗角").texture = Resources.Load<Texture2D>(Folder + "ProjectorShade");
         front = Layer("本張史料");
         back = Layer("前張史料");
@@ -141,7 +138,6 @@ public sealed class Chapter4EpilogueFilm : MonoBehaviour
             back.texture = stills[i-1];
             Fit(back, 1.035f, sequence[i-1].focusY);
         }
-        credit.text = blend < .5f ? sequence[i-1].caption : shot.caption;
     }
 
     static void Fit(RawImage image, float zoom, float focusY)

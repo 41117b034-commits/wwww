@@ -4,10 +4,10 @@
   "entries": [
     {
       "role": "mona",
-      "chinese": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
-      "mandarin": "Chapter4Voice/Mandarin/ec48bac3cc64dcdc07df",
-      "seediq": "Chapter4Voice/Seediq/ec48bac3cc64dcdc07df",
-      "translation": "Osa lmiqu kana ka seediq.",
+      "chinese": "日本軍警從霧社追上山了，槍聲就在後頭！帶上傷患，跟我往山裡走！",
+      "mandarin": "Chapter4Voice/Mandarin/b749cc265c4412ef04ef",
+      "seediq": "Chapter4Voice/Seediq/b749cc265c4412ef04ef",
+      "translation": "ga mhero knsat tanah tonox kndalax paran dehok dgiyaq di. ga bukuy ka hrenang na halung! adis loqah, snegon ko mosa lmiqo!",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-CN-YunjianNeural",
@@ -15,11 +15,28 @@
         "pitch": -8,
         "delivery": "steady"
       },
-      "mandarinSha256": "d32e828bf0a58ed38e2579abe839222e266d466af94fd8d937a6035b2c82b6b6",
-      "translationInput": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
-      "ttsText": "Osa lmiqu kana ka seediq.",
+      "mandarinSha256": "028264f026033fc06b1092bf79e61063c5b9ffb3a5183ad3a818fa797b07765d",
+      "translationInput": "日本軍警從霧社追上山了，槍聲就在後頭！帶上傷患，跟我往山裡走！",
+      "ttsText": "ga mhero knsat tanah tonox kndalax paran dehok dgiyaq di. ga bukuy ka hrenang na halung! adis loqah, snegon ko mosa lmiqo!",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "translationParts": [
+        {
+          "input": "日本軍警從霧社追上山了。",
+          "translation": "ga mhero knsat tanah tonox kndalax paran dehok dgiyaq di.",
+          "ttsText": "ga mhero knsat tanah tonox kndalax paran dehok dgiyaq di."
+        },
+        {
+          "input": "槍聲就在後頭！",
+          "translation": "ga bukuy ka hrenang na halung!",
+          "ttsText": "ga bukuy ka hrenang na halung!"
+        },
+        {
+          "input": "帶上傷患，跟我往山裡走！",
+          "translation": "adis loqah, snegon ko mosa lmiqo!",
+          "ttsText": "adis loqah, snegon ko mosa lmiqo!"
+        }
+      ]
     },
     {
       "role": "mona",
@@ -742,7 +759,7 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "7a7ec7d6c6d6d9df06a1ffe56fdd22b2a3393d07eb37be395345e6b5ef08d5b2",
+      "mandarinSha256": "6a60381a23e4e0b89d16f615950bbc201038bf8ac97aba876a87e390e5af38dd",
       "mandarinSegments": [
         "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。",
         "那一年，帶領族人起事的莫那・魯道在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。"
@@ -767,13 +784,13 @@
       "narrationPacing": {
         "mandarin": {
           "sourceSha256": "ff17a5cdb8595ef1b3f9d8b54dbcd621b1c98df1037ca3ac7d80fd3c67a1499b",
-          "masterSha256": "7a7ec7d6c6d6d9df06a1ffe56fdd22b2a3393d07eb37be395345e6b5ef08d5b2",
-          "tempo": 1.15
+          "masterSha256": "6a60381a23e4e0b89d16f615950bbc201038bf8ac97aba876a87e390e5af38dd",
+          "tempo": 1
         },
         "seediq": {
           "sourceSha256": "3009ea2567fda8e0befe272e5a14002b01b5c08c881fa08182d1348d86fa1c22",
-          "masterSha256": "9cd3d2045d70fef48b5173d0d44ae4e82c63799d874bed678b07bf78b045fe6a",
-          "tempo": 1.15
+          "masterSha256": "aef4db37ac6af1885edc75e5278277f1fb191faadbcdf32f1393f8c1b31df316",
+          "tempo": 1
         }
       }
     },

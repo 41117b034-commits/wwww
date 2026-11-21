@@ -14,6 +14,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     public float Clock { get; private set; }
     public int SuppressingShots { get; private set; }
     public int Hits { get; private set; }
+    public int EscortDowns { get; private set; }
     public bool Frozen => !Chapter || Chapter.WorldFrozen || Chapter.gas.IsCollapsed || Chapter.evacuation.PartyGathered || Chapter.evacuation.PlayerInShelter;
     public float NearestDistance
     {
@@ -23,7 +24,6 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     public float PartyAdvance => Mathf.Max(16, Chapter.evacuation.PlayerProgress + 9);
     public float PlayerLimit => Chapter.evacuation.RouteLength;
     public string Objective => CurrentPhase == Phase.LeavingCamp ? "毒氣侵入營地・跟著隊伍撤離" : "";
-    public string Status => !Frozen && NearestDistance < 24 ? "後方追兵逼近・約 " + Mathf.CeilToInt(NearestDistance) + " 公尺・利用山彎拉開距離" : "";
     public string Hint
     {
         get
@@ -138,7 +138,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
             if (Chapter.player.InteractPressed && NearSupply) Gun.Refill();
         }
         tracer.enabled = tracerClock > 0 && !Frozen;
-        Chapter.presentation.SetCombatStatus(Gun, !Frozen, Status);
+        Chapter.presentation.SetCombatStatus(Gun, !Frozen);
     }
     public bool ClearEscortShot(Chapter4Companion shooter, Vector3 from, Vector3 to)
     {
@@ -155,6 +155,21 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         foreach (var other in Chapter.evacuation.Party)
             if (other != shooter && Crosses(other.transform.position, .32f, other.Fallen ? .46f : 1.82f)) return false;
         return ClearTerrain(from, to);
+    }
+
+    // Two retreat beats use the same fall performance as a player hit. Other
+    // clear reports interrupt the pursuit while the group continues moving.
+    internal void ResolveEscortReport(Chapter4Pursuer pursuer)
+    {
+        if (Frozen || !pursuer || pursuer.Down) return;
+        float progress = Chapter.evacuation.PlayerProgress;
+        bool hit = (EscortDowns == 0 && progress >= 14) || (EscortDowns == 1 && progress >= 79);
+        if (hit)
+        {
+            pursuer.Hit();
+            if (pursuer.Down) EscortDowns++;
+        }
+        else pursuer.Suppress(1.5f);
     }
 
     public bool ClearTerrain(Vector3 from, Vector3 to)
@@ -223,13 +238,13 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     }
     [Serializable] public sealed class Snapshot
     {
-        public Phase phase; public float clock, nextReport; public int suppressingShots, hits, nextEscort;
+        public Phase phase; public float clock, nextReport; public int suppressingShots, hits, escortDowns, nextEscort;
         public Chapter4Rifle.Snapshot gun; public Chapter4Pursuer.Snapshot[] enemies;
         public Chapter4CompanionRifle.Snapshot[] escorts;
     }
     public Snapshot Capture()
     {
-        var s = new Snapshot { phase = CurrentPhase, clock = Clock, suppressingShots = SuppressingShots, hits = Hits, gun = Gun.Capture(), enemies = new Chapter4Pursuer.Snapshot[enemies.Count] };
+        var s = new Snapshot { phase = CurrentPhase, clock = Clock, suppressingShots = SuppressingShots, hits = Hits, escortDowns = EscortDowns, gun = Gun.Capture(), enemies = new Chapter4Pursuer.Snapshot[enemies.Count] };
         for (int i = 0; i < enemies.Count; i++) s.enemies[i] = enemies[i].Capture();
         s.nextEscort = nextEscort; s.nextReport = nextReport;
         s.escorts = escorts.ConvertAll(escort => escort.Capture()).ToArray();
@@ -238,7 +253,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     public void Restore(Snapshot s)
     {
         if (s == null) return;
-        CurrentPhase = s.phase; Clock = s.clock; SuppressingShots = s.suppressingShots; Hits = s.hits;
+        CurrentPhase = s.phase; Clock = s.clock; SuppressingShots = s.suppressingShots; Hits = s.hits; EscortDowns = s.escortDowns;
         Gun.Restore(s.gun); for (int i = 0; i < enemies.Count; i++) enemies[i].Restore(s.enemies[i]); tracerClock = 0;
         nextEscort = s.nextEscort; nextReport = s.nextReport;
         for (int i = 0; i < escorts.Count; i++) escorts[i].Restore(s.escorts != null && i < s.escorts.Length ? s.escorts[i] : null);

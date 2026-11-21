@@ -83,7 +83,6 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (Fallen) return;
         Fallen = true; fallElapsed = 0; MotionHeld = true; Speaking = false; AssistTarget = null;
         Pose.Set(Chapter4CompanionPose.State.SideFall, 0);
-        owner.ReportFall(this, hitByPolice);
     }
 
     public void FollowTo(float distance, float delay)

@@ -30,8 +30,6 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public Text rifleStatus, rifleReticle;
 
     bool vr;
-    bool controlsInitialized;
-    bool controlsVR;
     bool contactStyleConfigured;
     Transform desktopParent;
     Vector2 desktopAnchorMin, desktopAnchorMax, desktopPivot, desktopSize;
@@ -41,22 +39,23 @@ public sealed class Chapter4Presentation : MonoBehaviour
     GraphicRaycaster raycaster;
     readonly List<RaycastResult> gazeHits = new List<RaycastResult>();
 
-    public void SetObjective(string text) { if (objective) objective.text = text; }
-
-    public void SetControls(bool useVR)
+    string currentObjective;
+    string contactPrompt;
+    void RefreshObjective()
     {
-        if (controlsInitialized && controlsVR == useVR) return;
-        controlsInitialized = true;
-        controlsVR = useVR;
-        if (controls) controls.text = useVR
-            ? "左搖桿移動　右扳機射擊　右 B 裝填　右 A 補彈　右握把低身　左扳機聯絡　選單暫停"
-            : "WASD 移動　左鍵射擊　右鍵瞄準／環視　R 裝填　Ctrl 低身　E 補彈　F 聯絡歐冰　Esc 選單";
+        if (objective) objective.text = string.IsNullOrEmpty(contactPrompt) ? currentObjective : contactPrompt;
+    }
+    public void SetObjective(string text)
+    {
+        if (currentObjective == text) return;
+        currentObjective = text;
+        RefreshObjective();
     }
 
     public void EnsureCombatUI()
     {
         if (rifleStatus) return;
-        var panel = Panel(canvas.transform, "步槍與射擊回饋", new Vector2(.65f, .335f), new Vector2(.975f, .43f), new Color(.035f, .047f, .04f, .8f), false);
+        var panel = Panel(canvas.transform, "步槍與射擊回饋", new Vector2(.77f,.20f), new Vector2(.97f,.255f), new Color(.035f, .047f, .04f, .8f), false);
         rifleStatus = Label(panel, "", objective.font, 21, new Vector2(.03f, .04f), new Vector2(.97f, .96f));
         rifleStatus.color = new Color(.88f, .87f, .76f);
         rifleReticle = Label(canvas.transform, "+", objective.font, 24, new Vector2(.49f, .48f), new Vector2(.51f, .52f));
@@ -65,13 +64,14 @@ public sealed class Chapter4Presentation : MonoBehaviour
         var edge = rifleReticle.gameObject.AddComponent<Outline>(); edge.effectColor = new Color(.025f,.03f,.025f,.85f); edge.effectDistance = new Vector2(1,-1);
         menuPanel.transform.SetAsLastSibling();
     }
-    public void SetCombatStatus(Chapter4Rifle gun, bool visible, string status)
+    public void SetCombatStatus(Chapter4Rifle gun, bool visible)
     {
         if (!rifleStatus) return;
-        rifleStatus.transform.parent.gameObject.SetActive(visible);
+        bool showAmmo = visible && (gun.Reloading || gun.Aiming);
+        rifleStatus.transform.parent.gameObject.SetActive(showAmmo);
         rifleReticle.gameObject.SetActive(visible && !vr && gun.Aiming);
-        if (!visible) return;
-        rifleStatus.text = "步槍　" + (gun.Loaded ? "1" : "0") + "／1　備彈 " + gun.Reserve + (gun.Reloading ? "　裝填中" : "") + "\n" + gun.Feedback;
+        if (!showAmmo) return;
+        rifleStatus.text = "步槍　" + (gun.Loaded ? "1" : "0") + "／1　備彈 " + gun.Reserve + (gun.Reloading ? "　裝填中" : "");
     }
 
     public void EnsureEndingUI()
@@ -82,8 +82,6 @@ public sealed class Chapter4Presentation : MonoBehaviour
         var backdrop = Panel(canvas.transform, "個人結局與共同史實後記", Vector2.zero, Vector2.one, new Color(.025f, .037f, .03f, .98f), true);
         endingPanel = backdrop.gameObject;
         var card = Panel(backdrop, "章末文字", new Vector2(.13f, .15f), new Vector2(.87f, .86f), new Color(.055f, .075f, .06f, 1), true);
-        endingKicker = Label(card, "", objective.font, 23, new Vector2(.065f, .87f), new Vector2(.935f, .96f));
-        endingKicker.color = new Color(.79f, .79f, .66f);
         endingTitle = Label(card, "", objective.font, 38, new Vector2(.065f, .72f), new Vector2(.935f, .88f));
         endingTitle.color = new Color(.95f, .83f, .62f);
         endingBody = Label(card, "", objective.font, 29, new Vector2(.065f, .16f), new Vector2(.935f, .71f));
@@ -96,104 +94,92 @@ public sealed class Chapter4Presentation : MonoBehaviour
         menuPanel.transform.SetAsLastSibling();
     }
 
-    public void SetContactStatus(string text, bool ready)
+    public void SetContactStatus(string prompt, bool ready)
     {
         if (!contactButton) return;
         if (!contactStyleConfigured)
         {
-            contactButton.targetGraphic.color = new Color(.035f, .047f, .04f, .94f);
-            var colors = contactButton.colors;
-            colors.disabledColor = Color.white;
-            contactButton.colors = colors;
-            contactStyleConfigured = true;
+            contactButton.transform.SetParent(objective.transform.parent,false);
+            Place(contactButton.transform,.035f,.08f,.97f,.53f);
+            contactButton.targetGraphic.color=Color.clear;
+            contactText.gameObject.SetActive(false);
+            contactStyleConfigured=true;
         }
-        contactText.text = text;
-        contactText.color = ready ? new Color(1, .88f, .58f) : new Color(.91f, .92f, .87f);
-        contactButton.gameObject.SetActive(!string.IsNullOrEmpty(text));
-        contactButton.interactable = ready;
-        contactButton.GetComponent<Image>().raycastTarget = ready;
+        contactButton.gameObject.SetActive(ready);
+        contactButton.interactable=ready;
+        contactButton.targetGraphic.raycastTarget=ready;
+        string next=ready ? prompt : null;
+        if (contactPrompt == next) return;
+        contactPrompt=next;
+        RefreshObjective();
     }
 
-    public void ShowEnding(Chapter4SceneController chapter, string kicker, string title, string body, string footer)
+    public void ShowEnding(Chapter4SceneController chapter, string title, string body, string footer = null)
     {
         endingPanel.SetActive(true);
         if (!endingFilm)
         {
-            endingPanel.GetComponent<Image>().color = new Color(.16f, .17f, .15f);
+            endingPanel.GetComponent<Image>().color = new Color(.16f,.17f,.15f);
             var card = (RectTransform)endingBody.transform.parent;
             card.GetComponent<Image>().color = Color.clear;
-            Place(card, 0, 0, 1, 1);
-            Place(endingKicker.transform, .076f, .79f, .91f, .88f);
-            Place(endingTitle.transform, .075f, .66f, .93f, .79f);
-            Place(endingBody.transform, .078f, .20f, .81f, .64f);
-            Place(endingFooter.transform, .078f, .09f, .96f, .19f);
+            Place(card,0,0,1,1);
+            if (endingKicker) endingKicker.gameObject.SetActive(false);
+            Place(endingTitle.transform,.075f,.71f,.93f,.85f);
+            Place(endingBody.transform,.078f,.215f,.83f,.68f);
+            Place(endingFooter.transform,.078f,.075f,.96f,.185f);
             endingBody.lineSpacing = 1.18f;
             endingBody.resizeTextForBestFit = false;
             endingBody.fontSize = 30;
             endingBody.fontStyle = FontStyle.Normal;
             endingBody.horizontalOverflow = HorizontalWrapMode.Wrap;
-            endingKicker.color = new Color(.88f, .85f, .72f);
-            endingFooter.color = new Color(.86f, .85f, .79f);
-            var filmCredit = Label(card, "", endingBody.font, 19, new Vector2(.078f, .046f), new Vector2(.97f, .106f));
-            filmCredit.color = new Color(.83f, .82f, .77f);
-            foreach (var text in new[] { endingKicker, endingTitle, endingBody, endingFooter, filmCredit })
+            foreach (var text in new[] { endingTitle, endingBody, endingFooter })
             {
-                var shadow = text.gameObject.AddComponent<Shadow>();
-                shadow.effectColor = new Color(0, 0, 0, .62f);
-                shadow.effectDistance = new Vector2(1, -1);
+                var shadow=text.gameObject.AddComponent<Shadow>();
+                shadow.effectColor=new Color(0,0,0,.62f);
+                shadow.effectDistance=new Vector2(1,-1);
             }
-            endingFilm = endingPanel.AddComponent<Chapter4EpilogueFilm>();
-            endingFilm.Initialize(chapter, filmCredit);
+            endingFilm=endingPanel.AddComponent<Chapter4EpilogueFilm>();
+            endingFilm.Initialize(chapter);
         }
         endingFilm.Show(chapter.ending.CurrentStage);
-        endingKicker.text = kicker; endingTitle.text = title; endingBody.text = body; endingFooter.text = footer;
+        endingTitle.text=title; endingBody.text=body;
+        endingFooter.text=footer ?? "";
+        endingFooter.gameObject.SetActive(!string.IsNullOrEmpty(footer));
         if (vr) PlaceVRCanvas();
     }
 
     public void EnsureGasUI()
     {
-        if (gasStatus) return;
-        var veil = Panel(canvas.transform, "毒氣影響", Vector2.zero, Vector2.one, Color.clear, false);
-        gasVeil = veil.GetComponent<Image>();
+        if (gasVeil) return;
+        var veil=Panel(canvas.transform,"毒氣影響",Vector2.zero,Vector2.one,Color.clear,false);
+        gasVeil=veil.GetComponent<Image>();
         veil.SetAsFirstSibling();
-        var panel = Panel(canvas.transform, "後方煙霧提示", new Vector2(.025f, .635f), new Vector2(.48f, .715f), new Color(.035f, .047f, .04f, .86f), false);
-        gasStatus = Label(panel, "", objective.font, 22, new Vector2(.035f, .03f), new Vector2(.965f, .97f));
-        menuPanel.transform.SetAsLastSibling();
     }
 
-    public void SetGasStatus(string text, float exposure, float collapse, float mist = 0)
+    public void SetGasVeil(float exposure,float collapse,float mist=0)
     {
-        if (!gasStatus) return;
-        gasStatus.text = text;
-        gasStatus.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
-        gasStatus.color = exposure > .65f ? new Color(1, .73f, .52f) : new Color(.91f, .88f, .72f);
-        Color tint = Color.Lerp(new Color(.16f, .19f, .13f), new Color(.58f, .59f, .51f), mist);
-        tint.a = Mathf.Max(exposure * .20f, collapse * .82f, mist * .18f);
-        gasVeil.color = tint;
+        if (!gasVeil) return;
+        Color tint = Color.Lerp(new Color(.16f,.19f,.13f),new Color(.58f,.59f,.51f),mist);
+        tint.a=Mathf.Max(exposure*.20f,collapse*.82f,mist*.18f);
+        gasVeil.color=tint;
     }
 
+    // Saved scenes may still contain panels from the desktop prototype.
     public void EnsureRetreatUI()
     {
-        if (retreatWarning) return;
-        // Keep the middle of the view open while orders are spoken on the move.
-        Place(objective.transform.parent, .025f, .865f, .40f, .975f);
-        foreach (var label in objective.transform.parent.GetComponentsInChildren<Text>()) label.fontSize = 21;
-        objective.fontSize = 23;
-        Place(carryover.transform.parent, .025f, .78f, .40f, .855f);
-        carryover.fontSize = 17; partyStatus.fontSize = 21;
-        Place(gasStatus.transform.parent, .025f, .69f, .40f, .775f); gasStatus.fontSize = 19;
-        Place(speechPanel.transform, .16f, .11f, .84f, .24f);
-        speechPanel.GetComponent<Image>().color = new Color(.035f, .047f, .04f, .78f);
-        speakerName.fontSize = 20; speechText.fontSize = 25;
-        Place(signalButton.transform, .12f, .26f, .88f, .315f); interaction.fontSize = 21;
-        Place(controls.transform.parent, .065f, .025f, .935f, .07f); controls.fontSize = 19;
-        Place(navigation.transform, .70f, .89f, .975f, .96f); navigation.fontSize = 26;
-        if (contactButton) { Place(contactButton.transform, .52f, .70f, .975f, .79f); contactText.fontSize = 21; }
-        var panel = Panel(canvas.transform, "砲火與撤離警示", new Vector2(.44f, .80f), new Vector2(.975f, .87f), new Color(.08f, .055f, .035f, .84f), false);
-        retreatWarning = Label(panel, "", objective.font, 24, new Vector2(.025f, .05f), new Vector2(.975f, .95f));
-        retreatWarning.alignment = TextAnchor.MiddleCenter;
-        panel.gameObject.SetActive(false);
-        menuPanel.transform.SetAsLastSibling();
+        if (controls) controls.transform.parent.gameObject.SetActive(false);
+        if (carryover) carryover.transform.parent.gameObject.SetActive(false);
+        if (gasStatus) gasStatus.transform.parent.gameObject.SetActive(false);
+        if (navigation) navigation.gameObject.SetActive(false);
+        if (signalButton) signalButton.gameObject.SetActive(false);
+        if (retreatWarning) retreatWarning.transform.parent.gameObject.SetActive(false);
+        if (impactTarget) impactTarget.transform.parent.gameObject.SetActive(false);
+        Place(objective.transform.parent,.025f,.865f,.40f,.975f);
+        foreach(var label in objective.transform.parent.GetComponentsInChildren<Text>()) label.fontSize=21;
+        objective.fontSize=23;
+        Place(speechPanel.transform,.16f,.075f,.84f,.21f);
+        speechPanel.GetComponent<Image>().color=new Color(.035f,.047f,.04f,.78f);
+        speakerName.fontSize=20; speechText.fontSize=25;
     }
 
     static void Place(Transform item, float left, float bottom, float right, float top)
@@ -203,91 +189,76 @@ public sealed class Chapter4Presentation : MonoBehaviour
         rect.offsetMin = rect.offsetMax = Vector2.zero;
     }
 
-    public void SetThreatCue(string text, float intensity)
-    {
-        if (!retreatWarning) return;
-        retreatWarning.text = text;
-        retreatWarning.color = Color.Lerp(new Color(.85f, .83f, .73f), new Color(.92f, .85f, .69f), Mathf.Clamp01(intensity));
-        retreatWarning.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(text));
-    }
-
-    public void SetImpactTarget(Camera view, Vector3 position, float seconds, bool active, bool inside, bool gas = false)
-    {
-        if (!impactTarget)
-        {
-            var panel = Panel(canvas.transform, "精確落點倒數", Vector2.one * .5f, Vector2.one * .5f, new Color(.045f, .055f, .045f, .78f), false);
-            panel.sizeDelta = new Vector2(260, 58);
-            var border = panel.gameObject.AddComponent<Outline>(); border.effectColor = new Color(.73f, .73f, .64f, .28f); border.effectDistance = new Vector2(1, -1);
-            impactTarget = Label(panel, "", objective.font, 20, new Vector2(.025f, .025f), new Vector2(.975f, .975f));
-            impactTarget.alignment = TextAnchor.MiddleCenter;
-            menuPanel.transform.SetAsLastSibling();
-        }
-        impactTarget.transform.parent.gameObject.SetActive(active);
-        if (!active || !view) return;
-        Vector3 point = view.WorldToViewportPoint(position + Vector3.up * 1.8f);
-        Vector3 local = view.transform.InverseTransformPoint(position);
-        bool behind = point.z <= 0;
-        Vector2 anchor = behind ? new Vector2(local.x < 0 ? .15f : .85f, .44f)
-            : new Vector2(Mathf.Clamp(point.x, .15f, .85f), Mathf.Clamp(point.y, .39f, .63f));
-        var rect = (RectTransform)impactTarget.transform.parent;
-        rect.anchorMin = rect.anchorMax = anchor; rect.anchoredPosition = Vector2.zero;
-        string direction = behind ? "後方落點" : point.x < 0 ? "← 左側落點" : point.x > 1 ? "右側落點 →" : "▼ 落點";
-        impactTarget.text = direction + "　" + seconds.ToString("0.0") + " 秒\n" + (gas ? "瓦斯彈・煙霧將向外擴散" : inside ? "危險範圍內・往外移動" : "已在爆炸範圍外");
-        impactTarget.color = inside ? new Color(.93f, .88f, .76f) : new Color(.78f, .82f, .74f);
-    }
-
     public void EnsureStoryUI()
     {
         if (speechPanel) return;
         Font font = objective.font;
-        var status = Panel(canvas.transform, "撤離隊伍狀態", new Vector2(.025f, .73f), new Vector2(.48f, .825f), new Color(.035f, .047f, .04f, .84f), false);
-        carryover = Label(status, "", font, 21, new Vector2(.035f, .51f), new Vector2(.97f, .96f));
-        carryover.color = new Color(.87f, .80f, .66f);
-        partyStatus = Label(status, "", font, 24, new Vector2(.035f, .04f), new Vector2(.97f, .51f));
         var speech = Panel(canvas.transform, "撤離對話", new Vector2(.16f, .17f), new Vector2(.84f, .35f), new Color(.035f, .047f, .04f, .94f), false);
         speechPanel = speech.gameObject;
         speakerName = Label(speech, "", font, 24, new Vector2(.035f, .69f), new Vector2(.965f, .96f));
         speakerName.color = new Color(.94f, .83f, .62f);
         speechText = Label(speech, "", font, 28, new Vector2(.035f, .08f), new Vector2(.965f, .70f));
-        var prompt = Panel(canvas.transform, "探路示意", new Vector2(.12f, .095f), new Vector2(.88f, .155f), new Color(.035f, .047f, .04f, .88f), false);
-        interaction = Label(prompt, "", font, 23, new Vector2(.02f, 0), new Vector2(.98f, 1));
-        interaction.alignment = TextAnchor.MiddleCenter;
-        signalButton = prompt.gameObject.AddComponent<Button>();
-        signalButton.targetGraphic = prompt.GetComponent<Image>();
-        navigation = Label(canvas.transform, "", font, 29, new Vector2(.69f, .88f), new Vector2(.97f, .97f));
-        navigation.alignment = TextAnchor.MiddleRight;
-        navigation.color = new Color(.96f, .86f, .64f);
         menuPanel.transform.SetAsLastSibling();
         speechPanel.SetActive(false);
-        SetInteraction("", false);
     }
 
-    public void SetCarryover(string value) { if (carryover) carryover.text = value; }
-    public void SetPartyStatus(string value) { if (partyStatus) partyStatus.text = value; }
     public void ShowSpeech(string name, string text)
     {
         speakerName.text = name; speechText.text = text; speechPanel.SetActive(true);
     }
     public void HideSpeech() { if (speechPanel) speechPanel.SetActive(false); }
-    public void SetInteraction(string text, bool ready)
+    Canvas fadeCanvas;
+    Image fadeImage;
+    public float FadeAmount => fadeImage ? fadeImage.color.a : 0;
+
+    public void SetFade(float amount)
     {
-        if (!interaction) return;
-        interaction.text = text;
-        signalButton.gameObject.SetActive(!string.IsNullOrEmpty(text));
-        signalButton.interactable = ready;
-        signalButton.GetComponent<Image>().raycastTarget = ready;
-        interaction.color = ready ? new Color(1, .88f, .58f) : new Color(.90f, .91f, .86f);
-    }
-    public void SetNavigation(Camera view, Vector3 target, bool visible, string nearLabel = "")
-    {
-        if (!navigation) return;
-        navigation.gameObject.SetActive(visible);
-        if (!visible || !view) return;
-        Vector3 direction = Vector3.ProjectOnPlane(target - view.transform.position, Vector3.up);
-        if (direction.sqrMagnitude < 3.2f * 3.2f && !string.IsNullOrEmpty(nearLabel))
-        { navigation.text = nearLabel; return; }
-        float angle = Vector3.SignedAngle(Vector3.ProjectOnPlane(view.transform.forward, Vector3.up), direction, Vector3.up);
-        navigation.text = Mathf.Abs(angle) > 115 ? "回頭接應隊伍" : angle < -25 ? "← 沿路撤離" : angle > 25 ? "沿路撤離 →" : "↑ 沿路撤離";
+        if (!fadeImage && amount <= 0) return;
+        Transform parent = canvas.transform;
+        if (vr)
+        {
+            Camera view = canvas.worldCamera;
+            if (!fadeCanvas)
+            {
+                var obj = new GameObject("章末全視野淡出", typeof(RectTransform), typeof(Canvas));
+                fadeCanvas = obj.GetComponent<Canvas>();
+                fadeCanvas.renderMode = RenderMode.WorldSpace;
+                fadeCanvas.sortingOrder = 31000;
+            }
+            if (fadeCanvas.transform.parent != view.transform)
+            {
+                // Leave a generous margin around each eye, including during a head turn.
+                fadeCanvas.worldCamera = view;
+                float distance = Mathf.Max(.32f, view.nearClipPlane + .12f);
+                var rect = (RectTransform)fadeCanvas.transform;
+                rect.SetParent(view.transform, false);
+                rect.localPosition = Vector3.forward * distance;
+                rect.localRotation = Quaternion.identity;
+                rect.localScale = Vector3.one;
+                rect.sizeDelta = Vector2.one * (distance * 18f);
+            }
+            parent = fadeCanvas.transform;
+        }
+
+        if (!fadeImage)
+        {
+            fadeImage = Panel(parent, "黑幕", Vector2.zero, Vector2.one, Color.clear, false).GetComponent<Image>();
+            fadeImage.gameObject.AddComponent<GameDialogueOverlayGraphic>();
+        }
+        else if (fadeImage.transform.parent != parent)
+        {
+            var rect = fadeImage.rectTransform;
+            rect.SetParent(parent, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+        fadeImage.transform.SetAsLastSibling();
+        fadeImage.color = new Color(0, 0, 0, Mathf.Clamp01(amount));
+        bool visible = amount > 0 && (!menuPanel || !menuPanel.activeSelf);
+        fadeImage.gameObject.SetActive(visible);
+        if (fadeCanvas) fadeCanvas.enabled = vr && visible;
     }
 
     public void ShowMenu(string title, string message, string continueText)
@@ -296,6 +267,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         menuMessage.text = message;
         continueLabel.text = continueText;
         menuPanel.SetActive(true);
+        if (fadeImage) fadeImage.gameObject.SetActive(false);
         if (vr) PlaceVRCanvas();
         if (EventSystem.current) EventSystem.current.SetSelectedGameObject(continueButton.gameObject);
     }
@@ -305,6 +277,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
     public void HideMenu()
     {
         if (menuPanel) menuPanel.SetActive(false);
+        if (fadeImage) SetFade(FadeAmount);
         if (EventSystem.current) EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -342,6 +315,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
             canvas.renderMode = desktopMode;
         }
         vr = useVR;
+        if (fadeImage) SetFade(FadeAmount);
     }
 
     void LateUpdate()
@@ -393,9 +367,6 @@ public sealed class Chapter4Presentation : MonoBehaviour
         var heading = Panel(go.transform, "章節目標", new Vector2(.025f, .835f), new Vector2(.48f, .97f), new Color(.035f, .047f, .04f, .86f), false);
         Label(heading, "第四章　日軍鎮壓與毒氣攻擊", font, 25, new Vector2(.035f, .56f), new Vector2(.97f, .96f)).color = new Color(.92f, .81f, .58f);
         ui.objective = Label(heading, "沿山路前往岩窟", font, 29, new Vector2(.035f, .08f), new Vector2(.97f, .53f));
-        var hint = Panel(go.transform, "操作提示", new Vector2(.065f, .025f), new Vector2(.935f, .09f), new Color(.035f, .047f, .04f, .82f), false);
-        ui.controls = Label(hint, "", font, 23, new Vector2(.02f, 0), new Vector2(.98f, 1));
-        ui.controls.alignment = TextAnchor.MiddleCenter;
         var dim = Panel(go.transform, "選單遮罩", Vector2.zero, Vector2.one, new Color(0, 0, 0, .52f), true);
         ui.menuPanel = dim.gameObject;
         var panel = Panel(dim, "選單", new Vector2(.29f, .26f), new Vector2(.71f, .74f), new Color(.055f, .075f, .06f, .98f), true);
@@ -407,7 +378,6 @@ public sealed class Chapter4Presentation : MonoBehaviour
         ui.continueButton = CreateButton(panel, "繼續", font, new Vector2(.16f, .29f), new Vector2(.84f, .46f), out ui.continueLabel);
         ui.menuButton = CreateButton(panel, "返回章節選單", font, new Vector2(.16f, .075f), new Vector2(.84f, .245f), out _);
         ui.menuPanel.SetActive(false);
-        ui.SetControls(false);
         if (!Object.FindFirstObjectByType<EventSystem>())
         {
             var events = new GameObject("第四章介面事件", typeof(EventSystem), typeof(InputSystemUIInputModule));

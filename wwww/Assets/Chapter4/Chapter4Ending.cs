@@ -5,7 +5,7 @@ using UnityEngine;
 [DefaultExecutionOrder(70)]
 public sealed class Chapter4Ending : MonoBehaviour
 {
-    public enum Stage { Waiting, Personal, History1930, History1931, SaveFailed, Complete }
+    public enum Stage { Waiting, Personal, History1930, History1931, SaveFailed, Complete, LeavingTrail, FadingOut }
     public Chapter4SceneController chapter;
     public Stage CurrentStage { get; private set; }
     public bool HasStarted => CurrentStage != Stage.Waiting;
@@ -44,21 +44,40 @@ public sealed class Chapter4Ending : MonoBehaviour
             departed = flow.DepartedCount, sheltered = flow.InsideCount, fallen = flow.FallenCount, fallenNames = flow.FallenNames };
         chapter.player.SetInputEnabled(false);
         chapter.presentation.HideSpeech();
-        chapter.presentation.SetInteraction("", false);
         chapter.presentation.SetContactStatus("", false);
-        chapter.presentation.SetGasStatus("", 0, 0);
-        Show(Stage.Personal);
+        chapter.presentation.SetGasVeil(0,0);
+        CurrentStage = Stage.LeavingTrail;
+        CardElapsed = 0;
         return true;
     }
 
     void Update()
     {
         if (!HasStarted || chapter.IsPaused || CurrentStage == Stage.SaveFailed || CurrentStage == Stage.Complete) return;
+        float step = Time.unscaledDeltaTime;
+        if (CurrentStage == Stage.LeavingTrail || CurrentStage == Stage.FadingOut)
+        {
+            CardElapsed += step;
+            bool lastPage = CurrentStage == Stage.FadingOut;
+            float duration = lastPage ? 1.65f : 1.1f;
+            chapter.presentation.SetFade(Mathf.SmoothStep(0,1,CardElapsed/duration));
+            // Give the fully dark frame time to reach the display before changing scenes.
+            if (CardElapsed < duration + .20f) return;
+            if (lastPage) { pending.epilogueSeen = true; RetrySave(); }
+            else Show(Stage.Personal);
+            return;
+        }
         CardElapsed += Time.deltaTime;
+        if (CurrentStage == Stage.Personal && chapter.presentation.FadeAmount > 0)
+            chapter.presentation.SetFade(1-Mathf.SmoothStep(0,1,CardElapsed/.70f));
         if (chapter.Voice.Busy) return;
         if (CurrentStage == Stage.Personal) Show(Stage.History1930);
         else if (CurrentStage == Stage.History1930) Show(Stage.History1931);
-        else { pending.epilogueSeen = true; RetrySave(); }
+        else
+        {
+            CurrentStage = Stage.FadingOut;
+            CardElapsed = 0;
+        }
     }
 
     void Show(Stage stage)
@@ -66,16 +85,15 @@ public sealed class Chapter4Ending : MonoBehaviour
         chapter.Voice.Stop();
         CurrentStage = stage; CardElapsed = 0;
         if (stage == Stage.Personal)
-            chapter.presentation.ShowEnding(chapter, "本作個人結局 · 1／3",
+            chapter.presentation.ShowEnding(chapter,
                 pending.obingReunited && pending.inheritedBihu != Chapter4Evacuation.BihuState.Dead ? "一起走到了岩窟" : "我們仍會記得",
                 PersonalBody(pending.obingReunited, pending.inheritedBihu),
-                $"同行 {pending.departed} 人，走進岩窟 {pending.sheltered} 人。" +
+                $"同行 {pending.departed} 人，走到洞後林徑 {pending.sheltered} 人。" +
                 (pending.fallen > 0 ? $"　途中受傷倒下的同伴：{pending.fallenNames}。" : "") +
                 "\n人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
-        else chapter.presentation.ShowEnding(chapter, "共同史實後記 · " + (stage == Stage.History1930 ? "2／3" : "3／3"),
+        else chapter.presentation.ShowEnding(chapter,
             stage == Stage.History1930 ? "1930 年 · 戰火追進了山裡" : "1931 年 · 從霧社到川中島",
-            stage == Stage.History1930 ? History1930 : History1931,
-            "史料出處　國立公共資訊圖書館《民國近代史》、國立臺灣歷史博物館");
+            stage == Stage.History1930 ? History1930 : History1931);
         chapter.Voice.Enqueue("narrator", chapter.presentation.endingBody.text, 0, true);
     }
 
@@ -84,6 +102,7 @@ public sealed class Chapter4Ending : MonoBehaviour
         if (pending == null || !pending.epilogueSeen || Saved) return;
         if (!Chapter4ResultStore.SaveCompleted(pending))
         {
+            chapter.presentation.SetFade(0);
             CurrentStage = Stage.SaveFailed;
             chapter.ShowEndingSaveFailure();
             return;

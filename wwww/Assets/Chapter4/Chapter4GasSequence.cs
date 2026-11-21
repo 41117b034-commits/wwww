@@ -85,7 +85,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
             float fall = Mathf.SmoothStep(0, 1, collapseClock / 1.6f);
             chapter.player.SetCollapseVisual(fall);
             string cause = Exposure >= 1 ? "濃煙窒息" : ImpactCause;
-            chapter.presentation.SetGasStatus(cause + "中倒下・從最近集結點重新撤離", 1, fall);
+            chapter.presentation.SetGasVeil(1, fall);
             if (CanRetry && !failureMenuShown)
             {
                 failureMenuShown = true;
@@ -95,7 +95,8 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         }
         if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
-        WaveAge = flow.PlayerInShelter ? WaveDuration : Mathf.Min(WaveDuration, WaveAge + dt);
+        bool sheltered = flow.PlayerInShelter || flow.PartyGathered;
+        WaveAge = sheltered ? WaveDuration : Mathf.Min(WaveDuration, WaveAge + dt);
         Elapsed += dt;
         bool deciding = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
             flow.Action.Rockfall && flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided);
@@ -105,18 +106,18 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         // No permanent rear-of-party safety leash. During automatic assistance
         // and actual following the rally point offers a pocket, but an ignored
         // signal lets smoke sweep through that pocket too.
-        float ceiling = flow.PlayerInShelter ? flow.RouteLength - 18 : flow.RouteLength;
+        float ceiling = sheltered ? flow.ApproachLength - 18 : flow.ApproachLength;
         if (BlocksPartyAdvance || chapter.contact.CurrentState == Chapter4Contact.State.Rising)
             ceiling = Mathf.Min(ceiling, flow.RearProgress - 10, flow.PlayerProgress - 10);
         FrontDistance = Mathf.Max(FrontDistance, Mathf.Min(ceiling, FrontDistance + advance * dt));
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
         UpdateObing(dt);
-        if (flow.PlayerInShelter)
+        if (sheltered)
         {
             PlayerDensity = 0; Exposure = Mathf.MoveTowards(Exposure, 0, dt * .3f); BlastStress = Mathf.MoveTowards(BlastStress, 0, dt * .3f);
             atmosphere.Tick(FrontDistance, false, false, dt);
-            chapter.presentation.SetGasStatus("", 0, 0);
+            chapter.presentation.SetGasVeil(0, 0);
             return;
         }
         PlayerDensity = DensityAt(chapter.player.transform.position);
@@ -129,14 +130,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         bool assisting = BlocksPartyAdvance || chapter.contact.CurrentState == Chapter4Contact.State.Rising || waitingForParty;
         Exposure = Mathf.Clamp01(Exposure + (grace <= 0 && !waveHarmless && !assisting && PlayerDensity > .06f ? exposurePerSecond * PlayerDensity : -.13f) * dt);
         BlastStress = Mathf.Max(0, BlastStress - .012f * dt);
-        string status = Exposure > .02f ? "毒氣中呼吸困難 " + Mathf.CeilToInt(Exposure * 100) + "%・沿通路往前離開毒氣" :
-            BlastStress > .08f ? ImpactCause + " " + Mathf.CeilToInt(BlastStress * 100) + "%・利用岩石掩蔽，別停在火線" :
-            GasWaveActive ? (WaveAge < 11 ? "瓦斯彈煙霧正在擴散・離開濃霧，沿路撤離" : "這波煙霧正在消散・趁視線恢復繼續撤離") :
-            "煙霧暫時散去・留意上空下一次投彈";
-        if (DecisionClock > 28 && deciding && Exposure <= .02f && BlastStress <= .08f) status = "追兵正逼近！抓住砲火空檔，帶著隊伍離開";
-        if (GumuStage == RescueStage.WalkingTogether) status += "\n露比正扶著古慕前進";
-        else if (GumuStage != RescueStage.Waiting) status += "\n古慕咳嗽倒下・露比正在照應";
-        chapter.presentation.SetGasStatus(status, Mathf.Max(Exposure, BlastStress), 0, PlayerDensity);
+        chapter.presentation.SetGasVeil(Mathf.Max(Exposure, BlastStress), 0, PlayerDensity);
         if (Exposure >= 1 || BlastStress >= .99f)
         {
             IsCollapsed = true; collapseClock = 0;
@@ -270,7 +264,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         chapter.RestoreAfterGasFailure(retryAnchor);
         atmosphere.ResetSmoke(FrontDistance);
         if (chapter.Retreat) chapter.Retreat.ResetAfterRetry();
-        chapter.presentation.SetGasStatus("已回到接應處・觀察砲火空檔，沿路撤離", 0, 0);
+        chapter.presentation.SetGasVeil(0, 0);
     }
 
     public void MarkObingRejoined()

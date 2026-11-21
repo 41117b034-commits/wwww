@@ -83,11 +83,8 @@ public sealed class Chapter4Contact : MonoBehaviour
                 flow.Announce("obing", "我看見你們了……謝謝你告訴我方向。我會跟緊。", 6.2f);
             }
         }
-        string call = chapter.player.IsVR ? "按左扳機呼喊歐冰" : "按 F 呼喊歐冰";
-        chapter.presentation.SetContactStatus(Responded
-            ? Reunited ? "歐冰已沿路會合・繼續一起撤離" : "歐冰已回應，正在沿路跟上・等她會合"
-            : opportunity == 1 ? "中段岔路：" + call + "\n告訴她上坡通路的方向"
-            : opportunity == 2 ? "最後岩肩：" + call + "\n告訴她通往岩窟的方向" : "", opportunity > 0);
+        bool canCall = !Responded && opportunity > 0;
+        chapter.presentation.SetContactStatus(chapter.player.IsVR ? "按左扳機呼喊歐冰" : "呼喊歐冰", canCall);
     }
 
     public void NotifySignal(int leg)

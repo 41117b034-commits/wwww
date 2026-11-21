@@ -66,7 +66,6 @@ public sealed class Chapter4SceneController : MonoBehaviour
     {
         if (!player || !presentation || changingScene) return;
         presentation.ConfigureVR(player.IsVR);
-        presentation.SetControls(player.IsVR);
         if (ending && ending.CurrentStage == Chapter4Ending.Stage.SaveFailed)
         {
             if (player.RetryPressed) ending.RetrySave();
@@ -108,7 +107,9 @@ public sealed class Chapter4SceneController : MonoBehaviour
                 ReachedCheckpointCount++;
             }
         }
-        if (!HasArrived && (!evacuation || evacuation.ArrivalReady) && player.IsGrounded && Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance))
+        if (!HasArrived && player.IsGrounded && (evacuation
+            ? evacuation.ArrivalReady
+            : Near(gatheringPoint, arrivalRadius, arrivalHeightTolerance)))
         {
             if (ending)
             {
@@ -135,7 +136,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
         player.SetInputEnabled(false);
         presentation.ShowMenu(arrival ? (gas && gas.ObingSeparated ? "主隊已抵達集合地" : "隊伍已抵達集合地") : "暫停",
             arrival ? (gas && gas.ObingSeparated ? "古慕與露比已跟上，歐冰仍在後方。\n可以繼續探索，或返回章節選單。" : "可以繼續查看周圍，或返回章節選單。") :
-            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "避開空襲、毒氣和後方追兵，接應同伴持續撤離。\n步槍可爭取距離；不開槍也能撤離。R 裝填，E 補彈。",
+            ending && ending.HasStarted ? "章末播放已暫停。\n繼續後會接著播放，後記結束才保存。" : "避開空襲、毒氣和後方追兵，接應同伴持續撤離。\n帶著同伴穿過岩窟，在洞後左側的林徑會合。",
             ending && ending.HasStarted ? "繼續閱讀" : arrival || HasArrived ? "繼續探索" : "繼續");
     }
 
@@ -153,7 +154,7 @@ public sealed class Chapter4SceneController : MonoBehaviour
     {
         IsPaused = true;
         player.SetInputEnabled(false);
-        presentation.ShowMenu("本次結局尚未保存", "原有紀錄已保留。\n按 R 或下方按鈕重試保存。", "重試保存");
+        presentation.ShowMenu("本次結局尚未保存", "原有紀錄已保留。\n選擇下方按鈕重試保存。", "重試保存");
     }
 
     public void BeginGasCollapse()
@@ -161,7 +162,6 @@ public sealed class Chapter4SceneController : MonoBehaviour
         IsPaused = true;
         player.SetInputEnabled(false);
         presentation.HideSpeech();
-        presentation.SetInteraction("", false);
     }
 
     public void RestoreAfterGasFailure(Transform checkpoint)

@@ -112,7 +112,7 @@ public sealed class Chapter4Pursuer : MonoBehaviour
     void Pursue(float dt)
     {
         var flow = owner.Chapter.evacuation;
-        float limit = Mathf.Min(flow.PlayerProgress - 5, flow.RearProgress - 4, flow.RouteLength - 24);
+        float limit = Mathf.Min(flow.PlayerProgress - 5, flow.RearProgress - 4, flow.ApproachLength - 24);
         if (RouteProgress >= limit) return;
         replanClock -= dt;
         if (trail.Count == 0 && replanClock <= 0)

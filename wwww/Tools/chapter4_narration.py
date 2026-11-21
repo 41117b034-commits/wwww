@@ -1,12 +1,12 @@
 """Master the recorded Chapter 4 ending cards locally. Run after recording with
-python Tools/chapter4_narration.py --ffmpeg <ffmpeg> --work <work directory>.
+python Tools/chapter4_narration.py --work <work directory>. For older sped-up masters,
+pass --originals <unmastered Chapter4Voice folder>.
 Only narrator lines are edited. Matched output hashes make reruns idempotent.
 """
 import argparse
 import hashlib
 import io
 import json
-import subprocess
 import wave
 from pathlib import Path
 
@@ -54,25 +54,16 @@ def shorten_pauses(pcm, rate, min_gap):
     return np.concatenate(chunks).astype('<i2', copy=False), gaps
 
 
-def master(raw, tempo, ffmpeg):
+def master(raw):
     with wave.open(io.BytesIO(raw)) as file:
         rate = file.getframerate()
         if file.getsampwidth() != 2 or file.getnchannels() != 1:
             raise ValueError('Expected mono 16-bit recorded narration')
         pcm = np.frombuffer(file.readframes(file.getnframes()), dtype='<i2')
     trimmed, gaps = shorten_pauses(pcm, rate, min_gap=.42)
-    audio = trimmed.tobytes()
-    if tempo != 1:
-        result = subprocess.run([str(ffmpeg), '-nostdin', '-hide_banner', '-loglevel', 'error',
-            '-f', 's16le', '-ar', str(rate), '-ac', '1', '-i', 'pipe:0', '-af',
-            'atempo=' + str(tempo), '-f', 's16le', '-c:a', 'pcm_s16le', 'pipe:1'],
-            input=audio, capture_output=True, check=True)
-        audio = result.stdout
-    if not audio or len(audio) % 2:
-        raise ValueError('Invalid mastered PCM')
-    # Removing long rests changes the speech-to-silence ratio and may expose
-    # a quieter boundary once the waveform is remeasured after time stretching.
-    final, remaining = shorten_pauses(np.frombuffer(audio, dtype='<i2'), rate, min_gap=.48)
+    # Recheck silence against the new speech-to-silence ratio. Voiced samples
+    # keep their exact duration and pitch in both languages.
+    final, remaining = shorten_pauses(trimmed, rate, min_gap=.48)
     audio = final.tobytes()
     gaps.extend(remaining)
     out = io.BytesIO()
@@ -84,7 +75,8 @@ def master(raw, tempo, ffmpeg):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--ffmpeg', required=True, type=Path)
+    parser.add_argument('--originals', type=Path, help='Original Chapter4Voice folder with Mandarin and Seediq subfolders')
+    parser.add_argument('--ffmpeg', help=argparse.SUPPRESS)  # accepted by existing recording jobs
     parser.add_argument('--work', required=True, type=Path)
     parser.add_argument('--resources', type=Path, default=Path(__file__).resolve().parents[1]/'Assets/Resources')
     args = parser.parse_args()
@@ -95,18 +87,25 @@ def main():
     for entry in bank['entries']:
         if entry['role'] != 'narrator':
             continue
-        tempo = 1.15 if entry['chinese'].startswith('十月二十七日') else 1
         masters = entry.setdefault('narrationPacing', {})
         for language in ('mandarin', 'seediq'):
             dest = args.resources/(entry[language]+'.wav')
             raw = dest.read_bytes()
-            if masters.get(language, {}).get('masterSha256') == digest(raw):
-                continue
-            sound, (old, new, gaps) = master(raw, tempo, args.ffmpeg)
+            previous = masters.get(language, {})
+            if previous.get('masterSha256') == digest(raw):
+                if previous.get('tempo') == 1:
+                    continue
+                if not args.originals:
+                    parser.error(f'Pass --originals to restore {dest.name} at its recorded speed')
+                original = args.originals / dest.parent.name / dest.name
+                raw = original.read_bytes()
+                if digest(raw) != previous.get('sourceSha256'):
+                    raise ValueError(f'Original recording hash mismatch: {original}')
+            sound, (old, new, gaps) = master(raw)
             staged = args.work/(language+'-'+dest.name)
             staged.write_bytes(sound)
             writes.append((dest, staged))
-            masters[language] = dict(sourceSha256=digest(raw), masterSha256=digest(sound), tempo=tempo)
+            masters[language] = dict(sourceSha256=digest(raw), masterSha256=digest(sound), tempo=1)
             if language == 'mandarin':
                 entry['mandarinSha256'] = digest(sound)
             print(f'{dest.stem} {language}: {old:.2f}s -> {new:.2f}s, {len(gaps)} pauses, before max {max(gaps, default=0):.2f}s')

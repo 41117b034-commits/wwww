@@ -42,7 +42,7 @@ public static class Chapter4GasAuthoring
         atmosphere.rifleReport = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Chapter2/Audio/rifle_report.wav");
         if (!atmosphere.rifleReport) throw new InvalidOperationException("Existing rifle audio is missing.");
         chapter.presentation.EnsureGasUI();
-        chapter.presentation.SetGasStatus("", 0, 0);
+        chapter.presentation.SetGasVeil(0, 0);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene); AssetDatabase.SaveAssets();
         Debug.Log("[Chapter4] Added gas, fixed assistance, rear separation and local retry checkpoints.");

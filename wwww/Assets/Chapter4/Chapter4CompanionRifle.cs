@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// A short performance for two members of the fleeing party. Their report
-// interrupts one pursuer's animation and never consumes the player's round.
+// Two escorts can return fire while their own locomotion continues.
 [DefaultExecutionOrder(4800)]
 public sealed class Chapter4CompanionRifle : MonoBehaviour
 {
@@ -115,7 +114,7 @@ public sealed class Chapter4CompanionRifle : MonoBehaviour
         {
             reported = true; sinceShot = 0; Shots++;
             shotStart = muzzle.position; shotEnd = target.AimPoint;
-            target.Suppress(1.5f);
+            combat.ResolveEscortReport(target);
             report.PlayOneShot(combat.Gun.shotClip, .72f);
         }
         flash.SetActive(sinceShot < .085f && !combat.Frozen);
