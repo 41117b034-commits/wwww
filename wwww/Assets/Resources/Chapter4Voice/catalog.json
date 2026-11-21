@@ -742,7 +742,7 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "ff17a5cdb8595ef1b3f9d8b54dbcd621b1c98df1037ca3ac7d80fd3c67a1499b",
+      "mandarinSha256": "7a7ec7d6c6d6d9df06a1ffe56fdd22b2a3393d07eb37be395345e6b5ef08d5b2",
       "mandarinSegments": [
         "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。",
         "那一年，帶領族人起事的莫那・魯道在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。"
@@ -763,7 +763,19 @@
       ],
       "ttsText": "idas maxal mpusan mpitu ali, mmteru alang seediq ga paran, tbrinah qmlahang tanah tunux. meyah mremux lmiqu ka seediq alang, meluk eluw ka knsat tanah tunux, qmada bbali bobo ayu ka sapah skiya, mangal halung ma beyuq qbulic cmebu seediq mremux lhengo ka supi tanah tunux duri.\n\nknkawas ciida, wada mgedang lmiqu ka mona rudao mdudul seediq alang. wada ssaan sapah psliyan hiya ka seediq mnsngari. wada misan hiya di.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "ff17a5cdb8595ef1b3f9d8b54dbcd621b1c98df1037ca3ac7d80fd3c67a1499b",
+          "masterSha256": "7a7ec7d6c6d6d9df06a1ffe56fdd22b2a3393d07eb37be395345e6b5ef08d5b2",
+          "tempo": 1.15
+        },
+        "seediq": {
+          "sourceSha256": "3009ea2567fda8e0befe272e5a14002b01b5c08c881fa08182d1348d86fa1c22",
+          "masterSha256": "9cd3d2045d70fef48b5173d0d44ae4e82c63799d874bed678b07bf78b045fe6a",
+          "tempo": 1.15
+        }
+      }
     },
     {
       "role": "narrator",
@@ -778,7 +790,7 @@
         "pitch": -8,
         "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "a21a13c6c610c099a4cc1b031c84ade5872abcc7dafb9ac10f368f8bae9643b8",
+      "mandarinSha256": "87e68a6ce294ca9896ff6aff678dfeaced940ab118cac5ce6fe8b903919bd078",
       "mandarinSegments": [
         "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。",
         "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。"
@@ -799,7 +811,19 @@
       ],
       "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya.\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral ssiyo yayung Pecang, ini na srwai pbrinah alang daha dungal. betaq saya, alang gluban kesun ka alang hiya, lqlaqi mnsngarin mnsngare ciida we ga meniq hiya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "a21a13c6c610c099a4cc1b031c84ade5872abcc7dafb9ac10f368f8bae9643b8",
+          "masterSha256": "87e68a6ce294ca9896ff6aff678dfeaced940ab118cac5ce6fe8b903919bd078",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "938d5fb12496781c1aa042ee2c519aeecdb2c1b7ad33255b3af2d0ee677a44d6",
+          "masterSha256": "4649e4cf4214aa02f817c3559787de37d36ccbe4b948536bf517523821972b76",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -819,7 +843,7 @@
         "是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。"
       ],
       "preserveMandarinPauses": true,
-      "mandarinSha256": "0d257e805cac347488610af54569ae396465bd02a7514de062919622314843cc",
+      "mandarinSha256": "bee317ff1c67dc72cffed0ad19b420ba0513203e47e5af9cdd9702e9caff75bf",
       "mandarinEdit": {
         "source": "94e8bfe80b3c32fad7a6",
         "secondParagraphEnd": 5.68
@@ -839,7 +863,19 @@
       ],
       "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang diras so elow baro, snegon so dehok hini.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "0d257e805cac347488610af54569ae396465bd02a7514de062919622314843cc",
+          "masterSha256": "bee317ff1c67dc72cffed0ad19b420ba0513203e47e5af9cdd9702e9caff75bf",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "56ee8328c831588e15384fad8e6b915b83056ecc7fc05bacb8ed0f647d9f0819",
+          "masterSha256": "2951ee7256cf6b8f253ac4f2a596ef3e1682d8fedaca36808c0f5e7dfdb52f96",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -854,7 +890,7 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "6eef6b5357bb5af7ac48d65fa5b5e429ac13321490c78d95bd1a1b561ef1c677",
+      "mandarinSha256": "314f3dd29f7446d9b922d5e4a73775c77d83f4676994f2179f23d0724ea47b25",
       "mandarinSegments": [
         "露比扶著古慕走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。歐冰循著你的呼喊，終於追上了大家。",
         "比胡雖然在戰爭中犧牲了，但我們仍會記得他。"
@@ -875,7 +911,19 @@
       ],
       "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ini qbsiyaq, hmrenang knksaan ka beling dungal. smnegul hrenang su ka obing, wada smdurak kana seediq di.\n\nani naq wada mgedang mccebo ka piho we, maha ta klaon ka heya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "6eef6b5357bb5af7ac48d65fa5b5e429ac13321490c78d95bd1a1b561ef1c677",
+          "masterSha256": "314f3dd29f7446d9b922d5e4a73775c77d83f4676994f2179f23d0724ea47b25",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "c3b7c2f3b01d415cf437a7e26379a6bc763a89f7308794976f0059fac1aaab93",
+          "masterSha256": "4667c50e2d26a31c6eae6af5ea990059b173a29124b5c31285633f528cf8580d",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -890,7 +938,7 @@
         "pitch": -8,
         "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "fb165ccc283618a488fdcb590bc9805df6f46a8b87e6f51ebb088c40297593ac",
+      "mandarinSha256": "df3ccf396775d8378b948441beef91f804b208079451ee2bfd5c9cc21702cc0d",
       "mandarinSegments": [
         "到了馬赫坡岩窟，露比才扶著古慕坐下。比胡也活著走到了這裡。大家望向來時的山路，始終沒能等到歐冰。",
         "歐冰雖然在戰爭中犧牲了，但我們仍會記得她。"
@@ -911,7 +959,19 @@
       ],
       "ttsText": "dehuk lhengo mahupo, kiya ka dmayo tloong na ka lubi. muudus musa hini ka pihu duri. qmita mquri hini ka kana seediq, ani si ini dehuk obing.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "fb165ccc283618a488fdcb590bc9805df6f46a8b87e6f51ebb088c40297593ac",
+          "masterSha256": "df3ccf396775d8378b948441beef91f804b208079451ee2bfd5c9cc21702cc0d",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "34ab7db58af1754138610097ddb28c94c72f49cef75ac6b7b18c50d1275a9fec",
+          "masterSha256": "6e3b76c463498c608a4aaf02cfe7aec3f8b5921f7c35579a2854d4c39951cc20",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -926,7 +986,7 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "1aad6db56fcd38dc0a264842107725d3fbce11c239f90cd3576fd6dc48ed014f",
+      "mandarinSha256": "fe7670edd568a32586be0732efbfedaa176e8bb7203cc49569ac68f0de3313f0",
       "mandarinSegments": [
         "露比攙著古慕，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。",
         "歐冰和比胡雖然都在戰爭中犧牲了，但我們仍會記得他們。"
@@ -947,7 +1007,19 @@
       ],
       "ttsText": "mapa gomo ka lubi ma, mremux beling mahu. mteetu tloong ka daha seediq, niqan daha dheran ka ssiyo na nana.\n\nani naq wada mgedang mccebo ka obing daka piho, ani si maha ta lngelong dheya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "1aad6db56fcd38dc0a264842107725d3fbce11c239f90cd3576fd6dc48ed014f",
+          "masterSha256": "fe7670edd568a32586be0732efbfedaa176e8bb7203cc49569ac68f0de3313f0",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "8350cec55b4c6dbaad047a5eb922a2df09fc8d49bcb24d754b9ba4421a8b1201",
+          "masterSha256": "ebe347f6fb1e0933a85f533bd659fa41e26432edcdf85f0d2efacbce49e232d1",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -962,7 +1034,7 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "5a72524ee6d0b16d67ed399c9fe47c4f369af0e7610874da6396d3d9a7301204",
+      "mandarinSha256": "e4412a3b1d96c64a9ae50004d63d8c79ce4f9dcf6d273061ab780603ad35e54f",
       "mandarinSegments": [
         "露比扶著古慕走進馬赫坡岩窟。歐冰聽見你的呼喊，也沿著山路趕了上來。",
         "至於比胡，那一天的下落，我們還不知道。"
@@ -983,7 +1055,19 @@
       ],
       "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. mbahang diras su ka obing, ma smnegul eluw lmiqu meyah duri.\n\nma piho ge, ini ta klai mmaha hido ka ali ciida nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "5a72524ee6d0b16d67ed399c9fe47c4f369af0e7610874da6396d3d9a7301204",
+          "masterSha256": "e4412a3b1d96c64a9ae50004d63d8c79ce4f9dcf6d273061ab780603ad35e54f",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "4379c95e953bec4b15a25f30308b5ba3a589f8a61a18ecc4847dfa9467fd4665",
+          "masterSha256": "9ccea2ca5cb2234f764724a4011ae17ecd963665687f6b5fb1843cf582f3e742",
+          "tempo": 1
+        }
+      }
     },
     {
       "role": "narrator",
@@ -998,7 +1082,7 @@
         "pitch": -8,
         "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "847812f59b1a3c6ae3a303d8c71c32ca24651acd2a28eeddca2226d41b212487",
+      "mandarinSha256": "a93b38f3824aad8befe5229b6f2d94f4687f7415808ff79946079b48e8001dc9",
       "mandarinSegments": [
         "到了馬赫坡岩窟，露比扶著古慕坐下。比胡的下落，我們還不知道。歐冰也沒能從那條山路上走回來。",
         "歐冰雖然在戰爭中犧牲了，但我們仍會記得她。"
@@ -1019,7 +1103,19 @@
       ],
       "ttsText": "dehuk btunux mahu, dmayo tloung ka lubi. hmeruc pihu, ini miyan klai nana. ini dehuk mkkesa kndalax eluw lmiqu waga ka obing duri.\n\nani naq wada mgedang mccebo ka obing ga, ani si maha ta klaon ka heya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "narrationPacing": {
+        "mandarin": {
+          "sourceSha256": "847812f59b1a3c6ae3a303d8c71c32ca24651acd2a28eeddca2226d41b212487",
+          "masterSha256": "a93b38f3824aad8befe5229b6f2d94f4687f7415808ff79946079b48e8001dc9",
+          "tempo": 1
+        },
+        "seediq": {
+          "sourceSha256": "52089489bd86326757b40eab3361840a5e697823bb49c534decb8d7357bc6bf1",
+          "masterSha256": "ed525d3d3dc7e7b3ed3b89bfd09da8f670c83d26226756ba25252dcb80cd43af",
+          "tempo": 1
+        }
+      }
     }
   ]
 }

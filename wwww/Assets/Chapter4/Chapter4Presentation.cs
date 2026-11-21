@@ -145,8 +145,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
             endingFilm = endingPanel.AddComponent<Chapter4EpilogueFilm>();
             endingFilm.Initialize(chapter, filmCredit);
         }
-        bool historical = chapter.ending.CurrentStage == Chapter4Ending.Stage.History1930;
-        endingFilm.Show(historical);
+        endingFilm.Show(chapter.ending.CurrentStage);
         endingKicker.text = kicker; endingTitle.text = title; endingBody.text = body; endingFooter.text = footer;
         if (vr) PlaceVRCanvas();
     }

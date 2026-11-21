@@ -80,7 +80,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         foreach (float distance in new[] { 3f, 110f })
         {
             var box = Instantiate(supply, world).transform; box.name = "備彈木箱・E 補充";
-            box.position = Ground(At(distance, 1.8f)); box.rotation = Quaternion.identity; box.gameObject.SetActive(true); supplies.Add(box);
+            box.position = Ground(At(distance, distance == 3f ? 3.65f : 1.8f)); box.rotation = Quaternion.identity; box.gameObject.SetActive(true); supplies.Add(box);
         }
         tracerMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit")); tracerMaterial.color = new Color(.67f, .65f, .53f);
         tracer = new GameObject("短促彈道").AddComponent<LineRenderer>(); tracer.transform.SetParent(world, false);

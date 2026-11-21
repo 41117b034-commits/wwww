@@ -55,8 +55,7 @@ public sealed class Chapter4Ending : MonoBehaviour
     {
         if (!HasStarted || chapter.IsPaused || CurrentStage == Stage.SaveFailed || CurrentStage == Stage.Complete) return;
         CardElapsed += Time.deltaTime;
-        float duration = CurrentStage == Stage.Personal ? 12 : CurrentStage == Stage.History1930 ? 16 : 19;
-        if (CardElapsed < duration || chapter.Voice.Busy) return;
+        if (chapter.Voice.Busy) return;
         if (CurrentStage == Stage.Personal) Show(Stage.History1930);
         else if (CurrentStage == Stage.History1930) Show(Stage.History1931);
         else { pending.epilogueSeen = true; RetrySave(); }

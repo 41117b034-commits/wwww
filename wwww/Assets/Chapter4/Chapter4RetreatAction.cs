@@ -114,7 +114,7 @@ public sealed class Chapter4RetreatAction
         foreach (var mesh in UnityEngine.Object.FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
             if (mesh.name == "風化岩石" && mesh.sharedMesh && mesh.GetComponent<MeshRenderer>()) { donor = mesh; break; }
         if (!donor) throw new InvalidOperationException("Chapter 4 weathered-rock donor missing.");
-        Rock(donor, geometry, 3, -2.1f, new Vector3(2, 1.55f, 2.6f));
+        Rock(donor, geometry, 3, -4.4f, new Vector3(2, 1.55f, 2.6f));
         Rock(donor, geometry, 111, -2.8f, new Vector3(2.2f, 1.8f, 3.2f));
         Rock(donor, geometry, 11, -2.8f, new Vector3(2.2f, 2, 3.3f));
         Rock(donor, geometry, 36, -2.8f, new Vector3(2.2f, 2.2f, 4));

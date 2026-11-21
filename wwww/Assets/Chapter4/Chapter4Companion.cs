@@ -178,16 +178,24 @@ public sealed class Chapter4Companion : MonoBehaviour
         }
         if (SupportFollower && JoinedRoute) SelectPairLane(limit);
         else if (JoinedRoute) SelectSingleLane(limit);
-        float entry = rushing ? owner.ProjectProgress(transform.position, 0, destination) : 0;
-        Vector3 target = JoinedRoute ? RouteTarget(Mathf.Min(limit, Progress + .65f)) : owner.PointOnRoute(rushing ? Mathf.Min(destination, entry + 3) : entry);
-        StepToward(target, deltaTime);
         if (!JoinedRoute)
         {
-            float joinedAt = rushing ? owner.ProjectProgress(transform.position, 0, destination) : entry;
-            if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(joinedAt), Vector3.up).magnitude < .20f)
-            { JoinedRoute = true; Progress = joinedAt; }
+            // The player's initial pace may shorten the formation target while a
+            // runner is still leaving camp. Join the lane abreast or ahead of
+            // our feet, even when our assigned slot is already behind us.
+            float abreast = owner.ProjectProgress(transform.position, 0, owner.RouteLength);
+            float next = Mathf.Max(abreast, Mathf.Min(limit, abreast + 3));
+            StepToward(RouteTarget(next), deltaTime, true);
+            float joinedAt = owner.ProjectProgress(transform.position, 0, owner.RouteLength);
+            if (Chapter4Evacuation.FlatDistance(transform.position, RouteTarget(joinedAt)) < .24f)
+            {
+                JoinedRoute = true;
+                Progress = joinedAt;
+            }
+            return;
         }
-        else if (Walking) Progress = Mathf.Max(Progress, ProjectWalkedLane(Mathf.Min(destination, Progress + 1.5f)));
+        StepToward(RouteTarget(Mathf.Min(limit, Progress + .65f)), deltaTime);
+        if (Walking) Progress = Mathf.Max(Progress, ProjectWalkedLane(Mathf.Min(destination, Progress + 1.5f)));
     }
 
     float ProjectWalkedLane(float end)
@@ -219,16 +227,22 @@ public sealed class Chapter4Companion : MonoBehaviour
         return offset * Mathf.Max(before, after);
     }
 
-    void StepToward(Vector3 target, float deltaTime)
+    void StepToward(Vector3 target, float deltaTime, bool enteringTrail = false)
     {
         Vector3 delta = Vector3.ProjectOnPlane(target - transform.position, Vector3.up);
         if (delta.magnitude > .025f)
         {
+            bool faceLane = enteringTrail && !(EscortRifle && EscortRifle.Turning);
+            if (faceLane)
+            {
+                Rig.Face(Vector3.RotateTowards(Rig.Forward, delta.normalized, 300 * Mathf.Deg2Rad * deltaTime, 0));
+                if (Vector3.Dot(Rig.Forward, delta.normalized) < .75f) return;
+            }
             float step = Mathf.Min(delta.magnitude, walkSpeed * Pose.Pace * deltaTime);
             Motor.Move(delta.normalized * step + Vector3.down * (2f * deltaTime));
             Vector3 moved = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up);
             Walking = moved.magnitude > .0005f;
-            if (Walking && !(EscortRifle && EscortRifle.Turning)) Rig.Face(Vector3.RotateTowards(Rig.Forward, moved.normalized, 220 * Mathf.Deg2Rad * deltaTime, 0));
+            if (Walking && !faceLane && !(EscortRifle && EscortRifle.Turning)) Rig.Face(Vector3.RotateTowards(Rig.Forward, moved.normalized, 220 * Mathf.Deg2Rad * deltaTime, 0));
         }
     }
 

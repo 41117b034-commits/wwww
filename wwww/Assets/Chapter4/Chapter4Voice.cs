@@ -86,7 +86,7 @@ public sealed class Chapter4Voice : MonoBehaviour
         duration = Mathf.Max(current.minimum, current.text.Length / 4.2f + 1.5f);
         if (Output.clip)
         {
-            duration = Mathf.Max(duration, Output.clip.length + .45f);
+            duration = current.card ? Output.clip.length + .18f : Mathf.Max(duration, Output.clip.length + .45f);
             Output.Play(); if (paused) Output.Pause();
         }
         else MissingClips++; // Keep the readable subtitle; never speak the wrong language.
