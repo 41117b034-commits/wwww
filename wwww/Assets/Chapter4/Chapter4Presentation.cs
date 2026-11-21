@@ -126,7 +126,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
             Place(endingKicker.transform, .076f, .79f, .91f, .88f);
             Place(endingTitle.transform, .075f, .66f, .93f, .79f);
             Place(endingBody.transform, .078f, .20f, .81f, .64f);
-            Place(endingFooter.transform, .078f, .115f, .96f, .175f);
+            Place(endingFooter.transform, .078f, .09f, .96f, .19f);
             endingBody.lineSpacing = 1.18f;
             endingBody.resizeTextForBestFit = false;
             endingBody.fontSize = 30;
@@ -393,7 +393,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         scaler.matchWidthOrHeight = .5f;
         var heading = Panel(go.transform, "章節目標", new Vector2(.025f, .835f), new Vector2(.48f, .97f), new Color(.035f, .047f, .04f, .86f), false);
         Label(heading, "第四章　日軍鎮壓與毒氣攻擊", font, 25, new Vector2(.035f, .56f), new Vector2(.97f, .96f)).color = new Color(.92f, .81f, .58f);
-        ui.objective = Label(heading, "沿山路前往集合地", font, 29, new Vector2(.035f, .08f), new Vector2(.97f, .53f));
+        ui.objective = Label(heading, "沿山路前往岩窟", font, 29, new Vector2(.035f, .08f), new Vector2(.97f, .53f));
         var hint = Panel(go.transform, "操作提示", new Vector2(.065f, .025f), new Vector2(.935f, .09f), new Color(.035f, .047f, .04f, .82f), false);
         ui.controls = Label(hint, "", font, 23, new Vector2(.02f, 0), new Vector2(.98f, 1));
         ui.controls.alignment = TextAnchor.MiddleCenter;
@@ -403,7 +403,7 @@ public sealed class Chapter4Presentation : MonoBehaviour
         ui.menuTitle = Label(panel, "暫停", font, 36, new Vector2(.08f, .77f), new Vector2(.92f, .95f));
         ui.menuTitle.alignment = TextAnchor.MiddleCenter;
         ui.menuTitle.color = new Color(.94f, .83f, .62f);
-        ui.menuMessage = Label(panel, "沿山路前往集合地。", font, 25, new Vector2(.08f, .51f), new Vector2(.92f, .75f));
+        ui.menuMessage = Label(panel, "沿山路前往岩窟。", font, 25, new Vector2(.08f, .51f), new Vector2(.92f, .75f));
         ui.menuMessage.alignment = TextAnchor.MiddleCenter;
         ui.continueButton = CreateButton(panel, "繼續", font, new Vector2(.16f, .29f), new Vector2(.84f, .46f), out ui.continueLabel);
         ui.menuButton = CreateButton(panel, "返回章節選單", font, new Vector2(.16f, .075f), new Vector2(.84f, .245f), out _);

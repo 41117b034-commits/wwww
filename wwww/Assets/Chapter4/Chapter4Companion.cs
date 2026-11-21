@@ -14,7 +14,11 @@ public sealed class Chapter4Companion : MonoBehaviour
     public float Progress { get; private set; }
     public bool JoinedRoute { get; private set; }
     public bool Walking { get; private set; }
+    public Vector3 StepDirection { get; private set; }
     public float StepDistance { get; private set; }
+    public bool Fallen { get; private set; }
+    public Vector3 Chest => transform.position + Vector3.up * (wounded ? 1.05f : 1.18f);
+    float fallElapsed;
     public bool Speaking { get; set; }
     public float CoverCrouch { get; private set; }
     public Chapter1IncidentRig Rig { get; private set; }
@@ -22,6 +26,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     public Chapter4CompanionPose Pose { get; private set; }
     public bool MotionHeld { get; set; }
     public Chapter4CompanionRifle EscortRifle { get; internal set; }
+    public bool OnForwardFlank => EscortRifle && actorId == "tado";
     public bool IndependentFollow { get; set; }
     public float RouteOffset { get; set; }
     public Chapter4Companion SupportPartner { get; set; }
@@ -32,7 +37,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     // A formation slot is an arrival area, not an exact point that can lie on
     // the edge of a roadside rock. Both route progress and physical distance
     // must agree before the party controller counts this character as arrived.
-    public bool AtDestination => !MotionHeld && !AssistTarget.HasValue && (SupportPartner
+    public bool AtDestination => !Fallen && !MotionHeld && !AssistTarget.HasValue && (SupportPartner
         ? SupportPartner.AtDestination && Chapter4Evacuation.FlatDistance(transform.position, SupportTarget()) < .3f
         : JoinedRoute && Progress >= destination - .55f && Chapter4Evacuation.FlatDistance(transform.position, RouteTarget(destination)) < .9f);
     public float Destination => SupportPartner ? SupportPartner.Destination : destination;
@@ -73,6 +78,14 @@ public sealed class Chapter4Companion : MonoBehaviour
             if (other && other != this) Physics.IgnoreCollision(Motor, other.GetComponent<CharacterController>());
     }
 
+    public void FallWounded(bool hitByPolice)
+    {
+        if (Fallen) return;
+        Fallen = true; fallElapsed = 0; MotionHeld = true; Speaking = false; AssistTarget = null;
+        Pose.Set(Chapter4CompanionPose.State.SideFall, 0);
+        owner.ReportFall(this, hitByPolice);
+    }
+
     public void FollowTo(float distance, float delay)
     {
         destination = Mathf.Max(Progress, distance);
@@ -86,6 +99,13 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (EscortRifle) EscortRifle.Advance(Time.deltaTime);
         Walking = false;
         StepDistance = 0;
+        if (Fallen)
+        {
+            if (!IsPaused) fallElapsed = Mathf.Min(1.15f, fallElapsed + Time.deltaTime);
+            Pose.Set(Chapter4CompanionPose.State.SideFall, Mathf.SmoothStep(0, 1, fallElapsed / 1.15f));
+            Rig.walking = false; Rig.speakingWeight = 0; Rig.frozen = true;
+            return;
+        }
         if (!IsPaused)
         {
             var pressure = owner.chapter.Retreat;
@@ -95,13 +115,14 @@ public sealed class Chapter4Companion : MonoBehaviour
         if (!IsPaused)
         {
             travelClock += Time.deltaTime;
-            if (!MotionHeld && !(EscortRifle && EscortRifle.Turning))
+            if (!MotionHeld)
             {
                 if (AssistTarget.HasValue) StepToward(AssistTarget.Value, Time.deltaTime);
                 else if ((owner.CurrentStage == Chapter4Evacuation.Stage.Following || owner.OpeningRush || IndependentFollow) && travelClock >= releaseAt)
                     Walk(Time.deltaTime);
             }
         }
+        StepDirection = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up).normalized;
         StepDistance = IsPaused ? 0 : Chapter4Evacuation.FlatDistance(transform.position, previousPosition);
         Rig.walking = false;
         Rig.frozen = IsPaused;
@@ -111,6 +132,9 @@ public sealed class Chapter4Companion : MonoBehaviour
         // turn an otherwise forward-facing body back toward the player.
         if (SupportPartner && !AssistTarget.HasValue && !MotionHeld) Rig.Face(SupportPartner.Rig.Forward);
         previousPosition = transform.position;
+        // This companion left the camp already wounded. If protected on the way,
+        // their earlier injury can still stop them on the last climb.
+        if (actorId == "wounded" && Progress >= 123 && !IsPaused) FallWounded(false);
     }
 
     void AnimateSpeech()
@@ -138,8 +162,10 @@ public sealed class Chapter4Companion : MonoBehaviour
         // At the first shelling everyone leaves their own camp position.
         // Do not make the whole cast wait for the wounded leader to join a queue.
         bool rushing = owner.OpeningRush;
-        if (!rushing && ahead && (!ahead.JoinedRoute || ahead.Progress < .9f)) return;
-        float limit = ahead && !rushing ? Mathf.Min(destination, ahead.Progress - 1.35f) : destination;
+        var leader = ahead;
+        while (leader && leader.Fallen) leader = leader.ahead;
+        if (!rushing && !OnForwardFlank && leader && (!leader.JoinedRoute || leader.Progress < .9f)) return;
+        float limit = leader && !rushing && !OnForwardFlank ? Mathf.Min(destination, leader.Progress - 1.35f) : destination;
         if (JoinedRoute && Progress >= limit - .06f)
         {
             // Longitudinal progress can reach the endpoint before the leader's
@@ -161,7 +187,36 @@ public sealed class Chapter4Companion : MonoBehaviour
             if (Vector3.ProjectOnPlane(transform.position - owner.PointOnRoute(joinedAt), Vector3.up).magnitude < .20f)
             { JoinedRoute = true; Progress = joinedAt; }
         }
-        else Progress = Mathf.Max(Progress, owner.ProjectProgress(transform.position, Progress, Mathf.Min(destination, Progress + 1.5f)));
+        else if (Walking) Progress = Mathf.Max(Progress, ProjectWalkedLane(Mathf.Min(destination, Progress + 1.5f)));
+    }
+
+    float ProjectWalkedLane(float end)
+    {
+        if (!EscortRifle || Mathf.Abs(RouteOffset) < .01f) return owner.ProjectProgress(transform.position, Progress, end);
+        // At a bend the projection onto the middle of the trail can remain behind
+        // someone already walking around its outside edge. Measure that person's lane.
+        float best = float.PositiveInfinity, result = Progress, start = Progress;
+        Vector3 a = RouteTarget(start);
+        while (start < end)
+        {
+            float next = Mathf.Min(end, start + .25f);
+            Vector3 b = RouteTarget(next), segment = Vector3.ProjectOnPlane(b - a, Vector3.up);
+            float t = Mathf.Clamp01(Vector3.Dot(transform.position - a, segment) / Mathf.Max(.00001f, segment.sqrMagnitude));
+            float error = Chapter4Evacuation.FlatDistance(transform.position, a + t * segment);
+            if (error < best) { best = error; result = Mathf.Lerp(start,next,t); }
+            a = b; start = next;
+        }
+        return result;
+    }
+
+    float LaneOffset(float distance, float offset)
+    {
+        if (!EscortRifle) return offset;
+        // The two trails peel sharply away from the main path. Approach and leave
+        // the narrow junction in single file, then reopen the flank gradually.
+        float before = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(57, 64, distance));
+        float after = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(92, 100, distance));
+        return offset * Mathf.Max(before, after);
     }
 
     void StepToward(Vector3 target, float deltaTime)
@@ -173,7 +228,7 @@ public sealed class Chapter4Companion : MonoBehaviour
             Motor.Move(delta.normalized * step + Vector3.down * (2f * deltaTime));
             Vector3 moved = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up);
             Walking = moved.magnitude > .0005f;
-            if (Walking) Rig.Face(Vector3.RotateTowards(Rig.Forward, moved.normalized, 220 * Mathf.Deg2Rad * deltaTime, 0));
+            if (Walking && !(EscortRifle && EscortRifle.Turning)) Rig.Face(Vector3.RotateTowards(Rig.Forward, moved.normalized, 220 * Mathf.Deg2Rad * deltaTime, 0));
         }
     }
 
@@ -206,7 +261,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     void SelectSingleLane(float limit)
     {
         float near = Mathf.Min(limit, Progress + .35f), far = Mathf.Min(limit, Progress + 1.25f);
-        bool Fits(float distance, float offset) => BodyFits(owner.PointOnRoute(distance) + RouteRight(distance) * offset);
+        bool Fits(float distance, float offset) => BodyFits(owner.PointOnRoute(distance) + RouteRight(distance) * LaneOffset(distance, offset));
         if (Fits(near, RouteOffset) && Fits(far, RouteOffset)) return;
         foreach (float offset in singleLanes)
             if (Fits(near, offset) && Fits(far, offset)) { RouteOffset = offset; return; }
@@ -231,7 +286,7 @@ public sealed class Chapter4Companion : MonoBehaviour
     Vector3 RouteTarget(float distance)
     {
         Vector3 point = owner.PointOnRoute(distance);
-        point += RouteRight(distance) * RouteOffset;
+        point += RouteRight(distance) * LaneOffset(distance, RouteOffset);
         // The first person approaches beside the signal point, leaving room
         // for a player who remains there to watch the party arrive.
         if (!ahead && destination >= owner.RouteLength - .05f)
@@ -246,8 +301,8 @@ public sealed class Chapter4Companion : MonoBehaviour
     public sealed class Snapshot
     {
         public Vector3 position, forward;
-        public float progress, destination, speed, offset;
-        public bool joined, held, independent;
+        public float progress, destination, speed, offset, fallElapsed;
+        public bool joined, held, independent, fallen;
         public Chapter4Companion partner, follower;
         public Chapter4CompanionPose.State pose;
         public float poseWeight, poseClock;
@@ -256,7 +311,7 @@ public sealed class Chapter4Companion : MonoBehaviour
 
     public Snapshot Capture() => new Snapshot { position = transform.position, forward = Rig.Forward,
         progress = Progress, destination = destination, speed = walkSpeed, offset = RouteOffset,
-        joined = JoinedRoute, held = MotionHeld, independent = IndependentFollow, partner = SupportPartner, follower = SupportFollower,
+        fallen = Fallen, fallElapsed = fallElapsed, joined = JoinedRoute, held = MotionHeld, independent = IndependentFollow, partner = SupportPartner, follower = SupportFollower,
         pose = Pose.CurrentState, poseWeight = Pose.Weight, poseClock = Pose.Clock, escape = Pose.CaptureEscape() };
 
     public void Restore(Snapshot saved)
@@ -264,6 +319,7 @@ public sealed class Chapter4Companion : MonoBehaviour
         Pose.RestoreModelBase();
         Motor.enabled = false; transform.position = saved.position; Motor.enabled = true;
         Progress = saved.progress; destination = saved.destination; walkSpeed = saved.speed; RouteOffset = saved.offset;
+        Fallen = saved.fallen; fallElapsed = saved.fallElapsed; Rig.frozen = Fallen;
         JoinedRoute = saved.joined; MotionHeld = saved.held; SupportPartner = saved.partner; SupportFollower = saved.follower;
         IndependentFollow = saved.independent;
         AssistTarget = null; Walking = Speaking = false; StepDistance = CoverCrouch = 0; releaseAt = travelClock = 0;

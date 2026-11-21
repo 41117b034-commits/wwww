@@ -13,8 +13,8 @@ public sealed class Chapter4Ending : MonoBehaviour
     public bool Saved { get; private set; }
     public Chapter4ResultStore.Outcome Outcome { get; private set; }
     public const string History1930 = "十月二十七日，霧社一帶的六個賽德克部落起事，反抗日本統治。族人退進山裡，日本軍警封住山路。飛機在山谷上空投下炸彈，日軍也用山砲和毒氣攻擊躲進岩窟的族人。\n\n那一年，帶領族人起事的莫那・魯道在山中自盡。活下來的人陸續被送進收容所，在那裡過了冬。";
-    public const string History1931 = "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。";
-    const string BothAlive = "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。";
+    public const string History1931 = "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。";
+    const string BothAlive = "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。";
     const string RememberBihu = "露比扶著古慕走進馬赫坡岩窟。過了一會兒，洞口又響起腳步聲。歐冰循著你的呼喊，終於追上了大家。\n\n比胡雖然在戰爭中犧牲了，但我們仍會記得他。";
     const string RememberObing = "到了馬赫坡岩窟，露比才扶著古慕坐下。比胡也活著走到了這裡。大家望向來時的山路，始終沒能等到歐冰。\n\n歐冰雖然在戰爭中犧牲了，但我們仍會記得她。";
     const string RememberBoth = "露比攙著古慕，終於走進馬赫坡岩窟。等兩人坐穩，身旁還空著兩個位置。\n\n歐冰和比胡雖然都在戰爭中犧牲了，但我們仍會記得他們。";
@@ -40,7 +40,8 @@ public sealed class Chapter4Ending : MonoBehaviour
         Outcome = contact.Reunited ? Chapter4ResultStore.Outcome.Together : Chapter4ResultStore.Outcome.Memory;
         pending = new Chapter4ResultStore.Record { inheritedBihu = flow.InheritedBihu, outcome = Outcome,
             firstContact = contact.FirstContact, secondContact = contact.SecondContact, obingReunited = contact.Reunited,
-            gumuArrived = true, lubiArrived = true, epilogueSeen = false };
+            gumuArrived = true, lubiArrived = true, epilogueSeen = false,
+            departed = flow.DepartedCount, sheltered = flow.InsideCount, fallen = flow.FallenCount, fallenNames = flow.FallenNames };
         chapter.player.SetInputEnabled(false);
         chapter.presentation.HideSpeech();
         chapter.presentation.SetInteraction("", false);
@@ -68,7 +69,10 @@ public sealed class Chapter4Ending : MonoBehaviour
         if (stage == Stage.Personal)
             chapter.presentation.ShowEnding(chapter, "本作個人結局 · 1／3",
                 pending.obingReunited && pending.inheritedBihu != Chapter4Evacuation.BihuState.Dead ? "一起走到了岩窟" : "我們仍會記得",
-                PersonalBody(pending.obingReunited, pending.inheritedBihu), "人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
+                PersonalBody(pending.obingReunited, pending.inheritedBihu),
+                $"同行 {pending.departed} 人，走進岩窟 {pending.sheltered} 人。" +
+                (pending.fallen > 0 ? $"　途中受傷倒下的同伴：{pending.fallenNames}。" : "") +
+                "\n人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
         else chapter.presentation.ShowEnding(chapter, "共同史實後記 · " + (stage == Stage.History1930 ? "2／3" : "3／3"),
             stage == Stage.History1930 ? "1930 年 · 戰火追進了山裡" : "1931 年 · 從霧社到川中島",
             stage == Stage.History1930 ? History1930 : History1931,

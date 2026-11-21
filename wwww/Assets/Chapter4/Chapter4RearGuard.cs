@@ -14,7 +14,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     public float Clock { get; private set; }
     public int SuppressingShots { get; private set; }
     public int Hits { get; private set; }
-    public bool Frozen => !Chapter || Chapter.WorldFrozen || Chapter.gas.IsCollapsed || Chapter.evacuation.PartyGathered;
+    public bool Frozen => !Chapter || Chapter.WorldFrozen || Chapter.gas.IsCollapsed || Chapter.evacuation.PartyGathered || Chapter.evacuation.PlayerInShelter;
     public float NearestDistance
     {
         get { float distance = 999; foreach (var enemy in enemies) if (enemy.Engaged && !enemy.Down) distance = Mathf.Min(distance, Chapter4Evacuation.FlatDistance(enemy.transform.position, Chapter.player.transform.position)); return distance; }
@@ -23,7 +23,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     public float PartyAdvance => Mathf.Max(16, Chapter.evacuation.PlayerProgress + 9);
     public float PlayerLimit => Chapter.evacuation.RouteLength;
     public string Objective => CurrentPhase == Phase.LeavingCamp ? "毒氣侵入營地・跟著隊伍撤離" : "";
-    public string Status => NearestDistance < 24 ? "後方追兵逼近・約 " + Mathf.CeilToInt(NearestDistance) + " 公尺・利用山彎拉開距離" : "";
+    public string Status => !Frozen && NearestDistance < 24 ? "後方追兵逼近・約 " + Mathf.CeilToInt(NearestDistance) + " 公尺・利用山彎拉開距離" : "";
     public string Hint
     {
         get
@@ -41,7 +41,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
     readonly List<Transform> supplies = new List<Transform>();
     readonly List<Chapter4CompanionRifle> escorts = new List<Chapter4CompanionRifle>();
     int nextEscort;
-    float nextReport = 14;
+    float nextReport = 6;
     Transform world;
     LineRenderer tracer;
     Material tracerMaterial;
@@ -56,7 +56,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         var supply = Resources.Load<GameObject>("Chapter4Combat/Supply");
         if (!weapon || !pursuer || !supply) throw new InvalidOperationException("Chapter4 combat prefabs are missing.");
         Gun = Instantiate(weapon); Gun.Initialize(this);
-        foreach (string id in new[] { "bawan", "tado" })
+        foreach (string id in new[] { "tado", "bawan" })
         {
             var companion = Array.Find(chapter.evacuation.cast, member => member.actorId == id);
             if (!companion || !companion.isActiveAndEnabled || companion.wounded) continue;
@@ -123,7 +123,7 @@ public sealed class Chapter4RearGuard : MonoBehaviour
             {
                 bool started = escorts[nextEscort].TryTurn();
                 nextEscort = (nextEscort + 1) % escorts.Count;
-                nextReport = Clock + (started ? 19 : 1.5f);
+                nextReport = Clock + (started ? 5.2f : .65f);
             }
             if (CurrentPhase == Phase.LeavingCamp && flow.PlayerProgress >= 28)
             {
@@ -140,6 +140,23 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         tracer.enabled = tracerClock > 0 && !Frozen;
         Chapter.presentation.SetCombatStatus(Gun, !Frozen, Status);
     }
+    public bool ClearEscortShot(Chapter4Companion shooter, Vector3 from, Vector3 to)
+    {
+        Vector3 path = to - from;
+        Vector3 flat = Vector3.ProjectOnPlane(path, Vector3.up);
+        bool Crosses(Vector3 feet, float radius, float height)
+        {
+            float along = Mathf.Clamp01(Vector3.Dot(feet - from, flat) / Mathf.Max(.001f, flat.sqrMagnitude));
+            Vector3 near = from + path * along;
+            return near.y >= feet.y + .10f && near.y <= feet.y + height &&
+                Chapter4Evacuation.FlatDistance(near, feet) < radius;
+        }
+        if (Crosses(Chapter.player.transform.position, .38f, 1.85f)) return false;
+        foreach (var other in Chapter.evacuation.Party)
+            if (other != shooter && Crosses(other.transform.position, .32f, other.Fallen ? .46f : 1.82f)) return false;
+        return ClearTerrain(from, to);
+    }
+
     public bool ClearTerrain(Vector3 from, Vector3 to)
     {
         Vector3 delta = to - from;
@@ -175,6 +192,26 @@ public sealed class Chapter4RearGuard : MonoBehaviour
         if (suppressed) SuppressingShots++;
         if (victim) return "命中追兵・趁現在繼續撤離";
         return suppressed ? "追兵暫停追趕！趁空檔拉開距離" : length < 80 ? "子彈落在掩體・繼續找路撤離" : "繼續撤離・需要時按 R 裝填";
+    }
+    // Wounds belong to actual enemy shots. Cover and interrupting the shooter can spare a companion.
+    public Chapter4Companion FindCompanionTarget(Chapter4Pursuer shooter)
+    {
+        var flow = Chapter.evacuation;
+        if (Frozen || Assisting || flow.PlayerInShelter) return null;
+        bool exposed = flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Exposed;
+        bool chose = flow.Action.Choice != Chapter4RetreatAction.RouteChoice.Undecided;
+        foreach (var person in flow.Party)
+        {
+            if (!person.JoinedRoute || person.Fallen || person.MotionHeld || flow.Inside(person)) continue;
+            bool inBeat = person.actorId == "wounded" && person.Progress >= 20 ||
+                chose && person.actorId == (exposed ? "bawan" : "tado") && person.Progress >= 79 ||
+                exposed && person.actorId == "tado" && person.Progress >= 119;
+            if (!inBeat || (shooter.AimPoint - person.Chest).sqrMagnitude > 46 * 46) continue;
+            bool claimed = false;
+            foreach (var other in enemies) if (other != shooter && other.AimingAt == person) { claimed = true; break; }
+            if (!claimed && ClearTerrain(shooter.AimPoint, person.Chest)) return person;
+        }
+        return null;
     }
     public void EnemyReport(Chapter4Pursuer enemy, Vector3 target)
     {

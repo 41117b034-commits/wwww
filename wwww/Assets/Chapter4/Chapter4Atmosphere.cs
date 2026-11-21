@@ -91,11 +91,16 @@ public sealed class Chapter4Atmosphere : MonoBehaviour
         if (banks == null) return;
         Place(front);
         float duck = flow.chapter.Voice && flow.chapter.Voice.Speaking ? .32f : 1;
-        Barrage.volume = Mathf.MoveTowards(Barrage.volume, .29f * duck, dt * .8f);
-        Rifles.volume = Mathf.MoveTowards(Rifles.volume, .15f * duck, dt * .6f);
+        bool sheltered = flow.PlayerInShelter;
+        Barrage.volume = Mathf.MoveTowards(Barrage.volume, sheltered ? 0 : .29f * duck, dt * .8f);
+        Rifles.volume = Mathf.MoveTowards(Rifles.volume, sheltered ? 0 : .15f * duck, dt * .6f);
         float proximity = flow.chapter.gas.PlayerDensity;
         breathing.volume = Mathf.MoveTowards(breathing.volume, Mathf.Max(proximity * .2f, flow.chapter.gas.Exposure * .45f) * duck, dt * .2f);
-        if (!active) return;
+        if (!active)
+        {
+            foreach (var ps in banks) { var emission = ps.emission; emission.rateOverTime = 0; }
+            return;
+        }
         if (!playing)
         {
             playing = true; Barrage.Play(); breathing.Play();

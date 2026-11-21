@@ -22,6 +22,13 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public int LegIndex { get; private set; }
     public int SignalCount { get; private set; }
     public bool PartyGathered => CurrentStage == Stage.Gathered;
+    Chapter4RockShelter shelter;
+    public bool PlayerInShelter => shelter && shelter.Contains(chapter.player.transform.position);
+    public bool Inside(Chapter4Companion actor) => shelter && shelter.Contains(actor.transform.position);
+    public int DepartedCount => party.Count;
+    public int FallenCount => party.FindAll(a => a.Fallen).Count;
+    public int InsideCount => party.FindAll(a => RequiredForArrival(a) && Inside(a)).Count;
+    public string FallenNames => string.Join("、", party.FindAll(a => a.Fallen).ConvertAll(a => a.displayName.Split('·')[0]));
     public bool Regrouping => regrouping;
     public bool OpeningRush => initialized && party.Exists(actor => !actor.JoinedRoute);
     public Chapter4RetreatAction Action { get; private set; }
@@ -34,7 +41,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     public bool BoundaryBlocked => Time.time - blockedAt < .7f;
     public int BlockedSteps { get; private set; }
     public bool ArrivalReady => PartyGathered && !chapter.Voice.Busy;
-    public int ActivePartyCount => party.Count;
+    public int ActivePartyCount => party.Count - FallenCount;
     public IReadOnlyList<Chapter4Companion> Party => party;
     public Vector3 ScoutTarget => PointOnRoute(LegEnd);
     public float LegEnd => lengths[legs[LegIndex].routeIndex];
@@ -49,12 +56,21 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     float blockedAt = -100;
     bool initialized;
     bool regrouping;
-    string contextualHint;
+    string contextualHint, recentWound;
+    float woundNoticeTime;
+
+    public void ReportFall(Chapter4Companion actor, bool shot)
+    {
+        recentWound = actor.displayName.Split('·')[0] + (shot ? "中彈，倒在山路上了" : "傷勢加重，撐不住了");
+        woundNoticeTime = 4;
+    }
 
     public void Begin()
     {
         if (!chapter || !terrain || cast == null || cast.Length == 0 || legs == null || legs.Length == 0)
             throw new InvalidOperationException("Fourth chapter evacuation references are incomplete.");
+        shelter = FindFirstObjectByType<Chapter4RockShelter>();
+        if (!shelter) throw new InvalidOperationException("Missing Chapter 4 cave chamber.");
         route = Array.ConvertAll(chapter.routeCheckpoints, t => t.position);
         lengths = new float[route.Length];
         for (int i = 1; i < route.Length; i++)
@@ -90,6 +106,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         if (!initialized || chapter.WorldFrozen || chapter.gas.IsCollapsed) return;
         float dt = Time.deltaTime;
         stageClock += dt;
+        woundNoticeTime = Mathf.Max(0, woundNoticeTime - dt);
         if (!PartyGathered) TrackScoutedTrail();
         if (Action != null && !PartyGathered) Action.Tick(dt);
         if (CurrentStage == Stage.Opening)
@@ -109,7 +126,9 @@ public sealed class Chapter4Evacuation : MonoBehaviour
             for (int i = 0, slot = 0; i < party.Count; i++)
             {
                 if (!RequiredForArrival(party[i])) continue;
-                if (!party[i].IndependentFollow) party[i].FollowTo(Mathf.Max(0, target - slot * 1.45f), 0);
+                float position = Mathf.Max(0, target - slot * 1.45f);
+                if (party[i].OnForwardFlank) position = Mathf.Min(Action.PartyLimit, RouteLength - 1, PlayerProgress + 4.8f);
+                if (!party[i].IndependentFollow) party[i].FollowTo(position, 0);
                 slot++;
             }
             if (LegIndex < legs.Length - 1 && PlayerProgress >= LegEnd && RearProgress >= LegEnd - 12 && !chapter.gas.BlocksPartyAdvance)
@@ -118,17 +137,15 @@ public sealed class Chapter4Evacuation : MonoBehaviour
                 chapter.gas.CaptureCheckpoint(PlayerProgress);
                 RegroupDialogue(LegIndex);
             }
-            bool all = PlayerProgress >= RouteLength - 2.6f && (!chapter.gas || !chapter.gas.BlocksPartyAdvance) &&
+            bool all = PlayerInShelter && PlayerProgress >= RouteLength - 2.6f && (!chapter.gas || !chapter.gas.BlocksPartyAdvance) &&
                 (!chapter.contact || !chapter.contact.Responded || chapter.contact.Reunited);
-            foreach (var actor in party) if (RequiredForArrival(actor)) all &= actor.AtDestination;
+            foreach (var actor in party) if (RequiredForArrival(actor)) all &= actor.AtDestination && Inside(actor);
             if (all)
             {
                 if (LegIndex == legs.Length - 1)
                 {
                     CurrentStage = Stage.Gathered;
-                    Say("bawan", chapter.gas && chapter.gas.ObingSeparated
-                        ? "主隊到集合地了。古慕和露比都跟上了，歐冰還在後方。先讓傷患歇一口氣。"
-                        : "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。", 6.5f);
+                    Say("mona", "再往裡走一點。外頭的腳步聲遠了，先讓受傷的人坐下。", 5);
                     Say("lubi", "古慕，坐穩了再鬆手。我在你旁邊，你先慢慢把氣喘勻。", 8);
                 }
                 stageClock = 0;
@@ -162,7 +179,7 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     bool AtScoutTarget() => chapter.player.IsGrounded && FlatDistance(chapter.player.transform.position, ScoutTarget) <= 2.6f &&
         Mathf.Abs(chapter.player.transform.position.y - ScoutTarget.y) <= 1.3f;
 
-    public bool RequiredForArrival(Chapter4Companion actor) => !chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing" || chapter.contact && chapter.contact.Responded;
+    public bool RequiredForArrival(Chapter4Companion actor) => !actor.Fallen && (!chapter.gas || !chapter.gas.ObingSeparated || actor.actorId != "obing" || chapter.contact && chapter.contact.Responded);
 
     public void Announce(string actorId, string text, float seconds) { Say(actorId, text, seconds); }
 
@@ -170,13 +187,15 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     {
         LegIndex = leg; SignalCount = signals; ScoutedDistance = scouted;
         CurrentStage = Stage.Following; stageClock = 0; regrouping = false;
+        woundNoticeTime = 0;
         ClearSpeech();
         UpdateHUD();
     }
 
     void Say(string actorId, string text, float seconds)
     {
-        chapter.Voice.Enqueue(actorId, text, seconds);
+        var actor = Array.Find(cast, a => a.actorId == actorId);
+        if (actor && !actor.Fallen) chapter.Voice.Enqueue(actorId, text, seconds);
     }
 
     void ClearSpeech()
@@ -188,9 +207,9 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     {
         regrouping = false;
         if (leg == 2)
-            Say("tado", "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。", 0);
+            Say("tado", "前面那個彎很窄。看著前一個人的背，跟上來！", 0);
         else if (leg == 3)
-            Say("lubi", "古慕，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。", 0);
+            Say("lubi", "古慕，看見那個洞口了嗎？再靠過來一點，我陪你走進去。", 0);
     }
 
     // Enforce the active fire corridor for every desktop/XR/fixture Move.
@@ -230,13 +249,14 @@ public sealed class Chapter4Evacuation : MonoBehaviour
     {
         var ui = chapter.presentation;
         bool separated = chapter.gas && chapter.gas.ObingSeparated;
-        ui.SetObjective(PartyGathered ? "已抵達馬赫坡岩窟入口" : Action.Objective);
-        string status = PartyGathered ? "主隊集結　" + RequiredPartyCount + "／" + RequiredPartyCount :
+        ui.SetObjective(PartyGathered ? "倖存的族人已在馬赫坡岩窟內會合" : PlayerInShelter ? "追兵的腳步聲遠了・往洞內接應同伴" : Action.Objective);
+        string status = PlayerInShelter ? "出發 " + DepartedCount + " 人　已進洞 " + InsideCount + " 人　途中倒下 " + FallenCount + " 人" :
             "隊伍持續跟隨・距隊尾 " + Mathf.CeilToInt(Mathf.Max(0, PlayerProgress - RearProgress)) + " 公尺";
         if (chapter.RearGuard && !string.IsNullOrEmpty(chapter.RearGuard.Status)) status = chapter.RearGuard.Status;
-        ui.SetPartyStatus(status + (separated ? "・歐冰落在後方" : ""));
+        if (woundNoticeTime > 0 && !PlayerInShelter) status = recentWound;
+        ui.SetPartyStatus(status + (separated && !PartyGathered ? "・歐冰落在後方" : ""));
         bool tether = PlayerProgress >= RearProgress + 23.7f && !PartyGathered;
-        contextualHint = PartyGathered ? "" : tether ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
+        contextualHint = PartyGathered || PlayerInShelter ? "" : tether ? "隊伍落在後方了・在附近岩後接應，別讓同伴看不見你" : Action.Hint;
         ui.SetInteraction(contextualHint, !PartyGathered && Action.CanSignal);
         ui.SetNavigation(chapter.player.view, Action.NavigationTarget, !PartyGathered && !Action.AtOpenFork, "沿路撤離");
     }

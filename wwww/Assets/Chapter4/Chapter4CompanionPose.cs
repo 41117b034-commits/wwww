@@ -277,7 +277,8 @@ public sealed class Chapter4CompanionPose : MonoBehaviour
             lift = actor.Rig.Height * (supported ? .055f : limping ? (sore ? .063f : .12f) : .17f) * recovery * recovery;
             toe = limping ? 12 * (1 - t) - (sore ? 12 : 19) * recovery : Mathf.Lerp(12, -12, t) * recovery;
         }
-        Vector3 target = rest + forward * (offset * motionWeight);
+        var strideDirection = actor.EscortRifle && actor.EscortRifle.Turning && actor.Walking ? actor.StepDirection : forward;
+        Vector3 target = rest + strideDirection * (offset * motionWeight);
         var terrain = actor.RetreatChapter.evacuation.terrain;
         if (terrain && terrain.Raycast(new Ray(target + Vector3.up * 5, Vector3.down), out var hit, 10))
             target.y = hit.point.y + (left ? leftClearance : rightClearance);

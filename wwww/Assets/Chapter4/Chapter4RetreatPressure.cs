@@ -122,7 +122,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
         Elapsed += dt; ImpactPulse = Mathf.MoveTowards(ImpactPulse, 0, dt * 1.25f);
         flashClock = Mathf.Max(0, flashClock - dt); flash.enabled = flashClock > 0;
         if (flash.enabled) flash.intensity = flashClock * 20;
-        if (flow.PartyGathered)
+        if (flow.PlayerInShelter || flow.PartyGathered)
         {
             chapter.presentation.SetThreatCue("", 0); warningRemaining = 0;
             HideMarker(); fallingBomb.gameObject.SetActive(false); Aircraft.Stop(); wingmanEngine.Stop(); whistle.Stop(); plane.gameObject.SetActive(false); Wingman.gameObject.SetActive(false); return;
@@ -174,7 +174,7 @@ public sealed class Chapter4RetreatPressure : MonoBehaviour
 
     public bool ScheduleImpact(Vector3 point, bool harmless, bool aircraft = false, bool gas = false)
     {
-        if (!initialized || IsTelegraphing || chapter.WorldFrozen || chapter.gas.IsCollapsed || AirAttackActive && !aircraft) return false;
+        if (!initialized || flow.PlayerInShelter || IsTelegraphing || chapter.WorldFrozen || chapter.gas.IsCollapsed || AirAttackActive && !aircraft) return false;
         ImpactPosition = point;
         if (flow.terrain.Raycast(new Ray(point + Vector3.up * 20, Vector3.down), out var hit, 40)) ImpactPosition = hit.point;
         warningRemaining = WarningDuration; warningHarmless = harmless; warningGas = gas;

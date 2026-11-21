@@ -21,10 +21,10 @@ public sealed class Chapter4RetreatAction
     public float MinimumPartyAdvance => Combat ? Combat.PartyAdvance : 12;
     public float PlayerLimit => Combat ? Combat.PlayerLimit : flow.RouteLength;
     public string Objective => Combat && !string.IsNullOrEmpty(Combat.Objective) ? Combat.Objective :
-        Rockfall && Choice == RouteChoice.Undecided ? "前路被落石截斷・從岩石兩側繞行" :
+        Rockfall && Choice == RouteChoice.Undecided ? "山道中央有巨石・從兩側繞行" :
         Choice != RouteChoice.Undecided && flow.PlayerProgress < ForkEnd ?
             (Choice == RouteChoice.Sheltered ? "沿左側岩後小路撤離" : "穿過右側暴露小路・留意落彈") :
-        flow.PlayerProgress >= flow.RouteLength - 30 ? "沿山徑前往馬赫坡岩窟入口" : "接應同伴，往上坡撤離";
+        flow.PlayerProgress >= flow.RouteLength - 30 ? "沿山徑進入馬赫坡岩窟深處" : "接應同伴，往上坡撤離";
     public string Hint => Combat && !string.IsNullOrEmpty(Combat.Hint) ? Combat.Hint :
         Rockfall && Choice == RouteChoice.Undecided ? "左側貼岩：多繞幾步、有掩護　／　右側短路：較暴露・直接走入你選的路" :
         flow.chapter.contact && flow.chapter.contact.Responded && !flow.chapter.contact.Reunited ? "歐冰已回應・留在附近接應，她正沿剛才的路追上" :
@@ -33,9 +33,8 @@ public sealed class Chapter4RetreatAction
     readonly Vector3[][] branches = { new Vector3[26], new Vector3[26] };
     readonly List<Mesh> meshes = new List<Mesh>();
     readonly List<Material> materials = new List<Material>();
-    Transform geometry, rubble;
-    Vector3 rubbleRest;
-    float fallClock, shellClock;
+    Transform geometry;
+    float shellClock;
 
 
     public Chapter4RetreatAction(Chapter4Evacuation owner)
@@ -59,16 +58,7 @@ public sealed class Chapter4RetreatAction
             Clock = Combat.Clock;
             Crossing = CrossingState.Clear;
         }
-        if (!Rockfall && player >= 58)
-        {
-            Rockfall = true; fallClock = 0; rubble.gameObject.SetActive(true);
-            flow.chapter.gas.atmosphere.BlastAt(flow.BasePoint(77), false);
-        }
-        if (Rockfall)
-        {
-            fallClock = Mathf.Min(1.3f, fallClock + dt);
-            rubble.position = rubbleRest + Vector3.up * (2.5f * (1 - Mathf.SmoothStep(0, 1, fallClock / 1.3f)));
-        }
+        if (player >= 58) Rockfall = true;
         if (Rockfall && Choice == RouteChoice.Undecided && player >= 71.5f)
         {
             Vector3 feet = flow.chapter.player.transform.position;
@@ -130,11 +120,10 @@ public sealed class Chapter4RetreatAction
         Rock(donor, geometry, 36, -2.8f, new Vector3(2.2f, 2.2f, 4));
         Rock(donor, geometry, 54, -3.1f, new Vector3(2.3f, 2.4f, 4));
         Rock(donor, geometry, 78, -7, new Vector3(2.3f, 2.6f, 6));
-        rubble = new GameObject("砲擊後滑落的岩塊").transform; rubble.SetParent(geometry, false);
+        var rubble = new GameObject("山道中央既有的岩塊").transform; rubble.SetParent(geometry, false);
         Rock(donor, rubble, 74, 0, new Vector3(2.9f, 1.8f, 4.6f));
         Rock(donor, rubble, 78, 0, new Vector3(3.6f, 2.5f, 5.8f));
         Rock(donor, rubble, 82, 0, new Vector3(2.7f, 1.9f, 4.2f));
-        rubbleRest = rubble.position; rubble.gameObject.SetActive(false);
         for (int i = 0; i < 2; i++) Trail(branches[i], i == 0 ? "貼岩繞行小路" : "外側短路");
     }
     void Rock(MeshFilter donor, Transform parent, float d, float side, Vector3 size)
@@ -196,16 +185,15 @@ public sealed class Chapter4RetreatAction
     }
     [Serializable] public sealed class Snapshot
     {
-        public CrossingState crossing; public RouteChoice choice; public float clock, fall, shell; public bool rockfall; public int signals; public Chapter4RearGuard.Snapshot combat;
+        public CrossingState crossing; public RouteChoice choice; public float clock, shell; public bool rockfall; public int signals; public Chapter4RearGuard.Snapshot combat;
     }
-    public Snapshot Capture() => new Snapshot { crossing = Crossing, choice = Choice, clock = Clock, fall = fallClock, shell = shellClock, rockfall = Rockfall, signals = CrossingsSignalled, combat = Combat ? Combat.Capture() : null };
+    public Snapshot Capture() => new Snapshot { crossing = Crossing, choice = Choice, clock = Clock, shell = shellClock, rockfall = Rockfall, signals = CrossingsSignalled, combat = Combat ? Combat.Capture() : null };
     public void Restore(Snapshot s)
     {
         if (s == null) return;
         if (Combat) Combat.Restore(s.combat);
-        Crossing = s.crossing; Choice = s.choice; Clock = s.clock; fallClock = s.fall; shellClock = s.shell;
-        Rockfall = s.rockfall; CrossingsSignalled = s.signals; rubble.gameObject.SetActive(Rockfall);
-        rubble.position = rubbleRest + Vector3.up * (Rockfall ? 2.5f * (1 - Mathf.SmoothStep(0, 1, fallClock / 1.3f)) : 0);
+        Crossing = s.crossing; Choice = s.choice; Clock = s.clock; shellClock = s.shell;
+        Rockfall = s.rockfall; CrossingsSignalled = s.signals;
     }
     public void Dispose()
     {

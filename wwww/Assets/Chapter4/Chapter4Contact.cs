@@ -25,14 +25,20 @@ public sealed class Chapter4Contact : MonoBehaviour
     }
 
     Chapter4Evacuation flow;
-    Chapter4Companion obing, tail;
+    Chapter4Companion obing;
+    Chapter4Companion Tail()
+    {
+        var party = flow.Party;
+        for (int i = party.Count - 1; i >= 0; i--)
+            if (party[i] != obing && !party[i].Fallen) return party[i];
+        return chapter.gas.Lubi;
+    }
     float riseClock;
     bool initialized;
 
     public void Begin()
     {
         flow = chapter.evacuation; obing = chapter.gas.Obing;
-        foreach (var actor in flow.Party) if (actor != obing) tail = actor;
         chapter.presentation.EnsureEndingUI();
         chapter.presentation.contactButton.onClick.AddListener(TryContact);
         initialized = true;
@@ -64,6 +70,7 @@ public sealed class Chapter4Contact : MonoBehaviour
         {
             // Follow the real last companion even while the player is scouting.
             // The existing predecessor spacing still prevents overtaking.
+            var tail = Tail();
             obing.FollowTo(Mathf.Max(obing.Progress, tail.Progress - 1.45f), 0);
             bool near = Chapter4Evacuation.FlatDistance(obing.transform.position, tail.transform.position) <= 2.25f &&
                 Mathf.Abs(obing.transform.position.y - tail.transform.position.y) <= 1.2f;
@@ -80,7 +87,7 @@ public sealed class Chapter4Contact : MonoBehaviour
         chapter.presentation.SetContactStatus(Responded
             ? Reunited ? "歐冰已沿路會合・繼續一起撤離" : "歐冰已回應，正在沿路跟上・等她會合"
             : opportunity == 1 ? "中段岔路：" + call + "\n告訴她上坡通路的方向"
-            : opportunity == 2 ? "最後岩肩：" + call + "\n告訴她通往集合地的方向" : "", opportunity > 0);
+            : opportunity == 2 ? "最後岩肩：" + call + "\n告訴她通往岩窟的方向" : "", opportunity > 0);
     }
 
     public void NotifySignal(int leg)
@@ -98,7 +105,7 @@ public sealed class Chapter4Contact : MonoBehaviour
         obing.MotionHeld = true;
         flow.Announce("obing", opportunity == 1
             ? "聽見了！你們沿上坡的通路走，我站起來就跟上。"
-            : "聽見了！穿過岩肩就是集合地……我沿著這條路過去！", 6.2f);
+            : "聽見了！穿過岩肩就看得見洞口……我沿著這條路過去！", 6.2f);
         chapter.presentation.SetContactStatus("歐冰已回應，正在起身・等她沿路會合", false);
     }
 

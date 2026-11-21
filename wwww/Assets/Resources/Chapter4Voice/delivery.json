@@ -37,9 +37,9 @@
       "pitch": -8
     },
     "lubi": {
-      "voice": "zh-TW-HsiaoYuNeural",
-      "rate": -5,
-      "pitch": -6
+      "voice": "zh-TW-HsiaoChenNeural",
+      "rate": 0,
+      "pitch": 1
     },
     "obing": {
       "voice": "zh-CN-XiaoxiaoNeural",

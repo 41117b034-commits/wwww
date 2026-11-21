@@ -13,6 +13,7 @@ public sealed class Chapter4Pursuer : MonoBehaviour
     public bool Down { get; private set; }
     public bool Engaged { get; private set; }
     public bool Suppressed => suppression > 0 && !Down;
+    public Chapter4Companion AimingAt { get; private set; }
     public bool Telegraphing { get; private set; }
     public int Shots { get; private set; }
     public Vector3 AimPoint => transform.position + Vector3.up * (1.18f - crouch * .38f);
@@ -76,14 +77,17 @@ public sealed class Chapter4Pursuer : MonoBehaviour
         if (Engaged && !Suppressed && !Telegraphing && !owner.Assisting) Pursue(dt);
         actor.GroundHeight = transform.position.y;
         var player = owner.Chapter.player;
-        aimTarget.position = player.transform.position + Vector3.up * (player.IsBracing ? .95f : 1.22f);
+        attackClock = Mathf.Max(0, attackClock - dt);
+        if (AimingAt && (AimingAt.Fallen || owner.Chapter.evacuation.Inside(AimingAt))) { AimingAt = null; Telegraphing = false; aimClock = 0; }
+        if (!Telegraphing && Engaged && !Suppressed && !owner.Assisting && attackClock <= 0)
+            AimingAt = owner.FindCompanionTarget(this);
+        aimTarget.position = AimingAt ? AimingAt.Chest : player.transform.position + Vector3.up * (player.IsBracing ? .95f : 1.22f);
         actor.Face(aimTarget.position);
-        bool visible = Engaged && !Suppressed && !owner.Assisting && Vector3.Distance(AimPoint, aimTarget.position) < 38 && owner.ClearTerrain(AimPoint, aimTarget.position);
-        if (!visible) { Telegraphing = false; aimClock = 0; rifle.aim = 0; rifle.lowered = .65f; return; }
-        attackClock -= dt;
+        bool visible = Engaged && !Suppressed && !owner.Assisting && Vector3.Distance(AimPoint, aimTarget.position) < (AimingAt ? 46 : 38) && owner.ClearTerrain(AimPoint, aimTarget.position);
+        if (!visible) { AimingAt = null; Telegraphing = false; aimClock = 0; rifle.aim = 0; rifle.lowered = .65f; return; }
         if (attackClock <= 0)
         {
-            if (!Telegraphing) shotTarget = aimTarget.position;
+            if (!Telegraphing || AimingAt) shotTarget = aimTarget.position;
             Telegraphing = true; aimClock += dt;
             aimTarget.position = shotTarget;
         }
@@ -93,7 +97,13 @@ public sealed class Chapter4Pursuer : MonoBehaviour
             Shots++; rifle.Fire(); audioSource.PlayOneShot(owner.Gun.shotClip, .5f);
             owner.EnemyReport(this, shotTarget);
             // The aim point is committed before firing. Moving away or reaching rock cover works without returning fire.
-            if (Chapter4Evacuation.FlatDistance(player.transform.position, shotTarget) < .85f && owner.ClearTerrain(AimPoint, player.transform.position + Vector3.up))
+            if (AimingAt)
+            {
+                var muzzle = rifle.muzzle ? rifle.muzzle.position : AimPoint;
+                if (!AimingAt.Fallen && owner.ClearTerrain(muzzle, AimingAt.Chest)) AimingAt.FallWounded(true);
+                AimingAt = null;
+            }
+            else if (Chapter4Evacuation.FlatDistance(player.transform.position, shotTarget) < .85f && owner.ClearTerrain(AimPoint, player.transform.position + Vector3.up))
                 owner.Chapter.gas.ReceiveGunfire(player.IsBracing ? .018f : .055f);
             else owner.Chapter.gas.atmosphere.BulletAt(shotTarget);
             Telegraphing = false; aimClock = 0; attackClock = 6.5f + Index * .7f;
@@ -102,7 +112,7 @@ public sealed class Chapter4Pursuer : MonoBehaviour
     void Pursue(float dt)
     {
         var flow = owner.Chapter.evacuation;
-        float limit = Mathf.Min(flow.PlayerProgress - 5, flow.RearProgress - 4);
+        float limit = Mathf.Min(flow.PlayerProgress - 5, flow.RearProgress - 4, flow.RouteLength - 24);
         if (RouteProgress >= limit) return;
         replanClock -= dt;
         if (trail.Count == 0 && replanClock <= 0)
@@ -195,12 +205,12 @@ public sealed class Chapter4Pursuer : MonoBehaviour
     public void Suppress(float seconds)
     {
         if (Down || owner.Frozen) return;
-        suppression = Mathf.Max(suppression, seconds); Telegraphing = false; aimClock = 0; attackClock = 1.4f;
+        AimingAt = null; suppression = Mathf.Max(suppression, seconds); Telegraphing = false; aimClock = 0; attackClock = 1.4f;
     }
     public void Hit()
     {
         if (Down || owner.Frozen) return;
-        Down = true; Telegraphing = false; fallClock = 0; motor.enabled = false;
+        AimingAt = null; Down = true; Telegraphing = false; fallClock = 0; motor.enabled = false;
         rifle.aim = 0; rifle.lowered = 1;
     }
     void LateUpdate()
@@ -245,15 +255,15 @@ public sealed class Chapter4Pursuer : MonoBehaviour
     }
     [Serializable] public sealed class Snapshot
     {
-        public Vector3 position, target; public bool down, engaged, telegraph; public float suppression, attack, aim, crouch, fall, progress, travelled, lane; public int shots;
+        public Chapter4Companion companionTarget; public Vector3 position, target; public bool down, engaged, telegraph; public float suppression, attack, aim, crouch, fall, progress, travelled, lane; public int shots;
     }
-    public Snapshot Capture() => new Snapshot { position = transform.position, target = shotTarget, down = Down, engaged = Engaged, telegraph = Telegraphing, suppression = suppression, attack = attackClock, aim = aimClock, crouch = crouch, fall = fallClock, shots = Shots, progress = RouteProgress, travelled = Travelled, lane = lane };
+    public Snapshot Capture() => new Snapshot { companionTarget = AimingAt, position = transform.position, target = shotTarget, down = Down, engaged = Engaged, telegraph = Telegraphing, suppression = suppression, attack = attackClock, aim = aimClock, crouch = crouch, fall = fallClock, shots = Shots, progress = RouteProgress, travelled = Travelled, lane = lane };
     public void Restore(Snapshot s)
     {
         motor.enabled = false; transform.position = s.position; Down = s.down; Engaged = s.engaged; Telegraphing = s.telegraph;
         suppression = s.suppression; attackClock = s.attack; aimClock = s.aim; crouch = s.crouch; fallClock = s.fall; Shots = s.shots;
         RouteProgress = s.progress; Travelled = s.travelled; lane = s.lane; shotTarget = s.target;
-        trail.Clear(); replanClock = 0;
+        AimingAt = s.companionTarget; trail.Clear(); replanClock = 0;
         motor.enabled = !Down; audioSource.Stop();
         fallSettled = false;
     }

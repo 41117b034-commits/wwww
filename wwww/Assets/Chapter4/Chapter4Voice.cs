@@ -55,9 +55,12 @@ public sealed class Chapter4Voice : MonoBehaviour
     void Next()
     {
         ClearSpeaker();
-        if (queue.Count == 0) { current = null; chapter.presentation.HideSpeech(); return; }
-        current = queue.Dequeue(); elapsed = 0;
-        speaker = Array.Find(chapter.evacuation.cast, a => a.actorId == current.role && a.gameObject.activeInHierarchy);
+        do
+        {
+            if (queue.Count == 0) { current = null; chapter.presentation.HideSpeech(); return; }
+            current = queue.Dequeue(); elapsed = 0;
+            speaker = Array.Find(chapter.evacuation.cast, a => a.actorId == current.role && a.gameObject.activeInHierarchy);
+        } while (speaker && speaker.Fallen);
         if (!current.card) chapter.presentation.ShowSpeech(speaker ? speaker.displayName : "旁白", current.text);
         PlaySelected();
     }
@@ -74,7 +77,7 @@ public sealed class Chapter4Voice : MonoBehaviour
                 var original = Resources.Load<AudioClip>(CurrentResource);
                 clip = GameLanguageSettings.ChineseVoice
                     ? (entry.preserveMandarinPauses ? original : ChineseSpeechPacing.Prepare(original))
-                    : Chapter3VoiceTone.Prepare(original);
+                    : (current.role == "lubi" ? original : Chapter3VoiceTone.Prepare(original));
                 clips[CurrentResource] = clip;
                 if (clip && clip != original) preparedClips.Add(clip);
             }
@@ -104,6 +107,7 @@ public sealed class Chapter4Voice : MonoBehaviour
             paused = freeze;
             if (paused) Output.Pause(); else Output.UnPause();
         }
+        if (speaker && speaker.Fallen) { Output.Stop(); Next(); }
         if (speaker) speaker.Speaking = !paused && Speaking;
         float mouth = 0;
         if (!paused && Speaking)

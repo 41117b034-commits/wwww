@@ -3,40 +3,47 @@
   "seediqAttribution": "ILRDF AI Tgdaya draft, teacher review pending",
   "entries": [
     {
-      "role": "bawan",
-      "chinese": "主隊到集合地了。古慕和露比都跟上了，歐冰還在後方。先讓傷患歇一口氣。",
-      "mandarin": "Chapter4Voice/Mandarin/cd84f6d42ebb76362397",
-      "seediq": "Chapter4Voice/Seediq/cd84f6d42ebb76362397",
-      "translation": "dehuk pssliyan ka seediq mdudul di. smnegul ka gumo daka lubi, ga bukuy nana ka obing. pshengak ka luqah han.",
+      "role": "mona",
+      "chinese": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
+      "mandarin": "Chapter4Voice/Mandarin/ec48bac3cc64dcdc07df",
+      "seediq": "Chapter4Voice/Seediq/ec48bac3cc64dcdc07df",
+      "translation": "Osa lmiqu kana ka seediq.",
       "reviewed": false,
       "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -1,
-        "pitch": -12,
-        "delivery": "urgent"
+        "voice": "zh-CN-YunjianNeural",
+        "rate": -7,
+        "pitch": -8,
+        "delivery": "steady"
       },
-      "mandarinSha256": "c4e8c5e36b66d155252f61046e73fea528bb900c5683b77cd95eec37abbac8fe",
-      "translationInput": "主隊到集合地了。Gumu和Lubi都跟上了，Obing還在後方。先讓傷患歇一口氣。",
-      "ttsText": "dehuk pssliyan ka seediq mdudul di. smnegul ka gumo daka lubi, ga bukuy nana ka obing. pshengak ka luqah han.",
+      "mandarinSha256": "d32e828bf0a58ed38e2579abe839222e266d466af94fd8d937a6035b2c82b6b6",
+      "translationInput": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
+      "ttsText": "Osa lmiqu kana ka seediq.",
       "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
-      "role": "bawan",
-      "chinese": "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。",
-      "mandarin": "Chapter4Voice/Mandarin/58ed5ab75d754e99120c",
-      "seediq": "Chapter4Voice/Seediq/58ed5ab75d754e99120c",
-      "translation": "meyah psliyan hiya kana ka seediq. msange hini han, niqan seediq mqita mnarux.",
+      "role": "mona",
+      "chinese": "再往裡走一點。外頭的腳步聲遠了，先讓受傷的人坐下。",
+      "mandarin": "Chapter4Voice/Mandarin/d28de476151036a22422",
+      "seediq": "Chapter4Voice/Seediq/d28de476151036a22422",
+      "translation": "mquri truma hari. ga theya hari ka papak na nganguc di, pllaani tloong ka seediq mluqah han.",
       "reviewed": false,
       "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -4,
-        "pitch": -14,
-        "delivery": "steady"
+        "voice": "zh-CN-YunjianNeural",
+        "rate": -11,
+        "pitch": -10,
+        "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "ed55b4bf370c1599fe042cd004fd3e238d040aecb9b707c4a9bfb72cb3ae1d07",
-      "translationInput": "大家都到集合地了。先在這裡歇一口氣，傷患有人照應。",
-      "ttsText": "meyah psliyan hiya kana ka seediq. msange hini han, niqan seediq mqita mnarux.",
+      "mandarinSha256": "2c3b07e7f01e1132725692243d75ad2b898a1712d9843da00560070aa9264be6",
+      "translationInput": "再往裡走一點。外頭的腳步聲遠了，先讓受傷的人坐下。",
+      "translationParts": [
+        {
+          "input": "再往裡走一點。外頭的腳步聲遠了，先讓受傷的人坐下。",
+          "translation": "mquri truma hari. ga theya hari ka papak na nganguc di, pllaani tloong ka seediq mluqah han.",
+          "ttsText": "mquri truma hari. ga theya hari ka papak na nganguc di, pllaani tloong ka seediq mluqah han."
+        }
+      ],
+      "ttsText": "mquri truma hari. ga theya hari ka papak na nganguc di, pllaani tloong ka seediq mluqah han.",
       "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
@@ -48,19 +55,255 @@
       "translation": "tloong hari han komo. ni ko siyo so, thowe naq hengak han.",
       "reviewed": false,
       "mandarinVoice": {
-        "voice": "zh-TW-HsiaoYuNeural",
-        "rate": -5,
-        "pitch": -6,
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": -4,
+        "pitch": 0,
         "delivery": "steady"
       },
-      "mandarinSha256": "1fc6755cea00f5bc97ff3d3433ea25d03cfe76d8ba8628955108c3226bfec13f",
+      "mandarinSha256": "5ef66daab306dfad144860a3a776f1e7fd055014232a7beef287245a219ab65e",
       "translationInput": "Gumu，坐穩了再鬆手。我在你旁邊，你先慢慢把氣喘勻。",
       "ttsText": "tloong hari han komo. ni ko siyo so, thowe naq hengak han.",
       "seediqVoice": "賽德克_德固達雅_女聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
-      "mandarinSourceSha256": "643941233c59d629549303f7e23afff34921b9671495a01f26d7ab5236ab519e",
-      "mandarinMastering": "trail_partner_local_v1",
-      "preserveMandarinPauses": true
+      "mandarinMastering": "cave_partner_neural_v2",
+      "preserveMandarinPauses": true,
+      "mandarinReading": "古慕，坐穩了再鬆手。我在你旁邊。你先慢慢把氣喘勻。"
+    },
+    {
+      "role": "bawan",
+      "chinese": "看見你的示意了。傷患先走，大家沿著這條路跟上！",
+      "mandarin": "Chapter4Voice/Mandarin/a288897092945a8df0ed",
+      "seediq": "Chapter4Voice/Seediq/a288897092945a8df0ed",
+      "translation": "qtaan su so pgkela.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-YunJheNeural",
+        "rate": -1,
+        "pitch": -12,
+        "delivery": "urgent"
+      },
+      "mandarinSha256": "75935c5e1a803460ffd97f717a96dfd739322074f34de8925c056c06881d72bb",
+      "translationInput": "看見你的示意了。傷患先走，大家沿著這條路跟上！",
+      "ttsText": "qtaan su so pgkela.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "tado",
+      "chinese": "前面那個彎很窄。看著前一個人的背，跟上來！",
+      "mandarin": "Chapter4Voice/Mandarin/01f8eb955dfc03fe3076",
+      "seediq": "Chapter4Voice/Seediq/01f8eb955dfc03fe3076",
+      "translation": "mring riyong tgelaq berah ga. qtai bukuy na seediq berah, snegon!",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-CN-YunxiNeural",
+        "rate": -1,
+        "pitch": -12,
+        "delivery": "urgent"
+      },
+      "mandarinSha256": "89f00221f8480d7b3f6f56590b295f4954b7ea1e5ff5deba2a9abb2cb0b7d268",
+      "translationInput": "前面那個彎很窄。看著前一個人的背，跟上來！",
+      "translationParts": [
+        {
+          "input": "前面那個彎很窄。看著前一個人的背，跟上來！",
+          "translation": "mring riyong tgelaq berah ga. qtai bukuy na seediq berah, snegon!",
+          "ttsText": "mring riyong tgelaq berah ga. qtai bukuy na seediq berah, snegon!"
+        }
+      ],
+      "ttsText": "mring riyong tgelaq berah ga. qtai bukuy na seediq berah, snegon!",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "lubi",
+      "chinese": "古慕，看見那個洞口了嗎？再靠過來一點，我陪你走進去。",
+      "mandarin": "Chapter4Voice/Mandarin/bdf11b941f3c6c2c2ae6",
+      "seediq": "Chapter4Voice/Seediq/bdf11b941f3c6c2c2ae6",
+      "translation": "qtaan so beling ga di, komo? eyah smdaling tikoh hini dongan, hae miso mkkesa troma.",
+      "reviewed": false,
+      "preserveMandarinPauses": true,
+      "mandarinMastering": "cave_partner_neural_v2",
+      "mandarinReading": "古慕，看見那個洞口了嗎？再靠過來一點，我陪你走進去。",
+      "mandarinVoice": {
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": 1,
+        "pitch": 2,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "9dddc80eda7337ae22715ec1aaa89eb373365b74fd2f2e967d0bb7da1058f6dc",
+      "translationInput": "Gumu，看見那個洞口了嗎？再靠過來一點，我陪你走進去。",
+      "translationParts": [
+        {
+          "input": "Gumu，看見那個洞口了嗎？再靠過來一點，我陪你走進去。",
+          "translation": "qtaan so beling ga di, komo? eyah smdaling tikoh hini dongan, hae miso mkkesa troma.",
+          "ttsText": "qtaan so beling ga di, komo? eyah smdaling tikoh hini dongan, hae miso mkkesa troma."
+        }
+      ],
+      "ttsText": "qtaan so beling ga di, komo? eyah smdaling tikoh hini dongan, hae miso mkkesa troma.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "gumu",
+      "chinese": "咳、咳……我的腳……站不穩了……",
+      "mandarin": "Chapter4Voice/Mandarin/713b7c9710e62a93ec6b",
+      "seediq": "Chapter4Voice/Seediq/713b7c9710e62a93ec6b",
+      "translation": "mseyaq, mseya... papak mu... ini ksderux di...",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": -8,
+        "pitch": -8,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "84b6b6befdfe7c56bcd5da858d5292f7a9ab53bece72e6c590a508ef65e03820",
+      "translationInput": "咳、咳……我的腳……站不穩了……",
+      "ttsText": "mseyaq, mseya. papak mu. ini ksderux di.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "lubi",
+      "chinese": "古慕，靠著我。慢慢起來，我扶你一起走。",
+      "mandarin": "Chapter4Voice/Mandarin/129d4a3a43d6b14529f8",
+      "seediq": "Chapter4Voice/Seediq/129d4a3a43d6b14529f8",
+      "translation": "sdahar yako ga komo. thowe hari tutuy, dyago sumu.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": -1,
+        "pitch": 1,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "dbfc78506288605f5df381327cb54ccae5b471036a6237d4398098d2113c4461",
+      "translationInput": "Gumu，靠著我。慢慢起來，我扶你一起走。",
+      "ttsText": "sdahar yako ga komo. thowe hari tutuy, dyago sumu.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
+      "mandarinMastering": "cave_partner_neural_v2",
+      "preserveMandarinPauses": true,
+      "mandarinReading": "古慕，靠著我。慢慢起來……我扶你一起走。"
+    },
+    {
+      "role": "bawan",
+      "chinese": "露比已扶住古慕。她們一起跟上，你繼續看好前面的通路。",
+      "mandarin": "Chapter4Voice/Mandarin/12bea5f3c5e17a21d29f",
+      "seediq": "Chapter4Voice/Seediq/12bea5f3c5e17a21d29f",
+      "translation": "ga dmayo gomo ka lobi. msnegol ka dheya ga, bleyaq mita elow ga berah han.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-YunJheNeural",
+        "rate": -1,
+        "pitch": -12,
+        "delivery": "urgent"
+      },
+      "mandarinSha256": "a198e6c5b71de32772e69c4bd731526d6b001d139a33fbc12668d05a3078093a",
+      "translationInput": "Lubi已扶住Gumu。她們一起跟上，你繼續看好前面的通路。",
+      "ttsText": "ga dmayo gomo ka lobi. msnegol ka dheya ga, bleyaq mita elow ga berah han.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "obing",
+      "chinese": "咳……你們先往前，我……喘一口氣……",
+      "mandarin": "Chapter4Voice/Mandarin/58afa268eab0345f290b",
+      "seediq": "Chapter4Voice/Seediq/58afa268eab0345f290b",
+      "translation": "mseyaq... musa namu berah han, mseyax ku... mesa ku.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "rate": -5,
+        "pitch": -8,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "eb83a3df921530f5cf50d379a8367b51ea7db14a08fd16c99d8801e761d8cd82",
+      "translationInput": "咳……你們先往前，我……喘一口氣……",
+      "ttsText": "mseyaq. musa namu berah han, mseyax ku. mesa ku.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "bawan",
+      "chinese": "歐冰在隊末咳得厲害，坐下了。前面的人沿通路靠攏，別散開。",
+      "mandarin": "Chapter4Voice/Mandarin/38b4ce4985542f335fad",
+      "seediq": "Chapter4Voice/Seediq/38b4ce4985542f335fad",
+      "translation": "knteetu mseyaq puting ka obing, tloong di. seediq ga berih mkkesa mkkesa ssiyo, iya pswaye.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-TW-YunJheNeural",
+        "rate": -4,
+        "pitch": -14,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "55562b04af1dfd197a6e968d03e16be4847e121adcfed49c116ea742a8a57edb",
+      "translationInput": "Obing在隊末咳得厲害，坐下了。前面的人沿通路靠攏，別散開。",
+      "ttsText": "knteetu mseyaq puting ka obing, tloong di. seediq ga berih mkkesa mkkesa ssiyo, iya pswaye.",
+      "seediqVoice": "賽德克_德固達雅_男聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "obing",
+      "chinese": "我看見你們了……謝謝你告訴我方向。我會跟緊。",
+      "mandarin": "Chapter4Voice/Mandarin/0baeacd0834dd79c3bc3",
+      "seediq": "Chapter4Voice/Seediq/0baeacd0834dd79c3bc3",
+      "translation": "qmnita ku yamu di... mhuwe su bale tgsai ku elu, mkkere ku smnegul.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "rate": -5,
+        "pitch": -7,
+        "delivery": "warm"
+      },
+      "mandarinSha256": "458cd4409908ded79edfa4375e3a8ea39c3b87158513e8c1db73cb2e0d740cce",
+      "translationInput": "我看見你們了……謝謝你告訴我方向。我會跟緊。",
+      "ttsText": "qmnita ku yamu di. mhuwe su bale tgsai ku elu, mkkere ku smnegul.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "obing",
+      "chinese": "聽見了！你們沿上坡的通路走，我站起來就跟上。",
+      "mandarin": "Chapter4Voice/Mandarin/15bdf87ef46417613e6c",
+      "seediq": "Chapter4Voice/Seediq/15bdf87ef46417613e6c",
+      "translation": "Mnbahang ku, mkkesa namu elu mquri baro, mtutuy ku ma smnegul ku yamu.",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "rate": -2,
+        "pitch": -6,
+        "delivery": "urgent"
+      },
+      "mandarinSha256": "c4b3cbdcf8f509442b187af3434c8f1301a0d4f4c09276b1d8212b37a46ca660",
+      "translationInput": "聽見了！你們沿上坡的通路走，我站起來就跟上。",
+      "ttsText": "Mnbahang ku, mkkesa namu elu mquri baro, mtutuy ku ma smnegul ku yamu.",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
+    },
+    {
+      "role": "obing",
+      "chinese": "聽見了！穿過岩肩就看得見洞口……我沿著這條路過去！",
+      "mandarin": "Chapter4Voice/Mandarin/372dc893783dcd08391a",
+      "seediq": "Chapter4Voice/Seediq/372dc893783dcd08391a",
+      "translation": "mbahang di! moda ahing tasil de qtaan beling di... moda ku eluw nii!",
+      "reviewed": false,
+      "mandarinVoice": {
+        "voice": "zh-CN-XiaoxiaoNeural",
+        "rate": -5,
+        "pitch": -8,
+        "delivery": "steady"
+      },
+      "mandarinSha256": "9e8c5f716c3ab753cbd811d868dc777b41e7cea8404415241190fc4a9c06d1e5",
+      "translationInput": "聽見了！穿過岩肩就看得見洞口……我沿著這條路過去！",
+      "translationParts": [
+        {
+          "input": "聽見了！穿過岩肩就看得見洞口……我沿著這條路過去！",
+          "translation": "mbahang di! moda ahing tasil de qtaan beling di... moda ku eluw nii!",
+          "ttsText": "mbahang di! moda ahing tasil de qtaan beling di. moda ku eluw nii!"
+        }
+      ],
+      "ttsText": "mbahang di! moda ahing tasil de qtaan beling di. moda ku eluw nii!",
+      "seediqVoice": "賽德克_德固達雅_女聲",
+      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "gumu",
@@ -154,44 +397,6 @@
       "mandarinSha256": "933a5d6c49174d01b053973fd3b83a072282b02f94c333411381742483356d54",
       "translationInput": "先走到前面確認通路，再示意我們過去。",
       "ttsText": "osa berah qmita elow han ma, tgsai ta mosa deno.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "bawan",
-      "chinese": "看見你的示意了。傷患先走，大家沿著這條路跟上！",
-      "mandarin": "Chapter4Voice/Mandarin/a288897092945a8df0ed",
-      "seediq": "Chapter4Voice/Seediq/a288897092945a8df0ed",
-      "translation": "qtaan su so pgkela.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -1,
-        "pitch": -12,
-        "delivery": "urgent"
-      },
-      "mandarinSha256": "75935c5e1a803460ffd97f717a96dfd739322074f34de8925c056c06881d72bb",
-      "translationInput": "看見你的示意了。傷患先走，大家沿著這條路跟上！",
-      "ttsText": "qtaan su so pgkela.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "mona",
-      "chinese": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
-      "mandarin": "Chapter4Voice/Mandarin/ec48bac3cc64dcdc07df",
-      "seediq": "Chapter4Voice/Seediq/ec48bac3cc64dcdc07df",
-      "translation": "Osa lmiqu kana ka seediq.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-YunjianNeural",
-        "rate": -7,
-        "pitch": -8,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "d32e828bf0a58ed38e2579abe839222e266d466af94fd8d937a6035b2c82b6b6",
-      "translationInput": "大家往山林裡撤。先讓傷患走，照應身邊的人，不要散開。",
-      "ttsText": "Osa lmiqu kana ka seediq.",
       "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
@@ -374,19 +579,19 @@
       "translation": "gomo, eyah smdaling hini chedil na. niqan btunux tkriyak ka toma papak, kkkesa ta moda hiya, iya mhero mhero.",
       "reviewed": false,
       "mandarinVoice": {
-        "voice": "zh-TW-HsiaoYuNeural",
-        "rate": -5,
-        "pitch": -6,
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": 0,
+        "pitch": 1,
         "delivery": "steady"
       },
-      "mandarinSha256": "4cdf4314ffb3fc8e5095054c3a8db82590387547e80579b72a38bc738d2cce61",
+      "mandarinSha256": "30f8d6b14a71f3544c27e4c0c1187009892c29149375e7c7cbc1d6a30c8de3eb",
       "translationInput": "Gumu，把重量靠過來。腳下有突出的石頭，我們一步一步跨過去，不用趕著追。",
       "ttsText": "gomo, eyah smdaling hini chedil na. niqan btunux tkriyak ka toma papak, kkkesa ta moda hiya, iya mhero mhero.",
       "seediqVoice": "賽德克_德固達雅_女聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
-      "mandarinSourceSha256": "0a613a5d59adcd72cbf26d3bfa30131c5617a71ac375d8448abcfc78d1724846",
-      "mandarinMastering": "trail_partner_local_v1",
-      "preserveMandarinPauses": true
+      "mandarinMastering": "cave_partner_neural_v2",
+      "preserveMandarinPauses": true,
+      "mandarinReading": "古慕，把重量靠過來。腳下有突出的石頭，我們一步一步跨過去。不用趕著追。"
     },
     {
       "role": "gumu",
@@ -434,19 +639,19 @@
       "translation": "nii ka qnhdean na di. gomo, knbeyax mheyo han, qmerac ahing mo, oxe so mo htiyon hini.",
       "reviewed": false,
       "mandarinVoice": {
-        "voice": "zh-TW-HsiaoYuNeural",
-        "rate": -5,
-        "pitch": -6,
+        "voice": "zh-TW-HsiaoChenNeural",
+        "rate": -2,
+        "pitch": 0,
         "delivery": "steady"
       },
-      "mandarinSha256": "fa320a87f07a88804ae0b7ed24a92cc1a218065d6579d1ae2938b94e9020bfd1",
+      "mandarinSha256": "e412e5aba1eb8f07ed4f2166e92a2a464b90395b54a1fb531c91262baadf61e0",
       "translationInput": "這一段終於走過來了。Gumu，先站穩，抓好我的肩，我不會把你留在這裡。",
       "ttsText": "nii ka qnhdean na di. gomo, knbeyax mheyo han, qmerac ahing mo, oxe so mo htiyon hini.",
       "seediqVoice": "賽德克_德固達雅_女聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
-      "mandarinSourceSha256": "dd1fb9e60d424610902f546effb0804521961be5230e5826cbadce9aa393e64d",
-      "mandarinMastering": "trail_partner_local_v1",
-      "preserveMandarinPauses": true
+      "mandarinMastering": "cave_partner_neural_v2",
+      "preserveMandarinPauses": true,
+      "mandarinReading": "這一段終於走過來了。古慕，先站穩。抓好我的肩，我不會把你留在這裡。"
     },
     {
       "role": "gumu",
@@ -465,25 +670,6 @@
       "translationInput": "我聽得見。你先換一口氣，我會抓緊。等大家排好，我們再一起走。",
       "ttsText": "qnbhangan mu. pryuxi han, pskere ku qmerac. bleyaq ptbeku kana, suupu ta musa dungal.",
       "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "tado",
-      "chinese": "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。",
-      "mandarin": "Chapter4Voice/Mandarin/28f7bb84b5b2ad1bb362",
-      "seediq": "Chapter4Voice/Seediq/28f7bb84b5b2ad1bb362",
-      "translation": "ga smnegol kanna ka loqah na. dngoson ka elow btonox berah, iya psteqi ssiyo ka seediq, pqita ko berah deno.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-YunxiNeural",
-        "rate": -4,
-        "pitch": -14,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "2799e91334729dc50468112cf9f72f94f5f07bc4f7030ba07b41d0248cba256b",
-      "translationInput": "傷患都還跟著。前面岩肩路窄，別讓隊伍在轉彎處斷開，我會在前面照看。",
-      "ttsText": "ga smnegol kanna ka loqah na. dngoson ka elow btonox berah, iya psteqi ssiyo ka seediq, pqita ko berah deno.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
@@ -525,28 +711,6 @@
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
-      "role": "lubi",
-      "chinese": "古慕，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。",
-      "mandarin": "Chapter4Voice/Mandarin/ba43bff57d24c6cdb6b1",
-      "seediq": "Chapter4Voice/Seediq/ba43bff57d24c6cdb6b1",
-      "translation": "gomo, qntaan mo ka pssliyan di. sdahar yako ka hei mo, iya mrrudu papak, mhedu ta mkkesa.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-HsiaoYuNeural",
-        "rate": -5,
-        "pitch": -6,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "b559843b02f892eca7912bed31974e46b396e6af3903123ba05f7d4f8554586d",
-      "translationInput": "Gumu，已經看見集合地了。身體靠著我，腳步別亂，我們一起走完。",
-      "ttsText": "gomo, qntaan mo ka pssliyan di. sdahar yako ka hei mo, iya mrrudu papak, mhedu ta mkkesa.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
-      "mandarinSourceSha256": "a7cf93859a1bfb2a0ddf0d68934025cdf61dd145dd4436693b5d5ecb95b408c2",
-      "mandarinMastering": "trail_partner_local_v1",
-      "preserveMandarinPauses": true
-    },
-    {
       "role": "gumu",
       "chinese": "我看見了……我跟著你。到了那裡，讓我們先坐一下，再清點身邊的人。",
       "mandarin": "Chapter4Voice/Mandarin/a03d79fb0c1e69810d93",
@@ -562,161 +726,6 @@
       "mandarinSha256": "54f3c8c75068d1d38e5a84ea0e49979620737c9020a317458bd4a8d20b72c94d",
       "translationInput": "我看見了……我跟著你。到了那裡，讓我們先坐一下，再清點身邊的人。",
       "ttsText": "qmnita ku da. snegul ku isu. dehuk ku hiya de, tloung ta tikuh han, ma psbgurah seediq ssiyo ta.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "gumu",
-      "chinese": "咳、咳……我的腳……站不穩了……",
-      "mandarin": "Chapter4Voice/Mandarin/713b7c9710e62a93ec6b",
-      "seediq": "Chapter4Voice/Seediq/713b7c9710e62a93ec6b",
-      "translation": "mseyaq, mseya... papak mu... ini ksderux di...",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-HsiaoChenNeural",
-        "rate": -8,
-        "pitch": -8,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "84b6b6befdfe7c56bcd5da858d5292f7a9ab53bece72e6c590a508ef65e03820",
-      "translationInput": "咳、咳……我的腳……站不穩了……",
-      "ttsText": "mseyaq, mseya. papak mu. ini ksderux di.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "lubi",
-      "chinese": "古慕，靠著我。慢慢起來，我扶你一起走。",
-      "mandarin": "Chapter4Voice/Mandarin/129d4a3a43d6b14529f8",
-      "seediq": "Chapter4Voice/Seediq/129d4a3a43d6b14529f8",
-      "translation": "sdahar yako ga komo. thowe hari tutuy, dyago sumu.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-HsiaoYuNeural",
-        "rate": -5,
-        "pitch": -6,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "bc30ff8097cb92a211653cd2030e33bac64b1944342af92bc4c39f25718b30a1",
-      "translationInput": "Gumu，靠著我。慢慢起來，我扶你一起走。",
-      "ttsText": "sdahar yako ga komo. thowe hari tutuy, dyago sumu.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay",
-      "mandarinSourceSha256": "2eedaec25ef09774a833584bb5df7286ed35f33fdc023bb9013c96b043f3d271",
-      "mandarinMastering": "trail_partner_local_v1",
-      "preserveMandarinPauses": true
-    },
-    {
-      "role": "bawan",
-      "chinese": "露比已扶住古慕。她們一起跟上，你繼續看好前面的通路。",
-      "mandarin": "Chapter4Voice/Mandarin/12bea5f3c5e17a21d29f",
-      "seediq": "Chapter4Voice/Seediq/12bea5f3c5e17a21d29f",
-      "translation": "ga dmayo gomo ka lobi. msnegol ka dheya ga, bleyaq mita elow ga berah han.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -1,
-        "pitch": -12,
-        "delivery": "urgent"
-      },
-      "mandarinSha256": "a198e6c5b71de32772e69c4bd731526d6b001d139a33fbc12668d05a3078093a",
-      "translationInput": "Lubi已扶住Gumu。她們一起跟上，你繼續看好前面的通路。",
-      "ttsText": "ga dmayo gomo ka lobi. msnegol ka dheya ga, bleyaq mita elow ga berah han.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "obing",
-      "chinese": "咳……你們先往前，我……喘一口氣……",
-      "mandarin": "Chapter4Voice/Mandarin/58afa268eab0345f290b",
-      "seediq": "Chapter4Voice/Seediq/58afa268eab0345f290b",
-      "translation": "mseyaq... musa namu berah han, mseyax ku... mesa ku.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-XiaoxiaoNeural",
-        "rate": -5,
-        "pitch": -8,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "eb83a3df921530f5cf50d379a8367b51ea7db14a08fd16c99d8801e761d8cd82",
-      "translationInput": "咳……你們先往前，我……喘一口氣……",
-      "ttsText": "mseyaq. musa namu berah han, mseyax ku. mesa ku.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "bawan",
-      "chinese": "歐冰在隊末咳得厲害，坐下了。前面的人沿通路靠攏，別散開。",
-      "mandarin": "Chapter4Voice/Mandarin/38b4ce4985542f335fad",
-      "seediq": "Chapter4Voice/Seediq/38b4ce4985542f335fad",
-      "translation": "knteetu mseyaq puting ka obing, tloong di. seediq ga berih mkkesa mkkesa ssiyo, iya pswaye.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-TW-YunJheNeural",
-        "rate": -4,
-        "pitch": -14,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "55562b04af1dfd197a6e968d03e16be4847e121adcfed49c116ea742a8a57edb",
-      "translationInput": "Obing在隊末咳得厲害，坐下了。前面的人沿通路靠攏，別散開。",
-      "ttsText": "knteetu mseyaq puting ka obing, tloong di. seediq ga berih mkkesa mkkesa ssiyo, iya pswaye.",
-      "seediqVoice": "賽德克_德固達雅_男聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "obing",
-      "chinese": "我看見你們了……謝謝你告訴我方向。我會跟緊。",
-      "mandarin": "Chapter4Voice/Mandarin/0baeacd0834dd79c3bc3",
-      "seediq": "Chapter4Voice/Seediq/0baeacd0834dd79c3bc3",
-      "translation": "qmnita ku yamu di... mhuwe su bale tgsai ku elu, mkkere ku smnegul.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-XiaoxiaoNeural",
-        "rate": -5,
-        "pitch": -7,
-        "delivery": "warm"
-      },
-      "mandarinSha256": "458cd4409908ded79edfa4375e3a8ea39c3b87158513e8c1db73cb2e0d740cce",
-      "translationInput": "我看見你們了……謝謝你告訴我方向。我會跟緊。",
-      "ttsText": "qmnita ku yamu di. mhuwe su bale tgsai ku elu, mkkere ku smnegul.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "obing",
-      "chinese": "聽見了！你們沿上坡的通路走，我站起來就跟上。",
-      "mandarin": "Chapter4Voice/Mandarin/15bdf87ef46417613e6c",
-      "seediq": "Chapter4Voice/Seediq/15bdf87ef46417613e6c",
-      "translation": "Mnbahang ku, mkkesa namu elu mquri baro, mtutuy ku ma smnegul ku yamu.",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-XiaoxiaoNeural",
-        "rate": -2,
-        "pitch": -6,
-        "delivery": "urgent"
-      },
-      "mandarinSha256": "c4b3cbdcf8f509442b187af3434c8f1301a0d4f4c09276b1d8212b37a46ca660",
-      "translationInput": "聽見了！你們沿上坡的通路走，我站起來就跟上。",
-      "ttsText": "Mnbahang ku, mkkesa namu elu mquri baro, mtutuy ku ma smnegul ku yamu.",
-      "seediqVoice": "賽德克_德固達雅_女聲",
-      "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
-    },
-    {
-      "role": "obing",
-      "chinese": "聽見了！穿過岩肩就是集合地……我沿著這條路過去！",
-      "mandarin": "Chapter4Voice/Mandarin/c969597c483e280235a7",
-      "seediq": "Chapter4Voice/Seediq/c969597c483e280235a7",
-      "translation": "mbahang di! moda ahing tasil de kii ka msseli di... moda ku eluw nii!",
-      "reviewed": false,
-      "mandarinVoice": {
-        "voice": "zh-CN-XiaoxiaoNeural",
-        "rate": -5,
-        "pitch": -8,
-        "delivery": "steady"
-      },
-      "mandarinSha256": "51dbc1c52766ad4cfbbc64c207ac01b58260eb1afc007c08012f252c6efc3cdd",
-      "translationInput": "聽見了！穿過岩肩就是集合地……我沿著這條路過去！",
-      "ttsText": "mbahang di! moda ahing tasil de kii ka msseli di. moda ku eluw nii!",
       "seediqVoice": "賽德克_德固達雅_女聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
@@ -758,10 +767,10 @@
     },
     {
       "role": "narrator",
-      "chinese": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
-      "mandarin": "Chapter4Voice/Mandarin/22068bfbd28359c3750a",
-      "seediq": "Chapter4Voice/Seediq/22068bfbd28359c3750a",
-      "translation": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha \"musya kusya\".\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
+      "chinese": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
+      "mandarin": "Chapter4Voice/Mandarin/f559ddce945b76ca4242",
+      "seediq": "Chapter4Voice/Seediq/f559ddce945b76ca4242",
+      "translation": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha \"musya kusya\".\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral ssiyo yayung Pecang, ini na srwai pbrinah alang daha dungal. betaq saya, alang gluban kesun ka alang hiya, lqlaqi mnsngarin mnsngare ciida we ga meniq hiya nana.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
@@ -769,13 +778,13 @@
         "pitch": -8,
         "delivery": "hurt_or_grief"
       },
-      "mandarinSha256": "17492a3d53510a33cf3f5c6ef38f0eb842b4dda9d48f532da2e1cefcd5f8ef68",
+      "mandarinSha256": "a21a13c6c610c099a4cc1b031c84ade5872abcc7dafb9ac10f368f8bae9643b8",
       "mandarinSegments": [
         "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。",
-        "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。"
+        "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。"
       ],
       "preserveMandarinPauses": true,
-      "translationInput": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
+      "translationInput": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。\n\n五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
       "translationParts": [
         {
           "input": "隔年四月二十五日清晨，在日本警察的默許下，道澤群的人襲擊了收容所。許多熬過山中戰事的人，沒能活過那一天。這就是後來所說的「第二次霧社事件」。",
@@ -783,21 +792,21 @@
           "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya."
         },
         {
-          "input": "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。今天，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
-          "translation": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
-          "ttsText": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana."
+          "input": "五月六日，日本當局強迫倖存的族人離開霧社，遷往北港溪畔的川中島，不准他們再回故鄉。至今，那裡叫作清流部落，當年倖存者的子孫仍生活在那裡。",
+          "translation": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral ssiyo yayung Pecang, ini na srwai pbrinah alang daha dungal. betaq saya, alang gluban kesun ka alang hiya, lqlaqi mnsngarin mnsngare ciida we ga meniq hiya nana.",
+          "ttsText": "idas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral ssiyo yayung Pecang, ini na srwai pbrinah alang daha dungal. betaq saya, alang gluban kesun ka alang hiya, lqlaqi mnsngarin mnsngare ciida we ga meniq hiya nana."
         }
       ],
-      "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya.\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral kndkilan yayung pehcang, ini na srwai pbrinah alang daha dungal. ali saya, alang gluban kesun ka hiya, lqlaqi mnsngarenux ciida we ga meniq hiya nana.",
+      "ttsText": "knkawas tgsepac idas mpusan rima ali mgrebu, meniq knsat tanah tunux, musa kmremux sapah pssliyan ka seediq tnugiyo. hbaro ba seediq mnosa mccebu lmiqu, ini dehuk muudus ali kiya. kika kesun daha musya kusya.\n\nidas rima ali mmteru, qbsuran tanah tunux wada na pskixun pqduriq paran ka seediq mnsngari alang, musa theruy dxeral ssiyo yayung Pecang, ini na srwai pbrinah alang daha dungal. betaq saya, alang gluban kesun ka alang hiya, lqlaqi mnsngarin mnsngare ciida we ga meniq hiya nana.",
       "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },
     {
       "role": "narrator",
-      "chinese": "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
-      "mandarin": "Chapter4Voice/Mandarin/94e8bfe80b3c32fad7a6",
-      "seediq": "Chapter4Voice/Seediq/94e8bfe80b3c32fad7a6",
-      "translation": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
+      "chinese": "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。",
+      "mandarin": "Chapter4Voice/Mandarin/0a8a1014ccbf82a828c7",
+      "seediq": "Chapter4Voice/Seediq/0a8a1014ccbf82a828c7",
+      "translation": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang diras so elow baro, snegon so dehok hini.",
       "reviewed": false,
       "mandarinVoice": {
         "voice": "zh-TW-YunJheNeural",
@@ -805,13 +814,17 @@
         "pitch": -6,
         "delivery": "steady"
       },
-      "mandarinSha256": "ce2bc21fe9aa130c9211d1170368c936256b69dcf9c7afa9849501437562c218",
       "mandarinSegments": [
         "露比扶著古慕走進馬赫坡岩窟。比胡已經坐下來了，聽見腳步，又朝洞口望了一眼。",
-        "是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。"
+        "是歐冰。她在岔路上聽見你的呼喊，一路跟到了這裡。"
       ],
       "preserveMandarinPauses": true,
-      "translationInput": "Lubi扶著Gumu走進馬赫坡岩窟。Pihu已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
+      "mandarinSha256": "0d257e805cac347488610af54569ae396465bd02a7514de062919622314843cc",
+      "mandarinEdit": {
+        "source": "94e8bfe80b3c32fad7a6",
+        "secondParagraphEnd": 5.68
+      },
+      "translationInput": "Lubi扶著Gumu走進馬赫坡岩窟。Pihu已經坐下來了，聽見腳步，又朝洞口望了一眼。\n\n是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。",
       "translationParts": [
         {
           "input": "Lubi扶著Gumu走進馬赫坡岩窟。Pihu已經坐下來了，聽見腳步，又朝洞口望了一眼。",
@@ -819,12 +832,12 @@
           "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal."
         },
         {
-          "input": "是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。這一回，你們都活著走到了岩窟。",
-          "translation": "obing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
-          "ttsText": "obing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil."
+          "input": "是Obing。她在岔路上聽見你的呼喊，一路跟到了這裡。",
+          "translation": "obing. ga mbahang diras so elow baro, snegon so dehok hini.",
+          "ttsText": "obing. ga mbahang diras so elow baro, snegon so dehok hini."
         }
       ],
-      "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang uyas su eluw baro ka heya, snegun su dehuk hini. ali saya, muudus namu dehuk beling tasil.",
+      "ttsText": "dmanga gumo mremux lhengo mahu ka lubi. ga tloung ka pihu di, mbahang ndaan papak na, ma mquri beling qmita dungal.\n\nobing. ga mbahang diras so elow baro, snegon so dehok hini.",
       "seediqVoice": "賽德克_德固達雅_男聲",
       "seediqProvider": "https://ai-labs.ilrdf.org.tw/hnang-kari-ai-asi-sluhay"
     },

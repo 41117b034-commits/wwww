@@ -16,7 +16,8 @@ catalog_path = OUT/'catalog.json'
 def inventory():
     previous = json.loads(catalog_path.read_text('utf-8'))['entries'] if catalog_path.exists() else []
     existing = {(e['role'],e['chinese']):e for e in previous}
-    entries = {}
+    # Keep recorded companion lines used by older scene revisions and rehearsal tools.
+    entries = {k:v for k,v in existing.items() if k[0]!='narrator'}
     def add(role,text):
         key=(role,text)
         entries[key]=existing.get(key,dict(role=role,chinese=text,mandarin='',seediq='',translation='',reviewed=False))
@@ -45,7 +46,7 @@ async def mandarin():
     config=json.loads((ROOT/'Assets/StreamingAssets/ChineseVoice/delivery.json').read_text('utf-8'))
     config['roles'].update({
         'gumu':dict(voice='zh-TW-HsiaoChenNeural',rate=-8,pitch=-8),
-        'lubi':dict(voice='zh-TW-HsiaoYuNeural',rate=-5,pitch=-6),
+        'lubi':dict(voice='zh-TW-HsiaoChenNeural',rate=0,pitch=1),
         'obing':dict(voice='zh-CN-XiaoxiaoNeural',rate=-5,pitch=-8),
         'narrator':dict(voice='zh-TW-YunJheNeural',rate=-4,pitch=-6)})
     (OUT/'delivery.json').write_text(json.dumps(config,ensure_ascii=False,indent=2),'utf-8')
@@ -57,13 +58,15 @@ async def mandarin():
             resource='Chapter4Voice/Mandarin/'+key; dest=ROOT/'Assets/Resources'/(resource+'.wav')
             text=entry['chinese'].replace('1930','一九三零').replace('1931','一九三一')
             mp3=work/(key+'.mp3')
+            settings=config
             choice=worker.settings(text,entry['role'],config)
             if entry['role']=='lubi':
                 import chapter4_lubi
-                if entry.get('mandarinMastering')!=chapter4_lubi.REVISION or not dest.is_file() or hashlib.sha256(dest.read_bytes()).hexdigest()!=entry.get('mandarinSha256'):
-                    staged,_=chapter4_lubi.render_entry(entry,dest,work/'lubi')
-                    dest.write_bytes(staged.read_bytes())
-                return
+                text, rate, pitch = chapter4_lubi.READINGS[entry['chinese']]
+                settings = {'roles': {'lubi': dict(voice=chapter4_lubi.VOICE,rate=rate,pitch=pitch), 'default': config['roles']['default']}, 'delivery': []}
+                choice = worker.settings(text, 'lubi', settings)
+                entry.update(preserveMandarinPauses=True, mandarinMastering=chapter4_lubi.REVISION, mandarinReading=text)
+                entry.pop('mandarinSourceSha256',None)
             if dest.exists() and entry.get('mandarinVoice') == choice and entry.get('mandarinSha256') == hashlib.sha256(dest.read_bytes()).hexdigest():
                 entry['mandarin']=resource
                 return
@@ -81,7 +84,7 @@ async def mandarin():
                                 await worker.synthesize(part,entry['role'],segment,config)
                                 marker.write_text(json.dumps(expected),'utf-8');break
                             except Exception:
-                                if attempt==3:raise
+                                if attempt==3: raise
                                 await asyncio.sleep(2+attempt*2)
                     sound=miniaudio.decode(segment.read_bytes(),output_format=miniaudio.SampleFormat.SIGNED16,nchannels=1,sample_rate=24000)
                     if len(sound.samples)<2400 or max(abs(x) for x in sound.samples)<164:raise ValueError('Empty paragraph')
@@ -97,13 +100,13 @@ async def mandarin():
             if not ready:
                 for attempt in range(4):
                     try:
-                        await worker.synthesize(text,entry['role'],mp3,config)
+                        await worker.synthesize(text,entry['role'],mp3,settings)
                         sidecar.write_text(json.dumps(choice),'utf-8')
                         break
                     except Exception:
                         if attempt == 3: raise
                         await asyncio.sleep(2 + attempt * 2)
-            if not dest.exists() or entry.get('mandarinVoice') != choice:
+            if not dest.exists() or entry.get('mandarinVoice') != choice or hashlib.sha256(dest.read_bytes()).hexdigest() != entry.get('mandarinSha256'):
                 sound=miniaudio.decode(mp3.read_bytes(),output_format=miniaudio.SampleFormat.SIGNED16,nchannels=1,sample_rate=24000)
                 if len(sound.samples) < 2400 or max(abs(x) for x in sound.samples) < 164: raise ValueError('Empty recording')
                 with wave.open(str(dest),'wb') as w:

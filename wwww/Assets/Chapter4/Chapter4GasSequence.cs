@@ -95,7 +95,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         }
         if (!Active || chapter.WorldFrozen) return;
         float dt = Time.deltaTime;
-        WaveAge = flow.PartyGathered ? WaveDuration : Mathf.Min(WaveDuration, WaveAge + dt);
+        WaveAge = flow.PlayerInShelter ? WaveDuration : Mathf.Min(WaveDuration, WaveAge + dt);
         Elapsed += dt;
         bool deciding = flow.Action != null && (flow.Action.Crossing == Chapter4RetreatAction.CrossingState.Gap ||
             flow.Action.Rockfall && flow.Action.Choice == Chapter4RetreatAction.RouteChoice.Undecided);
@@ -105,13 +105,20 @@ public sealed class Chapter4GasSequence : MonoBehaviour
         // No permanent rear-of-party safety leash. During automatic assistance
         // and actual following the rally point offers a pocket, but an ignored
         // signal lets smoke sweep through that pocket too.
-        float ceiling = flow.PartyGathered ? flow.RouteLength - 18 : flow.RouteLength;
+        float ceiling = flow.PlayerInShelter ? flow.RouteLength - 18 : flow.RouteLength;
         if (BlocksPartyAdvance || chapter.contact.CurrentState == Chapter4Contact.State.Rising)
             ceiling = Mathf.Min(ceiling, flow.RearProgress - 10, flow.PlayerProgress - 10);
         FrontDistance = Mathf.Max(FrontDistance, Mathf.Min(ceiling, FrontDistance + advance * dt));
         grace = Mathf.Max(0, grace - dt);
         UpdateGumu(dt);
         UpdateObing(dt);
+        if (flow.PlayerInShelter)
+        {
+            PlayerDensity = 0; Exposure = Mathf.MoveTowards(Exposure, 0, dt * .3f); BlastStress = Mathf.MoveTowards(BlastStress, 0, dt * .3f);
+            atmosphere.Tick(FrontDistance, false, false, dt);
+            chapter.presentation.SetGasStatus("", 0, 0);
+            return;
+        }
         PlayerDensity = DensityAt(chapter.player.transform.position);
         atmosphere.Tick(FrontDistance, Active, false, dt);
         // A player actively trying to advance at the formation tether cannot
@@ -140,7 +147,7 @@ public sealed class Chapter4GasSequence : MonoBehaviour
 
     public void ReleaseGasAt(Vector3 point, bool harmless)
     {
-        if (!initialized || chapter.WorldFrozen || IsCollapsed || flow.PartyGathered) return;
+        if (!initialized || chapter.WorldFrozen || IsCollapsed || flow.PlayerInShelter || flow.PartyGathered) return;
         GasOrigin = point; WaveAge = 0; GasWaves++; waveHarmless = harmless;
         atmosphere.GasAt(point);
     }
