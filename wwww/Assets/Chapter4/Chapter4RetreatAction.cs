@@ -31,6 +31,9 @@ public sealed class Chapter4RetreatAction
         "留意前方落彈與身後腳步・步槍仍可使用";
     readonly Chapter4Evacuation flow;
     readonly Vector3[][] branches = { new Vector3[26], new Vector3[26] };
+    readonly Vector3[] mainTrail = new Vector3[26];
+    // Forest trail 0 is 2.45 m wide on each side, with an uneven painted edge.
+    const float MainTrailHalfWidthWithShoulder = 2.75f;
     readonly List<Mesh> meshes = new List<Mesh>();
     readonly List<Material> materials = new List<Material>();
     Transform geometry;
@@ -40,13 +43,15 @@ public sealed class Chapter4RetreatAction
     public Chapter4RetreatAction(Chapter4Evacuation owner, MeshFilter rockModel)
     {
         flow = owner;
-        for (int side = 0; side < 2; side++)
-            for (int i = 0; i < 26; i++)
-            {
-                float d = ForkStart + i, t = i / 25f;
-                float bend = Mathf.Min(1, Mathf.Sin(t * Mathf.PI) * 1.6f);
-                branches[side][i] = Ground(flow.BasePoint(d) + Right(d) * (side == 0 ? -5.1f : 4.25f) * bend);
-            }
+        for (int i = 0; i < mainTrail.Length; i++)
+        {
+            float d = ForkStart + i;
+            mainTrail[i] = flow.BasePoint(d);
+            float bend = Mathf.Min(1, Mathf.Sin(i * Mathf.PI / (mainTrail.Length - 1)) * 1.6f);
+            Vector3 offset = Right(d) * bend;
+            branches[0][i] = Ground(mainTrail[i] - offset * 5.1f);
+            branches[1][i] = Ground(mainTrail[i] + offset * 4.25f);
+        }
         BuildLandmarks(rockModel);
     }
 
@@ -62,9 +67,9 @@ public sealed class Chapter4RetreatAction
         if (Rockfall && Choice == RouteChoice.Undecided && player >= 71.5f)
         {
             Vector3 feet = flow.chapter.player.transform.position;
-            float left = DistanceToBranch(feet, branches[0]), right = DistanceToBranch(feet, branches[1]);
-            if (Mathf.Min(left, right) <= CorridorWidth(player) && Mathf.Abs(left - right) > .45f)
-                Choice = left < right ? RouteChoice.Sheltered : RouteChoice.Exposed;
+            float side = Vector3.Dot(feet - flow.BasePoint(player), Right(player));
+            if (Mathf.Abs(side) >= .8f && ForkEdgeDistance(feet, player) <= 0)
+                Choice = side < 0 ? RouteChoice.Sheltered : RouteChoice.Exposed;
         }
         if (Rockfall && player >= ForkStart - 3 && player < ForkEnd + 3)
         {
@@ -89,17 +94,21 @@ public sealed class Chapter4RetreatAction
         return Mathf.Lerp(4.6f, 2.55f, Mathf.SmoothStep(0, 1, interior));
     }
     public float BranchDistance(Vector3 position) =>
-        Mathf.Min(DistanceToBranch(position, branches[0]), DistanceToBranch(position, branches[1]));
-    static float DistanceToBranch(Vector3 position, Vector3[] branch)
+        Mathf.Min(DistanceToTrail(position, branches[0]), DistanceToTrail(position, branches[1]));
+    public float ForkEdgeDistance(Vector3 position, float progress) =>
+        Mathf.Min(BranchDistance(position) - CorridorWidth(progress),
+            DistanceToTrail(position, mainTrail) - MainTrailHalfWidthWithShoulder);
+    static float DistanceToTrail(Vector3 position, Vector3[] trail)
     {
         float closest = float.MaxValue;
-        for (int i = 1; i < branch.Length; i++)
+        for (int i = 1; i < trail.Length; i++)
         {
-            Vector3 a = branch[i - 1], v = Vector3.ProjectOnPlane(branch[i] - a, Vector3.up);
-            float t = Mathf.Clamp01(Vector3.Dot(Vector3.ProjectOnPlane(position - a, Vector3.up), v) / Mathf.Max(.001f, v.sqrMagnitude));
-            closest = Mathf.Min(closest, Chapter4Evacuation.FlatDistance(position, a + v * t));
+            Vector3 v = trail[i] - trail[i - 1], relative = position - trail[i - 1];
+            v.y = relative.y = 0;
+            float t = Mathf.Clamp01(Vector3.Dot(relative, v) / Mathf.Max(.001f, v.sqrMagnitude));
+            closest = Mathf.Min(closest, (relative - v * t).sqrMagnitude);
         }
-        return closest;
+        return Mathf.Sqrt(closest);
     }
     Vector3 Right(float d) => Vector3.Cross(Vector3.up, flow.BasePoint(d + .5f) - flow.BasePoint(d - .5f)).normalized;
     Vector3 Ground(Vector3 p)

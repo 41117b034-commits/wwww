@@ -93,8 +93,7 @@ public sealed class Chapter4Ending : MonoBehaviour
         if (stage == Stage.Personal)
             chapter.presentation.ShowEnding(chapter,
                 pending.obingReunited && pending.inheritedBihu != Chapter4Evacuation.BihuState.Dead ? "一起走到了岩窟" : "我們仍會記得",
-                PersonalBody(pending.obingReunited, pending.inheritedBihu),
-                "人物命運依本作劇情而定。接下來兩頁記述霧社事件的史實。");
+                PersonalBody(pending.obingReunited, pending.inheritedBihu));
         else chapter.presentation.ShowEnding(chapter,
             stage == Stage.History1930 ? "1930 年 · 戰火追進了山裡" : "1931 年 · 從霧社到川中島",
             stage == Stage.History1930 ? History1930 : History1931);

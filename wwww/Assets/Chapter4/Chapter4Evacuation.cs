@@ -271,8 +271,10 @@ public sealed class Chapter4Evacuation : MonoBehaviour
         float oldDistance = FlatDistance(from, PointOnRoute(current));
         if (Action != null && Action.Rockfall && progress > Chapter4RetreatAction.ForkStart && progress < Chapter4RetreatAction.ForkEnd)
         {
-            float excess = Action.BranchDistance(candidate) - Chapter4RetreatAction.CorridorWidth(progress);
-            return excess <= 0 || excess < Action.BranchDistance(from) - Chapter4RetreatAction.CorridorWidth(current);
+            // The painted main road continues alongside the boulders and joins both detours.
+            // Their solid rock meshes handle contact inside this shared walking area.
+            float excess = Action.ForkEdgeDistance(candidate, progress);
+            return excess <= 0 || excess < Action.ForkEdgeDistance(from, current);
         }
         bool camp = LegIndex == 0 && progress < 3 && FlatDistance(candidate, PointOnRoute(0)) < 12;
         return camp || distance <= 4.6f || distance < oldDistance;
