@@ -438,7 +438,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     public KeyCode physicalInteractKey = KeyCode.E;
     public KeyCode physicalInteractGamepadKey = KeyCode.JoystickButton0;
     public KeyCode physicalCancelKey = KeyCode.Q;
-    public float physicalPickupRange = 3.2f;
+    public float physicalPickupRange = 3f;
     public float physicalDeliveryRange = 2.25f;
     public float physicalGiveSeconds = 0.45f;
     public Transform winePickupPoint;
@@ -826,6 +826,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private GameObject activeDeliveryTargetMarker;
     private Transform activeDeliveryTarget;
+    private float activeDeliveryMarkerHeight;
     private Vector3 deliveryMarkerBaseScale = Vector3.one;
     private readonly List<GameObject> activeDeliveryGroundArrows = new List<GameObject>();
     private float nextDeliveryGroundArrowRefreshTime;
@@ -1092,6 +1093,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (physicalCarriedProp && !physicalDeliveryAnimating && IsFreeExplorationActive())
+            PlacePhysicalCarriedProp();
         UpdateChapterPresentation();
         if (tensionAudioHasStarted)
         {
@@ -2014,11 +2017,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        if (physicalCarriedProp != null && !physicalDeliveryAnimating)
-        {
-            PlacePhysicalCarriedProp();
-        }
-
         if (physicalDeliveryAnimating || interactionAnimationRunning)
         {
             return;
@@ -2228,10 +2226,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private GameObject CreatePhysicalCarryProp(bool isWine)
     {
-        if (isWine && FirstCupPending && bambooCupModel)
+        if (isWine && weddingElder && bambooCupModel)
         {
-            Renderer cup = ceremonyCup ? ceremonyCup.GetComponentInChildren<Renderer>() : null;
-            return CreateWeddingProp(bambooCupModel, cup ? cup.sharedMaterial : null, "WeddingBambooCup", .22f);
+            return CreatePlayerCup();
         }
         if (!isWine && foodCarryTemplate != null)
         {
@@ -2266,14 +2263,18 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             return;
         }
 
-        // 沒指定手部 Hold Point 時，自動固定在玩家視野右下方，PC/VR 都能測。
-        physicalCarriedProp.transform.position = GetCarriedPropPosition();
-
         Transform view = GetPlayerViewTransform();
         if (view == null)
         {
             return;
         }
+        if (weddingElder && bambooCupModel && carriedWeddingItem == WeddingCarryItem.Wine)
+        {
+            PositionPlayerCup(view);
+            return;
+        }
+
+        physicalCarriedProp.transform.position = GetCarriedPropPosition();
 
         if (carriedWeddingItem == WeddingCarryItem.Wine)
         {
@@ -2318,6 +2319,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         GameObject prop = physicalCarriedProp;
+        if (playerCupHand)
+        {
+            playerCupHand.SetActive(false);
+            Destroy(playerCupHand);
+            playerCupHand = null;
+        }
         Vector3 start = prop.transform.position;
         Vector3 end = receiver.position + Vector3.up * 1.05f;
         Vector3 originalScale = prop.transform.localScale;
@@ -2331,7 +2338,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             if (firstCup)
             {
                 end = elderPose.CupGrip;
-                prop.transform.localScale = originalScale * Mathf.Lerp(1f, elderPose.Height * .095f / .22f, t);
+                prop.transform.localScale = originalScale * Mathf.Lerp(1f, elderPose.Height * .095f / PlayerCupHeight, t);
             }
             Vector3 p = Vector3.Lerp(start, end, t);
             p.y += Mathf.Sin(t * Mathf.PI) * 0.08f;
@@ -2725,6 +2732,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         if (activeDeliveryTargetMarker != null)
         {
             activeDeliveryTargetMarker.name = "DeliveryTargetMarker_" + target.name;
+            activeDeliveryMarkerHeight = deliveryTargetMarkerHeight;
+            if (weddingElder && TryGetReceiverHeadBonePosition(target, out Vector3 head))
+            {
+                // The wedding cast has different authored scales. Keep the label above the recipient.
+                activeDeliveryMarkerHeight = Mathf.Max(deliveryTargetMarkerHeight, (head.y - target.position.y) * 1.15f);
+            }
             deliveryMarkerBaseScale =
                 Vector3.one * Mathf.Max(0.08f, deliveryTargetMarkerScale);
             activeDeliveryTargetMarker.transform.localScale = deliveryMarkerBaseScale;
@@ -2736,9 +2749,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     private void UpdateDeliveryTargetGuidance()
     {
         bool showGroundArrows = ShouldShowDeliveryGroundArrows();
-        bool showTimedTaskArrows = ShouldShowTimedTaskGroundGuidance();
-        if ((weddingElder && WeddingGuidanceQuiet)
-            || (!showDeliveryTargetMarker && !showGroundArrows && !showTimedTaskArrows)
+        bool showTaskArrows = ShouldShowTaskGroundGuidance();
+        if ((weddingElder && WeddingActionPlaying)
+            || (!showDeliveryTargetMarker && !showGroundArrows && !showTaskArrows)
             || policeSequenceStarted
             || !IsFreeExplorationActive())
         {
@@ -2748,14 +2761,14 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (carriedWeddingItem == WeddingCarryItem.None)
         {
-            if (!showTimedTaskArrows)
+            if (!showTaskArrows)
             {
                 ClearDeliveryTargetMarker();
                 return;
             }
 
-            Transform timedTarget = GetTimedTaskGuidanceTarget();
-            if (timedTarget == null)
+            Transform target = GetTaskGuidanceTarget();
+            if (target == null)
             {
                 ClearDeliveryTargetMarker();
                 return;
@@ -2767,7 +2780,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 activeDeliveryTargetMarker = null;
             }
 
-            activeDeliveryTarget = timedTarget;
+            activeDeliveryTarget = target;
             RefreshDeliveryGroundArrows(false);
             return;
         }
@@ -2803,7 +2816,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
             activeDeliveryTargetMarker.transform.position =
                 activeDeliveryTarget.position
-                + Vector3.up * (deliveryTargetMarkerHeight + bob);
+                + Vector3.up * (activeDeliveryMarkerHeight + bob);
 
             activeDeliveryTargetMarker.transform.Rotate(
                 Vector3.up,
@@ -2829,14 +2842,14 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         return showDeliveryGroundArrows || IsNewPoliceScene();
     }
 
-    private bool ShouldShowTimedTaskGroundGuidance()
+    private bool ShouldShowTaskGroundGuidance()
     {
-        return explorationTimerFinished
+        return (explorationTimerFinished || (weddingElder && weddingPickupPropsReady && showDeliveryGroundArrows))
             && IsFreeExplorationActive()
             && !AreWeddingTasksComplete();
     }
 
-    private Transform GetTimedTaskGuidanceTarget()
+    private Transform GetTaskGuidanceTarget()
     {
         if (deliveredWineCount < Mathf.Max(1, wineTargetCount))
         {
@@ -2858,10 +2871,10 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void RefreshDeliveryGroundArrows(bool force)
     {
-        bool timedTaskGuidance = ShouldShowTimedTaskGroundGuidance();
-        if ((!ShouldShowDeliveryGroundArrows() && !timedTaskGuidance)
+        bool taskGuidance = ShouldShowTaskGroundGuidance();
+        if ((!ShouldShowDeliveryGroundArrows() && !taskGuidance)
             || activeDeliveryTarget == null
-            || (carriedWeddingItem == WeddingCarryItem.None && !timedTaskGuidance))
+            || (carriedWeddingItem == WeddingCarryItem.None && !taskGuidance))
         {
             ClearDeliveryGroundArrows();
             return;
@@ -2877,6 +2890,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         Vector3 playerPosition = GetCurrentPlayerPosition();
         Vector3 targetPosition = activeDeliveryTarget.position;
+        if (carriedWeddingItem == WeddingCarryItem.None && (activeDeliveryTarget == winePickupPoint || activeDeliveryTarget == foodPickupPoint))
+            targetPosition = GetPhysicalPickupWorldPosition(activeDeliveryTarget);
         Vector3 flatDirection = targetPosition - playerPosition;
         flatDirection.y = 0f;
 
@@ -6561,8 +6576,13 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private bool TryGetTerrainGroundY(Vector3 position, out float groundY)
     {
+        return FindTerrainSurface(position, out groundY) != null;
+    }
+
+    private static Terrain FindTerrainSurface(Vector3 position, out float groundY)
+    {
         groundY = 0f;
-        bool foundGround = false;
+        Terrain surface = null;
         Terrain[] terrains = Terrain.activeTerrains;
 
         for (int i = 0; i < terrains.Length; i++)
@@ -6583,14 +6603,14 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             }
 
             float sampledY = terrainPosition.y + terrain.SampleHeight(position);
-            if (!foundGround || sampledY > groundY)
+            if (!surface || sampledY > groundY)
             {
                 groundY = sampledY;
-                foundGround = true;
+                surface = terrain;
             }
         }
 
-        return foundGround;
+        return surface;
     }
 
     private bool TryGetPhysicsGroundY(Transform root, Vector3 position, out float groundY)
@@ -9483,6 +9503,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             }
 
             grounder.Configure(animator, guidedGroundLayers);
+            if (weddingElder)
+                grounder.SetDanceFloor(actorRoot.GetComponent<Chapter1CircleDancer>(), FindTerrainSurface(actorRoot.position, out _));
             grounder.footClearance = 0.018f;
             grounder.hardSnapThreshold = 0.08f;
             grounder.followSpeed = 32f;
@@ -15539,6 +15561,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     private float ShowLine(string speaker, string line, float seconds)
     {
         seconds=BeginChineseLine(speaker,line,seconds);
+        // The chapter canvas follows the headset in VR and scales to the Game view on desktop.
+        if (chapterCanvas && dialogueUI)
+        {
+            dialogueUI.ShowLine(speaker, line, seconds);
+            return seconds;
+        }
         var bridge = Chapter1StorySubtitleBridge.Instance;
         bool openingCaption = openingStoryPlaying && openingSequence;
         bool guestCaption = weddingElder && (line == GroomRequest || line == ElderInvitation);

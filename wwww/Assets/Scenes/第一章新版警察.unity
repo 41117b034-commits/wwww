@@ -8552,8 +8552,10 @@ MonoBehaviour:
   chapterObjective: {fileID: 2074181911}
   weddingElder: {fileID: 2074181950}
   bambooCupModel: {fileID: 919132149155446097, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
-  cupStandModel: {fileID: 919132149155446097, guid: a2541253a2d3eaa40a173e8999e515b9, type: 3}
-  cupStandMaterial: {fileID: 2100000, guid: fc61be3dad86353468e232f0a9b0659d, type: 2}
+  cupStandModel: {fileID: 919132149155446097, guid: 64dba67ec6254988bf94202957022419, type: 3}
+  cupStandMaterial: {fileID: 2100000, guid: 5a84bfb0c04829546bd850a1a96d3a8a, type: 2}
+  cupHandMesh: {fileID: 4300000, guid: df50aa8c94a19064a909013acd7e1f97, type: 2}
+  cupHandSkin: {fileID: 2100000, guid: d7dad94f5d628e344800bdc3add50b61, type: 2}
   weddingAmbience: {fileID: 1634240005}
   weddingVocals: {fileID: 0}
   tensionAmbience: {fileID: 145637399}
@@ -8701,7 +8703,7 @@ MonoBehaviour:
   physicalInteractKey: 101
   physicalInteractGamepadKey: 330
   physicalCancelKey: 113
-  physicalPickupRange: 2.1
+  physicalPickupRange: 3
   physicalDeliveryRange: 4
   physicalGiveSeconds: 0.45
   winePickupPoint: {fileID: 241933309}
@@ -8727,7 +8729,7 @@ MonoBehaviour:
   pulseDeliveryTargetMarker: 1
   deliveryTargetMarkerColor: {r: 1, g: 0.78, b: 0.05, a: 1}
   showDeliveryTargetNameAndDistance: 1
-  showDeliveryGroundArrows: 0
+  showDeliveryGroundArrows: 1
   deliveryGroundArrowMaxCount: 12
   deliveryGroundArrowSpacing: 2.2
   deliveryGroundArrowStartDistance: 1.2
@@ -10654,7 +10656,7 @@ MonoBehaviour:
   forceHandRenderersVisible: 1
   updateSkinnedMeshWhenOffscreen: 1
   hideHandsAfterSequence: 0
-  debugReplayWithK: 1
+  debugReplayWithK: 0
 --- !u!1 &1072873720
 GameObject:
   m_ObjectHideFlags: 0

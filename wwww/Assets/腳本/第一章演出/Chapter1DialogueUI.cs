@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Chapter1DialogueUI : MonoBehaviour
 {
@@ -9,9 +10,22 @@ public class Chapter1DialogueUI : MonoBehaviour
     public TextMeshProUGUI bodyText;
 
     private Coroutine hideRoutine;
+    private Text chapterSpeaker, chapterBody;
+
+    public static Chapter1DialogueUI Create(Canvas canvas, Font font)
+    {
+        var panel = Chapter3Presentation.CreateSubtitlePanel(canvas.transform, font, out Text speaker, out Text body);
+        panel.GetComponent<Image>().raycastTarget = false;
+        panel.gameObject.AddComponent<CanvasGroup>();
+        var ui = panel.gameObject.AddComponent<Chapter1DialogueUI>();
+        ui.chapterSpeaker = speaker;
+        ui.chapterBody = body;
+        return ui;
+    }
 
     private void Awake()
     {
+        if (!canvasGroup) canvasGroup = GetComponent<CanvasGroup>();
         GameDialogueOverlay.Ensure(GetComponentInParent<Canvas>());
         HideInstant();
     }
@@ -30,6 +44,19 @@ public class Chapter1DialogueUI : MonoBehaviour
         }
 
         bool showSpeaker = !ShouldHideNarrationLabel(speaker);
+        if (chapterBody)
+        {
+            chapterBody.text = GameLanguageSettings.LocalizeSubtitle(line);
+            chapterSpeaker.text = showSpeaker ? GameLanguageSettings.LocalizeSpeaker(speaker) : "";
+            chapterBody.rectTransform.anchorMax = new Vector2(.965f, showSpeaker ? .67f : .92f);
+            // A narration line has no name row. Keep its lower edge and give it just the space it needs.
+            var panel = (RectTransform)transform;
+            panel.anchorMax = new Vector2(.86f, showSpeaker ? .29f : .21f);
+            panel.offsetMax = Vector2.zero;
+            float bodyFraction = chapterBody.rectTransform.anchorMax.y - .08f;
+            float requiredHeight = (chapterBody.preferredHeight + 2f) / bodyFraction;
+            panel.offsetMax = Vector2.up * Mathf.Max(0f, requiredHeight - panel.rect.height);
+        }
         if (speakerText != null)
         {
             speakerText.gameObject.SetActive(showSpeaker);

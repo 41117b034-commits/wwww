@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.XR;
 
 public partial class Chapter1PerformanceController
 {
@@ -8,6 +9,11 @@ public partial class Chapter1PerformanceController
     [SerializeField] private GameObject bambooCupModel;
     [SerializeField] private GameObject cupStandModel;
     [SerializeField] private Material cupStandMaterial;
+    [SerializeField] private Mesh cupHandMesh;
+    [SerializeField] private Material cupHandSkin;
+    private GameObject playerCupHand;
+    private const float PlayerCupHeight = .19f;
+    private const float CupGripHeight = PlayerCupHeight * .46f;
 
     private const string ElderName = "火堆旁的長輩";
     private const string GroomRequest = "來，幫我把這杯酒送給火堆旁的長輩，好嗎？";
@@ -17,8 +23,8 @@ public partial class Chapter1PerformanceController
     private float greetingUntil;
     private bool weddingPrimaryPressed, weddingReturnPressed;
     private bool FirstCupPending => weddingElder && !deliveredWineTargets.Contains(weddingElder.GetInstanceID());
-    private bool WeddingGuidanceQuiet => Time.time < greetingUntil || interactionAnimationRunning
-        || physicalDeliveryAnimating || danceRoutineRunning || policeSequenceStarted;
+    private bool WeddingActionPlaying => interactionAnimationRunning || physicalDeliveryAnimating || danceRoutineRunning;
+    private bool WeddingGuidanceQuiet => Time.time < greetingUntil || WeddingActionPlaying || policeSequenceStarted;
 
     private enum WeddingAction { None, TakeWine, TakeFood, GiveWine, GiveFood, JoinDance }
 
@@ -82,24 +88,46 @@ public partial class Chapter1PerformanceController
         RememberElderPlace();
         if (!cupStandModel) return;
         float height = elderPose.Height;
-        GameObject stand = CreateWeddingProp(cupStandModel, cupStandMaterial, "WeddingCupStand", height * .51f);
-        Vector3 basePoint = weddingElder.position + (elderPose.Right * .31f + elderPose.Forward * .14f) * height;
+        GameObject stand = CreateWeddingProp(cupStandModel, cupStandMaterial, "WeddingCupTable", height * .49f);
+        Vector3 outward = Vector3.ProjectOnPlane(weddingElder.position - GetFireCenterPosition(), Vector3.up).normalized;
+        Vector3 basePoint = weddingElder.position + outward * (.36f * height);
         if (TryGetIncidentSurfaceY(basePoint, out float floor)) basePoint.y = floor;
-        stand.transform.position = basePoint;
-        cupRestPoint = basePoint + Vector3.up * (height * .51f);
-        // The top of the scanned stump is uneven. Rest the cup on the wood under its centre.
-        foreach (MeshFilter mesh in stand.GetComponentsInChildren<MeshFilter>())
+        stand.transform.SetPositionAndRotation(basePoint, Quaternion.LookRotation(outward));
+        // The middle board has a flat top. Dancers and ground probes should only encounter the floor.
+        cupRestPoint = basePoint + Vector3.up * (height * .49f);
+    }
+
+    private GameObject CreatePlayerCup()
+    {
+        Renderer reference = ceremonyCup ? ceremonyCup.GetComponentInChildren<Renderer>() : null;
+        GameObject cup = CreateWeddingProp(bambooCupModel, reference ? reference.sharedMaterial : null, "WeddingBambooCup", PlayerCupHeight);
+        if (cupHandMesh && cupHandSkin)
         {
-            if (!mesh.sharedMesh) continue;
-            var surface = mesh.gameObject.AddComponent<MeshCollider>();
-            surface.sharedMesh = mesh.sharedMesh;
-            Physics.SyncTransforms();
-            if (surface.Raycast(new Ray(cupRestPoint + Vector3.up * height, Vector3.down), out RaycastHit hit, height * 2f))
-            {
-                cupRestPoint = hit.point;
-                break;
-            }
+            playerCupHand = new GameObject("握竹杯的右手", typeof(MeshFilter), typeof(MeshRenderer));
+            var hand = playerCupHand.transform;
+            hand.SetParent(cup.transform, false);
+            hand.localPosition = Vector3.up * CupGripHeight;
+            hand.localRotation = Quaternion.Euler(0f, -32f, 0f);
+            playerCupHand.GetComponent<MeshFilter>().sharedMesh = cupHandMesh;
+            playerCupHand.GetComponent<MeshRenderer>().sharedMaterial = cupHandSkin;
         }
+        return cup;
+    }
+
+    private void PositionPlayerCup(Transform view)
+    {
+        Vector3 grip = view.position + view.forward * .76f + view.right * .345f - view.up * .28f;
+        Quaternion rotation = Quaternion.Euler(0f, view.eulerAngles.y, 0f);
+        var head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+        var right = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        if (view.parent && right.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 handPosition)
+            && right.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion handRotation)
+            && head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition))
+        {
+            grip = view.position + view.parent.TransformVector(handPosition - headPosition);
+            rotation = view.parent.rotation * handRotation;
+        }
+        physicalCarriedProp.transform.SetPositionAndRotation(grip - rotation * (Vector3.up * CupGripHeight), rotation);
     }
 
     private GameObject CreateWeddingProp(GameObject model, Material finish, string propName, float height)

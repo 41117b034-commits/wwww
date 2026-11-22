@@ -1008,7 +1008,12 @@ public sealed class MenuPresentationController : MonoBehaviour
         image.sprite=panel?panel.sprite:null;image.type=Image.Type.Sliced;
         if(panel)image.pixelsPerUnitMultiplier=panel.pixelsPerUnitMultiplier;
         Button button=go.GetComponent<Button>();button.targetGraphic=image;
-        ColorBlock colors=button.colors;colors.highlightedColor=new Color(1,.96f,.84f);colors.selectedColor=colors.highlightedColor;colors.pressedColor=new Color(.85f,.76f,.57f);colors.fadeDuration=.12f;button.colors=colors;
+        ColorBlock colors = button.colors;
+        colors.highlightedColor = new Color32(255, 159, 53, 255);
+        colors.selectedColor = colors.highlightedColor;
+        colors.pressedColor = new Color(.85f,.76f,.57f);
+        colors.fadeDuration = .1f;
+        button.colors = colors;
         var label=go.GetComponentInChildren<TextMeshProUGUI>();
         if(!label)
         {

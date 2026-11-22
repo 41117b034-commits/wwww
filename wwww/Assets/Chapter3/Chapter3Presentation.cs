@@ -100,10 +100,7 @@ public sealed class Chapter3Presentation : MonoBehaviour
         Label(title,"第三章   霧社突襲與戰鬥",font,25,new Vector2(.035f,.57f),new Vector2(.97f,.98f)).color = new Color(.9f,.78f,.5f);
         ui.objective = Label(title,"部落與山林",font,29,new Vector2(.035f,.06f),new Vector2(.97f,.55f));
         ui.hint = Label(go.transform,"",font,24,new Vector2(.1f,.03f),new Vector2(.9f,.09f)); ui.hint.alignment = TextAnchor.MiddleCenter;
-        var sub = Panel(go.transform,"劇情字幕",new Vector2(.14f,.11f),new Vector2(.86f,.29f),new Color(.025f,.035f,.03f,.94f));
-        ui.subtitlePanel = sub.gameObject;
-        ui.speaker = Label(sub,"",font,26,new Vector2(.035f,.64f),new Vector2(.965f,.98f)); ui.speaker.color = new Color(.93f,.8f,.5f);
-        ui.subtitle = Label(sub,"",font,30,new Vector2(.035f,.08f),new Vector2(.965f,.67f));
+        ui.subtitlePanel = CreateSubtitlePanel(go.transform, font, out ui.speaker, out ui.subtitle).gameObject;
         var chat = Panel(go.transform,"巴萬出發前交談",new Vector2(.1f,.03f),new Vector2(.9f,.42f),new Color(.024f,.037f,.032f,.97f));
         ui.chat = chat.gameObject;
         Label(chat,"巴萬·拿威",font,29,new Vector2(.035f,.82f),new Vector2(.5f,.98f)).color = new Color(.94f,.81f,.54f);
@@ -129,6 +126,14 @@ public sealed class Chapter3Presentation : MonoBehaviour
         ui.fade.color = Color.clear;
         GameDialogueOverlay.Ensure(ui.canvas);
         return ui;
+    }
+    internal static RectTransform CreateSubtitlePanel(Transform parent, Font font, out Text speaker, out Text body)
+    {
+        var panel = Panel(parent, "劇情字幕", new Vector2(.14f,.11f), new Vector2(.86f,.29f), new Color(.025f,.035f,.03f,.94f));
+        speaker = Label(panel, "", font, 26, new Vector2(.035f,.64f), new Vector2(.965f,.98f));
+        speaker.color = new Color(.93f,.8f,.5f);
+        body = Label(panel, "", font, 30, new Vector2(.035f,.08f), new Vector2(.965f,.67f));
+        return panel;
     }
     static RectTransform Panel(Transform parent,string name,Vector2 min,Vector2 max,Color color)
     {

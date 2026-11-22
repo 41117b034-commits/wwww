@@ -17,6 +17,7 @@ public partial class Chapter1PerformanceController
     {
         if (!chapterObjective) return;
         chapterCanvas = chapterObjective.GetComponentInParent<Canvas>(true);
+        if (chapterCanvas && !dialogueUI) dialogueUI = Chapter1DialogueUI.Create(chapterCanvas, chapterObjective.font);
         chapterObjective.transform.parent.gameObject.SetActive(false);
         if (weddingElder && chapterCanvas)
         {
@@ -44,8 +45,6 @@ public partial class Chapter1PerformanceController
             // Keep the raised hand visible as the scene brightens even after a slow loading frame.
             if (groomPose) groomPose.Beckon(1.4f * progress);
         });
-        if (openingSequence && openingSequence.isActiveAndEnabled)
-            yield return openingSequence.StartCoroutine(openingSequence.PlaySequence(false));
     }
 
     private void UpdateChapterPresentation()

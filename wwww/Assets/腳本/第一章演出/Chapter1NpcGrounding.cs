@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-[DefaultExecutionOrder(2000)]
+[DefaultExecutionOrder(3400)]
 public sealed class Chapter1NpcGrounding : MonoBehaviour
 {
     public Animator animator;
@@ -16,6 +17,16 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
     private Transform rightFoot;
     private Renderer[] renderers;
     private bool loggedFirstCorrection;
+    private Chapter1CircleDancer circleDancer;
+    private Terrain danceFloor;
+    private Vector3[] solePoints;
+    private bool[] hasSolePoint;
+
+    public void SetDanceFloor(Chapter1CircleDancer dancer, Terrain floor)
+    {
+        circleDancer = dancer;
+        danceFloor = floor;
+    }
 
     private void Awake()
     {
@@ -24,6 +35,7 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
 
     public void Configure(Animator sourceAnimator, LayerMask layers)
     {
+        if (animator != sourceAnimator) solePoints = null;
         animator = sourceAnimator;
         groundLayers = layers;
         CacheReferences();
@@ -36,7 +48,67 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
 
     private void LateUpdate()
     {
+        // Sample after the final leg pose and turn into the circle. Props around the
+        // fire are above the village terrain and cannot support a dance step.
+        if (danceFloor && circleDancer && circleDancer.IsActivelyDancing && leftFoot && rightFoot)
+        {
+            if (solePoints == null) CacheDancingSoles();
+            float lift = float.NegativeInfinity;
+            for (int i = 0; i < solePoints.Length; i++)
+            {
+                if (!hasSolePoint[i]) continue;
+                Transform foot = i < 4 ? leftFoot : rightFoot;
+                Vector3 point = foot.TransformPoint(solePoints[i]);
+                float floor = danceFloor.transform.position.y + danceFloor.SampleHeight(point);
+                lift = Mathf.Max(lift, floor + footClearance - point.y);
+            }
+            if (!float.IsNegativeInfinity(lift))
+            {
+                transform.position += Vector3.up * lift;
+                return;
+            }
+        }
         CorrectHeight(false);
+    }
+
+    private void CacheDancingSoles()
+    {
+        // The characters have different ankle heights and some wear boots. Bake once,
+        // keeping a low point in each quadrant of each foot in that bone's own space.
+        solePoints = new Vector3[8];
+        hasSolePoint = new bool[8];
+        float[] lowest = new float[8];
+        Transform head = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.Head, "Head");
+        float radius = head ? Vector3.Distance(head.position, leftFoot.position) * .19f : Vector3.Distance(leftFoot.position, rightFoot.position);
+        var baked = new Mesh();
+        var vertices = new List<Vector3>();
+        Vector3 leftAnkle = leftFoot.position, rightAnkle = rightFoot.position;
+        Vector3 side = transform.right, forward = transform.forward;
+        foreach (var skin in animator.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            if (!skin.enabled || !skin.sharedMesh) continue;
+            skin.BakeMesh(baked, false);
+            baked.GetVertices(vertices);
+            // These imported rigs already apply the skeleton's scale to the baked vertices.
+            var toWorld = Matrix4x4.TRS(skin.transform.position, skin.transform.rotation, Vector3.one);
+            foreach (Vector3 vertex in vertices)
+            {
+                Vector3 world = toWorld.MultiplyPoint3x4(vertex);
+                Vector3 dl = world - leftAnkle, dr = world - rightAnkle;
+                dl.y = dr.y = 0f;
+                bool left = dl.sqrMagnitude <= dr.sqrMagnitude;
+                Vector3 delta = left ? dl : dr;
+                Transform foot = left ? leftFoot : rightFoot;
+                if (delta.sqrMagnitude > radius * radius || world.y > (left ? leftAnkle.y : rightAnkle.y) + radius * .35f) continue;
+                int slot = (left ? 0 : 4) + (Vector3.Dot(delta, side) > 0f ? 2 : 0)
+                    + (Vector3.Dot(delta, forward) > 0f ? 1 : 0);
+                if (hasSolePoint[slot] && world.y >= lowest[slot]) continue;
+                lowest[slot] = world.y;
+                hasSolePoint[slot] = true;
+                solePoints[slot] = foot.InverseTransformPoint(world);
+            }
+        }
+        Destroy(baked);
     }
 
     private void CacheReferences()

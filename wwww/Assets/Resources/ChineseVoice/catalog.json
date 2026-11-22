@@ -7,7 +7,7 @@
       "chinese": "來，幫我把這杯酒送給火堆旁的長輩，好嗎？",
       "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
       "resource": "ChineseVoice/Audio/wedding_groom_request",
-      "provider": "Windows offline Mandarin (zh-TW, Zhiwei)"
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch"
     },
     {
       "chinese": "謝謝你。這裡給你留個位子，等一下來跟我們跳。",
@@ -1620,7 +1620,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/63c828f6a8a666e2a354_m",
       "femaleResource": "ChineseVoice/Audio/63c828f6a8a666e2a354_f",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -1796,7 +1796,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/081bc771365f121e2209_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -1836,7 +1836,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/85a7d9acbfbc60a80b33_m",
       "femaleResource": "ChineseVoice/Audio/85a7d9acbfbc60a80b33_f",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -1884,7 +1884,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/a121cb435fd77fa3ed5f_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -1948,7 +1948,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/23bf2759992e18b1a7fe_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -2012,7 +2012,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/8281ab02ef93b3d46be3_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -2020,7 +2020,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/450c9fefbfd9c674d518_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -2028,7 +2028,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/dc27f321c687e3807ee1_m",
       "femaleResource": "",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
@@ -2076,7 +2076,7 @@
       "source": "Chapter1:Chapter1PerformanceController.cs",
       "resource": "ChineseVoice/Audio/2bb80d3c88a38486c310_m",
       "femaleResource": "ChineseVoice/Audio/2bb80d3c88a38486c310_f",
-      "provider": "Neural Mandarin; mature four-character delivery v1",
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
       "variants": []
     },
     {
