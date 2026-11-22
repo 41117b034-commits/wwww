@@ -6,6 +6,7 @@ public partial class Chapter1PerformanceController
 {
     [Header("第一杯喜酒")]
     [SerializeField] private Transform weddingElder;
+    [SerializeField] private Material weddingElderAttire;
     [SerializeField] private Transform weddingBride;
     [SerializeField] private Avatar weddingBrideAvatar;
     [SerializeField] private GameObject weddingFeastModel;
@@ -20,7 +21,7 @@ public partial class Chapter1PerformanceController
     private const float CupGripHeight = PlayerCupHeight * .46f;
 
     private const string ElderName = "火堆旁的長輩";
-    private const string GroomRequest = "來，幫我把這杯酒送給火堆旁的長輩，好嗎？";
+    private const string GroomRequest = "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。";
     private const string ElderInvitation = "謝謝你。這裡給你留個位子，等一下來跟我們跳。";
     private Chapter1WeddingGuestPose groomPose, elderPose, bridePose;
     private Vector3 cupRestPoint;
@@ -28,7 +29,7 @@ public partial class Chapter1PerformanceController
     private bool weddingPrimaryPressed, weddingReturnPressed;
     private bool FirstCupPending => weddingElder && !deliveredWineTargets.Contains(weddingElder.GetInstanceID());
     private bool WeddingActionPlaying => interactionAnimationRunning || physicalDeliveryAnimating || danceRoutineRunning;
-    private bool WeddingGuidanceQuiet => Time.time < greetingUntil || WeddingActionPlaying || policeSequenceStarted;
+    private bool WeddingGuidanceQuiet => WeddingActionPlaying || policeSequenceStarted;
 
     private enum WeddingAction { None, TakeWine, TakeFood, GiveWine, GiveFood, JoinDance }
 
@@ -66,6 +67,8 @@ public partial class Chapter1PerformanceController
         Animator groomAnimator = groomActor.GetComponentInChildren<Animator>();
         Animator elderAnimator = weddingElder.GetComponentInChildren<Animator>();
         if (!groomAnimator || !elderAnimator) return;
+        var elderBody = elderAnimator.GetComponentInChildren<SkinnedMeshRenderer>();
+        if (elderBody && weddingElderAttire) elderBody.sharedMaterial = weddingElderAttire;
         if (!elderAnimator.runtimeAnimatorController) elderAnimator.runtimeAnimatorController = groomAnimator.runtimeAnimatorController;
         PlayAnimatorStateIfAvailable(groomActor, deliveryTargetIdleStateName);
         PlayAnimatorStateIfAvailable(weddingElder, deliveryTargetIdleStateName);
@@ -90,6 +93,7 @@ public partial class Chapter1PerformanceController
 
         weddingElder.rotation = GetReceiverRotationFacingPosition(weddingElder, view.position);
         elderPose.Face(view.position - weddingElder.position);
+        PrepareGuestBodyColliders();
         RememberElderPlace();
         if (!cupStandModel) return;
         float height = elderPose.Height;

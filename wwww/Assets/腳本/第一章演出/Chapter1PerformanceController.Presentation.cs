@@ -10,6 +10,7 @@ public partial class Chapter1PerformanceController
     [SerializeField] private Text chapterObjective;
     private Canvas chapterCanvas;
     private Text weddingDirection;
+    private Text foodDirection;
     private Text brideName, groomName;
     private WeddingAction displayedAction;
     private float nextActionCheck;
@@ -33,6 +34,8 @@ public partial class Chapter1PerformanceController
             outline.effectColor = new Color(0f, 0f, 0f, .85f);
             outline.effectDistance = new Vector2(1.5f, -1.5f);
             weddingDirection.gameObject.SetActive(false);
+            foodDirection = Instantiate(weddingDirection, chapterCanvas.transform, false);
+            foodDirection.name = "WeddingFoodDirection";
         }
         GameDialogueOverlay.Ensure(chapterCanvas);
         if (fadeCanvas)
@@ -115,15 +118,20 @@ public partial class Chapter1PerformanceController
 
     private void ConfigureChapterCanvas(bool vr)
     {
-        RenderMode mode = vr ? RenderMode.WorldSpace : RenderMode.ScreenSpaceCamera;
+        RenderMode mode = vr ? RenderMode.WorldSpace : RenderMode.ScreenSpaceOverlay;
         if (chapterCanvas.renderMode == mode) return;
+        Camera camera = chapterCanvas.worldCamera;
+        RectTransform rect = (RectTransform)chapterCanvas.transform;
+        // Desktop glyphs need pixel coordinates, especially in this village at
+        // (3700, -5800). A tiny camera-space canvas loses precision there.
+        rect.SetParent(vr && camera ? camera.transform : null, false);
         chapterCanvas.renderMode = mode;
+        chapterCanvas.worldCamera = camera;
         RefreshChoicePanel();
         if (!vr) return;
 
         // The scene parents this canvas to the player camera, so head tracking
         // also positions the heading and the full-field curtain between frames.
-        RectTransform rect = (RectTransform)chapterCanvas.transform;
         rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
         rect.sizeDelta = new Vector2(1600f, 900f);
         rect.localScale = Vector3.one * .0017f;
@@ -163,15 +171,14 @@ public partial class Chapter1PerformanceController
                 if (carriedWeddingItem == WeddingCarryItem.Food) return $"把烤魚送給族人 {sharedFoodCount}/{food}" + putBack;
                 return (FirstCupPending ? "把第一杯酒送給火堆旁的長輩" : $"把酒送給賓客 {deliveredWineCount}/{wine}") + putBack;
             }
-            if (FirstCupPending) return "替新郎取一杯酒，送給火堆旁的長輩";
         }
         if (carriedWeddingItem == WeddingCarryItem.Wine)
             return $"把酒送給有黃色標記的賓客（{deliveredWineCount}/{wine}）";
         if (carriedWeddingItem == WeddingCarryItem.Food)
             return $"把食物送給有黃色標記的族人（{sharedFoodCount}/{food}）";
 
-        if (deliveredWineCount < wine && sharedFoodCount < food && !explorationTimerFinished)
-            return $"幫新郎送酒 {deliveredWineCount}/{wine}、分送食物 {sharedFoodCount}/{food}";
+        if (deliveredWineCount < wine && sharedFoodCount < food)
+            return $"送酒 {deliveredWineCount}/{wine}、分送食物 {sharedFoodCount}/{food}（任選先後）";
         if (deliveredWineCount < wine)
             return $"循標記取酒，送給賓客（{deliveredWineCount}/{wine}）";
         if (sharedFoodCount < food)
@@ -183,22 +190,21 @@ public partial class Chapter1PerformanceController
     {
         Transform target = null;
         string label = "";
-        if (exploring && !WeddingGuidanceQuiet && displayedAction == WeddingAction.None)
+        Transform food = null;
+        if (exploring && !WeddingGuidanceQuiet)
         {
             if (carriedWeddingItem != WeddingCarryItem.None)
             {
-                target = activeDeliveryTargetMarker ? activeDeliveryTargetMarker.transform : null;
+                target = activeDeliveryTarget;
                 label = carriedWeddingItem == WeddingCarryItem.Food ? "族人" : (FirstCupPending ? "長輩" : "賓客");
             }
-            else if (winePickupLocationMarker && winePickupLocationMarker.activeSelf)
+            else if (!AreWineAndFoodTasksComplete())
             {
-                target = winePickupLocationMarker.transform;
+                if (winePickupLocationMarker && winePickupLocationMarker.activeSelf)
+                    target = winePickupLocationMarker.transform;
+                if (foodPickupLocationMarker && foodPickupLocationMarker.activeSelf)
+                    food = foodPickupLocationMarker.transform;
                 label = "酒";
-            }
-            else if (foodPickupLocationMarker && foodPickupLocationMarker.activeSelf)
-            {
-                target = foodPickupLocationMarker.transform;
-                label = "食物";
             }
             else if (AreWineAndFoodTasksComplete() && !danceFinished)
             {
@@ -206,10 +212,24 @@ public partial class Chapter1PerformanceController
                 label = "舞圈";
             }
         }
+        bool carrying = carriedWeddingItem != WeddingCarryItem.None;
+        PlaceWeddingDirection(weddingDirection, target, label, carrying ? activeDeliveryMarkerHeight : pickupLocationMarkerHeight);
+        PlaceWeddingDirection(foodDirection, food, "食物", pickupLocationMarkerHeight);
+        if (!weddingDirection.gameObject.activeSelf || !foodDirection.gameObject.activeSelf) return;
+        RectTransform foodRect = foodDirection.rectTransform;
+        Vector2 canvasSize = ((RectTransform)chapterCanvas.transform).rect.size;
+        Vector2 gap = Vector2.Scale(foodRect.anchorMin - weddingDirection.rectTransform.anchorMin, canvasSize);
+        float line = foodRect.sizeDelta.y;
+        if (Mathf.Abs(gap.x) < (weddingDirection.preferredWidth + foodDirection.preferredWidth) * .5f + 8f && Mathf.Abs(gap.y) < line)
+            foodRect.anchoredPosition = Vector2.up * ((foodRect.anchorMin.y < .5f ? line : -line) - gap.y);
+    }
+
+    private void PlaceWeddingDirection(Text caption, Transform target, string label, float height)
+    {
         bool show = target && chapterCanvas.worldCamera;
-        if (weddingDirection.gameObject.activeSelf != show) weddingDirection.gameObject.SetActive(show);
+        if (caption.gameObject.activeSelf != show) caption.gameObject.SetActive(show);
         if (!show) return;
-        Vector3 point = chapterCanvas.worldCamera.WorldToViewportPoint(target.position);
+        Vector3 point = chapterCanvas.worldCamera.WorldToViewportPoint(target.position + Vector3.up * height);
         Vector2 offset = new Vector2(point.x - .5f, point.y - .5f);
         if (point.z < 0f) offset = -offset;
         bool offscreen = point.z <= 0f || Mathf.Abs(offset.x) > .43f || Mathf.Abs(offset.y) > .22f;
@@ -220,8 +240,8 @@ public partial class Chapter1PerformanceController
             label = GetPickupIndicatorDirection(new Vector2(offset.x, -offset.y)) + " " + label;
         }
         Vector2 anchor = new Vector2(.5f, .5f) + offset;
-        weddingDirection.rectTransform.anchorMin = weddingDirection.rectTransform.anchorMax = anchor;
-        weddingDirection.rectTransform.anchoredPosition = Vector2.zero;
-        if (weddingDirection.text != label) weddingDirection.text = label;
+        caption.rectTransform.anchorMin = caption.rectTransform.anchorMax = anchor;
+        caption.rectTransform.anchoredPosition = Vector2.zero;
+        if (caption.text != label) caption.text = label;
     }
 }

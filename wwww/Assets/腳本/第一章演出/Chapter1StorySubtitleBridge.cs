@@ -50,7 +50,6 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
     public void ShowFromStory(string speaker, string line, float seconds, bool weddingGuest = false)
     {
         if (onlyFivePoliceLines && !weddingGuest
-            && !IsOpeningNarrationLine(line)
             && !IsWantedPoliceLine(line))
         {
             return;
@@ -79,12 +78,6 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
             HideAfter(Mathf.Max(0.5f, seconds)));
     }
 
-    private bool IsOpeningNarrationLine(string line)
-    {
-        return line == "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。"
-            || line == "你睜開眼，看見族人圍著火堆歌舞。今晚本該只是祝福新人的夜晚。";
-    }
-
     private bool IsWantedPoliceLine(string line)
     {
         return line == "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？"
@@ -96,32 +89,20 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
 
     private string NormalizeSpeaker(string speaker, string line)
     {
-        if (IsOpeningNarrationLine(line))
-            return "";
-
         if (line == "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？"
             || line == "都給我安靜。你們最好記住自己的身分。")
             return "日警";
 
         if (line == "我們只是辦婚禮，沒有冒犯。")
-            return "族人";
+            return speaker;
 
         if (line == "放開我！")
-            return "女性族人";
+            return speaker;
 
         if (line == "夠了！不要再羞辱我們！")
             return "玩家";
 
         return speaker;
-    }
-
-    [ContextMenu("Test Opening Subtitle")]
-    public void TestOpeningSubtitle()
-    {
-        ShowFromStory(
-            "字幕",
-            "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。",
-            4f);
     }
 
     [ContextMenu("Test Subtitle")]

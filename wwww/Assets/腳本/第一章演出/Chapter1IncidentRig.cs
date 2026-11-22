@@ -314,7 +314,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         foreach(var renderer in animator.GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             Mesh mesh=renderer.sharedMesh;
-            if(mesh==null||!mesh.isReadable)continue;
+            if(mesh==null||!mesh.isReadable||mesh.GetBlendShapeIndex(Chapter2SpeechFace.Jaw)>=0)continue;
             Vector3[] vertices=mesh.vertices;
             BoneWeight[] weights=mesh.boneWeights;
             Matrix4x4[] bindposes=mesh.bindposes;
@@ -454,7 +454,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         foreach(var renderer in animator.GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             Mesh original=renderer.sharedMesh;
-            if(original==null||!original.isReadable)continue;
+            if(original==null||!original.isReadable||original.GetBlendShapeIndex(Chapter2SpeechFace.Jaw)>=0)continue;
             var vertices=original.vertices;
             var normals=original.normals;
             var weights=original.boneWeights;

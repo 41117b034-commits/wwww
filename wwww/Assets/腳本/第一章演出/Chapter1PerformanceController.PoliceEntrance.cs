@@ -133,7 +133,6 @@ public partial class Chapter1PerformanceController
             SetDoorwayCamera(widePosition, wideFocus, 50f);
         }
         SetWeddingDramaBeat("crowd-reaction");
-        ShowLine("旁白", "鼓聲突然停了下來。族人鬆開雙手，轉頭望向腳步聲傳來的方向。", 2.2f);
         for (float reaction = 0f; reaction < 0.9f; reaction += Time.deltaTime)
         {
             foreach (WeddingRetreatActor member in crowd)
@@ -148,7 +147,6 @@ public partial class Chapter1PerformanceController
         // action axis. Crowd roots keep moving continuously throughout this shot.
         SetDoorwayCamera(entrancePosition, entranceFocus, 48f);
         SetWeddingDramaBeat("police-entrance-short");
-        ShowLine("旁白", "兩名日本警察走入會場，族人紛紛退開，讓出空間。", 7.2f);
         firstRig.walking = secondRig.walking = true;
         firstRig.smoothLocomotion = secondRig.smoothLocomotion = true;
         float elapsed = 0f;
@@ -208,7 +206,6 @@ public partial class Chapter1PerformanceController
 
         firstRig.pointTarget=firstTarget; secondRig.pointTarget=secondTarget;
         firstRig.batonVisible=secondRig.batonVisible=true;
-        ShowLine("旁白", "兩名警察抽出警棍，指向族人，喝令婚禮立刻停止。", 3.8f);
         elapsed = 0f;
         while (elapsed < 1.6f)
         {
@@ -220,18 +217,17 @@ public partial class Chapter1PerformanceController
         firstRig.pointProgress=secondRig.pointProgress=1f;
         yield return WeddingSpeakerShot(first, true);
         SetWeddingDramaBeat("police-order");
-        ShowLine("日警", "停止！婚禮立刻停止！", 2.6f);
-        yield return new WaitForSeconds(2.6f);
+        yield return PlayPoliceVoicedLine("日警", "停止！婚禮立刻停止！", null, 2.6f, speakerActor: first);
         SetWeddingDramaBeat("police-insult");
         yield return PlayPoliceVoicedLine("日警", "這種野蠻婚禮，竟然還敢辦得這麼熱鬧？",
-            policeInsultVoice, 4f);
+            policeInsultVoice, 4f, speakerActor: first);
         firstRig.pointTarget=secondRig.pointTarget=null;
         Chapter1IncidentRig leaderRig = groomActor != null ? PrepareDoorwayRig(groomActor, false) : null;
         if (leaderRig != null) { leaderRig.conversationTarget=first; leaderRig.speakingWeight=0.8f; }
         yield return WeddingSpeakerShot(groomActor, false);
         SetWeddingDramaBeat("leader-reply");
-        yield return PlayPoliceVoicedLine("族人", "我們只是辦婚禮，沒有冒犯。",
-            groomReplyVoice, 3.2f, groomReplyVolumeScale);
+        yield return PlayPoliceVoicedLine("新郎", "我們只是辦婚禮，沒有冒犯。",
+            groomReplyVoice, 3.2f, groomReplyVolumeScale, speakerActor: groomActor);
         if (leaderRig != null) leaderRig.speakingWeight=0f;
         firstRig.pointTarget=secondRig.pointTarget=null;
         // Keep the same pose lock alive for the existing subsequent story shots.

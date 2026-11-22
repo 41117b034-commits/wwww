@@ -8,7 +8,6 @@ public partial class Chapter1PerformanceController
     public Chapter1HutDoor incidentHutDoor;
     [Min(0.1f)] public float incidentDoorSwingSeconds = 0.85f;
     [Min(1f)] public float incidentEnterHutSeconds = 3.6f;
-    [Min(1f)] public float incidentDepartureHoldSeconds = 6f;
     AudioSource hutInteriorAudio;
     readonly Dictionary<Renderer, bool> hutHiddenRenderers = new Dictionary<Renderer, bool>();
     bool doorwayWatchActive;
@@ -70,7 +69,6 @@ public partial class Chapter1PerformanceController
             {
                 screamed = true;
                 if (hutInteriorAudio.clip != null) hutInteriorAudio.Play();
-                ShowLine("", "（屋內傳來女性的慘叫聲）", Mathf.Min(3.2f, hold - screamDelay));
                 SetWeddingDramaBeat("watch-hut-scream");
             }
             yield return null;
@@ -104,7 +102,7 @@ public partial class Chapter1PerformanceController
         SaveChapterResult();
         chapterCompleted = true;
         cinematicStoryPlaying = false;
-        SetMission("族人默默望著警察離去的背影。");
+        SetMission("");
         SetWeddingDramaBeat("watch-complete");
         CleanupDoorwayWatch();
         // Keep the final composition intact until the configured chapter exit.
@@ -325,13 +323,9 @@ public partial class Chapter1PerformanceController
         SetWeddingDramaBeat("watch-police-departure");
         var leaveFirst = new List<Vector3> { first.transform.position, exit - right * doorwayHeight * 0.29f };
         var leaveSecond = new List<Vector3> { second.transform.position, exit + right * doorwayHeight * 0.29f - direction * doorwayHeight * 0.35f };
-        ShowLine("", "警察們揚長而去，族人望著他們下山的背影。",
-            WatchWalkDuration(WatchPathLength(leaveFirst), WatchPathLength(leaveSecond), 0.34f) + 2f);
         yield return WalkWatchPaths(first, leaveFirst, second, leaveSecond, crowd, 0.34f);
         SetWeddingDramaBeat("watch-departure-tableau");
-        ShowLine("", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。",
-            incidentDepartureHoldSeconds + 0.5f);
-        yield return new WaitForSeconds(incidentDepartureHoldSeconds);
+        yield return null;
     }
 
     IEnumerator WalkWatchPaths(Chapter1IncidentRig first, List<Vector3> firstPath,

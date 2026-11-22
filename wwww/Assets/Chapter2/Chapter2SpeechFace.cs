@@ -23,6 +23,7 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
     Chapter2CouncilDrama drama;
     AudioSource voice;
     bool recorded;
+    bool externalSpeaker;
     float began,ends,voicePeak;
     string words="";
     readonly float[] samples=new float[256];
@@ -44,11 +45,29 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
         BeginLine(text,source&&source.clip?source.clip.length/Mathf.Max(.1f,Mathf.Abs(source.pitch)):.1f,null);
         voice=source;recorded=voice&&voice.isPlaying;
     }
+    // Chapter one's wedding actors retain their own locomotion and Animator.
+    public void BeginGuestLine(string text,float seconds,AudioSource source)
+    {
+        externalSpeaker = true;
+        BeginLine(text, seconds, null);
+        voice = source;
+        recorded = source != null;
+    }
+    public void EndGuestLine()
+    {
+        ends = 0;
+        voice = null;
+        recorded = false;
+        MouthWeight = 0;
+        if (surfaces == null) return;
+        foreach (var surface in surfaces)
+            if (surface.renderer && surface.renderer.sharedMesh) Set(surface.renderer, Jaw, 0);
+    }
     void LateUpdate()
     {
-        if(!actor)return;
+        if((!actor&&!externalSpeaker)||surfaces==null)return;
         if(block==null)block=new MaterialPropertyBlock();
-        bool talking=actor.speaking&&!actor.fallen&&(recorded?voice&&voice.isPlaying:Time.unscaledTime<ends);
+        bool talking=(externalSpeaker||(actor.speaking&&!actor.fallen))&&(recorded?voice&&voice.isPlaying:Time.unscaledTime<ends);
         float open=0,elapsed=Time.unscaledTime-began;
         if(talking)
         {

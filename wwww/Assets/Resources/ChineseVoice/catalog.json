@@ -4,16 +4,18 @@
   "female": "zh-TW-HsiaoChenNeural",
   "entries": [
     {
-      "chinese": "來，幫我把這杯酒送給火堆旁的長輩，好嗎？",
+      "chinese": "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。",
       "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
       "resource": "ChineseVoice/Audio/wedding_groom_request",
-      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch"
+      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
+      "recordingProfile": { "voice": "zh-TW-YunJheNeural", "rate": -2, "pitch": 0 }
     },
     {
       "chinese": "謝謝你。這裡給你留個位子，等一下來跟我們跳。",
       "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
       "resource": "ChineseVoice/Audio/wedding_elder_invitation",
-      "provider": "Windows offline Mandarin (zh-TW, Zhiwei)"
+      "provider": "Microsoft zh-CN-YunyangNeural, rate -9%, pitch -8Hz",
+      "recordingProfile": { "voice": "zh-CN-YunyangNeural", "rate": -9, "pitch": -8 }
     },
     {
       "chinese": "最大碎片約佔完整酒罐尺寸的比例。",

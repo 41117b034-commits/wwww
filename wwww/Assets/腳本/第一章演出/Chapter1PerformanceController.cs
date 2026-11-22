@@ -167,12 +167,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     public float storyMusicCrossfadeSeconds = 1.6f;
     [Range(0f, 1f)] public float tensionMusicTargetVolume = 0.12f;
 
-    [Header("Opening Narration")]
-    public AudioSource narrationAudio;
-    public AudioClip introVoice1;
-    public AudioClip introVoice2;
-    [Range(0f, 1f)] public float narrationVolume = 1f;
-    public float introLineGap = 0.35f;
 
     [Header("Quest Progress")]
     public int wineTargetCount = 3;
@@ -829,6 +823,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     private float activeDeliveryMarkerHeight;
     private Vector3 deliveryMarkerBaseScale = Vector3.one;
     private readonly List<GameObject> activeDeliveryGroundArrows = new List<GameObject>();
+    private readonly List<GameObject> alternatePickupArrows = new List<GameObject>();
     private float nextDeliveryGroundArrowRefreshTime;
     private GameObject winePickupLocationMarker;
     private GameObject foodPickupLocationMarker;
@@ -972,7 +967,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         RepairInteractionHudRuntimeDefaults();
         CaptureDeliveryTaskNpcOriginalTransforms();
         PrepareDeliveryTaskNPCs();
-        EnsureNarrationAudioSource();
         EnsureWeddingVocalsReference();
         ApplyWeddingMusicVolume();
         ApplyWeddingVocalsVolume();
@@ -1093,6 +1087,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void LateUpdate()
     {
+        UpdatePendingGuestSpeech();
         if (physicalCarriedProp && !physicalDeliveryAnimating && IsFreeExplorationActive())
             PlacePhysicalCarriedProp();
         UpdateChapterPresentation();
@@ -1164,7 +1159,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             || source == policeEventAudio
             || source == policeDialogueAudio
             || source == hutInteriorAudio
-            || source == narrationAudio
             || (chineseSpeech && source == chineseSpeech.Output);
     }
 
@@ -1454,6 +1448,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void OnDisable()
     {
+        GameLanguageSettings.Changed -= ClearGuestSpeech;
+        ClearGuestSpeech();
         if (chapterObjective) chapterObjective.transform.parent.gameObject.SetActive(false);
         if (weddingDirection) weddingDirection.gameObject.SetActive(false);
         if(chineseSpeech)chineseSpeech.Stop();
@@ -1721,41 +1717,20 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         SetPlayerControl(false);
         SetWorldInteractionPromptVisible(false);
 
-        Coroutine opening = null;
         if (openingSequence)
         {
             if (fadeCanvas) fadeCanvas.alpha = 1f;
-            // Let the camera present black before narration, even on a slow first frame.
+            // Present a full black frame before revealing the hosts.
             yield return null;
             StageWeddingHosts();
             yield return new WaitForSecondsRealtime(.2f);
-            opening = StartCoroutine(RevealWedding());
+            yield return RevealWedding();
         }
         else
         {
             yield return Fade(1f, 0f, 1.2f);
         }
 
-        // 第一段：年代與場景介紹。字幕顯示時間會自動配合配音長度。
-        yield return PlayOpeningNarrationLine(
-            "字幕",
-            "1930.10.7，霧社。火光照亮婚禮，鼓聲和歌聲在山間回盪。",
-            introVoice1,
-            4f);
-
-        yield return new WaitForSeconds(Mathf.Max(0f, introLineGap));
-
-        // 第二段：把玩家帶進婚禮現場。
-        yield return PlayOpeningNarrationLine(
-            "旁白",
-            "你睜開眼，看見族人圍著火堆歌舞。今晚本該只是祝福新人的夜晚。",
-            introVoice2,
-            4.5f);
-
-        yield return new WaitForSeconds(Mathf.Max(0f, introLineGap));
-
-        // 故事講完，先把字幕確實收掉，再開啟遊戲 HUD。
-        if (opening != null) yield return opening;
         if (openingSequence && Chapter1StorySubtitleBridge.Instance)
             Chapter1StorySubtitleBridge.Instance.HideImmediate();
         if (dialogueUI != null)
@@ -1797,53 +1772,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             "朋友，今晚人多。跟著橘紅色標記拿酒送給賓客，再跟著黃綠色標記把食物分給族人；忙完再到舞圈一起跳吧。",
             6f);
         UpdateWeddingQuestMission();
-    }
-
-    private IEnumerator PlayOpeningNarrationLine(string speaker, string line, AudioClip clip, float fallbackSeconds)
-    {
-        float duration = clip != null ? Mathf.Max(0.1f, clip.length) : Mathf.Max(0.1f, fallbackSeconds);
-        ShowLine(speaker, line, duration + 0.1f);
-        if(GameLanguageSettings.ChineseVoice){while(ChineseSpeech.Busy)yield return null;yield return new WaitForSeconds(ChineseSpeech.HasAudio ? .12f : duration);yield break;}
-
-        if (clip == null)
-        {
-            yield return new WaitForSeconds(duration);
-            yield break;
-        }
-
-        EnsureNarrationAudioSource();
-        if (narrationAudio == null)
-        {
-            yield return new WaitForSeconds(duration);
-            yield break;
-        }
-
-        narrationAudio.Stop();
-        narrationAudio.clip = clip;
-        narrationAudio.volume = narrationVolume;
-        narrationAudio.loop = false;
-        narrationAudio.Play();
-
-        while (narrationAudio != null && narrationAudio.isPlaying)
-        {
-            yield return null;
-        }
-    }
-
-    private void EnsureNarrationAudioSource()
-    {
-        if (narrationAudio == null)
-        {
-            narrationAudio = gameObject.AddComponent<AudioSource>();
-        }
-
-        if (narrationAudio != null)
-        {
-            narrationAudio.playOnAwake = false;
-            narrationAudio.loop = false;
-            narrationAudio.spatialBlend = 0f;
-            narrationAudio.volume = narrationVolume;
-        }
     }
 
     private void UnlockFreeExploration()
@@ -2210,12 +2138,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             UpdateWeddingQuestMission();
             return;
         }
-        ShowLine(
-            "動作",
-            isWine
-                ? "你拿起一瓶酒。現在自己走到尚未收到酒的賓客旁邊。"
-                : "你拿起食物。現在自己走到尚未收到食物的族人旁邊。",
-            2.8f);
 
         SetTemporaryMission(
             isWine
@@ -2304,6 +2226,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         physicalDeliveryAnimating = true;
+        if (weddingElder) StartCoroutine(HoldWeddingConversationPosition(receiver));
         bool firstCup = isWine && receiver == weddingElder && FirstCupPending && elderPose && elderPose.CanHoldCup;
         if (firstCup) elderPose.Face(GetReceiverVisualForward(receiver));
 
@@ -2394,7 +2317,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         carriedWeddingItem = WeddingCarryItem.None;
         physicalDeliveryAnimating = false;
         ClearDeliveryTargetMarker();
-        if (!weddingElder) ShowLine("動作", "你先把手上的物品放回去了。", 1.8f);
         UpdateWeddingQuestMission();
     }
 
@@ -2889,10 +2811,23 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         nextDeliveryGroundArrowRefreshTime =
             Time.unscaledTime + Mathf.Max(0.03f, deliveryGroundArrowRefreshSeconds);
 
+        PositionGroundArrows(activeDeliveryGroundArrows, activeDeliveryTarget);
+        bool bothAvailable = weddingElder && carriedWeddingItem == WeddingCarryItem.None
+            && deliveredWineCount < Mathf.Max(1, wineTargetCount) && sharedFoodCount < Mathf.Max(1, foodTargetCount);
+        PositionGroundArrows(alternatePickupArrows, bothAvailable ? ResolvePhysicalPickupPoint(false) : null);
+    }
+
+    private void PositionGroundArrows(List<GameObject> arrows, Transform target)
+    {
+        if (!target)
+        {
+            SetDeliveryGroundArrowCount(arrows, 0);
+            return;
+        }
         Vector3 playerPosition = GetCurrentPlayerPosition();
-        Vector3 targetPosition = activeDeliveryTarget.position;
-        if (carriedWeddingItem == WeddingCarryItem.None && (activeDeliveryTarget == winePickupPoint || activeDeliveryTarget == foodPickupPoint))
-            targetPosition = GetPhysicalPickupWorldPosition(activeDeliveryTarget);
+        Vector3 targetPosition = target.position;
+        if (carriedWeddingItem == WeddingCarryItem.None && (target == winePickupPoint || target == foodPickupPoint))
+            targetPosition = GetPhysicalPickupWorldPosition(target);
         Vector3 flatDirection = targetPosition - playerPosition;
         flatDirection.y = 0f;
 
@@ -2903,7 +2838,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (flatDirection.sqrMagnitude < 0.01f || usableDistance <= 0f)
         {
-            SetDeliveryGroundArrowCount(0);
+            SetDeliveryGroundArrowCount(arrows, 0);
             return;
         }
 
@@ -2914,7 +2849,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             1,
             Mathf.Max(1, deliveryGroundArrowMaxCount));
 
-        SetDeliveryGroundArrowCount(arrowCount);
+        SetDeliveryGroundArrowCount(arrows, arrowCount);
 
         Quaternion arrowRotation = Quaternion.LookRotation(flatDirection, Vector3.up);
         float pulseAmount = Mathf.Clamp(deliveryGroundArrowPulseAmount, 0f, 0.35f);
@@ -2922,7 +2857,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         for (int i = 0; i < arrowCount; i++)
         {
-            GameObject arrow = activeDeliveryGroundArrows[i];
+            GameObject arrow = arrows[i];
             float pathDistance = arrowCount == 1
                 ? startDistance + usableDistance * 0.5f
                 : startDistance + usableDistance * i / (arrowCount - 1f);
@@ -2950,19 +2885,18 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
-    private void SetDeliveryGroundArrowCount(int count)
+    private void SetDeliveryGroundArrowCount(List<GameObject> arrows, int count)
     {
         int safeCount = Mathf.Max(0, count);
 
-        while (activeDeliveryGroundArrows.Count < safeCount)
+        while (arrows.Count < safeCount)
         {
-            activeDeliveryGroundArrows.Add(CreateDeliveryGroundArrow(
-                activeDeliveryGroundArrows.Count + 1));
+            arrows.Add(CreateDeliveryGroundArrow(arrows.Count + 1));
         }
 
-        for (int i = 0; i < activeDeliveryGroundArrows.Count; i++)
+        for (int i = 0; i < arrows.Count; i++)
         {
-            GameObject arrow = activeDeliveryGroundArrows[i];
+            GameObject arrow = arrows[i];
             if (arrow != null)
             {
                 arrow.SetActive(i < safeCount);
@@ -3043,6 +2977,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void ClearDeliveryGroundArrows()
     {
+        foreach (GameObject arrow in alternatePickupArrows)
+            if (arrow) Destroy(arrow);
+        alternatePickupArrows.Clear();
         for (int i = 0; i < activeDeliveryGroundArrows.Count; i++)
         {
             if (activeDeliveryGroundArrows[i] != null)
@@ -3099,7 +3036,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             guidedWinePickupSource = wineComplete
                 ? null
                 : ResolvePhysicalPickupPoint(true);
-            guidedFoodPickupSource = foodComplete || FirstCupPending
+            guidedFoodPickupSource = foodComplete
                 ? null
                 : ResolvePhysicalPickupPoint(false);
 
@@ -3918,6 +3855,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     public void Talk(string speaker, string line, float seconds = -1f)
     {
+        TalkTo(null, speaker, line, seconds);
+    }
+
+    public void TalkTo(Transform actor, string speaker, string line, float seconds = -1f)
+    {
         if (string.IsNullOrWhiteSpace(line))
         {
             line = GetNextVillagerTalkLine();
@@ -3928,7 +3870,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             speaker = "族人";
         }
 
-        ShowLine(speaker, line, seconds > 0f ? seconds : defaultDialogueSeconds);
+        ShowCharacterLine(actor ? actor : NamedSpeaker(speaker), speaker, line, seconds > 0f ? seconds : defaultDialogueSeconds);
     }
 
     public void DeliverWine(string npcName, Transform receiverTarget = null)
@@ -3957,7 +3899,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             int id = receiverTarget.GetInstanceID();
             if (deliveredWineTargets.Contains(id))
             {
-                ShowLine("賓客", "我已經拿到酒了，先送給其他人吧。", 2.4f);
+                ShowCharacterLine(receiverTarget, "賓客", "我已經拿到酒了，先送給其他人吧。", 2.4f);
                 return;
             }
             deliveredWineTargets.Add(id);
@@ -3970,11 +3912,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         string speaker = elderServing ? ElderName : (string.IsNullOrWhiteSpace(npcName) ? "賓客" : npcName);
 
         // NPC 收到酒後：先出聲 + 做感謝動作。
-        PlayReceiverThankYouFeedback(receiverTarget, true);
+        if (receiverTarget && !physicalDeliveryAnimating)
+            StartCoroutine(PlayReceiverUniversalAnimationRoutine(receiverTarget, true));
 
         PlayGiveItemAnimation(
             true,
-            "你拿起酒杯，走向賓客。",
             speaker,
             elderServing ? ElderInvitation : "謝謝你，這杯我收下了。願祖靈庇佑新人。",
             receiverTarget);
@@ -4001,7 +3943,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         int target = Mathf.Max(1, foodTargetCount);
         if (sharedFoodCount >= target)
         {
-            ShowLine("族人", "食物已經分得差不多了，謝謝你。", 2.3f);
+            ShowCharacterLine(receiverTarget, "族人", "食物已經分得差不多了，謝謝你。", 2.3f);
             UpdateWeddingQuestMission();
             return;
         }
@@ -4016,7 +3958,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             int id = receiverTarget.GetInstanceID();
             if (sharedFoodTargets.Contains(id))
             {
-                ShowLine("族人", "我已經拿到食物了，分給其他人吧。", 2.4f);
+                ShowCharacterLine(receiverTarget, "族人", "我已經拿到食物了，分給其他人吧。", 2.4f);
                 return;
             }
             sharedFoodTargets.Add(id);
@@ -4028,11 +3970,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "族人" : npcName;
 
         // NPC 收到食物後：先出聲 + 做感謝動作。
-        PlayReceiverThankYouFeedback(receiverTarget, false);
+        if (receiverTarget && !physicalDeliveryAnimating)
+            StartCoroutine(PlayReceiverUniversalAnimationRoutine(receiverTarget, false));
 
         PlayGiveItemAnimation(
             false,
-            "你從火堆旁拿起食物，走向族人。",
             speaker,
             "謝謝你。今晚能這樣相聚，已經很難得。",
             receiverTarget);
@@ -4961,74 +4903,23 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
-    private void PlayReceiverThankYouFeedback(Transform receiverTarget, bool isWine)
+    private float ShowReceiverLine(bool isWine, Transform receiver, string speaker, string line, float seconds)
     {
-        if (receiverTarget == null)
+        AudioSource voice = null;
+        if (receiver && !GameLanguageSettings.ChineseVoice)
         {
-            return;
-        }
-
-        bool isFemale =
-            IsFemaleThankYouReceiver(receiverTarget);
-
-        if(GameLanguageSettings.ChineseVoice && !weddingElder)
-            ShowLine(isFemale?"女性族人":"族人",isWine?"謝謝你，這杯我收下了。願祖靈庇佑新人。":"謝謝你。今晚能這樣相聚，已經很難得。",3f);
-
-        AudioClip selectedClip = null;
-
-        // 優先：男女專屬語音。
-        if (isFemale && femaleReceiverThanksVoice != null)
-        {
-            selectedClip = femaleReceiverThanksVoice;
-        }
-        else if (!isFemale && maleReceiverThanksVoice != null)
-        {
-            selectedClip = maleReceiverThanksVoice;
-        }
-
-        // 第二順位：送酒 / 食物專用語音。
-        if (selectedClip == null)
-        {
-            selectedClip =
-                isWine
-                    ? wineReceiverThanksVoice
-                    : foodReceiverThanksVoice;
-        }
-
-        // 最後保底：共用謝謝語音。
-        if (selectedClip == null)
-        {
-            selectedClip = receiverThanksVoice;
-        }
-
-        if (selectedClip != null && !GameLanguageSettings.ChineseVoice)
-        {
-            Transform receiverRoot =
-                GetDeliveryActorRoot(receiverTarget);
-
-            if (receiverRoot == null)
+            AudioClip clip = IsFemaleThankYouReceiver(receiver) ? femaleReceiverThanksVoice : maleReceiverThanksVoice;
+            if (!clip) clip = isWine ? wineReceiverThanksVoice : foodReceiverThanksVoice;
+            if (!clip) clip = receiverThanksVoice;
+            if (clip)
             {
-                receiverRoot = receiverTarget;
+                if (receiverSpeechSource) receiverSpeechSource.Stop();
+                voice = PlayReceiverThanksVoiceAtPosition(clip, GetReceiverFacePosition(receiver));
+                receiverSpeechSource = voice;
+                seconds = Mathf.Max(seconds, clip.length);
             }
-
-            Vector3 voicePosition =
-                GetReceiverFacePosition(receiverRoot);
-
-            StartCoroutine(
-                PlayReceiverThanksVoiceAtPosition(
-                    selectedClip,
-                    voicePosition));
         }
-
-        // 實體交付時已經在 CompletePhysicalWeddingDelivery 精準觸發一次。
-        // 非實體流程才在這裡補觸發，避免同一 NPC 動作播兩次。
-        if (!physicalDeliveryAnimating)
-        {
-            StartCoroutine(
-                PlayReceiverUniversalAnimationRoutine(
-                    receiverTarget,
-                    isWine));
-        }
+        return ShowCharacterLine(receiver, speaker, line, seconds, voice);
     }
 
     private bool IsFemaleThankYouReceiver(Transform receiverTarget)
@@ -5123,17 +5014,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         return false;
     }
 
-    private IEnumerator PlayReceiverThanksVoiceAtPosition(
+    private AudioSource PlayReceiverThanksVoiceAtPosition(
         AudioClip clip,
         Vector3 position)
     {
-        if (clip == null)
-        {
-            yield break;
-        }
-
-        GameObject temp =
-            new GameObject("Chapter1_ReceiverThanksVoice");
+        GameObject temp = new GameObject("Chapter1_ReceiverThanksVoice");
 
         temp.transform.position = position;
 
@@ -5169,15 +5054,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         source.Play();
 
-        yield return new WaitForSeconds(
-            Mathf.Max(
-                0.1f,
-                clip.length + 0.15f));
-
-        if (temp != null)
-        {
-            Destroy(temp);
-        }
+        Destroy(temp, clip.length + .15f);
+        return source;
     }
 
     private IEnumerator PlayReceiverThanks2D(AudioClip clip, float volume)
@@ -5490,21 +5368,21 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
     }
 
-    private void PlayGiveItemAnimation(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget = null)
+    private void PlayGiveItemAnimation(bool isWine, string receiverName, string receiverLine, Transform receiverTarget = null)
     {
         if (!playInteractionAnimations)
         {
             StartCoroutine(ReceiverDialogueOnlyRoutine(
-                receiverName,
+                isWine, receiverName,
                 receiverLine,
                 receiverTarget));
             return;
         }
 
-        StartCoroutine(GiveItemAnimationRoutine(isWine, actionLine, receiverName, receiverLine, receiverTarget));
+        StartCoroutine(GiveItemAnimationRoutine(isWine, receiverName, receiverLine, receiverTarget));
     }
 
-    private IEnumerator GiveItemAnimationRoutine(bool isWine, string actionLine, string receiverName, string receiverLine, Transform receiverTarget)
+    private IEnumerator GiveItemAnimationRoutine(bool isWine, string receiverName, string receiverLine, Transform receiverTarget)
     {
         interactionAnimationRunning = true;
         bool shouldGuidePlayer =
@@ -5550,9 +5428,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (shouldGuidePlayer)
         {
-            string pickupLine = isWine ? "系統帶你到火堆旁，拿起一瓶酒。" : "系統帶你到火堆旁，拿起食物。";
-            string walkLine = isWine ? "你拿著酒走到賓客旁邊。" : "你拿著食物走到族人旁邊。";
-            ShowLine("動作", pickupLine, guidedWalkToPickupSeconds + 0.6f);
 
             Vector3 currentPlayerPosition = GetCurrentPlayerPosition();
             Vector3 pickupCameraPosition = GetApproachCameraPosition(pickupPosition, currentPlayerPosition, guidedPickupDistance);
@@ -5562,7 +5437,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield return MovePropToPosition(prop, pickupPosition, handPosition, 0.35f, 0.15f);
             yield return HoldPropInView(prop, firstPersonHoldSeconds);
 
-            ShowLine("動作", walkLine, guidedWalkToReceiverSeconds + 0.6f);
             Vector3 receiverCameraPosition = GetApproachCameraPosition(receiverPosition, pickupPosition, guidedReceiverDistance);
             yield return MovePlayerCameraToPosition(receiverCameraPosition, receiverPosition, guidedWalkToReceiverSeconds, prop);
             yield return HoldPropInView(prop, 0.25f);
@@ -5576,7 +5450,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 // 玩家已經自己走到 NPC 旁邊，只播放近距離的交付動作，不移動 XR Origin。
                 Vector3 handPosition = GetCarriedPropPosition();
                 prop.transform.position = handPosition;
-                ShowLine("動作", isWine ? "你把酒遞給眼前的賓客。" : "你把食物遞給眼前的族人。", guidedGiveSeconds + 0.7f);
                 yield return HoldPropInView(prop, 0.18f);
                 yield return MovePropToPosition(
                     prop,
@@ -5587,7 +5460,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             }
             else
             {
-                ShowLine("動作", actionLine, interactionAnimationSeconds);
                 yield return MovePropToPosition(prop, pickupPosition, receiverPosition, interactionAnimationSeconds, interactionArcHeight);
             }
         }
@@ -5607,7 +5479,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         yield return FocusOnReceiverDuringDialogue(
-            receiverName,
+            isWine, receiverName,
             receiverLine,
             receiverTarget);
 
@@ -5620,13 +5492,13 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     }
 
     private IEnumerator ReceiverDialogueOnlyRoutine(
-        string receiverName,
+        bool isWine, string receiverName,
         string receiverLine,
         Transform receiverTarget)
     {
         interactionAnimationRunning = true;
         yield return FocusOnReceiverDuringDialogue(
-            receiverName,
+            isWine, receiverName,
             receiverLine,
             receiverTarget);
         interactionAnimationRunning = false;
@@ -5725,7 +5597,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
     }
 
     private IEnumerator FocusOnReceiverDuringDialogue(
-        string receiverName,
+        bool isWine, string receiverName,
         string receiverLine,
         Transform receiverTarget)
     {
@@ -5745,9 +5617,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             holdSeconds = Mathf.Max(holdSeconds, 4.8f);
             StartCoroutine(MakeRoomForPlayer());
         }
-        if (!focusCameraOnReceiverDialogue || receiverTarget == null)
+        // The standing origin supplies this wedding's dialogue view. Keep the
+        // tracked eye on the player throughout the exchange and the return to play.
+        if (weddingElder || !focusCameraOnReceiverDialogue || receiverTarget == null)
         {
-            ShowLine(receiverName, receiverLine, holdSeconds);
+            holdSeconds = Mathf.Max(holdSeconds, ShowReceiverLine(isWine, receiverTarget, receiverName, receiverLine, holdSeconds));
             yield return new WaitForSeconds(holdSeconds);
 
             RestorePlayerHandRenderers(
@@ -5761,7 +5635,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         Transform playerView = GetPlayerViewTransform();
         if (playerRootTransform == null || playerView == null)
         {
-            ShowLine(receiverName, receiverLine, holdSeconds);
+            holdSeconds = Mathf.Max(holdSeconds, ShowReceiverLine(isWine, receiverTarget, receiverName, receiverLine, holdSeconds));
             yield return new WaitForSeconds(holdSeconds);
 
             RestorePlayerHandRenderers(
@@ -5831,9 +5705,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         playerView.SetPositionAndRotation(dialogueCameraPosition, dialogueCameraRotation);
         receiverRoot.rotation = focusedReceiverRotation;
-        ShowLine(receiverName, receiverLine, holdSeconds);
-        if (receiverLine == ElderInvitation && chineseSpeech && chineseSpeech.HasAudio)
-            holdSeconds = Mathf.Max(holdSeconds, chineseSpeech.Remaining + .12f);
+        holdSeconds = Mathf.Max(holdSeconds, ShowReceiverLine(isWine, receiverTarget, receiverName, receiverLine, holdSeconds));
 
         elapsed = 0f;
         while (elapsed < holdSeconds)
@@ -7550,7 +7422,17 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         ApplyDancePlayerHandsScale();
         ApplyDancePlayerViewHeight();
         SetMission("加入舞蹈：跟著鼓聲踏步，感受婚禮短暫的安寧。");
-        ShowLine("族人", "來，跟著鼓聲一起踏步。今晚讓祖靈聽見我們的歌。", 3f);
+        Chapter1CircleDancer greeter = null;
+        float nearest = float.MaxValue;
+        foreach (var dancer in weddingCrowdDancers)
+        {
+            if (!dancer || !dancer.isActiveAndEnabled) continue;
+            float distance = (dancer.transform.position - GetCurrentPlayerPosition()).sqrMagnitude;
+            if (distance >= nearest) continue;
+            greeter = dancer;
+            nearest = distance;
+        }
+        ShowCharacterLine(greeter ? greeter.transform : null, "族人", "來，跟著鼓聲一起踏步。今晚讓祖靈聽見我們的歌。", 3f);
         SetWeddingPlayerSlotActive(true);
         yield return new WaitForSeconds(1f);
 
@@ -7710,6 +7592,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         RestoreDancePlayerHandsScale();
         RestoreDancePlayerViewHeight();
         StopAllCoroutines();
+        ClearGuestSpeech();
         if ((openingStoryPlaying || weddingElder) && Chapter1StorySubtitleBridge.Instance)
             Chapter1StorySubtitleBridge.Instance.HideImmediate();
         if (fadeCanvas)
@@ -7727,10 +7610,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         openingStoryPlaying = false;
         storyStarted = true;
 
-        if (narrationAudio != null && narrationAudio.isPlaying)
-        {
-            narrationAudio.Stop();
-        }
 
         if (dialogueUI != null)
         {
@@ -7799,6 +7678,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         // must keep feet-ground correction during the whole police sequence.
         SetWeddingNpcGrounding(true);
         policeSequenceStarted = true;
+        EndWeddingGuestMovement();
         incidentOcclusionRenderers = Object.FindObjectsByType<Renderer>(
             FindObjectsInactive.Exclude,
             FindObjectsSortMode.None);
@@ -10113,10 +9993,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
             if (cinematicStoryPlaying)
             {
-                ShowLine(
-                    "旁白",
-                    "歡笑聲戛然而止。遠處，只剩皮靴踩過山路的聲音。",
-                    Mathf.Max(1.2f, cinematicSilenceBeatSeconds + 0.8f));
 
                 yield return new WaitForSeconds(
                     Mathf.Max(0f, cinematicSilenceBeatSeconds));
@@ -10139,7 +10015,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
         else
         {
-            ShowLine("旁白", "鼓聲突然慢了下來。山路傳來急促的皮靴聲，兩名日本警察闖進婚禮會場。", 4.5f);
             yield return MovePlayerToWitnessPoint();
             CapturePoliceWitnessViewPose();
             yield return new WaitForSeconds(0.35f);
@@ -10193,8 +10068,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         else
         {
             yield return CinematicPanTo(shovedVillagerActor, policeCameraPanSeconds * 0.8f);
-            ShowLine("旁白", "警察推倒酒杯，又粗暴地推開靠近的族人。", 3.5f);
-            yield return new WaitForSeconds(3.2f);
         }
 
         if (IsNewPoliceScene())
@@ -10219,7 +10092,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             }
             yield return CinematicExtraHold();
 
-            ShowLine("旁白", "另一名警察把目光轉向一名女性族人，伸手逼近她。周圍的族人立刻騷動起來。", 4f);
             float harassmentDistance = GetIncidentPersonalSpace(
                 harassingPolice,
                 femaleVillagerActor,
@@ -10270,11 +10142,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 yield return new WaitForSeconds(remainingStruggleSeconds);
             }
         }
-        else
-        {
-            ShowLine("旁白", "一名警察試圖騷擾女性族人，四周的怒氣瞬間升高。", 3.8f);
-            yield return new WaitForSeconds(3.4f);
-        }
+
 
         // 選項出現前，必須讓玩家清楚看到警察正抓住並壓制女性族人。
         if (harassingPolice != null && femaleVillagerActor != null)
@@ -11347,7 +11215,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 line,
                 voiceClip,
                 fallbackSeconds,
-                volumeScale);
+                volumeScale, speakerActor: speakerActor);
             yield break;
         }
 
@@ -11445,7 +11313,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             line,
             voiceClip,
             fallbackSeconds,
-            volumeScale);
+            volumeScale, speakerActor: speakerActor);
 
         Vector3 closePosition = view.position;
         Quaternion closeRotation = view.rotation;
@@ -12110,10 +11978,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 out hiddenHandRendererStates);
         }
 
-        ShowLine(
-            "旁白",
-            "遠處的山路上，兩名日警正朝著婚禮會場緩步逼近。",
-            totalDuration);
 
         Vector3 aerialAnchorCenter =
             secondPolice != null
@@ -12935,7 +12799,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         if (choice == ConflictChoice.Intervene && playerKnockedOut)
         {
             // 玩家已倒地，保持地面視點，只讓長者的話從現場傳來。
-            float lineSeconds = ShowLine(elderSpeakerName, "今天的事，族人不會忘記。", 3.5f);
+            float lineSeconds = ShowCharacterLine(elderSpeaker, elderSpeakerName, "今天的事，族人不會忘記。", 3.5f);
             yield return new WaitForSeconds(lineSeconds);
         }
         else
@@ -12958,11 +12822,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield return EndingFallbackRoutine();
         }
 
-        ShowLine("", "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。", 5f);
-        SetMission("第一章結尾：族人望著日警下山的背影，憤恨與無力留在婚禮現場。");
+        SetMission("");
         SaveChapterResult();
         chapterCompleted = true;
-        yield return new WaitForSeconds(3f);
 
         cinematicStoryPlaying = false;
         ReleaseEndingCameraLock();
@@ -13096,13 +12958,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             closeUpPosition,
             closeUpRotation);
 
-        ShowLine(
-            "旁白",
-            "日警的手掃向桌邊。",
-            Mathf.Max(
-                0.8f,
-                cupCloseUpBeforeImpactSeconds
-                + 0.55f));
 
         yield return new WaitForSeconds(
             Mathf.Max(
@@ -13226,10 +13081,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 policeCameraPanSeconds * 0.65f);
         }
 
-        ShowLine(
-            "旁白",
-            "一名族人上前質問，立刻被粗暴地推開。",
-            2.8f);
 
         if (shovedVillagerActor != null)
         {
@@ -13268,7 +13119,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private IEnumerator KnockCupAndShoveVillagerFallback()
     {
-        ShowLine("旁白", "警察冷笑著抬手，把桌邊的酒杯掃倒。", 2.8f);
         PlayPoliceEventClip(cupCrashClip);
 
         if (ceremonyCupRigidbody != null)
@@ -13284,7 +13134,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1.2f);
-        ShowLine("旁白", "一名族人上前質問，立刻被粗暴地推開。", 2.8f);
 
         if (shovedVillagerActor != null)
         {
@@ -14923,7 +14772,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (femaleVillagerActor != null && draggingPolice != null && hutEntrancePoint != null)
         {
-            ShowLine("旁白", "你沒有上前。警察抓住女性族人的手臂，無視她的掙扎，強行把她拖向小木屋。", 4.6f);
             yield return DragVictimWithFixedWitnessCameraRoutine(
                 draggingPolice,
                 femaleVillagerActor,
@@ -14936,7 +14784,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             HoldPoliceWitnessViewTowardsPoint(
                 hutEntrancePoint.position + Vector3.up * 1.2f);
 
-            ShowLine("旁白", "她被拖進屋內，門在眾人面前重重關上。", 4.5f);
             float screamDelay = Mathf.Clamp(
                 hutScreamDelaySeconds,
                 0f,
@@ -14982,7 +14829,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             EnsureCinematicActorGrounding(femaleVillagerActor, true);
             BeginHarassmentPerformance(draggingPolice, femaleVillagerActor);
 
-            ShowLine("旁白", "過了一陣子，警察又拖著仍在掙扎的女性走出屋子。", 4.2f);
             Vector3 outsidePoint = hutEntrancePoint.position + outward * 2.3f;
             yield return DragVictimWithFixedWitnessCameraRoutine(
                 draggingPolice,
@@ -14995,7 +14841,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         {
             StopIncidentActorMotions(true);
             PlayPoliceEventClip(GetHutCryClip());
-            ShowLine("旁白", "你沉默地站在原地。警察把驚恐反抗的女性族人強行拖向木屋。", 4.5f);
             yield return new WaitForSeconds(3.2f);
         }
     }
@@ -15007,15 +14852,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             ? secondaryPoliceActor
             : primaryPoliceActor;
 
-        ShowLine("旁白", "你上前阻止。警察惱怒地抽出警棍，朝你逼近。", 3.5f);
         yield return PoliceBatonAttackPlayerRoutine(attackingPolice);
-        ShowLine("旁白", "警棍猛然落下。劇痛與暈眩讓你倒在地上，意識逐漸模糊。", 4.2f);
-        yield return new WaitForSeconds(3.1f);
     }
 
     private IEnumerator EndingFallbackRoutine()
     {
-        ShowLine("旁白", "兩名警察整理衣服，轉身沿著山路離開。婚禮現場只剩火堆與沉默。", 4.5f);
 
         StopIncidentActorMotions(true);
         if (!playerKnockedOut)
@@ -15441,15 +15282,25 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         AudioClip voiceClip,
         float fallbackSeconds,
         float volumeScale = 1f,
-        bool holdForCaption = false)
+        bool holdForCaption = false,
+        Transform speakerActor = null)
     {
         float duration = voiceClip != null
             ? Mathf.Max(0.1f, voiceClip.length)
             : Mathf.Max(0.1f, fallbackSeconds);
 
-        float captionEnd = Time.time + ShowLine(speaker, line, duration + .1f);
         bool mandarin = GameLanguageSettings.ChineseVoice;
-        if (!mandarin && voiceClip) EnsurePoliceDialogueAudioSource();
+        AudioSource performing = null;
+        if (!mandarin && voiceClip)
+        {
+            EnsurePoliceDialogueAudioSource();
+            performing = policeDialogueAudio;
+            performing.Stop();
+            performing.volume = Mathf.Clamp01(policeDialogueVolume);
+            performing.PlayOneShot(voiceClip, Mathf.Max(0f, volumeScale));
+        }
+        float captionEnd = Time.time + ShowCharacterLine(speakerActor ? speakerActor : NamedSpeaker(speaker),
+            speaker, line, duration + .1f, performing);
         if (mandarin)
         {
             while (ChineseSpeech.Busy) yield return null;
@@ -15457,10 +15308,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
         else if (voiceClip && policeDialogueAudio)
         {
-            policeDialogueAudio.Stop();
-            policeDialogueAudio.clip = null;
-            policeDialogueAudio.volume = Mathf.Clamp01(policeDialogueVolume);
-            policeDialogueAudio.PlayOneShot(voiceClip, Mathf.Max(0f, volumeScale));
             while (policeDialogueAudio && policeDialogueAudio.isPlaying) yield return null;
         }
         else
@@ -15559,7 +15406,22 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private float ShowLine(string speaker, string line, float seconds)
     {
+        return ShowCharacterLine(NamedSpeaker(speaker), speaker, line, seconds);
+    }
+
+    private Transform NamedSpeaker(string speaker)
+    {
+        if (speaker == "新郎") return groomActor;
+        if (speaker == ElderName) return weddingElder;
+        if (speaker == "女性族人" || speaker == "新娘") return femaleVillagerActor;
+        if (speaker == "日警") return primaryPoliceActor;
+        return null;
+    }
+
+    private float ShowCharacterLine(Transform actor, string speaker, string line, float seconds, AudioSource performedVoice = null)
+    {
         seconds=BeginChineseLine(speaker,line,seconds);
+        if (actor || speaker == "你") StartGuestSpeech(actor, line, seconds, performedVoice);
         // The chapter canvas follows the headset in VR and scales to the Game view on desktop.
         if (chapterCanvas && dialogueUI)
         {

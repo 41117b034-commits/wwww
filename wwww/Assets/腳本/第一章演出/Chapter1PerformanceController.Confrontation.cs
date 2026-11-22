@@ -123,7 +123,6 @@ public partial class Chapter1PerformanceController
         }
         if(impactProp==null)yield break;
         SetWeddingDramaBeat("police-wine-approach");
-        ShowLine("旁白","警察踢倒擺在地上的酒。",9f);
         Vector3 focus=wineCenter-approach*height*0.30f;
         if(TryGetIncidentSurfaceY(focus,out float floor))focus.y=floor;
         // The full figure and the grounded props stay in the same frame, so
@@ -350,7 +349,6 @@ public partial class Chapter1PerformanceController
         leaderRig.Face(control1 - start);
         Quaternion walkingRotation = leader.rotation;
         leader.rotation = startRotation;
-        ShowLine("旁白", "一名族人走上前，向警察質問。", leaderApproachSeconds + 0.7f);
         SetWeddingDramaBeat("leader-approach");
         for (float t = 0f; t < 0.4f; t += Time.deltaTime)
         {
@@ -382,7 +380,7 @@ public partial class Chapter1PerformanceController
         officerRig.Face(leader.position - officer.position);
         leaderRig.conversationTarget = officer;
         SetWeddingDramaBeat("leader-question");
-        ShowLine("族人", "我們只是辦婚禮，為什麼要這樣對待我們？", leaderQuestionSeconds);
+        ShowCharacterLine(leader, "族人", "我們只是辦婚禮，為什麼要這樣對待我們？", leaderQuestionSeconds);
         float spokenSeconds=GameLanguageSettings.ChineseVoice&&ChineseSpeech.HasAudio ? ChineseSpeech.Remaining+.12f : leaderQuestionSeconds;
         for (float elapsed = 0f; elapsed < spokenSeconds || (GameLanguageSettings.ChineseVoice&&ChineseSpeech.Busy); elapsed += Time.deltaTime)
         {
@@ -407,7 +405,6 @@ public partial class Chapter1PerformanceController
         officerRig.pushWeight = 1f;
         PlaceDoorwayActor(officerRig, officerContact);
         // Reaction begins after contact, so there is no invisible remote shove.
-        ShowLine("旁白", "警察猛地推開他，他踉蹌後退，差點跌倒。", 3.8f);
         SetWeddingDramaBeat("shove-contact");
         Vector3 contactStart = leader.position;
         for (float elapsed = 0f; elapsed < 0.26f; elapsed += Time.deltaTime)

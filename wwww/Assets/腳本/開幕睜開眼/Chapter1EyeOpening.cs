@@ -227,9 +227,7 @@ public class Chapter1EyeOpening : MonoBehaviour
 
         if (playEyelids)
         {
-            float delay = chapterController != null && chapterController.introVoice1 != null
-                ? chapterController.introVoice1.length + chapterController.introLineGap
-                : fallbackDelay;
+            float delay = chapterController != null ? 0f : fallbackDelay;
             yield return WaitRealtime(delay + Mathf.Max(0f, extraDelay));
             if (eyeOpenEffect != null)
             {

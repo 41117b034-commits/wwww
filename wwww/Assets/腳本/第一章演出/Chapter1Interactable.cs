@@ -199,7 +199,7 @@ public class Chapter1Interactable : MonoBehaviour
         switch (interactionType)
         {
             case InteractionType.Talk:
-                controller.Talk(speakerName, GetDialogueLine());
+                controller.TalkTo(transform, speakerName, GetDialogueLine());
                 break;
             case InteractionType.DeliverWine:
                 controller.DeliverWine(speakerName, transform);

@@ -7783,7 +7783,7 @@ BoxCollider:
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &2074181950 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
   m_PrefabInstance: {fileID: 801925924}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &801925924
@@ -7794,59 +7794,59 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalScale.x
       value: 12.27369
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalScale.y
       value: 12.27369
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalScale.z
       value: 12.27369
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3707.3
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalPosition.y
       value: -5812.9243
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalPosition.z
       value: -137.8
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: -8679921383154817045, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+    - target: {fileID: 919132149155446097, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
       propertyPath: m_Name
       value: 2
       objectReference: {fileID: 0}
@@ -7854,7 +7854,7 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e09d2108b7ed0394e89c55b572884218, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 4e3eb271119974a48936b1c632085f95, type: 3}
 --- !u!1 &812234433 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1507406190022473441, guid: 0fb3019f4ef6c594fbc83ea7f80bce07, type: 3}
@@ -8502,7 +8502,6 @@ MonoBehaviour:
   incidentHutDoor: {fileID: 1439229868}
   incidentDoorSwingSeconds: 0.85
   incidentEnterHutSeconds: 3.6
-  incidentDepartureHoldSeconds: 6
   playerController: {fileID: 0}
   characterController: {fileID: 0}
   danceTimeline: {fileID: 0}
@@ -8551,6 +8550,7 @@ MonoBehaviour:
   openingSequence: {fileID: 1071793186}
   chapterObjective: {fileID: 2074181911}
   weddingElder: {fileID: 2074181950}
+  weddingElderAttire: {fileID: 2100000, guid: aa3e5bf33a1f40b389345c5c4147f7a8, type: 2}
   weddingBride: {fileID: 1876586237}
   weddingBrideAvatar: {fileID: 9000000, guid: 76fff1a18a0e46968c1acfc4099dbf00, type: 2}
   weddingFeastModel: {fileID: 919132149155446097, guid: ec1d822b5036493eb09c32181c29471b, type: 3}
@@ -8584,11 +8584,6 @@ MonoBehaviour:
   useStoryMusicCrossfade: 1
   storyMusicCrossfadeSeconds: 0.004
   tensionMusicTargetVolume: 0.22
-  narrationAudio: {fileID: 0}
-  introVoice1: {fileID: 8300000, guid: 93a10ef5466c75440b5af199daabeea6, type: 3}
-  introVoice2: {fileID: 8300000, guid: 847d45c53231af140bfa0d32a2fb0e7e, type: 3}
-  narrationVolume: 1
-  introLineGap: 0.35
   wineTargetCount: 3
   foodTargetCount: 2
   requireWineAndFoodBeforeDance: 1
@@ -8707,8 +8702,8 @@ MonoBehaviour:
   physicalInteractKey: 101
   physicalInteractGamepadKey: 330
   physicalCancelKey: 113
-  physicalPickupRange: 4.5
-  physicalDeliveryRange: 4
+  physicalPickupRange: 9
+  physicalDeliveryRange: 12
   physicalGiveSeconds: 0.45
   winePickupPoint: {fileID: 241933309}
   foodPickupPoint: {fileID: 2035685197}

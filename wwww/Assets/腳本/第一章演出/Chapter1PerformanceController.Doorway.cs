@@ -132,7 +132,6 @@ public partial class Chapter1PerformanceController
         Vector3 cameraPosition = door + doorwayOut * doorwayHeight * 2.1f - doorwayRight * doorwayHeight * 1.25f + Vector3.up * doorwayHeight * 0.87f;
         Vector3 focus = door - doorwayRight * doorwayHeight * 0.66f + Vector3.up * doorwayHeight * 0.50f;
         SetDoorwayCamera(cameraPosition, focus, 49f);
-        ShowLine("旁白", "警察抓住女性族人的手腕，強行把她拉向木屋門口。", incidentDoorDragSeconds);
         yield return new WaitForSeconds(0.35f);
         doorwayOfficer.walking = doorwayVictim.walking = true;
         doorwayVictim.strideScale = 0.78f;
@@ -162,7 +161,8 @@ public partial class Chapter1PerformanceController
         doorwayVictim.frozen = false;
         doorwayVictim.strugglingInPlace = true;
         doorwayOfficer.AnchorPartnerGrip();
-        yield return PlayPoliceVoicedLine("女性族人", DoorwayProtest, femaleResistVoice, 2.2f, holdForCaption: true);
+        yield return PlayPoliceVoicedLine("新娘", DoorwayProtest, femaleResistVoice, 2.2f,
+            holdForCaption: true, speakerActor: doorwayVictim.transform);
         if (dialogueUI != null) dialogueUI.HideInstant();
         if (Chapter1StorySubtitleBridge.Instance) Chapter1StorySubtitleBridge.Instance.HideImmediate();
         fallbackLine = fallbackSpeaker = "";

@@ -37,8 +37,11 @@ async def main():
             text=json.loads(re.sub(r'\\x([0-9a-fA-F]{2})',r'\\u00\1',match[2]))
             second_roles.setdefault(text,set()).add(role)
     jobs=[]
+    fixed_profiles={}
     for entry in catalog['entries']:
         jobs.append((entry['chinese'],'default',entry['resource']))
+        if entry.get('recordingProfile'):
+            fixed_profiles[entry['resource']] = {'roles': {'default': entry['recordingProfile']}, 'delivery': []}
         if entry.get('femaleResource'):jobs.append((entry['chinese'],'female',entry['femaleResource']))
         authored_roles = [v['role'] for v in entry.get('variants', [])]
         scene_roles = roles if entry['chinese'] in third_lines else sorted(second_roles.get(entry['chinese'], ()))
@@ -51,7 +54,8 @@ async def main():
                 resource=entry['resource'] if role=='bawan' else entry['resource']+'_'+role
                 entry['variants'].append({'role':role,'resource':resource,'voice':config['roles'][role]['voice']})
                 if role!='bawan':jobs.append((entry['chinese'],role,resource))
-        entry['provider']='Neural Mandarin; mature four-character delivery v1'
+        if not entry.get('recordingProfile'):
+            entry['provider']='Neural Mandarin; mature four-character delivery v1'
     catalog['male']='zh-TW-YunJheNeural';catalog['female']='zh-TW-HsiaoChenNeural';catalog['deliveryVersion']=config['version'];catalog.pop('rate',None)
     records={};progress=EVIDENCE/'generation-progress.json'
     if progress.exists():records=json.loads(progress.read_text(encoding='utf-8')).get('clips',{})
@@ -61,7 +65,8 @@ async def main():
     async def one(text,role,resource):
         nonlocal done
         destination=ROOT/'Assets/Resources'/f'{resource}.wav'
-        expected=worker.settings(text,role,config)
+        profile = fixed_profiles.get(resource, config)
+        expected=worker.settings(text,role,profile)
         if records.get(resource,{}).get('settings')==expected and destination.exists():done+=1;return
         async with semaphore:
             mp3=mp3dir/(resource.split('/')[-1]+'.mp3')
@@ -71,7 +76,7 @@ async def main():
                     if mp3.exists() and sidecar.exists() and json.loads(sidecar.read_text())==expected:
                         choice=expected
                     else:
-                        choice=await worker.synthesize(text,role,mp3,config)
+                        choice=await worker.synthesize(text,role,mp3,profile)
                         sidecar.write_text(json.dumps(choice),encoding='utf-8')
                     seconds=pcm(mp3,destination)
                     if seconds<.15:raise ValueError('Audio too short')
