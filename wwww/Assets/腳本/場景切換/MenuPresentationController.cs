@@ -19,6 +19,12 @@ public sealed class MenuPresentationController : MonoBehaviour
     private bool returningToSettings;
     private GameObject exitConfirmationOverlay;
     private bool quitPending;
+    private bool enteringChapter;
+    private readonly List<ChapterEntryMesh> preparedMeshes = new List<ChapterEntryMesh>();
+    private ResourceRequest preparingMesh;
+    private bool skipMeshPreparation;
+    private static readonly string[] SharedBodies =
+        { "f32c0c9b", "4931ae9c", "9c8dfc1a", "3a511942", "e2dbffa6" };
 
     private static readonly string[] ChapterPrefixes =
     {
@@ -66,14 +72,11 @@ public sealed class MenuPresentationController : MonoBehaviour
         }
 
         instance = this;
+        skipMeshPreparation = Application.isMobilePlatform;
+        Application.lowMemory += ReleasePreparedMeshes;
         GameSubtitleLanguage unused = GameLanguageSettings.CurrentLanguage;
         GameAudioSettings.Apply();
         SceneManager.sceneLoaded += HandleSceneLoaded;
-    }
-
-    private void Start()
-    {
-        StartCoroutine(ApplyScenePresentationAfterLayout(SceneManager.GetActiveScene()));
     }
 
     private void OnDestroy()
@@ -81,6 +84,7 @@ public sealed class MenuPresentationController : MonoBehaviour
         if (instance == this)
         {
             SceneManager.sceneLoaded -= HandleSceneLoaded;
+            Application.lowMemory -= ReleasePreparedMeshes;
             instance = null;
         }
     }
@@ -107,6 +111,45 @@ public sealed class MenuPresentationController : MonoBehaviour
         quitPending = false;
         GameAudioSettings.Apply();
         StartCoroutine(ApplyScenePresentationAfterLayout(scene));
+        if (!skipMeshPreparation && (scene.name == "點選介面" || scene.name.Contains("選擇章節")))
+            StartCoroutine(PrepareSharedBodies(scene));
+        else
+        {
+            preparingMesh = null;
+            preparedMeshes.Clear();
+        }
+    }
+
+    private void ReleasePreparedMeshes()
+    {
+        skipMeshPreparation = true;
+        bool hadPreparedMeshes = preparingMesh != null || preparedMeshes.Count != 0;
+        preparingMesh = null;
+        preparedMeshes.Clear();
+        // A Single chapter load already releases unused assets at its handoff.
+        if (hadPreparedMeshes && !enteringChapter) Resources.UnloadUnusedAssets();
+    }
+
+    private IEnumerator PrepareSharedBodies(Scene menu)
+    {
+        // Let the menu accept input first. Only one low-priority mesh may be
+        // in flight if a player chooses immediately or moves to another screen.
+        yield return new WaitForSecondsRealtime(.55f);
+        while (!skipMeshPreparation && !enteringChapter && menu.IsValid() && menu.isLoaded && SceneManager.GetActiveScene() == menu
+            && preparedMeshes.Count < SharedBodies.Length)
+        {
+            if (preparingMesh == null)
+            {
+                string path = "ChapterEntryMeshes/" + SharedBodies[preparedMeshes.Count];
+                preparingMesh = Resources.LoadAsync<ChapterEntryMesh>(path);
+                preparingMesh.priority = -10;
+            }
+            yield return preparingMesh;
+            if (skipMeshPreparation || enteringChapter || !menu.IsValid() || !menu.isLoaded || SceneManager.GetActiveScene() != menu) yield break;
+            preparedMeshes.Add(preparingMesh.asset as ChapterEntryMesh);
+            preparingMesh = null;
+            yield return null;
+        }
     }
 
     private IEnumerator ApplyScenePresentationAfterLayout(Scene scene)
@@ -119,6 +162,10 @@ public sealed class MenuPresentationController : MonoBehaviour
         // Some older scene debug components set AudioListener.volume in Start().
         // Reapply the saved master volume after all scene Start methods have run.
         GameAudioSettings.Apply();
+        if (enteringChapter) yield break;
+        if (scene.name != "點選介面" && scene.name != "字幕選單"
+            && scene.name != "設定內容" && !scene.name.Contains("選擇章節"))
+            yield break;
         Canvas.ForceUpdateCanvases();
         EnlargeBrownMenuPanels();
 
@@ -152,6 +199,76 @@ public sealed class MenuPresentationController : MonoBehaviour
         ConfigureMainMenuTitle(title);
         Canvas canvas = title.GetComponentInParent<Canvas>();
         CenterCanvasVertically(canvas);
+    }
+
+    public static void EnterChapter(int chapterIndex)
+    {
+        if (instance.enteringChapter) return;
+        string sceneName = chapterIndex == 0 ? "第一章新版警察" : ChapterPrefixes[chapterIndex];
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogError("無法載入章節：" + sceneName);
+            return;
+        }
+        instance.enteringChapter = true;
+        instance.StartCoroutine(instance.OpenChapter(sceneName, chapterIndex));
+    }
+
+    private IEnumerator OpenChapter(string sceneName, int chapterIndex)
+    {
+        // Keep the chapter heading on the same canvas as the menu (including XR).
+        // Hide the buttons immediately so a second click cannot change the route.
+        TextMeshProUGUI title = FindTextStartingWith("霧社事件");
+        Canvas canvas = title ? title.GetComponentInParent<Canvas>() : null;
+        var hidden = new List<GameObject>();
+        Image panel = null;
+        if (canvas)
+        {
+            RectTransform root = (RectTransform)canvas.transform;
+            for (int i = 0; i < root.childCount; i++)
+            {
+                GameObject child = root.GetChild(i).gameObject;
+                if (!child.activeSelf) continue;
+                hidden.Add(child);
+                child.SetActive(false);
+            }
+            panel = CreateDialogImage("Chapter Entry", root, new Color(.10f, .075f, .055f, .94f));
+            RectTransform rect = panel.rectTransform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(133f, 42f);
+            CreateDialogText("Chapter", rect, title, ChapterTitles[chapterIndex].Replace("\n", "　"),
+                new Vector2(0, 4), new Vector2(128, 17), 7f, new Color(1f, .9f, .68f));
+            CreateDialogText("Status", rect, title, "載入中…",
+                new Vector2(0, -9), new Vector2(100, 9), 4.2f, new Color(.94f, .9f, .83f));
+        }
+        // Present the new heading before opening the scene file. Some platforms
+        // still do synchronous preparation at the start of LoadSceneAsync.
+        yield return null;
+        var previousPriority = Application.backgroundLoadingPriority;
+        try
+        {
+            Application.backgroundLoadingPriority = UnityEngine.ThreadPriority.High;
+            AsyncOperation opening = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            if (opening == null)
+            {
+                Debug.LogError("無法載入章節：" + sceneName);
+                yield break;
+            }
+            opening.priority = 10;
+            yield return opening;
+        }
+        finally
+        {
+            Application.backgroundLoadingPriority = previousPriority;
+            enteringChapter = false;
+            // On success the source scene has already destroyed these objects.
+            if (panel)
+            {
+                Destroy(panel.gameObject);
+                foreach (var child in hidden) if (child) child.SetActive(true);
+            }
+        }
     }
 
     private static void EnlargeBrownMenuPanels()

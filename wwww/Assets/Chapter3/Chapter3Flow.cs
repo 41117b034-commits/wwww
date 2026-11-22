@@ -45,6 +45,8 @@ public sealed class Chapter3Flow : MonoBehaviour
     }
     void Start()
     {
+        StartCoroutine(Chapter3CrowdDetail.LoadForChapter(this));
+        StartCoroutine(Chapter3ActorDetail.LoadForChapter(this));
         // Retire the old authoring overlay even in an older saved scene.
         foreach(var label in ui.canvas.GetComponentsInChildren<Text>(true))
             if(label.text.Contains("F6")&&label.text.Contains("F7"))

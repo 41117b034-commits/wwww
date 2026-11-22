@@ -10,6 +10,7 @@ public partial class Chapter1PerformanceController
     [SerializeField] private Text chapterObjective;
     private Canvas chapterCanvas;
     private Text weddingDirection;
+    private Text brideName, groomName;
     private WeddingAction displayedAction;
     private float nextActionCheck;
 
@@ -44,7 +45,43 @@ public partial class Chapter1PerformanceController
         {
             // Keep the raised hand visible as the scene brightens even after a slow loading frame.
             if (groomPose) groomPose.Beckon(1.4f * progress);
+            if (bridePose) bridePose.Welcome(1.2f * progress);
         });
+    }
+
+    private void PrepareCoupleNames()
+    {
+        if (!weddingDirection) return;
+        groomName = CreateWeddingName("新郎");
+        brideName = CreateWeddingName("新娘");
+    }
+
+    private Text CreateWeddingName(string role)
+    {
+        Text caption = Instantiate(weddingDirection, chapterCanvas.transform, false);
+        caption.name = role;
+        caption.text = role;
+        caption.fontSize = 24;
+        caption.color = new Color(1f, .9f, .68f);
+        return caption;
+    }
+
+    private void UpdateWeddingName(Text caption, Chapter1WeddingGuestPose host, bool introduce)
+    {
+        if (!caption || !host || !host.Head) return;
+        Camera camera = chapterCanvas.worldCamera;
+        bool visible = introduce && camera;
+        if (visible)
+        {
+            Vector3 viewport = camera.WorldToViewportPoint(host.Head.position + Vector3.up * (.24f * host.Height));
+            visible = viewport.z > 0f && viewport.x > .04f && viewport.x < .96f && viewport.y > .16f && viewport.y < .96f;
+            if (visible)
+            {
+                caption.rectTransform.anchorMin = caption.rectTransform.anchorMax = new Vector2(viewport.x, viewport.y);
+                caption.rectTransform.anchoredPosition = Vector2.zero;
+            }
+        }
+        if (caption.gameObject.activeSelf != visible) caption.gameObject.SetActive(visible);
     }
 
     private void UpdateChapterPresentation()
@@ -63,6 +100,10 @@ public partial class Chapter1PerformanceController
         }
         if (!weddingDirection) return;
         bool exploring = visible && IsFreeExplorationActive();
+        bool introducing = !policeSequenceStarted && ((openingStoryPlaying && (!fadeCanvas || fadeCanvas.alpha < .15f))
+            || (exploring && Time.time < greetingUntil && !WeddingActionPlaying));
+        UpdateWeddingName(groomName, groomPose, introducing);
+        UpdateWeddingName(brideName, bridePose, introducing);
         if (exploring && Time.unscaledTime >= nextActionCheck)
         {
             nextActionCheck = Time.unscaledTime + .1f;

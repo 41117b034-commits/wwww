@@ -40,8 +40,10 @@ async def main():
     for entry in catalog['entries']:
         jobs.append((entry['chinese'],'default',entry['resource']))
         if entry.get('femaleResource'):jobs.append((entry['chinese'],'female',entry['femaleResource']))
+        authored_roles = [v['role'] for v in entry.get('variants', [])]
+        scene_roles = roles if entry['chinese'] in third_lines else sorted(second_roles.get(entry['chinese'], ()))
+        needed_roles = dict.fromkeys([*authored_roles, *scene_roles])
         entry['variants']=[]
-        needed_roles=roles if entry['chinese'] in third_lines else second_roles.get(entry['chinese'],())
         if needed_roles:
             # Every Chapter 3 line can be spoken by any of the four actors,
             # including shared notices and branching conversation fragments.

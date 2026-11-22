@@ -2232,6 +2232,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
         if (!isWine && foodCarryTemplate != null)
         {
+            if (weddingElder && fishHandMesh) return CreatePlayerFish();
             GameObject food = Instantiate(foodCarryTemplate);
             food.name = "Chapter1_Food_PhysicalCarry";
             food.SetActive(true);
@@ -2268,9 +2269,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         {
             return;
         }
-        if (weddingElder && bambooCupModel && carriedWeddingItem == WeddingCarryItem.Wine)
+        if (weddingElder && playerCarryHand)
         {
-            PositionPlayerCup(view);
+            PositionWeddingGrip(view, carriedWeddingItem == WeddingCarryItem.Wine ? Vector3.up * CupGripHeight : Vector3.zero);
             return;
         }
 
@@ -2319,11 +2320,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         GameObject prop = physicalCarriedProp;
-        if (playerCupHand)
+        if (playerCarryHand)
         {
-            playerCupHand.SetActive(false);
-            Destroy(playerCupHand);
-            playerCupHand = null;
+            playerCarryHand.SetActive(false);
+            Destroy(playerCarryHand);
+            playerCarryHand = null;
         }
         Vector3 start = prop.transform.position;
         Vector3 end = receiver.position + Vector3.up * 1.05f;
@@ -7700,6 +7701,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         // The skip is a clean story transition. Stop any delivery/dance coroutine
         // before changing the quest state so it cannot move an actor afterwards.
         if (groomPose) groomPose.FinishInvitation();
+        if (bridePose) bridePose.FinishInvitation();
         if (elderPose)
         {
             elderPose.FinishInvitation();
@@ -8234,6 +8236,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         for (int i = 0; i < AddedWeddingDancerNames.Length; i++)
         {
             if (!namedAddedDancersFound.Contains(AddedWeddingDancerNames[i])
+                && !(weddingBride && weddingBride.name == AddedWeddingDancerNames[i])
                 && !(weddingElder && weddingElder.name == AddedWeddingDancerNames[i]))
             {
                 Debug.LogWarning(
@@ -8536,7 +8539,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private Transform FindExactSceneActorRoot(string actorName)
     {
-        Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
+        Transform[] transforms = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        string duplicatePrefix = actorName + " (";
         Transform bestMatch = null;
         int bestScore = 0;
         for (int i = 0; i < transforms.Length; i++)
@@ -8550,7 +8554,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 actorName,
                 System.StringComparison.Ordinal);
             bool unityDuplicateName = candidateName.StartsWith(
-                actorName + " (",
+                duplicatePrefix,
                 System.StringComparison.Ordinal)
                 && candidateName.EndsWith(")", System.StringComparison.Ordinal);
             if (candidate != null
@@ -9350,25 +9354,10 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         while (current != null && current.gameObject.scene.IsValid())
         {
-            string currentName = current.name.Trim();
-            for (int i = 0; i < AddedWeddingDancerNames.Length; i++)
+            if (IsNamedWeddingActor(current))
             {
-                string expectedName = AddedWeddingDancerNames[i];
-                bool exactMatch = string.Equals(
-                    currentName,
-                    expectedName,
-                    System.StringComparison.Ordinal);
-                bool unityDuplicateName = currentName.StartsWith(
-                    expectedName + " (",
-                    System.StringComparison.Ordinal)
-                    && currentName.EndsWith(")", System.StringComparison.Ordinal);
-
-                if ((exactMatch || unityDuplicateName)
-                    && IsLikelyWeddingActorRoot(current))
-                {
-                    actorRoot = current;
-                    return true;
-                }
+                actorRoot = current;
+                return true;
             }
 
             current = current.parent;
@@ -9377,19 +9366,26 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         return false;
     }
 
+    private bool IsNamedWeddingActor(Transform candidate)
+    {
+        string name = candidate.name.Trim();
+        if (name.EndsWith(")", System.StringComparison.Ordinal))
+        {
+            int suffix = name.IndexOf(" (", System.StringComparison.Ordinal);
+            if (suffix > 0) name = name.Substring(0, suffix);
+        }
+        return System.Array.IndexOf(AddedWeddingDancerNames, name) >= 0 && IsLikelyWeddingActorRoot(candidate);
+    }
+
     private Animator[] EnsureNamedAddedWeddingDancerAnimators()
     {
-        Transform[] transforms = Resources.FindObjectsOfTypeAll<Transform>();
-        HashSet<int> processedRoots = new HashSet<int>();
-
+        // The roots themselves are in this list. Walking upwards from every bone
+        // repeated the same checks thousands of times before the opening frame.
+        Transform[] transforms = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         for (int i = 0; i < transforms.Length; i++)
         {
-            Transform candidate = transforms[i];
-            if (candidate == null
-                || !candidate.gameObject.scene.IsValid()
-                || !TryFindNamedAddedDancerRoot(candidate, out Transform actorRoot)
-                || actorRoot == null
-                || !processedRoots.Add(actorRoot.GetInstanceID()))
+            Transform actorRoot = transforms[i];
+            if (actorRoot.gameObject.scene != gameObject.scene || !IsNamedWeddingActor(actorRoot))
             {
                 continue;
             }
@@ -9408,7 +9404,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             actorAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         }
 
-        return Resources.FindObjectsOfTypeAll<Animator>();
+        return Object.FindObjectsByType<Animator>(FindObjectsInactive.Include, FindObjectsSortMode.None);
     }
 
     private bool TryGetCharacterBounds(Transform root, out Bounds bounds)
@@ -9556,7 +9552,8 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             return false;
         }
 
-        if ((weddingElder && actor == groomActor) || (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(actor)))
+        if ((weddingElder && actor == groomActor) || actor == weddingBride
+            || (keepDeliveryTargetsStationary && IsDeliveryTaskNPC(actor)))
         {
             return false;
         }
@@ -12928,22 +12925,24 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
 
         Transform elderSpeaker = FindTransformByName("族人長者");
+        string elderSpeakerName = "族人長者";
         if (elderSpeaker == null)
         {
             elderSpeaker = FindTransformByName("莫那");
+            if (elderSpeaker) elderSpeakerName = "莫那·魯道";
         }
         RestoreWitnessCameraFieldOfView();
         if (choice == ConflictChoice.Intervene && playerKnockedOut)
         {
             // 玩家已倒地，保持地面視點，只讓長者的話從現場傳來。
-            ShowLine("族人長者", "今天的事，族人不會忘記。", 3.5f);
-            yield return new WaitForSeconds(3.5f);
+            float lineSeconds = ShowLine(elderSpeakerName, "今天的事，族人不會忘記。", 3.5f);
+            yield return new WaitForSeconds(lineSeconds);
         }
         else
         {
             yield return PlayCinematicSpeakerLine(
                 elderSpeaker,
-                "族人長者",
+                elderSpeakerName,
                 "今天的事，族人不會忘記。",
                 null,
                 3.5f);
@@ -15909,6 +15908,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
     private void SelectNearbyIncidentFemale()
     {
+        if (weddingBride)
+        {
+            femaleVillagerActor = weddingBride;
+            return;
+        }
         Vector3 fireCenter = GetFireCenterPosition();
         float currentDistance = femaleVillagerActor != null
             ? GetFlatDistance(femaleVillagerActor.position, fireCenter)

@@ -15,6 +15,7 @@ public sealed class Chapter1WeddingGuestPose : MonoBehaviour
     private Transform leftArm, leftElbow, leftHand, rightArm, rightElbow, rightHand;
     private Vector3 localForward = Vector3.forward;
     private float waveStart = float.NegativeInfinity;
+    private float bowStart = float.NegativeInfinity;
     private float lower;
     private Vector3 restingPoint;
     private Vector3 cupBeforeLowering;
@@ -47,10 +48,12 @@ public sealed class Chapter1WeddingGuestPose : MonoBehaviour
     }
 
     public void Beckon(float secondsIntoWave = 0f) => waveStart = Time.time - secondsIntoWave;
+    public void Welcome(float secondsIntoBow = 0f) => bowStart = Time.time - secondsIntoBow;
     public void AcceptCup(Transform cup) => Cup = cup;
     public void FinishInvitation()
     {
         waveStart = float.NegativeInfinity;
+        bowStart = float.NegativeInfinity;
         leadingFoot = trailingFoot = null;
     }
 
@@ -136,6 +139,19 @@ public sealed class Chapter1WeddingGuestPose : MonoBehaviour
             trailingFoot.Place(stepDelta, (stepPhase - .45f) / .55f, Forward);
         }
         Vector3 side = Right;
+        float bow = (Time.time - bowStart) / 2.5f;
+        if (bow >= 0f && bow < 1f && Head && leftArm && leftElbow && leftHand && rightArm && rightElbow && rightHand)
+        {
+            // Bring the hands together in front of the sash and incline the head toward the guest.
+            float weight = Mathf.SmoothStep(0f, 1f, Mathf.Min(bow * 4f, (1f - bow) * 3.5f));
+            Vector3 center = (leftArm.position + rightArm.position) * .5f
+                + (Forward * .155f - Vector3.up * .18f) * Height;
+            Chapter1IncidentRig.Solve(leftArm, leftElbow, leftHand,
+                Vector3.Lerp(leftHand.position, center - side * (.022f * Height), weight), -side - Vector3.up);
+            Chapter1IncidentRig.Solve(rightArm, rightElbow, rightHand,
+                Vector3.Lerp(rightHand.position, center + side * (.025f * Height), weight), side - Vector3.up);
+            Head.rotation = Quaternion.AngleAxis(7f * weight, side) * Head.rotation;
+        }
         float phase = (Time.time - waveStart) / 2.1f;
         if (leftHand && phase >= 0f && phase < 1f)
         {

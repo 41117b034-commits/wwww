@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,22 +12,22 @@ public class tiao : MonoBehaviour
     // 新增：跳到第一章場景
     public void JumpToScene5()
     {
-        SceneManager.LoadScene("第一章新版警察");
+        MenuPresentationController.EnterChapter(0);
     }
 
     public void JumpToChapter2()
     {
-        SceneManager.LoadScene("第二章");
+        MenuPresentationController.EnterChapter(1);
     }
 
     public void JumpToChapter3()
     {
-        SceneManager.LoadScene("第三章");
+        MenuPresentationController.EnterChapter(2);
     }
 
     public void JumpToChapter4()
     {
-        SceneManager.LoadScene("第四章");
+        MenuPresentationController.EnterChapter(3);
     }
 
     // 原有功能：跳到場景編號 4

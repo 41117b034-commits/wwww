@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 // Only SchoolAmbient background renderers. Mesh assets, transforms, materials,
 // bones, collisions and story components retain their existing ownership.
@@ -32,20 +32,13 @@ public sealed class Chapter3CrowdDetail : MonoBehaviour
     public bool DiscoveryStarted=>discoveryStarted;
     public int DistantCount {get{int n=0;foreach(var b in bindings)if(b.far)n++;return n;}}
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void Register()
+    public static IEnumerator LoadForChapter(Chapter3Flow flow)
     {
-        SceneManager.sceneLoaded-=SceneLoaded;SceneManager.sceneLoaded+=SceneLoaded;
-        for(int i=0;i<SceneManager.sceneCount;i++)InstallScene(SceneManager.GetSceneAt(i));
-    }
-    static void SceneLoaded(Scene scene,LoadSceneMode mode){InstallScene(scene);}
-    static void InstallScene(Scene scene)
-    {
-        if(!scene.isLoaded)return;
-        var data=Resources.Load<Chapter3CrowdDetailCatalog>("Chapter3/CrowdDetailCatalog");
-        if(!data||!data.automatic)return;
-        foreach(var root in scene.GetRootGameObjects())
-            foreach(var flow in root.GetComponentsInChildren<Chapter3Flow>(true))Install(flow,data);
+        if (!flow.school) yield break;
+        var request = Resources.LoadAsync<Chapter3CrowdDetailCatalog>("Chapter3/CrowdDetailCatalog");
+        yield return request;
+        var catalog = request.asset as Chapter3CrowdDetailCatalog;
+        if (catalog && catalog.automatic) Install(flow, catalog);
     }
     // Shared entry for scene installation and explicit visual/performance checks.
     public static Chapter3CrowdDetail Install(Chapter3Flow flow,Chapter3CrowdDetailCatalog data)

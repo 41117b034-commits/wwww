@@ -68,6 +68,9 @@ public sealed class Chapter4Voice : MonoBehaviour
     void PlaySelected()
     {
         Output.Stop(); Output.clip = null; CurrentResource = null;
+        bool sharedChapter3Speaker = current.role == "mona" || current.role == "tado" ||
+            current.role == "bawan" || current.role == "pihu";
+        Output.pitch = !GameLanguageSettings.ChineseVoice && sharedChapter3Speaker ? Chapter3VoiceTone.PlaybackPitch : 1f;
         if (entries.TryGetValue(current.role + "|" + current.text, out var entry))
             CurrentResource = GameLanguageSettings.ChineseVoice ? entry.mandarin : entry.seediq;
         if (!string.IsNullOrEmpty(CurrentResource))
@@ -86,7 +89,8 @@ public sealed class Chapter4Voice : MonoBehaviour
         duration = Mathf.Max(current.minimum, current.text.Length / 4.2f + 1.5f);
         if (Output.clip)
         {
-            duration = current.card ? Output.clip.length + .18f : Mathf.Max(duration, Output.clip.length + .45f);
+            float seconds = Output.clip.length / Output.pitch;
+            duration = current.card ? seconds + .18f : Mathf.Max(duration, seconds + .45f);
             Output.Play(); if (paused) Output.Pause();
         }
         else MissingClips++; // Keep the readable subtitle; never speak the wrong language.

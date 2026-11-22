@@ -10,6 +10,7 @@ public class PCPlayerController : MonoBehaviour
     [Header("µø¨¤³]©w")]
     public Transform cameraTransform;
     public float mouseSensitivity = 2f;
+    [Range(0f, 89f)] public float maxLookDown = 80f;
 
     private CharacterController controller;
     private float verticalVelocity;
@@ -88,9 +89,23 @@ public class PCPlayerController : MonoBehaviour
 
         transform.Rotate(Vector3.up * mouseX);
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -80f, 80f);
+        ApplyPitch(xRotation - mouseY);
+    }
 
+    public void SetInitialLookAt(Vector3 worldPoint)
+    {
+        if (!cameraTransform) return;
+        Vector3 direction = worldPoint - cameraTransform.position;
+        if (cameraTransform.parent)
+            direction = cameraTransform.parent.InverseTransformDirection(direction);
+        float horizontal = new Vector2(direction.x, direction.z).magnitude;
+        if (horizontal < .0001f) return;
+        ApplyPitch(-Mathf.Atan2(direction.y, horizontal) * Mathf.Rad2Deg);
+    }
+
+    private void ApplyPitch(float degrees)
+    {
+        xRotation = Mathf.Clamp(degrees, -80f, maxLookDown);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 }

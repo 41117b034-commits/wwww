@@ -2181,7 +2181,13 @@
       "resource": "ChineseVoice/Audio/e34206d7c615a207202a_m",
       "femaleResource": "",
       "provider": "Neural Mandarin; mature four-character delivery v1",
-      "variants": []
+      "variants": [
+        {
+          "role": "mona",
+          "resource": "ChineseVoice/Audio/e34206d7c615a207202a_m_mona",
+          "voice": "zh-CN-YunjianNeural"
+        }
+      ]
     },
     {
       "chinese": "族人望著日警下山的背影。憤怒留在每個人的眼神裡，卻沒有人知道下一步該怎麼辦。",

@@ -8551,10 +8551,14 @@ MonoBehaviour:
   openingSequence: {fileID: 1071793186}
   chapterObjective: {fileID: 2074181911}
   weddingElder: {fileID: 2074181950}
+  weddingBride: {fileID: 1876586237}
+  weddingBrideAvatar: {fileID: 9000000, guid: 76fff1a18a0e46968c1acfc4099dbf00, type: 2}
+  weddingFeastModel: {fileID: 919132149155446097, guid: ec1d822b5036493eb09c32181c29471b, type: 3}
   bambooCupModel: {fileID: 919132149155446097, guid: 6445c95e0130d934380df0e5bae9c38e, type: 3}
   cupStandModel: {fileID: 919132149155446097, guid: 64dba67ec6254988bf94202957022419, type: 3}
   cupStandMaterial: {fileID: 2100000, guid: 5a84bfb0c04829546bd850a1a96d3a8a, type: 2}
   cupHandMesh: {fileID: 4300000, guid: df50aa8c94a19064a909013acd7e1f97, type: 2}
+  fishHandMesh: {fileID: 4300000, guid: 41a261aac4848e444a3a37bad77b7ef3, type: 2}
   cupHandSkin: {fileID: 2100000, guid: d7dad94f5d628e344800bdc3add50b61, type: 2}
   weddingAmbience: {fileID: 1634240005}
   weddingVocals: {fileID: 0}
@@ -8703,7 +8707,7 @@ MonoBehaviour:
   physicalInteractKey: 101
   physicalInteractGamepadKey: 330
   physicalCancelKey: 113
-  physicalPickupRange: 3
+  physicalPickupRange: 4.5
   physicalDeliveryRange: 4
   physicalGiveSeconds: 0.45
   winePickupPoint: {fileID: 241933309}
@@ -11459,6 +11463,7 @@ MonoBehaviour:
   gravity: -9.81
   cameraTransform: {fileID: 24367169}
   mouseSensitivity: 2
+  maxLookDown: 70
 --- !u!143 &1160666541
 CharacterController:
   m_ObjectHideFlags: 0
@@ -22022,6 +22027,11 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!4 &1876586237 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b37820f3e090edb46a44e8e00055adcb, type: 3}
+  m_PrefabInstance: {fileID: 1876586236}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1876586236
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23514,7 +23524,7 @@ Transform:
   m_GameObject: {fileID: 2046250535}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 0}
+  m_LocalPosition: {x: 0, y: 11.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -64,12 +64,13 @@ public sealed class GameChineseVoice:MonoBehaviour
     }
     public static string ResolveRole(string speaker,bool female=false)
     {
-        if(female)return "female";speaker=speaker??"";
-        // Tado's full name contains Mona: resolve the son first.
-        if(speaker.Contains("達多")||speaker=="Tado")return "tado";
-        if(speaker.Contains("比胡")||speaker=="Pihu")return "pihu";
-        if(speaker.Contains("莫那")||speaker=="Mona")return "mona";
-        if(speaker.Contains("巴萬")||speaker=="Bawan")return "bawan";
+        if(female)return "female";
+        speaker=(speaker??"").TrimStart();
+        // The given name comes first. Awi Pihu and Tado Mona also contain a parent's name.
+        if(speaker.StartsWith("達多",StringComparison.Ordinal)||speaker=="Tado")return "tado";
+        if(speaker.StartsWith("比胡",StringComparison.Ordinal)||speaker=="Pihu")return "pihu";
+        if(speaker.StartsWith("莫那",StringComparison.Ordinal)||speaker=="Mona")return "mona";
+        if(speaker.StartsWith("巴萬",StringComparison.Ordinal)||speaker=="Bawan")return "bawan";
         return "default";
     }
     void Play(AudioClip clip)

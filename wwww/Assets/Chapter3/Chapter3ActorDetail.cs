@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 // Native story/combat bodies are extremely dense. Keep the original near the
 // player, and use authored, bone-compatible derivatives beyond five metres.
@@ -32,22 +32,16 @@ public sealed class Chapter3ActorDetail : MonoBehaviour
     float nextDiscovery,discoveryUntil;
     public int BindingCount=>bindings.Count;
     public int DistantCount {get{int n=0;foreach(var b in bindings)if(b.far)n++;return n;}}
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void Register()
+    public static IEnumerator LoadForChapter(Chapter3Flow flow)
     {
-        SceneManager.sceneLoaded-=Loaded;SceneManager.sceneLoaded+=Loaded;
-        for(int i=0;i<SceneManager.sceneCount;i++)Loaded(SceneManager.GetSceneAt(i),LoadSceneMode.Additive);
-    }
-    static void Loaded(Scene scene,LoadSceneMode mode)
-    {
-        if(!scene.isLoaded)return;
-        foreach(var root in scene.GetRootGameObjects())foreach(var f in root.GetComponentsInChildren<Chapter3Flow>(true))
-        {
-            if(f.GetComponent<Chapter3ActorDetail>())continue;
-            var data=Resources.Load<Chapter3CrowdDetailCatalog>("Chapter3/ActorDetailCatalog");
-            if(!data||!data.automatic)continue;
-            var detail=f.gameObject.AddComponent<Chapter3ActorDetail>();detail.flow=f;detail.catalog=data;
-        }
+        if (flow.GetComponent<Chapter3ActorDetail>()) yield break;
+        var request = Resources.LoadAsync<Chapter3CrowdDetailCatalog>("Chapter3/ActorDetailCatalog");
+        yield return request;
+        var data = request.asset as Chapter3CrowdDetailCatalog;
+        if (!data || !data.automatic) yield break;
+        var detail = flow.gameObject.AddComponent<Chapter3ActorDetail>();
+        detail.flow = flow;
+        detail.catalog = data;
     }
     void LateUpdate()
     {
