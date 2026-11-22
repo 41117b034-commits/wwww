@@ -63,6 +63,14 @@ public partial class Chapter1PerformanceController
         // Let the shared dance-to-idle grounding pass finish before blocking actors.
         yield return new WaitForEndOfFrame();
         yield return null;
+        if (elderPose && elderPose.Cup)
+        {
+            // A skip can interrupt the side step while the guest still faces the player.
+            // Finish it before the retreat records its starting positions.
+            var facingLock = weddingElder.GetComponent<Chapter1ReceiverFacingLock>();
+            if (facingLock) facingLock.enabled = false;
+            yield return StepBesideCupStand();
+        }
         Vector3 center = danceCenter != null ? danceCenter.position : GetFireCenterPosition();
         float height = Mathf.Max(GetActorStandingHeight(groomActor),
             Mathf.Max(GetActorStandingHeight(first), GetActorStandingHeight(second)));
@@ -119,6 +127,11 @@ public partial class Chapter1PerformanceController
             }
         }
 
+        if (elderPose && elderPose.Cup)
+        {
+            yield return ElderSetsDownCup();
+            SetDoorwayCamera(widePosition, wideFocus, 50f);
+        }
         SetWeddingDramaBeat("crowd-reaction");
         ShowLine("旁白", "鼓聲突然停了下來。族人鬆開雙手，轉頭望向腳步聲傳來的方向。", 2.2f);
         for (float reaction = 0f; reaction < 0.9f; reaction += Time.deltaTime)

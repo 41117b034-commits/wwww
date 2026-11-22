@@ -12,6 +12,9 @@ public class Chapter1ChoiceUI : MonoBehaviour
     public Button optionBButton;
 
     private Chapter1PerformanceController controller;
+    private bool ownsPointer;
+    private CursorLockMode previousLock;
+    private bool previousVisibility;
 
     private void Awake()
     {
@@ -36,8 +39,17 @@ public class Chapter1ChoiceUI : MonoBehaviour
         }
     }
 
-    public void Show(string question, string optionA, string optionB)
+    public void Show(string question, string optionA, string optionB, bool releasePointer = false)
     {
+        if (!releasePointer) RestorePointer();
+        if (releasePointer && !ownsPointer)
+        {
+            previousLock = Cursor.lockState;
+            previousVisibility = Cursor.visible;
+            ownsPointer = true;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
         if (questionText != null)
         {
             questionText.text = question;
@@ -68,6 +80,7 @@ public class Chapter1ChoiceUI : MonoBehaviour
 
     public void HideInstant()
     {
+        RestorePointer();
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 0f;
@@ -75,6 +88,16 @@ public class Chapter1ChoiceUI : MonoBehaviour
             canvasGroup.interactable = false;
         }
     }
+
+    private void RestorePointer()
+    {
+        if (!ownsPointer) return;
+        Cursor.lockState = previousLock;
+        Cursor.visible = previousVisibility;
+        ownsPointer = false;
+    }
+
+    private void OnDisable() => HideInstant();
 
     private void OnOptionA()
     {

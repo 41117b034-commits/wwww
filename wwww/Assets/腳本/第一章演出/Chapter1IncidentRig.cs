@@ -18,6 +18,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     // Read-only bridge for chapter-specific palm calibration. The shared
     // first/second-chapter animation and its cached pose remain unchanged.
     public Quaternion PalmFrame(bool left) => left ? leftPalmBasis : rightPalmBasis;
+    public Vector3 PalmCenterLocal(bool left) => left ? leftPalmCenter : rightPalmCenter;
     // Read-only provenance for bone-compatible display LODs. Pose ownership
     // and the original grip mesh remain with this rig.
     public bool TryGetGripMeshes(SkinnedMeshRenderer renderer,out Mesh original,out Mesh posed)

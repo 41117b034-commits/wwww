@@ -8,6 +8,8 @@ public partial class Chapter1PerformanceController
     public Vector3 incidentDoorOutward = Vector3.back;
     [Min(0.1f)] public float incidentDoorDragSeconds = 5.5f;
     [Min(0.1f)] public float incidentKnockoutHoldSeconds = 3f;
+    private const string DoorwayProtest = "放開我！";
+    private const float DoorwayReactionSeconds = .75f;
     bool doorwayStaged;
     Chapter1IncidentRig doorwayOfficer, doorwayVictim;
     Vector3 doorwayPoliceRest, doorwayVictimRest, doorwayOut, doorwayRight;
@@ -160,11 +162,14 @@ public partial class Chapter1PerformanceController
         doorwayVictim.frozen = false;
         doorwayVictim.strugglingInPlace = true;
         doorwayOfficer.AnchorPartnerGrip();
-        yield return PlayPoliceVoicedLine("女性族人", "放開我！", femaleResistVoice, 2.2f);
+        yield return PlayPoliceVoicedLine("女性族人", DoorwayProtest, femaleResistVoice, 2.2f, holdForCaption: true);
         if (dialogueUI != null) dialogueUI.HideInstant();
+        if (Chapter1StorySubtitleBridge.Instance) Chapter1StorySubtitleBridge.Instance.HideImmediate();
+        fallbackLine = fallbackSpeaker = "";
+        fallbackLineUntil = 0f;
+        // Keep her resistance and the held wrist visible for a beat before accepting input.
+        yield return new WaitForSeconds(DoorwayReactionSeconds);
         ShowConflictChoice();
-        if (dialogueUI != null) dialogueUI.HideInstant();
-        if (choiceUI != null) choiceUI.Hide(); // This shot uses a compact panel in its empty left area.
         SetWeddingDramaBeat("doorway-choice");
         Debug.Log("[Doorway] Choice ready; both actors held at the entrance.");
     }
@@ -286,10 +291,10 @@ public partial class Chapter1PerformanceController
             }
             Color previous = GUI.color; GUI.color = new Color(1, 1, 1, doorwayVignetteAmount); GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), doorwayVignette); GUI.color = previous;
         }
-        if (!waitingForChoice) return;
+        if (!waitingForChoice || choiceUI) return;
         EnsureHudStyles();
         float scale = Mathf.Clamp(Screen.height / 900f, 0.6f, 1.5f);
-        // 放大版：整個問答框、標題、按鈕都加大，但維持畫面正中央。
+        // Older scenes without a canvas choice panel use the same empty side of the shot.
         var titleStyle = new GUIStyle(hudTitleStyle)
         {
             fontSize = Mathf.RoundToInt(30 * scale),
@@ -304,10 +309,10 @@ public partial class Chapter1PerformanceController
             wordWrap = false
         };
 
-        float boxWidth = Mathf.Min(Screen.width * 0.72f, 540f * scale);
+        float boxWidth = Mathf.Min(Screen.width * 0.33f, 330f * scale);
         float boxHeight = 238f * scale;
         Rect box = new Rect(
-            (Screen.width - boxWidth) * 0.5f,
+            Screen.width * 0.035f,
             (Screen.height - boxHeight) * 0.5f,
             boxWidth,
             boxHeight);

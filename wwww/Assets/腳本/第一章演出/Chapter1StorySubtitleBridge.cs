@@ -47,9 +47,9 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
             Instance = null;
     }
 
-    public void ShowFromStory(string speaker, string line, float seconds)
+    public void ShowFromStory(string speaker, string line, float seconds, bool weddingGuest = false)
     {
-        if (onlyFivePoliceLines
+        if (onlyFivePoliceLines && !weddingGuest
             && !IsOpeningNarrationLine(line)
             && !IsWantedPoliceLine(line))
         {
@@ -140,7 +140,9 @@ public class Chapter1StorySubtitleBridge : MonoBehaviour
         hideRoutine = null;
     }
 
-    private void HideImmediate()
+    internal bool IsVisible => canvasGroup && canvasGroup.alpha > 0f;
+
+    internal void HideImmediate()
     {
         if (canvasGroup != null)
         {

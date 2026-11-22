@@ -160,6 +160,7 @@ public class Chapter1EyeOpening : MonoBehaviour
     public bool debugReplayWithK = true;
 
     private bool sequenceRunning;
+    private bool movingIntroCamera;
     private Quaternion cameraOffsetStartRotation;
 
     // 注意：這是「Hands_Rigged Root 的目標世界位置」，
@@ -178,6 +179,9 @@ public class Chapter1EyeOpening : MonoBehaviour
     public void FinishForPoliceIncident()
     {
         StopAllCoroutines();
+        if (movingIntroCamera && cameraOffsetRoot != null)
+            cameraOffsetRoot.localRotation = cameraOffsetStartRotation;
+        movingIntroCamera = false;
         sequenceRunning = false;
         fingerFlexRunning = false;
         if (eyeOpenEffect != null) eyeOpenEffect.FinishOpenAndHide();
@@ -185,10 +189,23 @@ public class Chapter1EyeOpening : MonoBehaviour
         enabled = false;
     }
 
-    private IEnumerator Start()
+    private void Awake()
     {
         ResolveReferences();
+        if (hideHandsUntilEyesOpen && introHandsRoot != null)
+            introHandsRoot.SetActive(false);
+    }
 
+    private IEnumerator Start()
+    {
+        if (chapterController != null && chapterController.openingSequence == this)
+            yield break;
+
+        yield return PlaySequence(true);
+    }
+
+    public IEnumerator PlaySequence(bool playEyelids)
+    {
         if (!ValidateReferences())
         {
             // 看手模型缺少引用時不能讓眼皮永久擋住遊戲畫面。
@@ -200,49 +217,31 @@ public class Chapter1EyeOpening : MonoBehaviour
             yield break;
         }
 
-        if (hideHandsUntilEyesOpen && introHandsRoot != null)
-        {
-            // Chapter1EyeOpening 掛在 IntroSequence，不是在 Hands_Rigged 上，
-            // 所以可以安全把整雙手關掉，不會中斷本 Coroutine。
-            introHandsRoot.SetActive(false);
-        }
-        else
+        sequenceRunning = true;
+        if (!hideHandsUntilEyesOpen)
         {
             PrepareHands();
             yield return null;
             AutoFitHandsToCamera();
         }
 
-        float delay = fallbackDelay;
-
-        if (chapterController != null && chapterController.introVoice1 != null)
+        if (playEyelids)
         {
-            delay =
-                chapterController.introVoice1.length
-                + chapterController.introLineGap;
-        }
-
-        delay += Mathf.Max(0f, extraDelay);
-
-        yield return WaitRealtime(delay);
-
-        sequenceRunning = true;
-
-        if (eyeOpenEffect != null)
-        {
-            if (useNaturalWakeUp)
+            float delay = chapterController != null && chapterController.introVoice1 != null
+                ? chapterController.introVoice1.length + chapterController.introLineGap
+                : fallbackDelay;
+            yield return WaitRealtime(delay + Mathf.Max(0f, extraDelay));
+            if (eyeOpenEffect != null)
             {
-                yield return eyeOpenEffect.NaturalWakeUpRoutine();
+                if (useNaturalWakeUp)
+                    yield return eyeOpenEffect.NaturalWakeUpRoutine();
+                else
+                {
+                    eyeOpenEffect.OpenEyes();
+                    yield return WaitRealtime(Mathf.Max(0.1f, eyeOpenEffect.openDuration));
+                }
+                eyeOpenEffect.FinishOpenAndHide();
             }
-            else
-            {
-                eyeOpenEffect.OpenEyes();
-                yield return WaitRealtime(
-                    Mathf.Max(0.1f, eyeOpenEffect.openDuration));
-            }
-
-            // 遊戲控制權交還玩家前一定要移除眼皮；場景欄位誤設時也不會留下黑邊。
-            eyeOpenEffect.FinishOpenAndHide();
         }
 
         yield return WaitRealtime(pauseAfterEyesOpen);
@@ -287,6 +286,7 @@ public class Chapter1EyeOpening : MonoBehaviour
     {
         if (debugReplayWithK
             && Input.GetKeyDown(KeyCode.K)
+            && (chapterController == null || chapterController.openingSequence != this || chapterController.IsFreeExplorationActive())
             && !sequenceRunning)
         {
             StartCoroutine(DebugReplay());
@@ -653,6 +653,8 @@ public class Chapter1EyeOpening : MonoBehaviour
         cameraOffsetStartRotation =
             cameraOffsetRoot.localRotation;
 
+        movingIntroCamera = cameraLooksAtHands
+            && !UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head).isValid;
         Quaternion lookDownRotation =
             cameraOffsetStartRotation
             * Quaternion.Euler(
@@ -693,7 +695,7 @@ public class Chapter1EyeOpening : MonoBehaviour
                     shownRootWorldPosition,
                     handT);
 
-            if (cameraLooksAtHands)
+            if (movingIntroCamera)
             {
                 cameraOffsetRoot.localRotation =
                     Quaternion.Slerp(
@@ -708,7 +710,7 @@ public class Chapter1EyeOpening : MonoBehaviour
         handsRoot.position =
             shownRootWorldPosition;
 
-        if (cameraLooksAtHands)
+        if (movingIntroCamera)
         {
             cameraOffsetRoot.localRotation =
                 lookDownRotation;
@@ -777,7 +779,7 @@ public class Chapter1EyeOpening : MonoBehaviour
                     fixedRotation;
 
                 // 鏡頭保持低頭，不在這時候回正。
-                if (cameraLooksAtHands)
+                if (movingIntroCamera)
                 {
                     cameraOffsetRoot.localRotation =
                         lookDownRotation;
@@ -817,7 +819,7 @@ public class Chapter1EyeOpening : MonoBehaviour
                         0.05f,
                         cameraReturnSeconds));
 
-            if (cameraLooksAtHands)
+            if (movingIntroCamera)
             {
                 cameraOffsetRoot.localRotation =
                     Quaternion.Slerp(
@@ -829,8 +831,9 @@ public class Chapter1EyeOpening : MonoBehaviour
             yield return null;
         }
 
-        cameraOffsetRoot.localRotation =
-            cameraOffsetStartRotation;
+        if (movingIntroCamera)
+            cameraOffsetRoot.localRotation = cameraOffsetStartRotation;
+        movingIntroCamera = false;
     }
 
     private void ResolveAndCacheFingerBones()
