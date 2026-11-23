@@ -6,7 +6,7 @@ public partial class Chapter1PerformanceController
 {
     readonly Dictionary<Transform,float> guestStandingHeights = new Dictionary<Transform,float>();
     readonly List<Collider> guestBodyColliders = new List<Collider>();
-    static readonly float[] RetreatAngles = { 0f, 30f, -30f, 60f, -60f, 85f, -85f };
+    static readonly float[] RetreatAngles = { 0f, 30f, -30f, 60f, -60f, 90f, -90f };
 
     void PrepareGuestBodyColliders()
     {
@@ -54,59 +54,40 @@ public partial class Chapter1PerformanceController
         if (restoreInput) playerController.enabled = false;
         if (!guestStandingHeights.TryGetValue(actor, out float height)) height = GetVisibleRigHeight(actor);
         float separation = Mathf.Max(2f, .65f * height);
-        Vector3 direction = Vector3.zero;
-        Vector3 lastActor = actor.position;
         do
         {
             Vector3 offset = Vector3.ProjectOnPlane(eye.position - actor.position, Vector3.up);
             float distance = offset.magnitude;
             if (distance < separation - .03f)
             {
-                if (direction == Vector3.zero || (actor.position - lastActor).sqrMagnitude > .1f)
-                {
-                    Vector3 outward = distance > .05f ? offset.normalized : -Vector3.ProjectOnPlane(eye.forward, Vector3.up).normalized;
-                    direction = FindGuestRetreatDirection(eye, motor, actor, outward, separation, height);
-                    lastActor = actor.position;
-                }
-                if (direction != Vector3.zero)
-                {
-                    Vector3 destination = actor.position + direction * separation;
-                    Vector3 planar = Vector3.ProjectOnPlane(destination - eye.position, Vector3.up);
-                    Vector3 step = Vector3.ClampMagnitude(planar, height * 1.6f * Mathf.Min(Time.deltaTime, .06f));
-                    // Follow the actual walkable collision surface downhill. The motor
-                    // prevents movement through scene props and the other guests.
-                    motor.Move(step + Vector3.down * (step.magnitude + motor.skinWidth));
-                }
+                Vector3 outward = distance > .05f ? offset.normalized : -Vector3.ProjectOnPlane(eye.forward, Vector3.up).normalized;
+                float step = Mathf.Min(separation - distance, height * 1.6f * Mathf.Min(Time.deltaTime, .06f));
+                RetreatFromWeddingGuest(eye, motor, outward, step);
             }
             yield return null;
         } while (physicalDeliveryAnimating || interactionAnimationRunning);
         if (restoreInput && !policeSequenceStarted && IsFreeExplorationActive()) playerController.enabled = true;
     }
 
-    Vector3 FindGuestRetreatDirection(Transform eye, CharacterController motor, Transform actor, Vector3 outward, float separation, float height)
+    void RetreatFromWeddingGuest(Transform eye, CharacterController motor, Vector3 outward, float step)
     {
+        if (step <= 0f) return;
         if (outward.sqrMagnitude < .01f) outward = Vector3.back;
+        Vector3 start = motor.transform.position;
         foreach (float angle in RetreatAngles)
         {
             Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * outward;
-            Vector3 target = actor.position + direction * separation;
-            Vector3 delta = Vector3.ProjectOnPlane(target - eye.position, Vector3.up);
-            if (delta.sqrMagnitude < .001f || Vector3.Dot(delta, outward) < -.01f) continue;
-            if (!TryGetIncidentSurfaceY(target, out float floor) ||
-                Mathf.Abs(floor - motor.bounds.min.y) > motor.stepOffset + delta.magnitude * Mathf.Tan(motor.slopeLimit * Mathf.Deg2Rad)) continue;
-            Vector3 lower = motor.bounds.center + Vector3.up * motor.stepOffset;
-            Vector3 upper = eye.position;
-            RaycastHit[] hits = Physics.CapsuleCastAll(lower, upper, Mathf.Max(.15f, motor.radius),
-                delta.normalized, delta.magnitude, ~0, QueryTriggerInteraction.Ignore);
-            bool blocked = false;
-            foreach (var hit in hits)
-            {
-                if (!hit.collider || hit.collider is TerrainCollider || hit.transform.IsChildOf(actor)
-                    || hit.transform.IsChildOf(motor.transform) || hit.normal.y > .7f) continue;
-                blocked = true; break;
-            }
-            if (!blocked) return direction;
+            // Test the next footstep. A table at the far end of a retreat must
+            // not prevent taking the first step or sliding sideways around it.
+            Vector3 destination = eye.position + direction * step;
+            if (!TryGetIncidentSurfaceY(destination, out float floor) ||
+                floor < motor.bounds.min.y - motor.stepOffset - step * Mathf.Tan(motor.slopeLimit * Mathf.Deg2Rad)) continue;
+            if (Physics.SphereCast(eye.position, .12f, direction, out RaycastHit headHit, step, Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore) && !headHit.transform.IsChildOf(motor.transform)) continue;
+            motor.Move(direction * step);
+            Vector3 moved = Vector3.ProjectOnPlane(motor.transform.position - start, Vector3.up);
+            if (Vector3.Dot(moved, direction) > step * .15f) break;
         }
-        return Vector3.zero;
+        motor.Move(Vector3.down * (step + motor.skinWidth));
     }
 }

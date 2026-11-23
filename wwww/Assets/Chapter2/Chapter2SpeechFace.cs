@@ -13,6 +13,7 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
         public Chapter2FaceCut cut;
         public Transform head;
         public Vector3 origin,right,up,forward;
+        [NonSerialized] public Material[] restingMaterials, speakingMaterials;
     }
     public Surface[] surfaces;
     public float MouthWeight {get;private set;}
@@ -49,19 +50,31 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
     public void BeginGuestLine(string text,float seconds,AudioSource source)
     {
         externalSpeaker = true;
+        enabled = true;
+        if (surfaces != null)
+            foreach (var surface in surfaces)
+            {
+                if (surface.body && surface.speakingMaterials != null) surface.body.sharedMaterials = surface.speakingMaterials;
+                if (surface.renderer) surface.renderer.enabled = true;
+            }
         BeginLine(text, seconds, null);
         voice = source;
         recorded = source != null;
     }
     public void EndGuestLine()
     {
+        if (!externalSpeaker) return;
         ends = 0;
         voice = null;
         recorded = false;
         MouthWeight = 0;
-        if (surfaces == null) return;
-        foreach (var surface in surfaces)
-            if (surface.renderer && surface.renderer.sharedMesh) Set(surface.renderer, Jaw, 0);
+        if (surfaces != null)
+            foreach (var surface in surfaces)
+            {
+                if (surface.renderer) surface.renderer.enabled = false;
+                if (surface.body && surface.restingMaterials != null) surface.body.sharedMaterials = surface.restingMaterials;
+            }
+        enabled = false;
     }
     void LateUpdate()
     {
@@ -92,6 +105,11 @@ public sealed class Chapter2SpeechFace:MonoBehaviour
             }
         }
         MouthWeight=Mathf.MoveTowards(MouthWeight,open,Time.unscaledDeltaTime*(open>MouthWeight?12:16));
+        if (externalSpeaker && !talking && MouthWeight <= 0f && Time.timeScale > 0f && !AudioListener.pause)
+        {
+            EndGuestLine();
+            return;
+        }
         float anger=0,worry=0,closed=0;
         if(drama)
         {

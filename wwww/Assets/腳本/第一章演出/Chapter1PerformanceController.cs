@@ -1452,6 +1452,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         ClearGuestSpeech();
         if (chapterObjective) chapterObjective.transform.parent.gameObject.SetActive(false);
         if (weddingDirection) weddingDirection.gameObject.SetActive(false);
+        if (foodDirection) foodDirection.gameObject.SetActive(false);
+        if (groomName) groomName.gameObject.SetActive(false);
+        if (brideName) brideName.gameObject.SetActive(false);
         if(chineseSpeech)chineseSpeech.Stop();
         if (doorwayWatchActive) StopAllCoroutines();
         CleanupDoorwayWatch();
@@ -7421,7 +7424,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         SetPlayerControl(false);
         ApplyDancePlayerHandsScale();
         ApplyDancePlayerViewHeight();
-        SetMission("加入舞蹈：跟著鼓聲踏步，感受婚禮短暫的安寧。");
+        SetMission("跟著鼓聲，與族人一起跳舞");
         Chapter1CircleDancer greeter = null;
         float nearest = float.MaxValue;
         foreach (var dancer in weddingCrowdDancers)
@@ -7487,7 +7490,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
         else if (startPoliceAfterDance && !useExplorationTimer)
         {
-            SetMission("舞蹈結束。婚禮仍在繼續，但山路上傳來皮靴聲。");
             StartPoliceSequence();
         }
         else
@@ -7640,7 +7642,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         cinematicStoryPlaying = true;
         SetPlayerControl(false);
         SetWorldInteractionPromptVisible(false);
-        SetMission("已跳過婚禮任務。山路上忽然傳來急促的皮靴聲……");
+        SetMission("");
         StartPoliceSequenceInternal(true);
     }
 
@@ -7783,8 +7785,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield return new WaitForSeconds(
                 Mathf.Max(0f, cinematicPreRollSeconds));
         }
-
-        SetMission("婚禮任務完成。遠處忽然傳來急促的皮靴聲……");
 
         yield return new WaitForSeconds(
             Mathf.Max(0f, policeStartDelayAfterWeddingTasks));
@@ -9976,7 +9976,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         EnsureCinematicActorGrounding(primaryPoliceActor, true);
         EnsureCinematicActorGrounding(secondaryPoliceActor, true);
         EnsureCinematicActorGrounding(femaleVillagerActor, true);
-        SetMission("婚禮中斷：兩名日本警察闖入會場。");
+        SetMission("");
 
         if (hardCutWeddingAudioOnPolice)
         {
@@ -12750,11 +12750,11 @@ public partial class Chapter1PerformanceController : MonoBehaviour
             yield break;
         }
 
+        SetMission("");
         if (choice == ConflictChoice.Intervene)
         {
             morale += 2;
             peopleInjured += Mathf.Max(1, casualtyVillagers != null && casualtyVillagers.Length > 0 ? casualtyVillagers.Length : 2);
-            SetMission("分支：你選擇上前阻止。族人的憤怒被點燃，場面急速失控。");
             yield return PlayPoliceVoicedLine(
                 "你",
                 "夠了！不要再羞辱我們！",
@@ -12775,7 +12775,6 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         {
             morale -= 1;
             peopleInjured += 1;
-            SetMission("分支：你選擇沉默觀望。壓抑沒有消失，只是更深地留在族人心裡。");
 
             if (watchTimeline != null)
             {

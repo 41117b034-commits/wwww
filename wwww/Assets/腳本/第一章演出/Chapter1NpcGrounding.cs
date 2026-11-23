@@ -21,6 +21,7 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
     private Terrain danceFloor;
     private Vector3[] solePoints;
     private bool[] hasSolePoint;
+    private static int lastSoleBakeFrame = -1;
 
     public void SetDanceFloor(Chapter1CircleDancer dancer, Terrain floor)
     {
@@ -52,7 +53,18 @@ public sealed class Chapter1NpcGrounding : MonoBehaviour
         // fire are above the village terrain and cannot support a dance step.
         if (danceFloor && circleDancer && circleDancer.IsActivelyDancing && leftFoot && rightFoot)
         {
-            if (solePoints == null) CacheDancingSoles();
+            if (solePoints == null)
+            {
+                // BakeMesh creates a full posed body that Unity releases at the end of
+                // the frame. Stagger dancers so only one temporary body exists at once.
+                if (lastSoleBakeFrame == Time.frameCount)
+                {
+                    CorrectHeight(false);
+                    return;
+                }
+                lastSoleBakeFrame = Time.frameCount;
+                CacheDancingSoles();
+            }
             float lift = float.NegativeInfinity;
             for (int i = 0; i < solePoints.Length; i++)
             {

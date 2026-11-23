@@ -35,6 +35,8 @@ public sealed class Chapter1SpeechFaces : MonoBehaviour
             patchObject.layer = body.gameObject.layer;
             patchObject.transform.SetParent(body.transform, false);
             var patch = patchObject.AddComponent<SkinnedMeshRenderer>();
+            patch.enabled = false;
+            patch.skinnedMotionVectors = false;
             patch.sharedMesh = profile.cut.face;
             patch.bones = body.bones;
             patch.rootBone = body.rootBone;
@@ -43,19 +45,20 @@ public sealed class Chapter1SpeechFaces : MonoBehaviour
             patch.renderingLayerMask = body.renderingLayerMask;
             Material[] originals = body.sharedMaterials;
             patch.sharedMaterials = SpeechMaterials(originals, profile.faceShader, 2599);
-            body.sharedMaterials = SpeechMaterials(originals, profile.bodyShader, 2600);
             var overrides = new MaterialPropertyBlock();
             body.GetPropertyBlock(overrides);
             patch.SetPropertyBlock(overrides);
             surfaces.Add(new Chapter2SpeechFace.Surface
             {
                 body = body, renderer = patch, cut = profile.cut, head = head,
+                restingMaterials = originals, speakingMaterials = SpeechMaterials(originals, profile.bodyShader, 2600),
                 origin = profile.origin, right = profile.right, up = profile.up, forward = profile.forward
             });
         }
         if (surfaces.Count == 0) return null;
         face = gameObject.AddComponent<Chapter2SpeechFace>();
         face.surfaces = surfaces.ToArray();
+        face.enabled = false;
         return face;
     }
 

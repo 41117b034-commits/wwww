@@ -64,6 +64,10 @@ public partial class Chapter1PerformanceController
     {
         Transform view = GetPlayerViewTransform();
         if (!weddingElder || !groomActor || !view || groomPose) return;
+        // Place the player on the same terrain the walking controller will use,
+        // before framing the couple and fading up from black.
+        if (playerRoot)
+            playerRoot.position = GetSafeGuidedRootPosition(playerRoot, playerRoot.position, playerRoot.position);
         Animator groomAnimator = groomActor.GetComponentInChildren<Animator>();
         Animator elderAnimator = weddingElder.GetComponentInChildren<Animator>();
         if (!groomAnimator || !elderAnimator) return;

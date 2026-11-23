@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc2354649cb44a19c792588c1cba2c3, type: 3}
+  m_Name: tripo_node_e2dbffa6
+  m_EditorClassIdentifier: 
+  cut: {fileID: 11400000, guid: 4685105791fa17b40b1ebdeeb3ce342e, type: 2}
+  origin: {x: -0.009997313, y: 0.052375816, z: -0.10510832}
+  right: {x: -1.0019501, y: -0.029528312, z: 0.024173621}
+  up: {x: -0.031663653, y: 0.99779844, z: -0.09357981}
+  forward: {x: -0.021300163, y: -0.09427558, z: -0.9980073}
+  bodyShader: {fileID: 4800000, guid: 54e81d15117f8f5458dfaa00fb12469e, type: 3}
+  faceShader: {fileID: 4800000, guid: d3ca467c28efd3d40801e2e9cd25a197, type: 3}

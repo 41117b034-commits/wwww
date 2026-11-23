@@ -58,9 +58,13 @@ public class PCPlayerController : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        MoveCharacter(new Vector2(x, z), Input.GetKey(KeyCode.LeftShift));
+    }
 
-        float speed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+    private void MoveCharacter(Vector2 input, bool running)
+    {
+        Vector3 move = transform.right * input.x + transform.forward * input.y;
+        float speed = running ? runSpeed : walkSpeed;
 
         if (controller.isGrounded)
         {

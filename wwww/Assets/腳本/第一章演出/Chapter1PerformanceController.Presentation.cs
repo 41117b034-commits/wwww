@@ -9,6 +9,7 @@ public partial class Chapter1PerformanceController
     public Chapter1EyeOpening openingSequence;
     [SerializeField] private Text chapterObjective;
     private Canvas chapterCanvas;
+    private Camera chapterViewCamera;
     private Text weddingDirection;
     private Text foodDirection;
     private Text brideName, groomName;
@@ -19,6 +20,7 @@ public partial class Chapter1PerformanceController
     {
         if (!chapterObjective) return;
         chapterCanvas = chapterObjective.GetComponentInParent<Canvas>(true);
+        chapterViewCamera = chapterCanvas && chapterCanvas.worldCamera ? chapterCanvas.worldCamera : Camera.main;
         if (chapterCanvas && !dialogueUI) dialogueUI = Chapter1DialogueUI.Create(chapterCanvas, chapterObjective.font);
         chapterObjective.transform.parent.gameObject.SetActive(false);
         if (weddingElder && chapterCanvas)
@@ -72,11 +74,10 @@ public partial class Chapter1PerformanceController
     private void UpdateWeddingName(Text caption, Chapter1WeddingGuestPose host, bool introduce)
     {
         if (!caption || !host || !host.Head) return;
-        Camera camera = chapterCanvas.worldCamera;
-        bool visible = introduce && camera;
+        bool visible = introduce && chapterViewCamera;
         if (visible)
         {
-            Vector3 viewport = camera.WorldToViewportPoint(host.Head.position + Vector3.up * (.24f * host.Height));
+            Vector3 viewport = chapterViewCamera.WorldToViewportPoint(host.Head.position + Vector3.up * (.24f * host.Height));
             visible = viewport.z > 0f && viewport.x > .04f && viewport.x < .96f && viewport.y > .16f && viewport.y < .96f;
             if (visible)
             {
@@ -120,13 +121,12 @@ public partial class Chapter1PerformanceController
     {
         RenderMode mode = vr ? RenderMode.WorldSpace : RenderMode.ScreenSpaceOverlay;
         if (chapterCanvas.renderMode == mode) return;
-        Camera camera = chapterCanvas.worldCamera;
         RectTransform rect = (RectTransform)chapterCanvas.transform;
         // Desktop glyphs need pixel coordinates, especially in this village at
         // (3700, -5800). A tiny camera-space canvas loses precision there.
-        rect.SetParent(vr && camera ? camera.transform : null, false);
+        rect.SetParent(vr && chapterViewCamera ? chapterViewCamera.transform : null, false);
         chapterCanvas.renderMode = mode;
-        chapterCanvas.worldCamera = camera;
+        chapterCanvas.worldCamera = chapterViewCamera;
         RefreshChoicePanel();
         if (!vr) return;
 
@@ -226,10 +226,10 @@ public partial class Chapter1PerformanceController
 
     private void PlaceWeddingDirection(Text caption, Transform target, string label, float height)
     {
-        bool show = target && chapterCanvas.worldCamera;
+        bool show = target && chapterViewCamera;
         if (caption.gameObject.activeSelf != show) caption.gameObject.SetActive(show);
         if (!show) return;
-        Vector3 point = chapterCanvas.worldCamera.WorldToViewportPoint(target.position + Vector3.up * height);
+        Vector3 point = chapterViewCamera.WorldToViewportPoint(target.position + Vector3.up * height);
         Vector2 offset = new Vector2(point.x - .5f, point.y - .5f);
         if (point.z < 0f) offset = -offset;
         bool offscreen = point.z <= 0f || Mathf.Abs(offset.x) > .43f || Mathf.Abs(offset.y) > .22f;
