@@ -3912,7 +3912,12 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         morale++;
 
         bool elderServing = weddingElder && receiverTarget == weddingElder;
-        string speaker = elderServing ? ElderName : (string.IsNullOrWhiteSpace(npcName) ? "賓客" : npcName);
+        string speaker = string.IsNullOrWhiteSpace(npcName) ? "賓客" : npcName;
+        if (weddingElder && receiverTarget)
+            speaker = elderServing ? ElderName : WeddingReceiverLabel(receiverTarget, true);
+        string reply = "謝謝你，這杯我收下了。願祖靈庇佑新人。";
+        if (elderServing) reply = ElderInvitation;
+        else if (weddingBride && receiverTarget == weddingBride) reply = BrideToast;
 
         // NPC 收到酒後：先出聲 + 做感謝動作。
         if (receiverTarget && !physicalDeliveryAnimating)
@@ -3921,7 +3926,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         PlayGiveItemAnimation(
             true,
             speaker,
-            elderServing ? ElderInvitation : "謝謝你，這杯我收下了。願祖靈庇佑新人。",
+            reply,
             receiverTarget);
 
         int shownCount = Mathf.Min(deliveredWineCount, target);
@@ -3971,6 +3976,13 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         morale++;
 
         string speaker = string.IsNullOrWhiteSpace(npcName) ? "族人" : npcName;
+        string reply = "謝謝你。今晚能這樣相聚，已經很難得。";
+        if (weddingElder && receiverTarget)
+        {
+            speaker = WeddingReceiverLabel(receiverTarget, false);
+            if (speaker == "孩子") reply = ChildFish;
+            else if (IsFemaleThankYouReceiver(receiverTarget)) speaker = "女性族人";
+        }
 
         // NPC 收到食物後：先出聲 + 做感謝動作。
         if (receiverTarget && !physicalDeliveryAnimating)
@@ -3979,7 +3991,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         PlayGiveItemAnimation(
             false,
             speaker,
-            "謝謝你。今晚能這樣相聚，已經很難得。",
+            reply,
             receiverTarget);
 
         int shownCount = Mathf.Min(sharedFoodCount, target);
@@ -4911,12 +4923,27 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         AudioSource voice = null;
         if (receiver && !GameLanguageSettings.ChineseVoice)
         {
-            AudioClip clip = IsFemaleThankYouReceiver(receiver) ? femaleReceiverThanksVoice : maleReceiverThanksVoice;
-            if (!clip) clip = isWine ? wineReceiverThanksVoice : foodReceiverThanksVoice;
-            if (!clip) clip = receiverThanksVoice;
+            if (receiverSpeechSource) receiverSpeechSource.Stop();
+            // These two complete lines have Mandarin recordings only.
+            if (line == BrideToast || line == ChildFish)
+                return ShowCharacterLine(receiver, speaker, line, seconds);
+
+            AudioClip clip;
+            if (weddingElder && isWine && receiver != weddingElder)
+            {
+                // The source transcript for this recording is exactly "Mhuwe su bale."
+                clip = Resources.Load<AudioClip>("Chapter3Voice/Audio/f68329268836638b9bc4");
+                line = "非常謝謝你。";
+            }
+            else
+            {
+                clip = IsFemaleThankYouReceiver(receiver) ? femaleReceiverThanksVoice : maleReceiverThanksVoice;
+                if (!clip) clip = isWine ? wineReceiverThanksVoice : foodReceiverThanksVoice;
+                if (!clip) clip = receiverThanksVoice;
+                if (weddingElder && !isWine && clip == femaleReceiverThanksVoice) line = "謝謝你。";
+            }
             if (clip)
             {
-                if (receiverSpeechSource) receiverSpeechSource.Stop();
                 voice = PlayReceiverThanksVoiceAtPosition(clip, GetReceiverFacePosition(receiver));
                 receiverSpeechSource = voice;
                 seconds = Mathf.Max(seconds, clip.length);
@@ -7589,7 +7616,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         if (elderPose)
         {
             elderPose.FinishInvitation();
-            if (elderPose.Cup) RememberElderPlace();
+            if (elderPose.Cup) RememberWeddingPlace(weddingElder);
         }
         RestoreDancePlayerHandsScale();
         RestoreDancePlayerViewHeight();
@@ -12730,22 +12757,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
 
         if (IsNewPoliceScene() && doorwayStaged)
         {
-            // 新版 Doorway 劇情會直接跳到 ResolveDoorwayChoice，
-            // 因此下面舊分支裡的「夠了！不要再羞辱我們！」原本永遠不會被執行。
-            // 玩家選擇「上前阻止」時，先在真正進入 Doorway 分支的這一刻顯示玩家台詞。
-            if (choice == ConflictChoice.Intervene)
-            {
-                float interveneSubtitleSeconds =
-                    playerInterveneVoice != null
-                        ? Mathf.Max(0.5f, playerInterveneVoice.length + 0.1f)
-                        : 2.9f;
-
-                ShowLine(
-                    "你",
-                    "夠了！不要再羞辱我們！",
-                    interveneSubtitleSeconds);
-            }
-
+            // The staged choice owns the player's line while the first-person camera advances.
             yield return ResolveDoorwayChoice(choice);
             yield break;
         }

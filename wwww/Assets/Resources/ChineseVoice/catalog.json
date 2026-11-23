@@ -4,6 +4,19 @@
   "female": "zh-TW-HsiaoChenNeural",
   "entries": [
     {
+      "chinese": "這杯我想和新郎一起喝。謝謝你跑這一趟！",
+      "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
+      "resource": "ChineseVoice/Audio/wedding_bride_toast",
+      "femaleResource": "ChineseVoice/Audio/wedding_bride_toast",
+      "provider": "Windows offline zh-TW Yating"
+    },
+    {
+      "chinese": "好香！我把烤魚分一半給妹妹。",
+      "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
+      "resource": "ChineseVoice/Audio/wedding_child_fish",
+      "provider": "Windows offline zh-TW Hanhan, pitch +3, rate +1"
+    },
+    {
       "chinese": "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。",
       "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
       "resource": "ChineseVoice/Audio/wedding_groom_request",

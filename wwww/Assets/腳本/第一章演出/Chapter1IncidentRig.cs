@@ -9,6 +9,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public Animator animator;
     public bool police;
     public bool walking;
+    public bool running;
+    public float partnerGripWeight = 1f;
     public bool frozen;
     public float strideScale = 1f;
     public float Height { get; private set; }
@@ -54,6 +56,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     Quaternion[] blendRotations;
     float poseBlendSeconds, poseBlendElapsed;
     public Transform gripTarget;
+    public bool gripTargetOnFreeHand;
     public bool gripWithLeft = true;
     public bool resisting;
     public bool strugglingInPlace;
@@ -233,6 +236,17 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         float localFootY=Mathf.Min(transform.TransformPoint(leftAnkle).y,transform.TransformPoint(rightAnkle).y)-transform.position.y;
         var p=transform.position;p.y=groundY+ankleClearance-localFootY;transform.position=p;
     }
+    public Vector3 OfferedWristPosition(Vector3 towardHelper)
+    {
+        bool left = !gripWithLeft;
+        Vector3 shoulder = transform.TransformPoint(left ? leftShoulderRest : rightShoulderRest);
+        Vector3 outside = Vector3.Cross(Vector3.up, Forward).normalized * (left ? -1f : 1f);
+        // Keep the wrist below the free sleeve and on its own side of the body
+        // as the woman turns. Reaching across her chest would pierce the cape.
+        Vector3 reach = towardHelper - outside * Mathf.Min(0f, Vector3.Dot(towardHelper, outside));
+        return shoulder + (reach * .16f + outside * .065f - Vector3.up * .245f) * Height;
+    }
+
     public void AnchorPartnerGrip()
     {
         var partner=gripPartner!=null?gripPartner.GetComponent<Chapter1IncidentRig>():null;
@@ -519,7 +533,10 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     public void ClearInteractionPose()
     {
         gripPartner=gripTarget=pointTarget=conversationTarget=null;
+        gripTargetOnFreeHand=false;
         StationaryGrip=null;
+        running=false;
+        partnerGripWeight=1f;
         speakingWeight=pushWeight=stumbleWeight=0f;
         pushTarget=null;
         resisting=strugglingInPlace=strike=kicking=false;
@@ -556,6 +573,13 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         // During the 60% stance phase the foot travels exactly opposite to the
         // actor's displacement. Match phase advance to the authored stride.
         if(walking&&!frozen)phase+=Mathf.Min(distance,Height*0.2f)/Mathf.Max(0.1f,Height*0.23f*strideScale/0.6f)*Mathf.PI*2f;
+        if(running && locomotionWeight > 0f)
+        {
+            float effort = locomotionWeight;
+            hips.position += Vector3.up * Height * (0.010f * Mathf.Cos(phase * 2f) - 0.017f) * effort;
+            Transform spine = B(HumanBodyBones.Spine);
+            if(spine != null) spine.rotation = Quaternion.AngleAxis(12f * effort, right) * spine.rotation;
+        }
         if(relaxedPoliceWalk && locomotionWeight > 0f)
         {
             // Leave enough knee flexion for the stride to reach the floor.
@@ -619,8 +643,12 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         }
         if(gripTarget!=null)
         {
-            Transform arm=gripWithLeft?leftArm:rightArm, elbow=gripWithLeft?leftElbow:rightElbow, hand=gripWithLeft?leftHand:rightHand;
-            Solve(arm,elbow,hand,gripTarget.position,-Forward+Vector3.down*0.4f);
+            bool left = gripTargetOnFreeHand ? !gripWithLeft : gripWithLeft;
+            Transform arm=left?leftArm:rightArm, elbow=left?leftElbow:rightElbow, hand=left?leftHand:rightHand;
+            Vector3 pole = gripTargetOnFreeHand
+                ? Vector3.down * 1.5f + (left ? -right : right) * .85f
+                : -Forward + Vector3.down * .4f;
+            Solve(arm,elbow,hand,gripTarget.position,pole);
         }
         if(gripPartner!=null)
         {
@@ -628,9 +656,11 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Vector3 grip=partnerRig!=null?PartnerGripPoint(partnerRig):gripPartner.position+Vector3.up*Height*0.6f;
             if(StationaryGrip.HasValue)grip=StationaryGrip.Value;
             Transform arm=gripWithLeft?leftArm:rightArm, elbow=gripWithLeft?leftElbow:rightElbow, hand=gripWithLeft?leftHand:rightHand;
-            Solve(arm,elbow,hand,grip,Vector3.down);
+            Quaternion restRotation=hand.rotation;
+            Solve(arm,elbow,hand,Vector3.Lerp(hand.position,grip,partnerGripWeight),Vector3.down);
             OrientHand(gripWithLeft,hand.position-elbow.position,Vector3.down);
-            if(police)CurlHand(gripWithLeft,0.7f);
+            if(partnerGripWeight < 1f) hand.rotation=Quaternion.Slerp(restRotation,hand.rotation,partnerGripWeight);
+            if(police)CurlHand(gripWithLeft,0.7f * partnerGripWeight);
         }
         if(pointTarget!=null)
         {
@@ -726,8 +756,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         UpdateBaton();
         foreach(var mesh in gripMeshes)
         {
-            mesh.renderer.SetBlendShapeWeight(mesh.left,batonVisible&&batonInLeftHand?100f:gripPartner!=null&&gripWithLeft?75f:0f);
-            mesh.renderer.SetBlendShapeWeight(mesh.right,batonVisible&&!batonInLeftHand?100f:gripPartner!=null&&!gripWithLeft?75f:0f);
+            mesh.renderer.SetBlendShapeWeight(mesh.left,batonVisible&&batonInLeftHand?100f:gripPartner!=null&&gripWithLeft?75f*partnerGripWeight:0f);
+            mesh.renderer.SetBlendShapeWeight(mesh.right,batonVisible&&!batonInLeftHand?100f:gripPartner!=null&&!gripWithLeft?75f*partnerGripWeight:0f);
         }
     }
     void ApplyLeg(Transform thigh,Transform calf,Transform foot,Vector3 ankle,Quaternion rotation,float p)
@@ -745,7 +775,8 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             float cycle=Mathf.Repeat(p/(2f*Mathf.PI),1f);
             float stride=Height*0.115f*strideScale;
             float offset=WalkFootOffset(p)*stride;
-            float lift=cycle<0.6f?0f:Mathf.Pow(Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI),2f)*Height*(relaxedPoliceWalk?0.026f:0.035f);
+            float liftHeight = running ? 0.085f : relaxedPoliceWalk ? 0.026f : 0.035f;
+            float lift=cycle<0.6f?0f:Mathf.Pow(Mathf.Sin((cycle-0.6f)/0.4f*Mathf.PI),2f)*Height*liftHeight;
             target+=(Forward*offset+Vector3.up*lift)*locomotionWeight;
         }
         if(kicking && foot==rightFoot)

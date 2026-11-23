@@ -8,6 +8,7 @@ public sealed class Chapter3ViewArm : MonoBehaviour
 {
     public Camera view;
     public bool left;
+    public Transform ShoulderAnchor { get; set; }
     Mesh mesh;
     Vector3[] source,vertices,sourceNormals,normals;
     Vector3 end;
@@ -39,7 +40,9 @@ public sealed class Chapter3ViewArm : MonoBehaviour
     void LateUpdate()
     {
         if(!view||mesh==null)return;
-        Vector3 shoulder=transform.InverseTransformPoint(view.transform.TransformPoint(new Vector3(left?-.95f:.95f,-.65f,-.35f)));
+        Vector3 shoulderWorld = ShoulderAnchor ? ShoulderAnchor.position
+            : view.transform.TransformPoint(new Vector3(left ? -.95f : .95f, -.65f, -.35f));
+        Vector3 shoulder = transform.InverseTransformPoint(shoulderWorld);
         Vector3 extension=shoulder-end;
         // Camera and grip move together while walking/looking. Rebuild only
         // when recoil, aiming, reload or a slash actually changes their pose.

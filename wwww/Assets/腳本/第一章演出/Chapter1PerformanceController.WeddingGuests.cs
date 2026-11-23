@@ -6,7 +6,6 @@ public partial class Chapter1PerformanceController
 {
     [Header("第一杯喜酒")]
     [SerializeField] private Transform weddingElder;
-    [SerializeField] private Material weddingElderAttire;
     [SerializeField] private Transform weddingBride;
     [SerializeField] private Avatar weddingBrideAvatar;
     [SerializeField] private GameObject weddingFeastModel;
@@ -23,6 +22,21 @@ public partial class Chapter1PerformanceController
     private const string ElderName = "火堆旁的長輩";
     private const string GroomRequest = "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。";
     private const string ElderInvitation = "謝謝你。這裡給你留個位子，等一下來跟我們跳。";
+    private const string BrideToast = "這杯我想和新郎一起喝。謝謝你跑這一趟！";
+    private const string ChildFish = "好香！我把烤魚分一半給妹妹。";
+
+    private string WeddingReceiverLabel(Transform receiver, bool wine)
+    {
+        if (receiver)
+        {
+            if (receiver == weddingBride) return "新娘";
+            if (receiver == weddingElder) return "長輩";
+            if (receiver == groomActor) return "新郎";
+            if (receiver.name.Contains("小孩")) return "孩子";
+        }
+        return wine ? "賓客" : "族人";
+    }
+
     private Chapter1WeddingGuestPose groomPose, elderPose, bridePose;
     private Vector3 cupRestPoint;
     private float greetingUntil;
@@ -71,8 +85,7 @@ public partial class Chapter1PerformanceController
         Animator groomAnimator = groomActor.GetComponentInChildren<Animator>();
         Animator elderAnimator = weddingElder.GetComponentInChildren<Animator>();
         if (!groomAnimator || !elderAnimator) return;
-        var elderBody = elderAnimator.GetComponentInChildren<SkinnedMeshRenderer>();
-        if (elderBody && weddingElderAttire) elderBody.sharedMaterial = weddingElderAttire;
+
         if (!elderAnimator.runtimeAnimatorController) elderAnimator.runtimeAnimatorController = groomAnimator.runtimeAnimatorController;
         PlayAnimatorStateIfAvailable(groomActor, deliveryTargetIdleStateName);
         PlayAnimatorStateIfAvailable(weddingElder, deliveryTargetIdleStateName);
@@ -98,7 +111,7 @@ public partial class Chapter1PerformanceController
         weddingElder.rotation = GetReceiverRotationFacingPosition(weddingElder, view.position);
         elderPose.Face(view.position - weddingElder.position);
         PrepareGuestBodyColliders();
-        RememberElderPlace();
+        RememberWeddingPlace(weddingElder);
         if (!cupStandModel) return;
         float height = elderPose.Height;
         GameObject stand = CreateWeddingProp(cupStandModel, cupStandMaterial, "WeddingCupTable", height * .49f);
@@ -130,6 +143,9 @@ public partial class Chapter1PerformanceController
         EnsureDeliveryTargetGrounding(weddingBride, new[] { animator });
         bridePose = weddingBride.gameObject.AddComponent<Chapter1WeddingGuestPose>();
         bridePose.Face(view.position - weddingBride.position);
+        // The delivery system restores each receiver before the dance and the incident.
+        // Keep the bride at her staged entrance mark, at the height set for this couple.
+        RememberWeddingPlace(weddingBride);
         PrepareCoupleNames();
         if (!InputDevices.GetDeviceAtXRNode(XRNode.Head).isValid && playerController is PCPlayerController desktop
             && groomPose.Head && bridePose.Head)
@@ -242,15 +258,16 @@ public partial class Chapter1PerformanceController
         float distance = remaining.magnitude - elderPose.Height * .22f;
         if (!cupStandModel || distance < elderPose.Height * .008f) yield break;
         yield return elderPose.StepAside(remaining.normalized * distance);
-        RememberElderPlace();
+        RememberWeddingPlace(weddingElder);
     }
 
-    private void RememberElderPlace()
+    private void RememberWeddingPlace(Transform actor)
     {
-        if (deliveryNpcAuthoredTransforms.TryGetValue(weddingElder.GetInstanceID(), out var place))
+        if (deliveryNpcAuthoredTransforms.TryGetValue(actor.GetInstanceID(), out var place))
         {
-            place.worldPosition = weddingElder.position;
-            place.worldRotation = weddingElder.rotation;
+            place.worldPosition = actor.position;
+            place.worldRotation = actor.rotation;
+            place.localScale = actor.localScale;
         }
     }
 

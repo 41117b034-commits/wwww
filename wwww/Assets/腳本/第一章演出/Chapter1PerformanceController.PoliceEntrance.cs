@@ -347,7 +347,13 @@ public partial class Chapter1PerformanceController
             }
             if (actor == groomActor && available.Count > 0) nearest = 0;
             Vector3 destination = nearest >= 0 ? available[nearest] : start;
-            if (nearest >= 0) available.RemoveAt(nearest);
+            if (actor == femaleVillagerActor)
+            {
+                // She walks here with the witnesses. Leave a clear lane from
+                // the shove around the west edge of the fire to the hut.
+                destination = center + new Vector3(-2f, 0f, 0.75f) * height;
+            }
+            else if (nearest >= 0) available.RemoveAt(nearest);
             if (animator != null)
             {
                 animator.applyRootMotion = false;

@@ -94,10 +94,27 @@ public partial class Chapter1PerformanceController
         SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, position,
             Quaternion.LookRotation(focus - position, Vector3.up) * Quaternion.Euler(0, 0, roll));
     }
+    Vector3 DoorwayTrackingPosition(Vector3 subject)
+    {
+        // The second officer remains on the west edge of the courtyard.
+        // Track from the open south lane to see the bride and the joined wrists.
+        Vector3 eye = subject + (doorwayOut * 1.68f + doorwayRight * 0.24f) * doorwayHeight;
+        if (TryGetIncidentSurfaceY(eye, out float ground)) eye.y = Mathf.Max(eye.y, ground);
+        return eye + Vector3.up * doorwayHeight * 1.02f;
+    }
+
+    void TurnDoorwayActor(Chapter1IncidentRig rig, Vector3 direction, float degreesPerSecond)
+    {
+        Quaternion from = rig.transform.rotation;
+        rig.Face(direction);
+        rig.transform.rotation = Quaternion.RotateTowards(from, rig.transform.rotation,
+            degreesPerSecond * Time.deltaTime);
+    }
+
     IEnumerator DoorwayIncidentRoutine()
     {
         if (incidentHutDoor != null) incidentHutDoor.SetOpen(0f);
-        Transform officer = secondaryPoliceActor != null ? secondaryPoliceActor : primaryPoliceActor;
+        Transform officer = primaryPoliceActor != null ? primaryPoliceActor : secondaryPoliceActor;
         if (officer == null || femaleVillagerActor == null) { Debug.LogError("[Doorway] Missing incident actors."); yield break; }
         StopIncidentActorMotions(true);
         RestoreIncidentShotOccluders();
@@ -113,37 +130,103 @@ public partial class Chapter1PerformanceController
         if (TryGetIncidentSurfaceY(door, out float floor)) door.y = floor;
         doorwayPoliceRest = door + doorwayOut * doorwayHeight * 0.16f;
         doorwayVictimRest = doorwayPoliceRest - doorwayRight * doorwayHeight * 0.43f + doorwayOut * doorwayHeight * 0.11f;
-        Vector3 pull = -doorwayOut;
-        doorwayOfficer.Face((pull + doorwayRight * 0.4f).normalized);
-        doorwayVictim.Face((pull + doorwayRight * 0.65f).normalized);
-        Vector3 startOffset = doorwayOut * doorwayHeight * 0.86f - doorwayRight * doorwayHeight * 0.58f;
-        PlaceDoorwayActor(doorwayOfficer, doorwayPoliceRest + startOffset);
-        PlaceDoorwayActor(doorwayVictim, doorwayVictimRest + startOffset);
         doorwayOfficer.batonVisible = true;
-        doorwayOfficer.gripWithLeft = false;
         doorwayOfficer.batonInLeftHand = true;
-        doorwayOfficer.gripPartner = doorwayVictim.transform;
-        doorwayVictim.gripPartner = doorwayOfficer.transform;
-        doorwayVictim.gripWithLeft = false;
-        doorwayVictim.resisting = true;
+        doorwayOfficer.gripWithLeft = doorwayVictim.gripWithLeft = false;
+        doorwayOfficer.frozen = doorwayVictim.frozen = false;
         doorwayStaged = true;
         incidentCameraView = GetPlayerViewTransform();
         if (incidentCameraPoseLock == null) incidentCameraPoseLock = BeginCinematicCameraPoseLock(incidentCameraView);
-        Vector3 cameraPosition = door + doorwayOut * doorwayHeight * 2.1f - doorwayRight * doorwayHeight * 1.25f + Vector3.up * doorwayHeight * 0.87f;
-        Vector3 focus = door - doorwayRight * doorwayHeight * 0.66f + Vector3.up * doorwayHeight * 0.50f;
-        SetDoorwayCamera(cameraPosition, focus, 49f);
-        yield return new WaitForSeconds(0.35f);
-        doorwayOfficer.walking = doorwayVictim.walking = true;
-        doorwayVictim.strideScale = 0.78f;
-        float elapsed = 0;
-        while (elapsed < incidentDoorDragSeconds)
+
+        // Keep both roots where the shove and the crowd retreat actually ended.
+        // The approach stops within reach of the bride before either wrist moves.
+        Vector3 brideStart = WeddingActorFloor(femaleVillagerActor);
+        Vector3 officerAtBride = brideStart + (doorwayPoliceRest - doorwayVictimRest);
+        var path = BuildWeddingRetreatPath(officer.position, officerAtBride,
+            WatchFireObstacleCenter(), doorwayHeight * 1.2f);
+        float distance = WatchPathLength(path);
+        float runSeconds = Mathf.Max(0.95f, distance / (doorwayHeight * 1.38f));
+        Vector3 shotStart = incidentCameraView.position;
+        Quaternion shotRotation = incidentCameraView.rotation;
+        Camera camera = incidentCameraView.GetComponent<Camera>();
+        float initialFov = camera != null ? camera.fieldOfView : 50f;
+        SetWeddingDramaBeat("police-run-to-bride");
+        Vector3 firstStep = path.Find(point =>
+            Vector3.ProjectOnPlane(point - officer.position, Vector3.up).sqrMagnitude > 0.01f);
+        Quaternion turnFrom = officer.rotation;
+        Quaternion turnTo = EntranceFacingRotation(officer, firstStep);
+        float turnSeconds = Quaternion.Angle(turnFrom, turnTo) / 220f;
+        for (float elapsed = 0f; elapsed < turnSeconds; elapsed += Time.deltaTime)
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / incidentDoorDragSeconds);
-            PlaceDoorwayActor(doorwayOfficer, doorwayPoliceRest + startOffset * (1f - t));
-            PlaceDoorwayActor(doorwayVictim, doorwayVictimRest + startOffset * (1f - t));
+            officer.rotation = Quaternion.Slerp(turnFrom, turnTo, Mathf.SmoothStep(0f, 1f, elapsed / turnSeconds));
             yield return null;
         }
+        officer.rotation = turnTo;
+        doorwayOfficer.strideScale = 1.58f;
+        doorwayOfficer.running = doorwayOfficer.walking = true;
+        for (float elapsed = 0f; elapsed < runSeconds; elapsed += Time.deltaTime)
+        {
+            float t = WatchWalkProgress(elapsed / runSeconds);
+            SampleWatchPath(doorwayOfficer, path, distance * t);
+            Vector3 brideFacing = officer.position - femaleVillagerActor.position + doorwayOut * (doorwayHeight * 0.44f * t);
+            TurnDoorwayActor(doorwayVictim, brideFacing, 120f);
+            Vector3 subject = Vector3.Lerp(WeddingActorFloor(officer), brideStart, 0.5f * t);
+            Vector3 position = DoorwayTrackingPosition(subject);
+            float blend = Mathf.SmoothStep(0f, 1f, elapsed / Mathf.Min(1.25f, runSeconds));
+            Vector3 eye = Vector3.Lerp(shotStart, position, blend);
+            Quaternion look = Quaternion.LookRotation(subject + Vector3.up * doorwayHeight * 0.57f - eye);
+            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, eye,
+                Quaternion.Slerp(shotRotation, look, blend));
+            if (camera != null) camera.fieldOfView = Mathf.Lerp(initialFov, 49f, blend);
+            yield return null;
+        }
+        PlaceDoorwayActor(doorwayOfficer, officerAtBride);
+        doorwayOfficer.running = doorwayOfficer.walking = false;
+        doorwayOfficer.strideScale = 1f;
+        doorwayOfficer.partnerGripWeight = doorwayVictim.partnerGripWeight = 0f;
+        doorwayOfficer.gripPartner = femaleVillagerActor;
+        doorwayVictim.gripPartner = officer;
+        SetWeddingDramaBeat("police-takes-wrist");
+        Vector3 pickup = (officerAtBride + brideStart) * 0.5f;
+        if (TryGetIncidentSurfaceY(pickup, out float pickupFloor)) pickup.y = pickupFloor;
+        SetDoorwayCamera(DoorwayTrackingPosition(pickup), pickup + Vector3.up * doorwayHeight * 0.57f, 49f);
+        const float reachSeconds = 0.75f;
+        for (float elapsed = 0f; elapsed < reachSeconds; elapsed += Time.deltaTime)
+        {
+            TurnDoorwayActor(doorwayOfficer, brideStart - officerAtBride, 170f);
+            TurnDoorwayActor(doorwayVictim, officerAtBride - brideStart + doorwayOut * (doorwayHeight * 0.44f), 120f);
+            doorwayOfficer.partnerGripWeight = doorwayVictim.partnerGripWeight =
+                Mathf.SmoothStep(0f, 1f, elapsed / reachSeconds);
+            yield return null;
+        }
+        doorwayOfficer.partnerGripWeight = doorwayVictim.partnerGripWeight = 1f;
+        doorwayVictim.resisting = true;
+        yield return new WaitForSeconds(0.25f);
+
+        SetWeddingDramaBeat("doorway-drag");
+        Vector3 route = Vector3.ProjectOnPlane(doorwayPoliceRest - officerAtBride, Vector3.up);
+        Vector3 cameraEnd = door + doorwayOut * doorwayHeight * 2.1f - doorwayRight * doorwayHeight * 1.25f
+            + Vector3.up * doorwayHeight * 0.87f;
+        Vector3 finalFocus = door - doorwayRight * doorwayHeight * 0.66f + Vector3.up * doorwayHeight * 0.50f;
+        float dragSeconds = Mathf.Max(incidentDoorDragSeconds, route.magnitude / (doorwayHeight * 0.62f));
+        doorwayOfficer.walking = doorwayVictim.walking = true;
+        doorwayVictim.strideScale = 0.78f;
+        for (float elapsed = 0f; elapsed < dragSeconds; elapsed += Time.deltaTime)
+        {
+            float t = WatchWalkProgress(elapsed / dragSeconds);
+            PlaceWatchActor(doorwayOfficer, Vector3.Lerp(officerAtBride, doorwayPoliceRest, t));
+            PlaceWatchActor(doorwayVictim, Vector3.Lerp(brideStart, doorwayVictimRest, t));
+            TurnDoorwayActor(doorwayOfficer, route, 140f);
+            TurnDoorwayActor(doorwayVictim, route.normalized + doorwayRight * 0.45f, 100f);
+            Vector3 subject = (WeddingActorFloor(officer) + WeddingActorFloor(femaleVillagerActor)) * 0.5f;
+            float settle = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.55f, 1f, t));
+            SetDoorwayCamera(Vector3.Lerp(DoorwayTrackingPosition(subject), cameraEnd, settle),
+                Vector3.Lerp(subject + Vector3.up * doorwayHeight * 0.57f, finalFocus, settle), 49f);
+            yield return null;
+        }
+        PlaceWatchActor(doorwayOfficer, doorwayPoliceRest);
+        PlaceWatchActor(doorwayVictim, doorwayVictimRest);
+        SetDoorwayCamera(cameraEnd, finalFocus, 49f);
         doorwayOfficer.walking = doorwayVictim.walking = false;
         Quaternion policeTurnFrom = officer.rotation, victimTurnFrom = femaleVillagerActor.rotation;
         doorwayOfficer.Face(doorwayOut + doorwayRight * 0.15f);
@@ -175,99 +258,209 @@ public partial class Chapter1PerformanceController
     }
     IEnumerator ResolveDoorwayChoice(ConflictChoice choice)
     {
-        doorwayVictim.strugglingInPlace = false;
-        doorwayOfficer.StationaryGrip = doorwayVictim.StationaryGrip = null;
         if (choiceUI != null) choiceUI.Hide();
         if (dialogueUI != null) dialogueUI.HideInstant();
         if (choice == ConflictChoice.Watch)
         {
+            doorwayVictim.strugglingInPlace = false;
+            doorwayOfficer.StationaryGrip = doorwayVictim.StationaryGrip = null;
             yield return DoorwayWatchRoutine();
             yield break;
         }
-        doorwayOfficer.gripPartner = null;
-        doorwayVictim.gripPartner = null;
+
+        yield return ApproachAndHelpBride();
+        yield return DoorwayOfficerInterrupts();
+    }
+
+    Vector3 DoorwayEyeAt(Vector3 position, float relativeHeight)
+    {
+        if (TryGetIncidentSurfaceY(position, out float floor)) position.y = floor;
+        position.y += doorwayHeight * relativeHeight;
+        return position;
+    }
+
+    IEnumerator ApproachAndHelpBride()
+    {
+        // Start at the choice viewpoint. Stay on the woman's open side so the
+        // officer and the hut never pass between the player and her wrist.
+        SetWeddingDramaBeat("intervene-approach");
+        Coroutine call = StartCoroutine(PlayPoliceVoicedLine("你", "住手！放開她！", playerInterveneVoice, 1.8f));
+        Vector3 start = incidentCameraView.position;
+        Quaternion rotation = incidentCameraView.rotation;
+        Vector3 near = DoorwayEyeAt(doorwayVictim.transform.position
+            + (doorwayOut * .54f - doorwayRight * .16f) * doorwayHeight, .85f);
+        Camera camera = incidentCameraView.GetComponent<Camera>();
+        float startFov = camera ? camera.fieldOfView : 49f;
+        Transform wrist = doorwayVictim.gripWithLeft ? doorwayVictim.RightHand : doorwayVictim.LeftHand;
+        float seconds = Mathf.Clamp(GetFlatDistance(start, near) / (doorwayHeight * .85f), 1.65f, 3.4f);
+        bool headset = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head).isValid;
+        for (float time = 0; time < seconds; time += Time.deltaTime)
+        {
+            float t = Mathf.SmoothStep(0f, 1f, time / seconds);
+            Vector3 eye = Vector3.Lerp(start, near, t);
+            if (!headset) eye.y += Mathf.Sin(t * Mathf.PI * 6f) * Mathf.Sin(t * Mathf.PI) * doorwayHeight * .007f;
+            Vector3 focus = Vector3.Lerp(wrist.position, doorwayVictim.Head.position, .64f);
+            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, eye,
+                Quaternion.Slerp(rotation, Quaternion.LookRotation(focus - eye), t));
+            if (camera) camera.fieldOfView = Mathf.Lerp(startFov, 60f, t);
+            yield return null;
+        }
+        SetDoorwayCamera(near, Vector3.Lerp(wrist.position, doorwayVictim.Head.position, .64f), 60f);
+        yield return call;
+
+        SetWeddingDramaBeat("intervene-reach");
+        Vector3 towardPlayer = Vector3.ProjectOnPlane(near - doorwayVictim.transform.position, Vector3.up).normalized;
+        Quaternion brideFrom = doorwayVictim.transform.rotation;
+        doorwayVictim.Face(towardPlayer);
+        Quaternion brideTo = doorwayVictim.transform.rotation;
+        doorwayVictim.transform.rotation = brideFrom;
+        Vector3 wristStart = wrist.position;
+        Transform offeredWrist = new GameObject("Bride offered wrist").transform;
+        offeredWrist.SetParent(transform, false);
+        offeredWrist.position = wristStart;
+        doorwayVictim.gripTarget = offeredWrist;
+        doorwayVictim.gripTargetOnFreeHand = true;
+
+        Chapter1HelpingHand hand = null;
+        if (cupHandMesh && cupHandSkin && camera)
+        {
+            var obj = new GameObject("Player helping right hand", typeof(MeshFilter), typeof(MeshRenderer));
+            obj.GetComponent<MeshFilter>().sharedMesh = cupHandMesh;
+            obj.GetComponent<MeshRenderer>().sharedMaterial = cupHandSkin;
+            obj.transform.SetParent(transform, true);
+            obj.transform.localScale = Vector3.one * (doorwayHeight / 1.75f);
+            hand = obj.AddComponent<Chapter1HelpingHand>();
+            hand.Configure(camera, wrist, doorwayHeight);
+        }
+
+        const float reachSeconds = .95f;
+        for (float time = 0; time < reachSeconds; time += Time.deltaTime)
+        {
+            float t = Mathf.SmoothStep(0f, 1f, time / reachSeconds);
+            doorwayVictim.transform.rotation = Quaternion.Slerp(brideFrom, brideTo, .36f * t);
+            offeredWrist.position = Vector3.Lerp(wristStart, doorwayVictim.OfferedWristPosition(towardPlayer), t);
+            if (hand) hand.reach = t;
+            SetDoorwayCamera(near, Vector3.Lerp(wrist.position, doorwayVictim.Head.position, Mathf.Lerp(.64f, .54f, t)), 60f);
+            yield return null;
+        }
+        doorwayVictim.transform.rotation = Quaternion.Slerp(brideFrom, brideTo, .36f);
+        offeredWrist.position = doorwayVictim.OfferedWristPosition(towardPlayer);
+        if (hand) hand.reach = 1f;
+
+        // Her other wrist remains caught until the player has made contact.
+        // She then turns and takes two steps away from the door with the player.
+        SetWeddingDramaBeat("intervene-pull");
+        doorwayOfficer.StationaryGrip = doorwayVictim.StationaryGrip = null;
+        doorwayOfficer.gripPartner = doorwayVictim.gripPartner = null;
+        doorwayVictim.strugglingInPlace = doorwayVictim.resisting = false;
+        doorwayVictim.walking = true;
+        Vector3 brideStart = doorwayVictim.transform.position;
+        Vector3 pull = (doorwayOut * .29f - doorwayRight * .28f) * doorwayHeight;
+        brideFrom = doorwayVictim.transform.rotation;
+        const float pullSeconds = 1.45f;
+        for (float time = 0; ; time += Time.deltaTime)
+        {
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / pullSeconds));
+            doorwayVictim.transform.rotation = Quaternion.Slerp(brideFrom, brideTo, t);
+            PlaceDoorwayActor(doorwayVictim, brideStart + pull * t);
+            offeredWrist.position = doorwayVictim.OfferedWristPosition(towardPlayer);
+            Vector3 eye = DoorwayEyeAt(near + pull * t, .85f);
+            SetDoorwayCamera(eye, Vector3.Lerp(wrist.position, doorwayVictim.Head.position, .54f), 60f);
+            if (t >= 1f) break;
+            yield return null;
+        }
+        doorwayVictim.walking = false;
+        for (float time = 0; time < .45f; time += Time.deltaTime)
+        {
+            float t = Mathf.SmoothStep(0f, 1f, time / .45f);
+            if (hand) hand.reach = 1f - t;
+            offeredWrist.position += Vector3.down * doorwayHeight * (.24f * Time.deltaTime);
+            yield return null;
+        }
+        doorwayVictim.gripTarget = null;
+        doorwayVictim.gripTargetOnFreeHand = false;
+        Destroy(offeredWrist.gameObject);
+        if (hand) { hand.gameObject.SetActive(false); Destroy(hand.gameObject); }
+    }
+
+    IEnumerator DoorwayOfficerInterrupts()
+    {
+        SetWeddingDramaBeat("intervene-officer-turn");
+        Vector3 eye = incidentCameraView.position;
+        Vector3 officerStart = doorwayOfficer.transform.position;
+        Vector3 towardPlayer = Vector3.ProjectOnPlane(eye - officerStart, Vector3.up).normalized;
+        Vector3 officerEnd = eye - towardPlayer * doorwayHeight * .86f;
+        Quaternion from = doorwayOfficer.transform.rotation;
         doorwayOfficer.frozen = false;
-        doorwayVictim.resisting = false;
-        doorwayVictim.frozen = true;
-        yield return PlayPoliceVoicedLine("你", "住手！放開她！", playerInterveneVoice, 1.8f);
-        if (dialogueUI != null) dialogueUI.HideInstant();
-        Vector3 center = (doorwayPoliceRest + doorwayVictimRest) * 0.5f;
-        Vector3 viewPosition = center + doorwayOut * doorwayHeight * 1.45f - doorwayRight * doorwayHeight * 0.28f + Vector3.up * doorwayHeight * 0.88f;
-        Vector3 startView = incidentCameraView.position;
-        Quaternion startRotation = incidentCameraView.rotation;
-        Vector3 viewFocus = doorwayOfficer.Head.position;
-        Quaternion viewRotation = Quaternion.LookRotation(viewFocus - viewPosition, Vector3.up);
-        for (float t = 0; t < 0.6f; t += Time.deltaTime)
-        {
-            float blend = Mathf.SmoothStep(0, 1, t / 0.6f);
-            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, Vector3.Lerp(startView, viewPosition, blend), Quaternion.Slerp(startRotation, viewRotation, blend));
-            yield return null;
-        }
-        Vector3 approachEnd = viewPosition - doorwayOut * doorwayHeight * 0.55f; approachEnd.y = doorwayPoliceRest.y;
-        Vector3 approachStart = doorwayOfficer.transform.position;
-        doorwayOfficer.Face(approachEnd - approachStart);
+        doorwayOfficer.Face(towardPlayer);
+        Quaternion facing = doorwayOfficer.transform.rotation;
+        doorwayOfficer.transform.rotation = from;
+        Quaternion cameraFrom = incidentCameraView.rotation;
+        Camera camera = incidentCameraView.GetComponent<Camera>();
+        float seconds = Mathf.Max(1.2f, policeApproachPlayerSeconds);
         doorwayOfficer.walking = true;
-        float approachSeconds = Mathf.Max(2.4f, policeApproachPlayerSeconds);
-        for (float t = 0; t < approachSeconds; t += Time.deltaTime)
+        for (float time = 0; ; time += Time.deltaTime)
         {
-            PlaceDoorwayActor(doorwayOfficer, Vector3.Lerp(approachStart, approachEnd, t / approachSeconds));
-            SetDoorwayCamera(viewPosition, doorwayOfficer.Head.position - Vector3.up * doorwayHeight * 0.05f, 56f);
+            float t = Mathf.Clamp01(time / seconds);
+            doorwayOfficer.transform.rotation = Quaternion.Slerp(from, facing, Mathf.SmoothStep(0, 1, t / .48f));
+            PlaceDoorwayActor(doorwayOfficer, Vector3.Lerp(officerStart, officerEnd, Mathf.SmoothStep(0f, 1f, t)));
+            Vector3 focus = doorwayOfficer.Head.position + Vector3.up * doorwayHeight * .07f;
+            if (camera) camera.fieldOfView = Mathf.Lerp(60f, 66f, t);
+            Quaternion look = Quaternion.LookRotation(focus - eye);
+            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, eye,
+                Quaternion.Slerp(cameraFrom, look, Mathf.SmoothStep(0f, 1f, t / .72f)));
+            if (t >= 1f) break;
             yield return null;
         }
-        PlaceDoorwayActor(doorwayOfficer, approachEnd); doorwayOfficer.walking = false;
-        doorwayOfficer.Face(viewPosition - approachEnd);
+        doorwayOfficer.walking = false;
+        SetWeddingDramaBeat("intervene-baton");
         doorwayOfficer.strike = true;
-        bool impact = false;
-        for (float t = 0; t < 1.15f; t += Time.deltaTime)
+        doorwayOfficer.strikeProgress = 0;
+        const float swingSeconds = 1.25f;
+        for (float time = 0; time < swingSeconds * .72f; time += Time.deltaTime)
         {
-            float p = t / 1.15f; doorwayOfficer.strikeProgress = p;
-            if (!impact && p >= 0.70f) { impact = true; PlayPoliceEventClip(struggleClip); Debug.Log("[Doorway] Baton impact."); }
-            doorwayVignetteAmount = p > 0.65f ? Mathf.Clamp01((p - 0.65f) * 4f) : 0f;
-            Vector3 shake = p > 0.68f ? doorwayRight * Mathf.Sin(t * 65f) * doorwayHeight * 0.005f : Vector3.zero;
-            SetDoorwayCamera(viewPosition + shake, doorwayOfficer.Head.position, 56f);
+            float progress = time / swingSeconds;
+            doorwayOfficer.strikeProgress = progress;
+            float step = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.42f, .72f, progress));
+            PlaceDoorwayActor(doorwayOfficer, officerEnd + towardPlayer * doorwayHeight * (.26f * step));
+            SetDoorwayCamera(eye, doorwayOfficer.Head.position + Vector3.up * doorwayHeight * Mathf.Lerp(.07f, -.04f, step), 66f);
+            yield return null;
+        }
+        doorwayOfficer.strikeProgress = .72f;
+        PlaceDoorwayActor(doorwayOfficer, officerEnd + towardPlayer * doorwayHeight * .26f);
+        PlayPoliceEventClip(struggleClip);
+        SetWeddingDramaBeat("intervene-impact");
+        yield return null;
+
+        Vector3 down = DoorwayEyeAt(eye + towardPlayer * doorwayHeight * .33f, .065f);
+        Vector3 focusDown = Vector3.Lerp(doorwayOfficer.Head.position, doorwayVictim.Head.position, .45f)
+            - Vector3.up * doorwayHeight * .26f;
+        bool headset = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head).isValid;
+        Quaternion upright = incidentCameraView.rotation;
+        Quaternion downRotation = Quaternion.LookRotation(focusDown - down)
+            * Quaternion.Euler(0f, 0f, headset ? 0f : 13f);
+        const float fallSeconds = 1.05f;
+        for (float time = 0; ; time += Time.deltaTime)
+        {
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(time / fallSeconds));
+            doorwayOfficer.strikeProgress = Mathf.Min(1f, .72f + time / swingSeconds);
+            doorwayVignetteAmount = t * .92f;
+            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock,
+                Vector3.Lerp(eye, down, t), Quaternion.Slerp(upright, downRotation, t));
+            if (t >= 1f) break;
             yield return null;
         }
         doorwayOfficer.strike = false;
-        // As the player falls the officer backs toward the woman and takes her arm again.
-        Vector3 downPosition = center + doorwayOut * doorwayHeight * 1.66f - doorwayRight * doorwayHeight * 0.06f;
-        if (TryGetIncidentSurfaceY(downPosition, out float ground)) downPosition.y = ground + doorwayHeight * 0.045f;
-        Vector3 downFocus = center + Vector3.up * doorwayHeight * 0.52f;
-        Quaternion downRotation = Quaternion.LookRotation(downFocus - downPosition, Vector3.up) * Quaternion.Euler(0, 0, 16f);
-        Vector3 fallStart = incidentCameraView.position; Quaternion fallRotation = incidentCameraView.rotation;
-        Vector3 officerStart = doorwayOfficer.transform.position;
-        Vector3 victimStart = doorwayVictim.transform.position;
-        doorwayPoliceRest = center - doorwayRight * doorwayHeight * 0.23f;
-        doorwayVictimRest = center + doorwayRight * doorwayHeight * 0.23f;
-        doorwayOfficer.walking = true; doorwayOfficer.Face(doorwayPoliceRest - officerStart);
-        float fallSeconds = 1.15f;
-        for (float t = 0; t < fallSeconds; t += Time.deltaTime)
-        {
-            float p = Mathf.SmoothStep(0, 1, t / fallSeconds);
-            PlaceDoorwayActor(doorwayOfficer, Vector3.Lerp(officerStart, doorwayPoliceRest, p));
-            PlaceDoorwayActor(doorwayVictim, Vector3.Lerp(victimStart, doorwayVictimRest, p));
-            SetCinematicCameraPose(incidentCameraView, incidentCameraPoseLock, Vector3.Lerp(fallStart, downPosition, p), Quaternion.Slerp(fallRotation, downRotation, p));
-            yield return null;
-        }
-        PlaceDoorwayActor(doorwayOfficer, doorwayPoliceRest);
-        PlaceDoorwayActor(doorwayVictim, doorwayVictimRest);
-        doorwayOfficer.walking = false; doorwayOfficer.frozen = true;
-        doorwayOfficer.Face(doorwayOut);
-        doorwayVictim.Face((doorwayOut - doorwayRight * 0.28f).normalized);
-        doorwayOfficer.gripPartner = doorwayVictim.transform;
-        doorwayVictim.gripPartner = doorwayOfficer.transform;
-        doorwayOfficer.gripWithLeft = true;
-        doorwayVictim.gripWithLeft = false;
-        doorwayOfficer.batonInLeftHand = false;
-        SetDoorwayCamera(downPosition, downFocus, 58f, 16f);
-        CreateDoorwayFallenHand(downPosition);
-        knockoutCameraPosition = downPosition; knockoutCameraRotation = downRotation;
-        playerKnockedOut = true; knockoutDizzyVisible = false;
-        doorwayVignetteAmount = 0.9f;
+        CreateDoorwayFallenHand(down);
+        knockoutCameraPosition = down;
+        knockoutCameraRotation = downRotation;
+        playerKnockedOut = true;
+        knockoutDizzyVisible = false;
+        SetWeddingDramaBeat("intervene-knockout");
         if (dialogueUI != null) dialogueUI.HideInstant();
-        if (fadeCanvas != null) fadeCanvas.alpha = 0;
-        Debug.Log("[Doorway] Knockout tableau ready; stopping Play Mode in 3 seconds.");
         yield return new WaitForSecondsRealtime(incidentKnockoutHoldSeconds);
-        chapterCompleted = true; cinematicStoryPlaying = false;
+        chapterCompleted = true;
+        cinematicStoryPlaying = false;
         SaveChapterResult();
         StopChapterPlayMode();
     }
@@ -353,5 +546,44 @@ public partial class Chapter1PerformanceController
             PlayChapterUiClick();
             ChooseWatch();
         }
+    }
+}
+
+[DefaultExecutionOrder(4500)]
+public sealed class Chapter1HelpingHand : MonoBehaviour
+{
+    public float reach;
+    private Camera view;
+    private Transform wrist;
+    private Transform shoulder;
+    private float height;
+
+    public void Configure(Camera camera, Transform targetWrist, float actorHeight)
+    {
+        view = camera;
+        wrist = targetWrist;
+        height = actorHeight;
+        shoulder = new GameObject("Helping arm shoulder").transform;
+        shoulder.SetParent(view.transform, false);
+        var arm = gameObject.AddComponent<Chapter3ViewArm>();
+        arm.view = view;
+        arm.ShoulderAnchor = shoulder;
+    }
+
+    // The bride solves her wrist at order 4000. Follow only its position,
+    // then aim the player's forearm back toward the shoulder outside the frame.
+    void LateUpdate()
+    {
+        if (!view || !wrist) return;
+        Vector3 lowered = view.ViewportToWorldPoint(new Vector3(1.03f, -.24f, height * .26f));
+        Vector3 palm = Vector3.Lerp(lowered, wrist.position, reach);
+        float depth = Mathf.Max(view.nearClipPlane * 2f, view.WorldToViewportPoint(palm).z * .62f);
+        shoulder.position = view.ViewportToWorldPoint(new Vector3(1.24f, -.30f, depth));
+        transform.SetPositionAndRotation(palm, Quaternion.LookRotation(palm - shoulder.position, Vector3.up));
+    }
+
+    void OnDestroy()
+    {
+        if (shoulder) Destroy(shoulder.gameObject);
     }
 }

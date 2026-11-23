@@ -161,15 +161,17 @@ public partial class Chapter1PerformanceController
             {
                 case WeddingAction.TakeWine: return press + (FirstCupPending ? "拿起第一杯酒" : "拿酒");
                 case WeddingAction.TakeFood: return press + "拿取烤魚";
-                case WeddingAction.GiveWine: return press + (FirstCupPending ? "把酒交給長輩" : "把酒交給賓客");
-                case WeddingAction.GiveFood: return press + "把烤魚交給族人";
+                case WeddingAction.GiveWine: return press + "把酒交給" + WeddingReceiverLabel(GetDesignatedPhysicalDeliveryTarget(true), true);
+                case WeddingAction.GiveFood: return press + "把烤魚交給" + WeddingReceiverLabel(GetDesignatedPhysicalDeliveryTarget(false), false);
                 case WeddingAction.JoinDance: return press + "加入舞圈";
             }
             if (carriedWeddingItem != WeddingCarryItem.None)
             {
                 string putBack = chapterCanvas.renderMode == RenderMode.WorldSpace ? "（B 放回）" : "（Q 放回）";
-                if (carriedWeddingItem == WeddingCarryItem.Food) return $"把烤魚送給族人 {sharedFoodCount}/{food}" + putBack;
-                return (FirstCupPending ? "把第一杯酒送給火堆旁的長輩" : $"把酒送給賓客 {deliveredWineCount}/{wine}") + putBack;
+                bool carryingWine = carriedWeddingItem == WeddingCarryItem.Wine;
+                string name = WeddingReceiverLabel(GetDesignatedPhysicalDeliveryTarget(carryingWine), carryingWine);
+                if (!carryingWine) return $"把烤魚送給{name} {sharedFoodCount}/{food}" + putBack;
+                return (FirstCupPending ? "把第一杯酒送給火堆旁的長輩" : $"把酒送給{name} {deliveredWineCount}/{wine}") + putBack;
             }
         }
         if (carriedWeddingItem == WeddingCarryItem.Wine)
@@ -196,7 +198,7 @@ public partial class Chapter1PerformanceController
             if (carriedWeddingItem != WeddingCarryItem.None)
             {
                 target = activeDeliveryTarget;
-                label = carriedWeddingItem == WeddingCarryItem.Food ? "族人" : (FirstCupPending ? "長輩" : "賓客");
+                label = WeddingReceiverLabel(target, carriedWeddingItem == WeddingCarryItem.Wine);
             }
             else if (!AreWineAndFoodTasksComplete())
             {
