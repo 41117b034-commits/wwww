@@ -30,6 +30,15 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     [Header("Replace this clip with the final opening film")]
     public VideoClip openingFilm;
     [Min(1)] public float videoPrepareTimeout = 12;
+    [Header("片頭播放呈現")]
+    public string openingTitle = "新規定與秘密會議";
+    public string openingSubtitle = "霧社事件 · 第二章";
+    [Min(0)] public float openingTitleSeconds = 2.2f;
+    [Min(.05f)] public float openingFadeSeconds = .65f;
+    [Range(0, 1)] public float openingFilmVolume = .85f;
+    Chapter2OpeningScreen openingScreen;
+    AudioSource openingSound;
+    bool openingHudEnabled, openingPausedAmbience;
     // Kept for older editor probes; completed chapters now continue into Chapter 3.
     [HideInInspector] public bool stopEditorAfterEnding = true;
     public bool saveResult = true;
@@ -101,6 +110,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if (!player || !ui) return;
         ui.ConfigureVR(player.IsVR);
+        if (openingScreen) openingScreen.Configure(player.IsVR, player.view);
         if ((!exploration || !exploration.ChatOpen) && Chapter2Player.Key(Chapter2Player.KeyControlName.P)) SkipToMeeting();
         if (CurrentStage == Stage.Intro && player.ActionPressed) skip = true;
         if (CurrentStage == Stage.TreeChoice || CurrentStage == Stage.Vote)
@@ -130,6 +140,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if (exploration) exploration.CancelExploration();
         // Includes the separate axe-swing coroutine, which can otherwise change the UI later.
         StopAllCoroutines();
+        CloseOpeningScreen(false);
         if (chapterAudio) chapterAudio.StopAllAudio();
         foreach (var actor in workers) if (actor) actor.speaking = false;
         skip = true; readyToChoose = false; canChop = false; raisedFor = 0;
@@ -204,9 +215,9 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         routeGuide.GuidanceEnabled = false;
         ui.hint.text = ""; ui.objective.text = "聆聽警察與族人的對話";
         yield return FrameTreeExchange();
-        yield return Say(officer, "日本警察", "把這些樹都砍了。",0,workers[0]);
+        yield return Say(officer, "日本警察", "把這些樹都砍了。", 0, workers[0]);
         yield return StepForwardToOfficer();
-        yield return Say(workers[0], "族人", "這棵巨木是我們的守護者……真的要砍下去嗎？",0,officer);
+        yield return Say(workers[0], "族人", "這棵巨木是我們的守護者……真的要砍下去嗎？", 0, officer);
         yield return FrameConfrontation();
         SetStage(Stage.TreeChoice); ui.objective.text = "面對聖地的抉擇";
         ui.hint.text = "按 1／右手主按鈕，或按 2／左手主按鈕";
@@ -227,7 +238,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         ui.ShowLocationCaption("夜晚，山林深處。");
         yield return Fade(0, 1.5f);
         yield return new WaitForSeconds(3);
-        for(float t=0;t<1;t+=Time.deltaTime/.6f){ui.ShowLocationCaption("夜晚，山林深處。",1-t);yield return null;}
+        for (float t = 0; t < 1; t += Time.deltaTime / .6f) { ui.ShowLocationCaption("夜晚，山林深處。", 1 - t); yield return null; }
         ui.ShowLocationCaption("");
         yield return CouncilScript();
         yield return FrameCouncilOverview();
@@ -251,31 +262,71 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     IEnumerator Intro()
     {
-        // Retain the selected clip while the decoder prepares it. Inspector changes
-        // to the source field must not invalidate an already running introduction.
+        videoError = false; videoEnded = false; VideoPlayed = false; VideoFinished = false;
+        openingHudEnabled = ui.canvas.enabled; ui.canvas.enabled = false;
+        openingPausedAmbience = ambience && ambience.isPlaying;
+        if (openingPausedAmbience) ambience.Pause();
+        // SetStage(Intro) already starts Intro Music; keep it playing with the film.
+        if (chapterAudio) chapterAudio.StopVoice();
+        openingScreen = Chapter2OpeningScreen.Build(ui, SkipIntro, openingTitle, openingSubtitle);
+        openingScreen.Configure(player.IsVR, player.view);
+        // Decoder preparation overlaps the title card, avoiding an empty loading screen.
         var clip = openingFilm;
+        float prepareBegan = Time.realtimeSinceStartup;
         if (clip)
         {
             video = gameObject.AddComponent<VideoPlayer>(); video.playOnAwake = false; video.isLooping = false; video.clip = clip;
-            if (clip.audioTrackCount > 0) { video.audioOutputMode = VideoAudioOutputMode.AudioSource; video.controlledAudioTrackCount = 1; video.SetTargetAudioSource(0, effects); }
-            else video.audioOutputMode = VideoAudioOutputMode.None;
-            video.renderMode = VideoRenderMode.RenderTexture; videoTexture = new RenderTexture(1280, 720, 0); videoTexture.Create(); video.targetTexture = videoTexture;
-            ui.videoImage.texture = videoTexture; ui.videoImage.gameObject.SetActive(true);
-            video.errorReceived += VideoError; video.loopPointReached += VideoEnd;
-            video.Prepare(); float began = Time.realtimeSinceStartup;
-            while (!video.isPrepared && !videoError && Time.realtimeSinceStartup - began < videoPrepareTimeout && !skip) yield return null;
-            if (video.isPrepared && !skip && !videoError)
+            video.waitForFirstFrame = true; video.skipOnDrop = true;
+            if (clip.audioTrackCount > 0)
             {
-                video.Play(); VideoPlayed = true;
-                // Start and finish watchdogs cover decoder failures without trapping the player.
-                float deadline = Time.realtimeSinceStartup + (float)clip.length + 8;
-                while (!videoEnded && !videoError && !skip && Time.realtimeSinceStartup < deadline) yield return null;
-                VideoFinished = videoEnded;
+                openingSound = gameObject.AddComponent<AudioSource>(); openingSound.playOnAwake = false; openingSound.loop = false;
+                openingSound.spatialBlend = 0; openingSound.volume = 0;
+                if (effects) openingSound.outputAudioMixerGroup = effects.outputAudioMixerGroup;
+                video.audioOutputMode = VideoAudioOutputMode.AudioSource; video.controlledAudioTrackCount = 1;
+                video.EnableAudioTrack(0, true); video.SetTargetAudioSource(0, openingSound);
             }
-            video.Stop(); ui.videoImage.gameObject.SetActive(false);
+            else video.audioOutputMode = VideoAudioOutputMode.None;
+            int width = Mathf.Clamp((int)clip.width, 16, 1920);
+            int height = Mathf.Clamp(Mathf.RoundToInt(width * (float)clip.height / Mathf.Max(1, (float)clip.width)), 16, 1920);
+            videoTexture = new RenderTexture(width, height, 0); videoTexture.Create();
+            var previous = RenderTexture.active; RenderTexture.active = videoTexture; GL.Clear(true, true, Color.black); RenderTexture.active = previous;
+            video.renderMode = VideoRenderMode.RenderTexture; video.targetTexture = videoTexture;
+            openingScreen.Film.texture = videoTexture;
+            float pixelAspect = clip.pixelAspectRatioDenominator > 0 ? (float)clip.pixelAspectRatioNumerator / clip.pixelAspectRatioDenominator : 1;
+            openingScreen.SetAspect((float)clip.width / Mathf.Max(1, (float)clip.height) * pixelAspect);
+            video.errorReceived += VideoError; video.loopPointReached += VideoEnd; video.Prepare();
         }
+        yield return OpeningTitleFade(0, 1);
+        for (float t = 0; t < openingTitleSeconds && !skip; t += Time.unscaledDeltaTime) yield return null;
+        yield return OpeningTitleFade(1, 0);
+        if (clip && !skip)
+        {
+            openingScreen.Status.text = "影片準備中…";
+            while (!video.isPrepared && !videoError && !skip && Time.realtimeSinceStartup - prepareBegan < Mathf.Max(1, videoPrepareTimeout)) yield return null;
+            openingScreen.Status.text = "";
+            if (video.isPrepared && !videoError && !skip)
+            {
+                openingScreen.Cover.color = Color.black;
+                openingScreen.Film.gameObject.SetActive(true); video.Play();
+                float firstFrameDeadline = Time.realtimeSinceStartup + 8;
+                while (video.frame < 0 && !videoEnded && !videoError && !skip && Time.realtimeSinceStartup < firstFrameDeadline) yield return null;
+                if (video.frame >= 0 && !videoError && !skip)
+                {
+                    VideoPlayed = true;
+                    yield return OpeningCoverFade(1, 0);
+                    float deadline = Time.realtimeSinceStartup + Mathf.Max(1, (float)clip.length) + 8;
+                    while (!videoEnded && !videoError && !skip && Time.realtimeSinceStartup < deadline) yield return null;
+                    VideoFinished = videoEnded;
+                    yield return OpeningCoverFade(0, 1);
+                }
+            }
+        }
+        CloseOpeningScreen(true);
+        // Existing narrated captions remain available, including the decoder fallback.
         if ((narrateAfterOpeningFilm || !VideoPlayed || videoError || !videoEnded) && !skip)
         {
+            ui.hint.text = "E／空白鍵／右手扳機  略過片頭";
+            yield return Fade(0, .7f);
             for (int i = 0; i < introLines.Length && !skip; i++)
             {
                 ui.Line("新規定", introLines[i]);
@@ -283,8 +334,42 @@ public sealed partial class Chapter2Controller : MonoBehaviour
                 for (float t = 0; t < hold && !skip; t += Time.unscaledDeltaTime) yield return null;
                 if (chapterAudio) chapterAudio.StopVoice();
             }
+            yield return Fade(1, .6f);
         }
         ui.Line("", "");
+    }
+    IEnumerator OpeningTitleFade(float from, float to)
+    {
+        for (float t = 0; t < 1 && !skip; t += Time.unscaledDeltaTime / Mathf.Max(.05f, openingFadeSeconds))
+        { if (!openingScreen) yield break; openingScreen.Title.alpha = Mathf.Lerp(from, to, Mathf.SmoothStep(0, 1, t)); yield return null; }
+        if (openingScreen) openingScreen.Title.alpha = to;
+    }
+    IEnumerator OpeningCoverFade(float from, float to)
+    {
+        for (float t = 0; t < 1; t += Time.unscaledDeltaTime / Mathf.Max(.05f, openingFadeSeconds))
+        {
+            if (!openingScreen) yield break;
+            float a = Mathf.Lerp(from, to, Mathf.SmoothStep(0, 1, t)); openingScreen.Cover.color = new Color(0, 0, 0, a);
+            if (openingSound) openingSound.volume = openingFilmVolume * (1 - a);
+            if (skip && to == 0) break;
+            yield return null;
+        }
+        if (openingScreen) openingScreen.Cover.color = new Color(0, 0, 0, to);
+    }
+    void CloseOpeningScreen(bool resume)
+    {
+        bool hadScreen = openingScreen;
+        if (video) { video.errorReceived -= VideoError; video.loopPointReached -= VideoEnd; video.Stop(); Destroy(video); video = null; }
+        if (openingSound) { openingSound.Stop(); Destroy(openingSound); openingSound = null; }
+        if (openingScreen) { openingScreen.gameObject.SetActive(false); Destroy(openingScreen.gameObject); openingScreen = null; }
+        if (videoTexture) { videoTexture.Release(); Destroy(videoTexture); videoTexture = null; }
+        if (hadScreen && ui) { ui.fade.color = Color.black; ui.canvas.enabled = openingHudEnabled; }
+        if (resume)
+        {
+            if (openingPausedAmbience && ambience) ambience.UnPause();
+            if (chapterAudio) chapterAudio.MusicForStage(CurrentStage, TreeDecision, MeetingDecision);
+        }
+        openingPausedAmbience = false;
     }
     void VideoError(VideoPlayer source, string message) { videoError = true; Debug.LogWarning("[Chapter2] Opening film unavailable; using story captions. " + message); }
     void VideoEnd(VideoPlayer source) { videoEnded = true; }
@@ -322,8 +407,8 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         rifle.target = workers[0];
         for (float t = 0; t < 1; t += Time.deltaTime / 1.3f) { rifle.aim = Mathf.SmoothStep(0, 1, t); yield return null; }
         rifle.aim = 1;
-        yield return Say(officer, "日本警察", "退開！誰敢違抗命令？", 4,workers[0]);
-        yield return Say(workers[0], "族人", "這是祖靈守護的地方……我們不能退。 ", 1.2f,officer);
+        yield return Say(officer, "日本警察", "退開！誰敢違抗命令？", 4, workers[0]);
+        yield return Say(workers[0], "族人", "這是祖靈守護的地方……我們不能退。 ", 1.2f, officer);
         rifle.Fire();
         if (threatAudio) effects.PlayOneShot(threatAudio, .45f);
         workers[0].BeginFall(officer.transform.position);
@@ -409,13 +494,13 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     {
         if (actor && CurrentStage >= Stage.Meeting && nightGroup.activeInHierarchy)
         { ui.Line("", ""); yield return FrameCouncilSpeaker(actor); }
-        string display=actor&&(name=="族人"||name=="日本警察")?actor.DisplayName:name;
+        string display = actor && (name == "族人" || name == "日本警察") ? actor.DisplayName : name;
         ui.Line(display, words);
         if (actor)
         {
             actor.speaking = true;
-            if(listener){actor.Face(listener.transform.position);listener.Face(actor.transform.position);}
-            if (actor.Rig) actor.Rig.conversationTarget = listener ? (listener.Rig.Head?listener.Rig.Head:listener.transform) : player.view.transform;
+            if (listener) { actor.Face(listener.transform.position); listener.Face(actor.transform.position); }
+            if (actor.Rig) actor.Rig.conversationTarget = listener ? (listener.Rig.Head ? listener.Rig.Head : listener.transform) : player.view.transform;
         }
         yield return WaitChapterVoice(BeginChapterVoice(actor, name, words, seconds > 0 ? seconds : lineSeconds));
         if (actor) actor.speaking = false;
@@ -431,11 +516,11 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         else if (actor && actor == watan) role = Chapter2AudioManager.Role.Watan;
         else if (speaker == "玩家") role = Chapter2AudioManager.Role.Player;
         else if (speaker == "巴萬與眾戰士") role = Chapter2AudioManager.Role.Warriors;
-        float seconds=chapterAudio ? chapterAudio.BeginLine(role, words, fallback) : fallback;
-        if(actor&&!actor.police)actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(words,seconds,chapterAudio);
-        else if(role==Chapter2AudioManager.Role.Warriors)
-            foreach(var participant in councilCast)
-                if(participant&&participant.speaking)participant.GetComponent<Chapter2SpeechFace>()?.BeginLine(words,seconds,chapterAudio);
+        float seconds = chapterAudio ? chapterAudio.BeginLine(role, words, fallback) : fallback;
+        if (actor && !actor.police) actor.GetComponent<Chapter2SpeechFace>()?.BeginLine(words, seconds, chapterAudio);
+        else if (role == Chapter2AudioManager.Role.Warriors)
+            foreach (var participant in councilCast)
+                if (participant && participant.speaking) participant.GetComponent<Chapter2SpeechFace>()?.BeginLine(words, seconds, chapterAudio);
         return seconds;
     }
     IEnumerator WaitChapterVoice(float seconds)
@@ -465,6 +550,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     }
     void OnDisable()
     {
+        CloseOpeningScreen(false);
         if (exploration) exploration.CancelExploration();
         if (chapterAudio) chapterAudio.StopAllAudio();
         if (flow != null) StopCoroutine(flow);
