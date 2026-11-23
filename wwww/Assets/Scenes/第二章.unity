@@ -16483,7 +16483,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1596110020}
   chapterAudio: {fileID: 0}
-  narrateAfterOpeningFilm: 1
+  narrateAfterOpeningFilm: 0
   ui: {fileID: 1288949345}
   sacredTree: {fileID: 1879062536}
   treeApproach: {fileID: 1172475255}
@@ -16526,8 +16526,13 @@ MonoBehaviour:
   exploration: {fileID: 206475610}
   forestEscort: {fileID: 206475611}
   trunkSurface: {fileID: 2052909205}
-  openingFilm: {fileID: 32900000, guid: 56e7f19c4776036419614d351fa7ec1c, type: 3}
+  openingFilm: {fileID: 32900000, guid: 8fd30dc812896964c940f6e87e50b7b8, type: 3}
   videoPrepareTimeout: 12
+  openingTitle: "\u65B0\u898F\u5B9A\u8207\u79D8\u5BC6\u6703\u8B70"
+  openingSubtitle: "\u9727\u793E\u4E8B\u4EF6 \xB7 \u7B2C\u4E8C\u7AE0"
+  openingTitleSeconds: 2.2
+  openingFadeSeconds: 0.65
+  openingFilmVolume: 0.85
   stopEditorAfterEnding: 1
   saveResult: 1
   treeArrivalDistance: 1.5

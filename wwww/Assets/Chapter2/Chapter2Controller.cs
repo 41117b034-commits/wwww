@@ -39,6 +39,14 @@ public sealed partial class Chapter2Controller : MonoBehaviour
     Chapter2OpeningScreen openingScreen;
     AudioSource openingSound;
     bool openingHudEnabled, openingPausedAmbience;
+    [Tooltip("片頭期間暫停場景時間，主相機只繪製 UI 層；結束、略過與停用時自動恢復。")]
+    public bool reduceSceneLoadDuringOpening = true;
+    bool openingPerformanceActive;
+    float openingSavedTimeScale;
+    Camera openingView;
+    int openingSavedMask;
+    CameraClearFlags openingSavedClearFlags;
+    Color openingSavedBackground;
     // Kept for older editor probes; completed chapters now continue into Chapter 3.
     [HideInInspector] public bool stopEditorAfterEnding = true;
     public bool saveResult = true;
@@ -270,6 +278,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         if (chapterAudio) chapterAudio.StopVoice();
         openingScreen = Chapter2OpeningScreen.Build(ui, SkipIntro, openingTitle, openingSubtitle);
         openingScreen.Configure(player.IsVR, player.view);
+        BeginOpeningPerformanceMode();
         // Decoder preparation overlaps the title card, avoiding an empty loading screen.
         var clip = openingFilm;
         float prepareBegan = Time.realtimeSinceStartup;
@@ -277,6 +286,7 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         {
             video = gameObject.AddComponent<VideoPlayer>(); video.playOnAwake = false; video.isLooping = false; video.clip = clip;
             video.waitForFirstFrame = true; video.skipOnDrop = true;
+            video.timeUpdateMode = VideoTimeUpdateMode.UnscaledGameTime;
             if (clip.audioTrackCount > 0)
             {
                 openingSound = gameObject.AddComponent<AudioSource>(); openingSound.playOnAwake = false; openingSound.loop = false;
@@ -356,8 +366,37 @@ public sealed partial class Chapter2Controller : MonoBehaviour
         }
         if (openingScreen) openingScreen.Cover.color = new Color(0, 0, 0, to);
     }
+    void BeginOpeningPerformanceMode()
+    {
+        if (!reduceSceneLoadDuringOpening || openingPerformanceActive) return;
+        openingPerformanceActive = true;
+        openingSavedTimeScale = Time.timeScale; Time.timeScale = 0;
+        openingView = player.view;
+        if (openingView)
+        {
+            openingSavedMask = openingView.cullingMask;
+            openingSavedClearFlags = openingView.clearFlags;
+            openingSavedBackground = openingView.backgroundColor;
+            openingView.cullingMask = 1 << 5; // Built-in UI layer used by the opening screen.
+            openingView.clearFlags = CameraClearFlags.SolidColor;
+            openingView.backgroundColor = Color.black;
+        }
+    }
+    void EndOpeningPerformanceMode()
+    {
+        if (!openingPerformanceActive) return;
+        openingPerformanceActive = false; Time.timeScale = openingSavedTimeScale;
+        if (openingView)
+        {
+            openingView.cullingMask = openingSavedMask;
+            openingView.clearFlags = openingSavedClearFlags;
+            openingView.backgroundColor = openingSavedBackground;
+        }
+        openingView = null;
+    }
     void CloseOpeningScreen(bool resume)
     {
+        EndOpeningPerformanceMode();
         bool hadScreen = openingScreen;
         if (video) { video.errorReceived -= VideoError; video.loopPointReached -= VideoEnd; video.Stop(); Destroy(video); video = null; }
         if (openingSound) { openingSound.Stop(); Destroy(openingSound); openingSound = null; }
