@@ -10,10 +10,13 @@ public sealed class Chapter2Actor : MonoBehaviour
     public bool isChild;
     public string DisplayName => string.IsNullOrWhiteSpace(characterName) ? name : characterName;
     public bool police;
+    [Header("持槍交談")]
+    [Range(0, 1)] public float rifleConversationGesture = .2f;
+    Chapter2Rifle carriedRifle;
     public bool seated;
     public bool fallen;
     public bool speaking;
-    [Min(.1f)] public float seatedHipHeight=.54f;
+    [Min(.1f)] public float seatedHipHeight = .54f;
     public Vector3 facing = Vector3.back;
     // Only the roaming guide follows terrain height; authored story actors keep zero.
     public float GroundHeight { get; set; }
@@ -21,22 +24,22 @@ public sealed class Chapter2Actor : MonoBehaviour
     public float FallProgress { get; private set; }
     public float FallenLowestPoint { get; private set; }
     public float SeatWeight { get; private set; }
-    float standStarted=-1,standDuration;
-    Vector3 standOrigin,standForward;
-    float sitStarted=-1,sitDuration;
-    Vector3 seatOrigin,sitOrigin;
+    float standStarted = -1, standDuration;
+    Vector3 standOrigin, standForward;
+    float sitStarted = -1, sitDuration;
+    Vector3 seatOrigin, sitOrigin;
     float fallStarted;
     Vector3 fallDirection;
     SkinnedMeshRenderer[] skins;
     Mesh fallMesh;
-    readonly System.Collections.Generic.List<Vector3> fallVertices=new System.Collections.Generic.List<Vector3>();
+    readonly System.Collections.Generic.List<Vector3> fallVertices = new System.Collections.Generic.List<Vector3>();
     float finalLift;
     bool fallSettled;
     float fallRootY;
     int fallGeometry;
     Vector3 previous;
-    Transform leftThigh,rightThigh,leftKnee,rightKnee,leftFoot,rightFoot;
-    Transform fallLeftArm,fallRightArm,fallLeftElbow,fallRightElbow;
+    Transform leftThigh, rightThigh, leftKnee, rightKnee, leftFoot, rightFoot;
+    Transform fallLeftArm, fallRightArm, fallLeftElbow, fallRightElbow;
     Transform seatedRoot;
     void Start()
     {
@@ -45,135 +48,141 @@ public sealed class Chapter2Actor : MonoBehaviour
         Rig.Initialize(animator, police);
         Rig.batonVisible = false;
         Rig.Face(facing); Rig.Ground(0);
-        leftThigh=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftUpperLeg,"L_Thigh","LeftUpLeg");
-        rightThigh=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightUpperLeg,"R_Thigh","RightUpLeg");
-        leftKnee=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftLowerLeg,"L_Calf","LeftLeg");
-        rightKnee=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerLeg,"R_Calf","RightLeg");
-        leftFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftFoot,"L_Foot","LeftFoot");
-        rightFoot=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightFoot,"R_Foot","RightFoot");
-        fallLeftArm=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftUpperArm,"L_Upperarm","LeftArm");
-        fallRightArm=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightUpperArm,"R_Upperarm","RightArm");
-        fallLeftElbow=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.LeftLowerArm,"L_Forearm","LeftForeArm");
-        fallRightElbow=Chapter1WeddingRigBones.Resolve(animator,HumanBodyBones.RightLowerArm,"R_Forearm","RightForeArm");
+        leftThigh = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftUpperLeg, "L_Thigh", "LeftUpLeg");
+        rightThigh = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.RightUpperLeg, "R_Thigh", "RightUpLeg");
+        leftKnee = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftLowerLeg, "L_Calf", "LeftLeg");
+        rightKnee = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.RightLowerLeg, "R_Calf", "RightLeg");
+        leftFoot = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftFoot, "L_Foot", "LeftFoot");
+        rightFoot = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.RightFoot, "R_Foot", "RightFoot");
+        fallLeftArm = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftUpperArm, "L_Upperarm", "LeftArm");
+        fallRightArm = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.RightUpperArm, "R_Upperarm", "RightArm");
+        fallLeftElbow = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.LeftLowerArm, "L_Forearm", "LeftForeArm");
+        fallRightElbow = Chapter1WeddingRigBones.Resolve(animator, HumanBodyBones.RightLowerArm, "R_Forearm", "RightForeArm");
         // Some imported humanoids map Hips to Pelvis, while Waist is its sibling
         // under Hip. Lower their shared bone so the torso follows the seated legs.
-        seatedRoot=Rig.Hips;
-        while(seatedRoot && Rig.Head && !Rig.Head.IsChildOf(seatedRoot) &&
-              seatedRoot.parent && seatedRoot.parent!=transform && seatedRoot.parent!=animator.transform)
-            seatedRoot=seatedRoot.parent;
+        seatedRoot = Rig.Hips;
+        while (seatedRoot && Rig.Head && !Rig.Head.IsChildOf(seatedRoot) &&
+              seatedRoot.parent && seatedRoot.parent != transform && seatedRoot.parent != animator.transform)
+            seatedRoot = seatedRoot.parent;
+        carriedRifle = GetComponent<Chapter2Rifle>();
         previous = transform.position;
-        seatOrigin=transform.position;
-        skins=GetComponentsInChildren<SkinnedMeshRenderer>();
+        seatOrigin = transform.position;
+        skins = GetComponentsInChildren<SkinnedMeshRenderer>();
     }
     void Update()
     {
         if (!Rig) return;
-        if(standStarted>=0)
+        if (standStarted >= 0)
         {
-            float progress=Mathf.Clamp01((Time.time-standStarted)/standDuration);
-            transform.position=standOrigin+standForward*((isChild?.30f:.46f)*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,.95f,progress)));
+            float progress = Mathf.Clamp01((Time.time - standStarted) / standDuration);
+            transform.position = standOrigin + standForward * ((isChild ? .30f : .46f) * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.1f, .95f, progress)));
         }
-        if(sitStarted>=0)transform.position=Vector3.Lerp(sitOrigin,seatOrigin,Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-sitStarted)/sitDuration)));
-        Vector3 delta = Vector3.ProjectOnPlane(transform.position-previous,Vector3.up);
-        Rig.walking = standStarted<0 && sitStarted<0 && !fallen && delta.magnitude > 0.0005f;
+        if (sitStarted >= 0) transform.position = Vector3.Lerp(sitOrigin, seatOrigin, Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.time - sitStarted) / sitDuration)));
+        Vector3 delta = Vector3.ProjectOnPlane(transform.position - previous, Vector3.up);
+        Rig.walking = standStarted < 0 && sitStarted < 0 && !fallen && delta.magnitude > 0.0005f;
         if (Rig.walking) Rig.Face(delta);
-        Rig.speakingWeight = speaking && !fallen ? 0.65f : 0;
+        float gesture = .65f;
+        // Preserve normal gestures when aiming, lowering the rifle or not carrying one.
+        if (police && carriedRifle && carriedRifle.isActiveAndEnabled && carriedRifle.weapon &&
+           carriedRifle.naturalCarry && carriedRifle.aim < .05f && carriedRifle.lowered < .05f)
+            gesture = Mathf.Clamp01(rifleConversationGesture);
+        Rig.speakingWeight = speaking && !fallen ? gesture : 0;
         if (!fallen) Rig.Ground(GroundHeight);
         previous = transform.position;
     }
     void LateUpdate()
     {
         if (!Rig || !Rig.Hips) return;
-        SeatWeight=seated?1:0;
-        if(standStarted>=0)
+        SeatWeight = seated ? 1 : 0;
+        if (standStarted >= 0)
         {
-            SeatWeight=1-Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-standStarted)/standDuration));
-            if(SeatWeight<=0){seated=false;standStarted=-1;}
+            SeatWeight = 1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.time - standStarted) / standDuration));
+            if (SeatWeight <= 0) { seated = false; standStarted = -1; }
         }
-        if(sitStarted>=0){SeatWeight=Mathf.SmoothStep(0,1,Mathf.Clamp01((Time.time-sitStarted)/sitDuration));if(SeatWeight>=1){seated=true;sitStarted=-1;}}
-        if (SeatWeight>0 && leftFoot && rightFoot)
+        if (sitStarted >= 0) { SeatWeight = Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.time - sitStarted) / sitDuration)); if (SeatWeight >= 1) { seated = true; sitStarted = -1; } }
+        if (SeatWeight > 0 && leftFoot && rightFoot)
         {
-            float footReach=.2f*seatedHipHeight/.54f;
-            Vector3 l=leftFoot.position+Rig.Forward*(footReach*SeatWeight),r=rightFoot.position+Rig.Forward*(footReach*SeatWeight);
-            Quaternion leftSole=leftFoot.rotation,rightSole=rightFoot.rotation;
+            float footReach = .2f * seatedHipHeight / .54f;
+            Vector3 l = leftFoot.position + Rig.Forward * (footReach * SeatWeight), r = rightFoot.position + Rig.Forward * (footReach * SeatWeight);
+            Quaternion leftSole = leftFoot.rotation, rightSole = rightFoot.rotation;
             // Council stumps are 0.44 m high. Different donor rigs have different
             // pelvis heights; keep the seated pelvis above the seat surface.
-            float seatDrop=Mathf.Max(0,Rig.Hips.position.y-seatedHipHeight);
-            (seatedRoot?seatedRoot:Rig.Hips).position += Vector3.down * (seatDrop*SeatWeight);
-            Chapter1IncidentRig.Solve(leftThigh,leftKnee,leftFoot,l,Rig.Forward);
-            Chapter1IncidentRig.Solve(rightThigh,rightKnee,rightFoot,r,Rig.Forward);
+            float seatDrop = Mathf.Max(0, Rig.Hips.position.y - seatedHipHeight);
+            (seatedRoot ? seatedRoot : Rig.Hips).position += Vector3.down * (seatDrop * SeatWeight);
+            Chapter1IncidentRig.Solve(leftThigh, leftKnee, leftFoot, l, Rig.Forward);
+            Chapter1IncidentRig.Solve(rightThigh, rightKnee, rightFoot, r, Rig.Forward);
             // Leg IK rotates the calf; the planted soles must retain their grounded orientation.
-            leftFoot.rotation=leftSole;rightFoot.rotation=rightSole;
+            leftFoot.rotation = leftSole; rightFoot.rotation = rightSole;
         }
         if (fallen) PoseFall();
-        if (speaking && Rig.Head) Rig.Head.rotation = Quaternion.AngleAxis(Mathf.Sin(Time.time*2.1f)*3, transform.right)*Rig.Head.rotation;
+        if (speaking && Rig.Head) Rig.Head.rotation = Quaternion.AngleAxis(Mathf.Sin(Time.time * 2.1f) * 3, transform.right) * Rig.Head.rotation;
     }
-    public void Face(Vector3 point) { facing = point-transform.position; if(Rig) Rig.Face(facing); }
-    public void StandFromSeat(float delay=0,float duration=1.25f)
+    public void Face(Vector3 point) { facing = point - transform.position; if (Rig) Rig.Face(facing); }
+    public void StandFromSeat(float delay = 0, float duration = 1.25f)
     {
-        if(!seated)return;
-        sitStarted=-1;seatOrigin=transform.position;
-        standStarted=Time.time+delay;standDuration=Mathf.Max(.1f,duration);
-        standOrigin=transform.position;standForward=Rig.Forward;
+        if (!seated) return;
+        sitStarted = -1; seatOrigin = transform.position;
+        standStarted = Time.time + delay; standDuration = Mathf.Max(.1f, duration);
+        standOrigin = transform.position; standForward = Rig.Forward;
     }
-    public void SitBack(float duration=1.1f)
+    public void SitBack(float duration = 1.1f)
     {
-        standStarted=-1;sitOrigin=transform.position;sitStarted=Time.time;sitDuration=Mathf.Max(.1f,duration);
-        seated=false;
+        standStarted = -1; sitOrigin = transform.position; sitStarted = Time.time; sitDuration = Mathf.Max(.1f, duration);
+        seated = false;
     }
     public void BeginFall(Vector3 source)
     {
-        if(fallen)return;
-        fallDirection=Vector3.ProjectOnPlane(transform.position-source,Vector3.up).normalized;
-        fallen=true;speaking=false;fallStarted=Time.time;
-        fallRootY=transform.position.y;
-        Rig.pointTarget=null;Rig.conversationTarget=null;
-        fallMesh=new Mesh();
+        if (fallen) return;
+        fallDirection = Vector3.ProjectOnPlane(transform.position - source, Vector3.up).normalized;
+        fallen = true; speaking = false; fallStarted = Time.time;
+        fallRootY = transform.position.y;
+        Rig.pointTarget = null; Rig.conversationTarget = null;
+        fallMesh = new Mesh();
     }
     void PoseFall()
     {
-        var rootPosition=transform.position;rootPosition.y=fallRootY;transform.position=rootPosition;
-        FallProgress=Mathf.Clamp01((Time.time-fallStarted)/1.9f);
-        float drop=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.1f,1,FallProgress));
-        Vector3 axis=Vector3.Cross(Vector3.up,fallDirection);
-        float flinch=Mathf.Sin(Mathf.Clamp01(FallProgress/.24f)*Mathf.PI)*10;
-        Rig.Hips.position+=fallDirection*(.48f*drop)+Vector3.down*(.72f*drop);
-        Rig.Hips.rotation=Quaternion.AngleAxis(90*drop+flinch,axis)*Rig.Hips.rotation;
+        var rootPosition = transform.position; rootPosition.y = fallRootY; transform.position = rootPosition;
+        FallProgress = Mathf.Clamp01((Time.time - fallStarted) / 1.9f);
+        float drop = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.1f, 1, FallProgress));
+        Vector3 axis = Vector3.Cross(Vector3.up, fallDirection);
+        float flinch = Mathf.Sin(Mathf.Clamp01(FallProgress / .24f) * Mathf.PI) * 10;
+        Rig.Hips.position += fallDirection * (.48f * drop) + Vector3.down * (.72f * drop);
+        Rig.Hips.rotation = Quaternion.AngleAxis(90 * drop + flinch, axis) * Rig.Hips.rotation;
         // Bend knees during the collapse, then keep the whole skin above the floor.
-        float bend=Mathf.Sin(drop*Mathf.PI);
-        if(leftKnee)leftKnee.rotation=Quaternion.AngleAxis(-20*bend,axis)*leftKnee.rotation;
-        if(rightKnee)rightKnee.rotation=Quaternion.AngleAxis(-25*bend,axis)*rightKnee.rotation;
+        float bend = Mathf.Sin(drop * Mathf.PI);
+        if (leftKnee) leftKnee.rotation = Quaternion.AngleAxis(-20 * bend, axis) * leftKnee.rotation;
+        if (rightKnee) rightKnee.rotation = Quaternion.AngleAxis(-25 * bend, axis) * rightKnee.rotation;
         // Release the standing guard pose. An elbow left underneath the torso
         // otherwise props the entire rigid body up like a suspended plank.
-        Vector3 side=Vector3.Cross(Vector3.up,fallDirection);
-        RelaxFallenArm(fallLeftArm,fallLeftElbow,Rig.LeftHand,-side,drop);
-        RelaxFallenArm(fallRightArm,fallRightElbow,Rig.RightHand,side,drop);
-        int geometry=0;foreach(var skin in skins)if(skin&&skin.sharedMesh)geometry=unchecked(geometry*31+skin.sharedMesh.GetInstanceID());
-        if(fallSettled&&geometry==fallGeometry){transform.position+=Vector3.up*finalLift;return;}
-        if(!fallMesh)fallMesh=new Mesh();
-        float low=float.PositiveInfinity;
-        foreach(var skin in skins)
+        Vector3 side = Vector3.Cross(Vector3.up, fallDirection);
+        RelaxFallenArm(fallLeftArm, fallLeftElbow, Rig.LeftHand, -side, drop);
+        RelaxFallenArm(fallRightArm, fallRightElbow, Rig.RightHand, side, drop);
+        int geometry = 0; foreach (var skin in skins) if (skin && skin.sharedMesh) geometry = unchecked(geometry * 31 + skin.sharedMesh.GetInstanceID());
+        if (fallSettled && geometry == fallGeometry) { transform.position += Vector3.up * finalLift; return; }
+        if (!fallMesh) fallMesh = new Mesh();
+        float low = float.PositiveInfinity;
+        foreach (var skin in skins)
         {
             skin.BakeMesh(fallMesh);
             fallMesh.GetVertices(fallVertices);
-            foreach(var vertex in fallVertices)low=Mathf.Min(low,skin.transform.TransformPoint(vertex).y);
+            foreach (var vertex in fallVertices) low = Mathf.Min(low, skin.transform.TransformPoint(vertex).y);
         }
-        if(float.IsPositiveInfinity(low))return;
+        if (float.IsPositiveInfinity(low)) return;
         // Settle onto the floor in either direction. Up-only correction left
         // horizontal bodies hanging above it when their pose was too high.
-        float correction=GroundHeight+.025f-low;
-        float lift=correction>=0?correction:correction*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.7f,1,FallProgress));
+        float correction = GroundHeight + .025f - low;
+        float lift = correction >= 0 ? correction : correction * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.7f, 1, FallProgress));
         // Translate the entire imported skeleton, including vertices weighted
         // to siblings of Hips. Moving Hips alone only partly moved those skins.
-        transform.position+=Vector3.up*lift;
-        FallenLowestPoint=low+lift;
-        if(FallProgress>=1){finalLift=lift;fallSettled=true;fallGeometry=geometry;}
+        transform.position += Vector3.up * lift;
+        FallenLowestPoint = low + lift;
+        if (FallProgress >= 1) { finalLift = lift; fallSettled = true; fallGeometry = geometry; }
     }
-    void RelaxFallenArm(Transform upper,Transform elbow,Transform hand,Vector3 side,float weight)
+    void RelaxFallenArm(Transform upper, Transform elbow, Transform hand, Vector3 side, float weight)
     {
-        if(!upper||!elbow||!hand)return;
-        Vector3 target=Rig.Hips.position+(fallDirection*.08f+side*.22f+Vector3.up*.04f)*Rig.Height;
-        Chapter1IncidentRig.Solve(upper,elbow,hand,Vector3.Lerp(hand.position,target,weight),Vector3.up);
+        if (!upper || !elbow || !hand) return;
+        Vector3 target = Rig.Hips.position + (fallDirection * .08f + side * .22f + Vector3.up * .04f) * Rig.Height;
+        Chapter1IncidentRig.Solve(upper, elbow, hand, Vector3.Lerp(hand.position, target, weight), Vector3.up);
     }
-    void OnDestroy(){if(fallMesh)Destroy(fallMesh);}
+    void OnDestroy() { if (fallMesh) Destroy(fallMesh); }
 }

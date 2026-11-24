@@ -10112,6 +10112,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u9732\u6BD4\xB7\u5DF4\u5E72\uFF0C\u719F\u6089\u6797\u9593\u690D\u7269\u8207\u90E8\u843D\u751F\u6D3B\u7684\u8CFD\u5FB7\u514B\u5973\u5B50\u3002\u4F60\u5728\u6797\u9053\u65C1\u6D3B\u52D5\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\uFF0C\u9858\u610F\u8207\u73A9\u5BB6\u4EA4\u8AC7\u3002\u4F60\u8207\u591C\u9593\u5287\u60C5\u7684\u540C\u540D\u4EBA\u7269\u662F\u540C\u4E00\u4EBA\uFF1B\u76EE\u524D\u662F\u65E9\u6668\uFF0C\u591C\u9593\u6703\u8B70\u5C1A\u672A\u767C\u751F\uFF0C\u4E0D\u53EF\u8AAA\u5DF2\u958B\u904E\u6703\u6216\u900F\u9732\u4E4B\u5F8C\u7684\u9078\u64C7\u3001\u6B7B\u4EA1\u548C\u7D50\u5C40\u3002"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -46680,6 +46681,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u90FD\u6BD4\xB7\u963F\u5A01\uFF0C\u8DDF\u8457\u5BB6\u4EBA\u5728\u6797\u908A\u6D3B\u52D5\u7684\u8CFD\u5FB7\u514B\u5C0F\u5B69\u3002\u597D\u5947\u3001\u8AAA\u8A71\u7C21\u55AE\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\u548C\u52D5\u690D\u7269\uFF0C\u4E0D\u61C2\u8ECD\u4E8B\u653F\u6CBB\u3002\u4F60\u8207\u591C\u9593\u5287\u60C5\u7684\u540C\u540D\u4EBA\u7269\u662F\u540C\u4E00\u4EBA\uFF1B\u76EE\u524D\u662F\u65E9\u6668\uFF0C\u591C\u9593\u6703\u8B70\u5C1A\u672A\u767C\u751F\uFF0C\u4E0D\u53EF\u8AAA\u5DF2\u958B\u904E\u6703\u6216\u900F\u9732\u4E4B\u5F8C\u7684\u9078\u64C7\u3001\u6B7B\u4EA1\u548C\u7D50\u5C40\u3002"
   isChild: 1
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -52858,6 +52860,7 @@ MonoBehaviour:
   dialogueRole: "\u83AB\u90A3\xB7\u9B6F\u9053\u4E4B\u5B50"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -54555,6 +54558,7 @@ MonoBehaviour:
   dialogueRole: "\u8CFD\u5FB7\u514B\u793E\u982D\u76EE"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -61520,6 +61524,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u73FE\u5834\u7763\u5DE5\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u8A9E\u6C23\u7C21\u77ED\u56B4\u8085\uFF0C\u8981\u6C42\u65CF\u4EBA\u670D\u5F9E\u4F10\u6728\u547D\u4EE4\uFF0C\u4F46\u4E0D\u900F\u9732\u672A\u767C\u751F\u7684\u5287\u60C5\u3002"
   isChild: 0
   police: 1
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -61567,6 +61572,14 @@ MonoBehaviour:
   aim: 0
   lowered: 0
   aimTarget: {fileID: 0}
+  naturalCarry: 1
+  carryStockOffset: {x: 0.14, y: 0.08, z: 0.02}
+  carryDirection: {x: 0, y: 0.15, z: 1}
+  rightGripOffset: {x: 0, y: -0.045, z: 0.24}
+  leftGripOffset: {x: 0, y: -0.028, z: 0.5}
+  rightGripTarget: {fileID: 1064834308}
+  leftGripTarget: {fileID: 1234220248}
+  breathingAmount: 0.003
 --- !u!114 &735477015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63135,6 +63148,7 @@ MonoBehaviour:
   dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -66569,6 +66583,7 @@ MonoBehaviour:
   dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -94589,6 +94604,7 @@ MonoBehaviour:
   dialogueRole: "\u9577\u8001\u4EE3\u8868"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -95703,6 +95719,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1064834307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1064834308}
+  m_Layer: 0
+  m_Name: RightGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1064834308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064834307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000029802326, y: 0.015302323, z: -4.6566134e-10, w: 0.99988294}
+  m_LocalPosition: {x: -0.1675, y: 0.016, z: 0.2582}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1486269607}
+  m_LocalEulerAnglesHint: {x: 0, y: 1.754, z: 0}
 --- !u!1 &1066392120
 GameObject:
   m_ObjectHideFlags: 0
@@ -101565,6 +101612,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u8DDF\u8457\u5BB6\u4EBA\u5728\u6797\u908A\u6D3B\u52D5\u7684\u8CFD\u5FB7\u514B\u5C0F\u5B69\u3002\u597D\u5947\u3001\u8AAA\u8A71\u7C21\u55AE\uFF0C\u95DC\u5FC3\u5BB6\u4EBA\u548C\u52D5\u690D\u7269\uFF0C\u4E0D\u61C2\u8ECD\u4E8B\u653F\u6CBB\u3002"
   isChild: 1
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -107362,6 +107410,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u9054\u591A\xB7\u83AB\u90A3\uFF0C\u83AB\u90A3\xB7\u9B6F\u9053\u7684\u5152\u5B50\u3002\u4F60\u5728\u5DE8\u6728\u65C1\u8207\u540C\u4F34\u52DE\u4F5C\uFF0C\u95DC\u5FC3\u7236\u89AA\u3001\u65CF\u4EBA\u8207\u5BB6\u4EBA\uFF0C\u5C0D\u8B66\u5BDF\u5F37\u8FEB\u52DE\u52D5\u611F\u5230\u4E0D\u6EFF\uFF1B\u4E0D\u662F\u982D\u76EE\u672C\u4EBA\uFF0C\u4E5F\u4E0D\u8CA0\u8CAC\u5E36\u8DEF\u3002\u4F60\u8207\u591C\u9593\u5287\u60C5\u7684\u540C\u540D\u4EBA\u7269\u662F\u540C\u4E00\u4EBA\uFF1B\u76EE\u524D\u662F\u65E9\u6668\uFF0C\u591C\u9593\u6703\u8B70\u5C1A\u672A\u767C\u751F\uFF0C\u4E0D\u53EF\u8AAA\u5DF2\u958B\u904E\u6703\u6216\u900F\u9732\u4E4B\u5F8C\u7684\u9078\u64C7\u3001\u6B7B\u4EA1\u548C\u7D50\u5C40\u3002"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -109113,6 +109162,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1233021302}
   m_Mesh: {fileID: -6760369281798240013, guid: 8e73fb935fa09e446b5707a2c15c8d3c, type: 3}
+--- !u!1 &1234220247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1234220248}
+  m_Layer: 0
+  m_Name: LeftGrip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1234220248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234220247}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.1649, y: 0.1018, z: 0.681}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1486269607}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1234236530
 GameObject:
   m_ObjectHideFlags: 0
@@ -122645,6 +122725,7 @@ MonoBehaviour:
   dialogueRole: "\u5E74\u8F15\u6230\u58EB"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -129348,6 +129429,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u53E4\u6155\xB7\u963F\u57FA\uFF0C\u719F\u6089\u5C71\u6797\u751F\u6D3B\u7684\u8CFD\u5FB7\u514B\u5973\u5B50\u3002\u4F60\u5728\u5DE8\u6728\u9644\u8FD1\u52DE\u4F5C\uFF0C\u95DC\u5FC3\u540C\u4F34\u3001\u5BB6\u4EBA\u8207\u7CE7\u98DF\uFF0C\u8AAA\u8A71\u6EAB\u548C\u3002\u4F60\u8207\u591C\u9593\u5287\u60C5\u7684\u540C\u540D\u4EBA\u7269\u662F\u540C\u4E00\u4EBA\uFF1B\u76EE\u524D\u662F\u65E9\u6668\uFF0C\u591C\u9593\u6703\u8B70\u5C1A\u672A\u767C\u751F\uFF0C\u4E0D\u53EF\u8AAA\u5DF2\u958B\u904E\u6703\u6216\u900F\u9732\u4E4B\u5F8C\u7684\u9078\u64C7\u3001\u6B7B\u4EA1\u548C\u7D50\u5C40\u3002"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -130087,6 +130169,8 @@ Transform:
   m_Children:
   - {fileID: 2056499309}
   - {fileID: 6374416}
+  - {fileID: 1064834308}
+  - {fileID: 1234220248}
   m_Father: {fileID: 735477011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1486338729
@@ -135184,6 +135268,7 @@ MonoBehaviour:
   dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u9752\u5E74"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -139676,6 +139761,7 @@ MonoBehaviour:
   dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u9577\u8F29"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -140395,6 +140481,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u83AB\u90A3\xB7\u9B6F\u9053\uFF0C\u8CFD\u5FB7\u514B\u793E\u982D\u76EE\uFF0C\u9054\u591A\xB7\u83AB\u90A3\u7684\u7236\u89AA\u3002\u4F60\u5728\u6797\u9053\u9644\u8FD1\u95DC\u5FC3\u65CF\u4EBA\u7684\u52DE\u4F5C\u548C\u5B89\u5371\uFF0C\u8AAA\u8A71\u6C89\u7A69\u6709\u5A01\u56B4\uFF0C\u4E0D\u662F\u5E36\u8DEF\u9752\u5E74\u963F\u5A01\u3002\u4F60\u8207\u591C\u9593\u5287\u60C5\u7684\u540C\u540D\u4EBA\u7269\u662F\u540C\u4E00\u4EBA\uFF1B\u76EE\u524D\u662F\u65E9\u6668\uFF0C\u591C\u9593\u6703\u8B70\u5C1A\u672A\u767C\u751F\uFF0C\u4E0D\u53EF\u8AAA\u5DF2\u958B\u904E\u6703\u6216\u900F\u9732\u4E4B\u5F8C\u7684\u9078\u64C7\u3001\u6B7B\u4EA1\u548C\u7D50\u5C40\u3002"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -142718,6 +142805,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u5DE1\u67E5\u6797\u5730\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u56B4\u8085\u5BE1\u8A00\uFF0C\u95DC\u5FC3\u79E9\u5E8F\uFF0C\u53EA\u8AC7\u81EA\u5DF1\u77E5\u9053\u7684\u4E8B\u60C5\u3002"
   isChild: 0
   police: 1
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -145773,6 +145861,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u719F\u6089\u6797\u9053\u7684\u8CFD\u5FB7\u514B\u9752\u5E74\uFF0C\u8CA0\u8CAC\u5E36\u73A9\u5BB6\u524D\u5F80\u5DE8\u6728\u3002\u73CD\u60DC\u68EE\u6797\uFF0C\u8AAA\u8A71\u6C89\u7A69\uFF0C\u9858\u610F\u4ECB\u7D39\u773C\u524D\u74B0\u5883\u3002"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -154842,6 +154931,7 @@ MonoBehaviour:
   dialogueRole: "\u4F60\u662F\u6797\u9053\u57F7\u52E4\u7684\u65E5\u672C\u8B66\u5BDF\u3002\u8AAA\u8A71\u7C21\u77ED\uFF0C\u7559\u610F\u901A\u884C\u8207\u642C\u904B\uFF0C\u4E0D\u77E5\u9053\u4E0A\u7D1A\u672A\u544A\u77E5\u7684\u4E8B\u60C5\u3002"
   isChild: 0
   police: 1
+  rifleConversationGesture: 0.2
   seated: 0
   fallen: 0
   speaking: 0
@@ -180833,6 +180923,7 @@ MonoBehaviour:
   dialogueRole: "\u51FA\u5E2D\u5BC6\u8B70\u7684\u8CFD\u5FB7\u514B\u5973\u5B50"
   isChild: 0
   police: 0
+  rifleConversationGesture: 0.2
   seated: 1
   fallen: 0
   speaking: 0
@@ -181080,13 +181171,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2056499308}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.00000003508153, y: 0.59655493, z: -0.80257225, w: -0.00000002607625}
-  m_LocalPosition: {x: -0.17499994, y: -0.0007214555, z: 0.599713}
+  m_LocalRotation: {x: -0.7925822, y: -0.09383257, z: 0.12623729, w: 0.5891291}
+  m_LocalPosition: {x: -0.16866334, y: 0.12027457, z: 0.5626117}
   m_LocalScale: {x: 1.2602834, y: 1.223143, z: 1.2988731}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1486269607}
-  m_LocalEulerAnglesHint: {x: 106.75299, y: -180, z: 0}
+  m_LocalEulerAnglesHint: {x: 245.53, y: 48.589996, z: -45.903015}
 --- !u!23 &2056499310
 MeshRenderer:
   m_ObjectHideFlags: 0
