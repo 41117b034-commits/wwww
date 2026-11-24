@@ -171,7 +171,7 @@ public partial class Chapter1PerformanceController
                 bool carryingWine = carriedWeddingItem == WeddingCarryItem.Wine;
                 string name = WeddingReceiverLabel(GetDesignatedPhysicalDeliveryTarget(carryingWine), carryingWine);
                 if (!carryingWine) return $"把烤魚送給{name} {sharedFoodCount}/{food}" + putBack;
-                return (FirstCupPending ? "把第一杯酒送給火堆旁的長輩" : $"把酒送給{name} {deliveredWineCount}/{wine}") + putBack;
+                return (FirstCupPending ? "把第一杯酒送給" + ElderName : $"把酒送給{name} {deliveredWineCount}/{wine}") + putBack;
             }
         }
         if (carriedWeddingItem == WeddingCarryItem.Wine)
@@ -180,11 +180,11 @@ public partial class Chapter1PerformanceController
             return $"把食物送給有黃色標記的族人（{sharedFoodCount}/{food}）";
 
         if (deliveredWineCount < wine && sharedFoodCount < food)
-            return $"送酒 {deliveredWineCount}/{wine}、分送食物 {sharedFoodCount}/{food}（任選先後）";
+            return $"送酒 {deliveredWineCount}/{wine}、分烤魚 {sharedFoodCount}/{food}";
         if (deliveredWineCount < wine)
             return $"循標記取酒，送給賓客（{deliveredWineCount}/{wine}）";
         if (sharedFoodCount < food)
-            return $"循標記取食物，分給族人（{sharedFoodCount}/{food}）";
+            return $"循標記取烤魚，分給族人（{sharedFoodCount}/{food}）";
         return danceFinished ? "婚禮任務已完成" : "到火堆旁加入舞圈";
     }
 

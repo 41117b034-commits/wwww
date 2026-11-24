@@ -19,8 +19,8 @@ public partial class Chapter1PerformanceController
     private const float PlayerCupHeight = .19f;
     private const float CupGripHeight = PlayerCupHeight * .46f;
 
-    private const string ElderName = "火堆旁的長輩";
-    private const string GroomRequest = "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。";
+    private const string ElderName = "木屋旁的長輩";
+    private const string GroomRequest = "你來啦！今天是我們的婚禮，能幫我給客人送酒、分烤魚嗎？";
     private const string ElderInvitation = "謝謝你。這裡給你留個位子，等一下來跟我們跳。";
     private const string BrideToast = "這杯我想和新郎一起喝。謝謝你跑這一趟！";
     private const string ChildFish = "好香！我把烤魚分一半給妹妹。";
@@ -115,10 +115,11 @@ public partial class Chapter1PerformanceController
         if (!cupStandModel) return;
         float height = elderPose.Height;
         GameObject stand = CreateWeddingProp(cupStandModel, cupStandMaterial, "WeddingCupTable", height * .49f);
-        Vector3 outward = Vector3.ProjectOnPlane(weddingElder.position - GetFireCenterPosition(), Vector3.up).normalized;
-        Vector3 basePoint = weddingElder.position + outward * (.36f * height);
+        Vector3 courtyard = Vector3.ProjectOnPlane(GetFireCenterPosition() - weddingElder.position, Vector3.up).normalized;
+        Vector3 towardStand = Quaternion.AngleAxis(42f, Vector3.up) * courtyard;
+        Vector3 basePoint = weddingElder.position + towardStand * (.36f * height);
         if (TryGetIncidentSurfaceY(basePoint, out float floor)) basePoint.y = floor;
-        stand.transform.SetPositionAndRotation(basePoint, Quaternion.LookRotation(outward));
+        stand.transform.SetPositionAndRotation(basePoint, Quaternion.LookRotation(towardStand));
         // The middle board has a flat top. Dancers and ground probes should only encounter the floor.
         cupRestPoint = basePoint + Vector3.up * (height * .49f);
     }

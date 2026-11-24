@@ -213,6 +213,7 @@ public partial class Chapter1PerformanceController
         foreach (Transform actor in actors)
         {
             var rig = PrepareDoorwayRig(actor, false);
+            if (rig.shoveFallProgress > 0f) continue;
             rig.walking = false; rig.frozen = false;
             rig.speakingWeight = rig.stumbleWeight = rig.pushWeight = 0f;
             rig.conversationTarget = null;

@@ -142,15 +142,17 @@ public sealed class Chapter1WeddingGuestPose : MonoBehaviour
         float bow = (Time.time - bowStart) / 2.5f;
         if (bow >= 0f && bow < 1f && Head && leftArm && leftElbow && leftHand && rightArm && rightElbow && rightHand)
         {
-            // Bring the hands together in front of the sash and incline the head toward the guest.
+            // Acknowledge the guest with a nod. The right hand rests by the sash
+            // and the left hangs beside the skirt, each below its own shoulder.
             float weight = Mathf.SmoothStep(0f, 1f, Mathf.Min(bow * 4f, (1f - bow) * 3.5f));
-            Vector3 center = (leftArm.position + rightArm.position) * .5f
-                + (Forward * .155f - Vector3.up * .18f) * Height;
+            Vector3 across = Vector3.ProjectOnPlane(rightArm.position - leftArm.position, Vector3.up).normalized;
+            Vector3 leftRest = leftArm.position + (Forward * .055f - across * .025f - Vector3.up * .29f) * Height;
+            Vector3 rightRest = rightArm.position + (Forward * .125f - across * .03f - Vector3.up * .205f) * Height;
             Chapter1IncidentRig.Solve(leftArm, leftElbow, leftHand,
-                Vector3.Lerp(leftHand.position, center - side * (.022f * Height), weight), -side - Vector3.up);
+                Vector3.Lerp(leftHand.position, leftRest, weight), -across - Forward * .35f);
             Chapter1IncidentRig.Solve(rightArm, rightElbow, rightHand,
-                Vector3.Lerp(rightHand.position, center + side * (.025f * Height), weight), side - Vector3.up);
-            Head.rotation = Quaternion.AngleAxis(7f * weight, side) * Head.rotation;
+                Vector3.Lerp(rightHand.position, rightRest, weight), across - Vector3.up);
+            Head.rotation = Quaternion.AngleAxis(7f * weight, across) * Head.rotation;
         }
         float phase = (Time.time - waveStart) / 2.1f;
         if (leftHand && phase >= 0f && phase < 1f)

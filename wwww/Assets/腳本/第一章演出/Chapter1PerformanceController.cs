@@ -2254,6 +2254,9 @@ public partial class Chapter1PerformanceController : MonoBehaviour
         }
         Vector3 start = prop.transform.position;
         Vector3 end = receiver.position + Vector3.up * 1.05f;
+        Transform receivingHand = weddingElder && !isWine
+            ? Chapter1WeddingRigBones.Resolve(receiver.GetComponentInChildren<Animator>(), HumanBodyBones.RightHand, "R_Hand", "RightHand")
+            : null;
         Vector3 originalScale = prop.transform.localScale;
         float duration = Mathf.Max(0.15f, physicalGiveSeconds);
         float elapsed = 0f;
@@ -2267,6 +2270,7 @@ public partial class Chapter1PerformanceController : MonoBehaviour
                 end = elderPose.CupGrip;
                 prop.transform.localScale = originalScale * Mathf.Lerp(1f, elderPose.Height * .095f / PlayerCupHeight, t);
             }
+            else if (receivingHand) end = receivingHand.position;
             Vector3 p = Vector3.Lerp(start, end, t);
             p.y += Mathf.Sin(t * Mathf.PI) * 0.08f;
             prop.transform.position = p;

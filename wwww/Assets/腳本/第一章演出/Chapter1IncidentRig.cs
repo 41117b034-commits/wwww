@@ -80,6 +80,15 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
     [Range(0f, 1f)] public float speakingWeight;
     public Chapter1IncidentRig pushTarget;
     [Range(0f, 1f)] public float pushWeight;
+    public float shoveLookDown;
+    public float weddingQuestionProgress = -1f;
+    public float shoveFallProgress;
+    public Vector3 ShoveChest => Vector3.Lerp(hips.position, head.position, .66f)
+        + (Forward * .078f - Vector3.Cross(Vector3.up, Forward) * .064f) * Height;
+    Terrain fallTerrain;
+    float fallFloorY;
+    Vector3 fallLeftAnkle, fallRightAnkle;
+    bool fallSettled;
     [Range(0f, 1f)] public float stumbleWeight;
     [Range(0f, 1f)] public float stumbleProgress;
     public bool smoothLocomotion;
@@ -537,13 +546,16 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
         StationaryGrip = null;
         running = false;
         partnerGripWeight = 1f;
-        speakingWeight = pushWeight = stumbleWeight = 0f;
+        speakingWeight = pushWeight = stumbleWeight = shoveLookDown = 0f;
+        weddingQuestionProgress = -1f;
+        shoveFallProgress = 0f;
+        fallSettled = false;
         pushTarget = null;
         resisting = strugglingInPlace = strike = kicking = false;
     }
     void LateUpdate()
     {
-        if (!ready) return;
+        if (!ready || (fallSettled && shoveFallProgress >= 1f)) return;
         for (int i = 0; i < bones.Length; i++) if (bones[i] != null && bones[i] != transform) bones[i].SetLocalPositionAndRotation(positions[i], rotations[i]);
         float distance = Vector3.ProjectOnPlane(transform.position - previousPosition, Vector3.up).magnitude;
         previousPosition = transform.position;
@@ -562,6 +574,7 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Transform spine = B(HumanBodyBones.Spine);
             if (spine != null) spine.rotation = Quaternion.AngleAxis(13f * pushWeight, right) * spine.rotation;
         }
+        if (shoveLookDown > 0f) head.rotation = Quaternion.AngleAxis(26f * shoveLookDown, right) * head.rotation;
         if (stumbleWeight > 0f)
         {
             hips.position -= Vector3.up * Height * 0.075f * stumbleWeight;
@@ -710,6 +723,14 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             float beat = Mathf.Sin(Time.time * 2.7f);
             Vector3 gesture = rightArm.position + Forward * Height * (0.24f + beat * 0.018f)
                 + right * Height * 0.055f - Vector3.up * Height * 0.075f;
+            if (weddingQuestionProgress >= 0f)
+            {
+                float appeal = Mathf.Sin(Mathf.PI * weddingQuestionProgress);
+                gesture = rightArm.position + (Forward * (.13f + .14f * appeal) + right * .045f
+                    - Vector3.up * (.20f - .12f * appeal)) * Height;
+                Vector3 open = leftArm.position + (Forward * .13f - right * .08f - Vector3.up * .21f) * Height;
+                Solve(leftArm, leftElbow, leftHand, Vector3.Lerp(leftHand.position, open, appeal * speakingWeight), -right - Vector3.up);
+            }
             Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, gesture, speakingWeight), Vector3.down);
             Transform spine = B(HumanBodyBones.Spine);
             if (spine != null) spine.rotation = Quaternion.AngleAxis((2f + beat) * speakingWeight, right) * spine.rotation;
@@ -723,12 +744,6 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
                 + Forward * Height * 0.08f - Vector3.up * Height * 0.10f;
             Solve(leftArm, leftElbow, leftHand, Vector3.Lerp(leftHand.position, leftCatch, stumbleWeight), -Forward);
             Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, rightCatch, stumbleWeight), -Forward);
-        }
-        if (pushTarget != null && pushTarget.Head != null && pushWeight > 0f)
-        {
-            Vector3 chest = pushTarget.Head.position - Vector3.up * pushTarget.Height * 0.18f
-                + pushTarget.Forward * pushTarget.Height * 0.055f;
-            Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, chest, pushWeight), Vector3.down);
         }
         if (blendRotations != null)
         {
@@ -753,6 +768,22 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             Transform hand = left ? leftHand : rightHand, elbow = left ? leftElbow : rightElbow;
             OrientHand(left, hand.position - elbow.position, left ? right : -right);
         }
+        if (weddingQuestionProgress >= 0f && speakingWeight > 0f)
+        {
+            Quaternion rest = rightHand.rotation;
+            OrientHand(false, Forward + right * .12f, Vector3.up);
+            rightHand.rotation = Quaternion.Slerp(rest, rightHand.rotation, speakingWeight * .87f);
+        }
+        if (pushTarget && pushTarget.Head && pushWeight > 0f)
+        {
+            Quaternion rest = rightHand.rotation;
+            OrientHand(false, Vector3.up + right * .22f, Forward);
+            Quaternion press = rightHand.rotation;
+            Vector3 wrist = pushTarget.ShoveChest - rightHand.TransformVector(rightPalmCenter);
+            Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, wrist, pushWeight), right * .45f + Vector3.down);
+            rightHand.rotation = Quaternion.Slerp(rest, press, pushWeight);
+        }
+        if (shoveFallProgress > 0f) PoseWeddingFall(right);
         UpdateBaton();
         foreach (var mesh in gripMeshes)
         {
@@ -760,6 +791,55 @@ public sealed class Chapter1IncidentRig : MonoBehaviour
             mesh.renderer.SetBlendShapeWeight(mesh.right, batonVisible && !batonInLeftHand ? 100f : gripPartner != null && !gripWithLeft ? 75f * partnerGripWeight : 0f);
         }
     }
+    public void BeginWeddingFall(Terrain terrain, float groundY)
+    {
+        if (!ready) return;
+        fallTerrain = terrain;
+        fallFloorY = groundY;
+        fallLeftAnkle = leftFoot.position;
+        fallRightAnkle = rightFoot.position;
+        fallSettled = false;
+    }
+
+    float WeddingFallGround(Vector3 point) => fallTerrain
+        ? fallTerrain.SampleHeight(point) + fallTerrain.transform.position.y : fallFloorY;
+
+    void PoseWeddingFall(Vector3 right)
+    {
+        float t = shoveFallProgress;
+        float drop = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.03f, .75f, t));
+        float tip = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.06f, .92f, t));
+        Vector3 pelvis = hips.position;
+        // The wrapped hip and outer thigh reach below the pelvis on this
+        // three-quarter landing. Give the garment room while the feet stay planted.
+        pelvis.y = Mathf.Lerp(pelvis.y, WeddingFallGround(pelvis) + .193f * Height, drop);
+        hips.position = pelvis;
+        hips.rotation = Quaternion.AngleAxis(-22f * tip, Forward) * Quaternion.AngleAxis(-79f * tip, right) * hips.rotation;
+        head.rotation = Quaternion.AngleAxis(10f * tip, right) * head.rotation;
+        float legs = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.16f, .9f, t));
+        SetFallingFoot(leftThigh, leftCalf, leftFoot, fallLeftAnkle, pelvis + (Forward * .28f - right * .11f) * Height, legs, leftFootRotation);
+        SetFallingFoot(rightThigh, rightCalf, rightFoot, fallRightAnkle, pelvis + (Forward * .42f + right * .12f) * Height, legs, rightFootRotation);
+
+        float brace = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.23f, .88f, t));
+        Vector3 support = pelvis - (Forward * .17f + right * .24f) * Height;
+        support.y = WeddingFallGround(support) + Height * .061f;
+        Solve(leftArm, leftElbow, leftHand, Vector3.Lerp(leftHand.position, support, brace), -right - Forward);
+        Quaternion free = leftHand.rotation;
+        OrientHand(true, -right - Forward * .25f, Vector3.down);
+        leftHand.rotation = Quaternion.Slerp(free, leftHand.rotation, brace);
+        Vector3 guard = Vector3.Lerp(pelvis, head.position, .62f) + (right * .06f + Vector3.up * .10f) * Height;
+        Solve(rightArm, rightElbow, rightHand, Vector3.Lerp(rightHand.position, guard, tip), right + Vector3.up);
+        fallSettled = t >= 1f;
+    }
+
+    void SetFallingFoot(Transform thigh, Transform calf, Transform foot, Vector3 planted, Vector3 end, float t, Quaternion rotation)
+    {
+        end.y = WeddingFallGround(end) + ankleClearance;
+        Vector3 ankle = Vector3.Lerp(planted, end, t);
+        Solve(thigh, calf, foot, ankle, Forward + Vector3.up * t);
+        foot.rotation = transform.rotation * rotation;
+    }
+
     void ApplyLeg(Transform thigh, Transform calf, Transform foot, Vector3 ankle, Quaternion rotation, float p)
     {
         Vector3 target = transform.TransformPoint(ankle);

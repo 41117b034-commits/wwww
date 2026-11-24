@@ -17,11 +17,10 @@
       "provider": "Windows offline zh-TW Hanhan, pitch +3, rate +1"
     },
     {
-      "chinese": "能幫我招呼一下大家嗎？給火堆旁的長輩送杯酒，或先給賓客分烤魚，都可以。",
+      "chinese": "你來啦！今天是我們的婚禮，能幫我給客人送酒、分烤魚嗎？",
       "source": "Chapter1:Chapter1PerformanceController.WeddingGuests.cs",
       "resource": "ChineseVoice/Audio/wedding_groom_request",
-      "provider": "Microsoft zh-TW-YunJheNeural, rate -2%, natural pitch",
-      "recordingProfile": { "voice": "zh-TW-YunJheNeural", "rate": -2, "pitch": 0 }
+      "provider": "Windows offline zh-TW Zhiwei, rate -1"
     },
     {
       "chinese": "謝謝你。這裡給你留個位子，等一下來跟我們跳。",

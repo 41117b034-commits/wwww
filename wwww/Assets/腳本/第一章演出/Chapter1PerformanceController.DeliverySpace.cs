@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public partial class Chapter1PerformanceController
 {
@@ -53,20 +54,63 @@ public partial class Chapter1PerformanceController
         bool restoreInput = playerController && playerController.enabled;
         if (restoreInput) playerController.enabled = false;
         if (!guestStandingHeights.TryGetValue(actor, out float height)) height = GetVisibleRigHeight(actor);
-        float separation = Mathf.Max(2f, .65f * height);
+        Transform head = Chapter1WeddingRigBones.Resolve(actor.GetComponentInChildren<Animator>(), HumanBodyBones.Head, "Head");
+        var desktop = InputDevices.GetDeviceAtXRNode(XRNode.Head).isValid ? null : playerController as PCPlayerController;
+        Vector3 offset = Vector3.ProjectOnPlane(eye.position - actor.position, Vector3.up);
+        Vector3 outward = offset.sqrMagnitude > .01f ? offset.normalized : -GetReceiverVisualForward(actor);
+        float distance = Mathf.Max(offset.magnitude, 2f, .76f * height);
+        // Stand on the approach side when it is open. Beside a second guest,
+        // use the nearest clear angle from which the speaker's face is visible.
+        foreach (float angle in RetreatAngles)
+        {
+            Vector3 bearing = Quaternion.AngleAxis(angle, Vector3.up) * outward;
+            Vector3 spot = actor.position + bearing * distance;
+            if (!WeddingGuestBlocksView(spot, actor) && TryGetIncidentSurfaceY(spot, out _))
+            {
+                outward = bearing;
+                break;
+            }
+        }
+        Vector3 standingPoint = actor.position + outward * distance;
         do
         {
-            Vector3 offset = Vector3.ProjectOnPlane(eye.position - actor.position, Vector3.up);
-            float distance = offset.magnitude;
-            if (distance < separation - .03f)
+            Vector3 toSpot = Vector3.ProjectOnPlane(standingPoint - eye.position, Vector3.up);
+            if (toSpot.sqrMagnitude > .035f * .035f)
+                RetreatFromWeddingGuest(eye, motor, toSpot.normalized, Mathf.Min(toSpot.magnitude, height * 1.6f * Mathf.Min(Time.deltaTime, .06f)));
+            if (desktop)
             {
-                Vector3 outward = distance > .05f ? offset.normalized : -Vector3.ProjectOnPlane(eye.forward, Vector3.up).normalized;
-                float step = Mathf.Min(separation - distance, height * 1.6f * Mathf.Min(Time.deltaTime, .06f));
-                RetreatFromWeddingGuest(eye, motor, outward, step);
+                Vector3 focus = head ? head.position - Vector3.up * (.09f * height) : actor.position + Vector3.up * (.78f * height);
+                Vector3 look = Vector3.RotateTowards(eye.forward, (focus - eye.position).normalized, 155f * Mathf.Deg2Rad * Time.deltaTime, 0f);
+                float yaw = Vector3.SignedAngle(Vector3.ProjectOnPlane(eye.forward, Vector3.up), Vector3.ProjectOnPlane(look, Vector3.up), Vector3.up);
+                desktop.transform.Rotate(Vector3.up, yaw, Space.World);
+                // Set the movement controller's own pitch so its first free frame keeps this view.
+                desktop.SetInitialLookAt(eye.position + look);
             }
             yield return null;
         } while (physicalDeliveryAnimating || interactionAnimationRunning);
         if (restoreInput && !policeSequenceStarted && IsFreeExplorationActive()) playerController.enabled = true;
+    }
+
+    bool WeddingGuestBlocksView(Vector3 spot, Transform speaker)
+    {
+        Vector3 sight = Vector3.ProjectOnPlane(speaker.position - spot, Vector3.up);
+        float length = sight.magnitude;
+        if (length < .01f) return false;
+        Vector3 direction = sight / length;
+        foreach (var guest in guestStandingHeights)
+        {
+            if (guest.Key == speaker || !guest.Key || !guest.Key.gameObject.activeInHierarchy) continue;
+            Vector3 delta = Vector3.ProjectOnPlane(guest.Key.position - spot, Vector3.up);
+            // A shoulder beside the eye can fill the edge of the picture even
+            // when the ray to the speaker's face passes the other guest.
+            float nearClearance = guest.Value * .51f + characterController.radius;
+            if (delta.sqrMagnitude < nearClearance * nearClearance) return true;
+            float along = Vector3.Dot(delta, direction);
+            if (along > length) continue;
+            float clearance = guest.Value * .25f + characterController.radius;
+            if ((delta - direction * Mathf.Max(0f, along)).sqrMagnitude < clearance * clearance) return true;
+        }
+        return false;
     }
 
     void RetreatFromWeddingGuest(Transform eye, CharacterController motor, Vector3 outward, float step)

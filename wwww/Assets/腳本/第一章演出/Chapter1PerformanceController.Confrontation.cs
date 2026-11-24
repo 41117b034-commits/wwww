@@ -66,15 +66,23 @@ public partial class Chapter1PerformanceController
             floor + Vector3.up * height * 0.72f, 46f, weddingSpeakerCameraSeconds);
     }
 
-    private IEnumerator WeddingActionShot()
+    private (Vector3 eye, Vector3 focus, float fov) WeddingConfrontationShot(
+        Transform officer, Transform leader, Vector3 axis, float height, float close, float fall)
     {
-        // Match the approved reference: police left, leader centre, the same
-        // fire and buildings behind, with all bystanders in their original slots.
-        float height = Mathf.Max(1.7f, weddingDramaHeight);
-        yield return WeddingCameraTo(
-            weddingDramaCenter + new Vector3(-0.55f, 1.1f, -4.15f) * height,
-            weddingDramaCenter + new Vector3(-0.28f, 0.50f, 0.05f) * height,
-            50f, 0.9f);
+        Vector3 nearSide = Vector3.Cross(Vector3.up, axis);
+        Vector3 first = WeddingActorFloor(officer);
+        Vector3 second = WeddingActorFloor(leader);
+        Vector3 center = Vector3.Lerp(first, second, Mathf.Lerp(.53f, .62f, fall));
+        Vector3 focus = center + Vector3.up * (Mathf.Lerp(.57f, .72f, close) - .31f * fall) * height;
+        float fov = Mathf.Lerp(48f, 41f, close) + 6f * fall;
+        Camera camera = incidentCameraView ? incidentCameraView.GetComponent<Camera>() : null;
+        float aspect = camera ? camera.aspect : 1.6f;
+        float span = Mathf.Abs(Vector3.Dot(second - first, axis)) + height * (.75f + fall * .56f);
+        float widthDistance = span / (2f * Mathf.Tan(fov * .5f * Mathf.Deg2Rad) * aspect * .84f);
+        float distance = Mathf.Max(widthDistance, height * (Mathf.Lerp(1.92f, 1.32f, close) + .58f * fall));
+        Vector3 viewSide = (nearSide - axis * Mathf.Lerp(.12f, .46f, close)).normalized;
+        Vector3 eye = center + viewSide * distance + Vector3.up * height * Mathf.Lerp(.96f, .78f, fall);
+        return (eye, focus, fov);
     }
 
     private IEnumerator WeddingCupAndConfrontation()
@@ -337,14 +345,22 @@ public partial class Chapter1PerformanceController
         leaderRig.speakingWeight = 0f;
         officerRig.pointTarget = null;
         officerRig.batonInLeftHand = true; // Right hand is free for the shove.
-        yield return WeddingActionShot();
-
         Vector3 start = leader.position;
-        Vector3 destination = officer.position + new Vector3(0.64f, 0f, 0.045f) * height;
+        // Face across the open south lane. Falling along this line leaves the
+        // groom in front of the feast canopy, clear of its posts and the guests.
+        Vector3 axis = new Vector3(.85f, 0f, -.53f).normalized;
+        Vector3 destination = officer.position + axis * (.64f * height);
         destination.y = start.y;
+        var approachShot = WeddingConfrontationShot(officer, leader, axis, height, 0f, 0f);
+        yield return WeddingCameraTo(approachShot.eye, approachShot.focus, approachShot.fov, .75f);
+        void Frame(float close, float fall)
+        {
+            var shot = WeddingConfrontationShot(officer, leader, axis, height, close, fall);
+            SetDoorwayCamera(shot.eye, shot.focus, shot.fov);
+        }
         // Curve around the near edge of the roasting pit, never through it.
-        Vector3 control1 = start + Vector3.back * height * 0.80f;
-        Vector3 control2 = destination + Vector3.right * height * 0.60f;
+        Vector3 control1 = start + new Vector3(-.32f, 0f, -.82f) * height;
+        Vector3 control2 = destination + axis * (.48f * height);
         Quaternion startRotation = leader.rotation;
         leaderRig.Face(control1 - start);
         Quaternion walkingRotation = leader.rotation;
@@ -372,6 +388,7 @@ public partial class Chapter1PerformanceController
             Quaternion officerFrom = officer.rotation;
             officerRig.Face(leader.position - officer.position);
             officer.rotation = Quaternion.Slerp(officerFrom, officer.rotation, 1f - Mathf.Exp(-4f * Time.deltaTime));
+            Frame(Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.30f, 1f, t)), 0f);
             yield return null;
         }
         PlaceDoorwayActor(leaderRig, destination);
@@ -380,69 +397,78 @@ public partial class Chapter1PerformanceController
         officerRig.Face(leader.position - officer.position);
         leaderRig.conversationTarget = officer;
         SetWeddingDramaBeat("leader-question");
-        ShowCharacterLine(leader, "族人", "我們只是辦婚禮，為什麼要這樣對待我們？", leaderQuestionSeconds);
-        float spokenSeconds=GameLanguageSettings.ChineseVoice&&ChineseSpeech.HasAudio ? ChineseSpeech.Remaining+.12f : leaderQuestionSeconds;
+        Frame(1f, 0f);
+        float spokenSeconds = ShowCharacterLine(leader, leader == groomActor ? "新郎" : "族人",
+            "我們只是辦婚禮，為什麼要這樣對待我們？", leaderQuestionSeconds);
         for (float elapsed = 0f; elapsed < spokenSeconds || (GameLanguageSettings.ChineseVoice&&ChineseSpeech.Busy); elapsed += Time.deltaTime)
         {
-            leaderRig.speakingWeight = Mathf.SmoothStep(0f, 1f, elapsed / 0.35f);
+            leaderRig.weddingQuestionProgress = Mathf.Clamp01(elapsed / Mathf.Max(.1f, spokenSeconds));
+            leaderRig.speakingWeight = Mathf.SmoothStep(0f, 1f, elapsed / .36f)
+                * Mathf.SmoothStep(0f, 1f, (spokenSeconds - elapsed) / .42f);
             yield return null;
         }
 
         leaderRig.speakingWeight = 0f;
+        leaderRig.weddingQuestionProgress = -1f;
         leaderRig.conversationTarget = null;
         officerRig.pushTarget = leaderRig;
         Vector3 officerStart = officer.position;
         Vector3 pushDirection = Vector3.ProjectOnPlane(leader.position - officer.position, Vector3.up).normalized;
-        Vector3 officerContact = officerStart + pushDirection * height * 0.22f;
+        Vector3 officerContact = officerStart + pushDirection * height * .25f;
         SetWeddingDramaBeat("police-shove");
         for (float elapsed = 0f; elapsed < 0.34f; elapsed += Time.deltaTime)
         {
             float t = Mathf.SmoothStep(0, 1, elapsed / 0.34f);
             officerRig.pushWeight = t;
             PlaceDoorwayActor(officerRig, Vector3.Lerp(officerStart, officerContact, t));
+            Frame(1f, 0f);
             yield return null;
         }
         officerRig.pushWeight = 1f;
         PlaceDoorwayActor(officerRig, officerContact);
-        // Reaction begins after contact, so there is no invisible remote shove.
+        // Give the rig a frame to plant the palm before the groom reacts.
+        yield return null;
         SetWeddingDramaBeat("shove-contact");
         Vector3 contactStart = leader.position;
-        for (float elapsed = 0f; elapsed < 0.26f; elapsed += Time.deltaTime)
+        for (float elapsed = 0f; elapsed < .14f; elapsed += Time.deltaTime)
         {
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / 0.26f);
-            leaderRig.stumbleWeight = 0.62f * t;
-            PlaceDoorwayActor(leaderRig, contactStart + pushDirection * height * 0.06f * t);
-            PlaceDoorwayActor(officerRig, officerContact + pushDirection * height * 0.08f * t);
+            float t = Mathf.SmoothStep(0f, 1f, elapsed / .14f);
+            leaderRig.stumbleWeight = .42f * t;
+            PlaceDoorwayActor(leaderRig, contactStart + pushDirection * height * .035f * t);
+            PlaceDoorwayActor(officerRig, officerContact + pushDirection * height * .05f * t);
+            Frame(1f, 0f);
             yield return null;
         }
-        PlaceDoorwayActor(leaderRig, contactStart + pushDirection * height * 0.06f);
-        PlaceDoorwayActor(officerRig, officerContact + pushDirection * height * 0.08f);
-        SetWeddingDramaBeat("leader-stumble");
-        Vector3 leaderStart = leader.position;
-        const float stumbleSeconds = 1.65f;
-        for (float elapsed = 0f; elapsed < stumbleSeconds; elapsed += Time.deltaTime)
+        Vector3 fallStart = leader.position;
+        Vector3 landing = fallStart + pushDirection * height * .58f;
+        Terrain terrain = FindTerrainSurface(landing, out float floor);
+        leaderRig.BeginWeddingFall(terrain, terrain ? floor : WeddingActorFloor(leader).y);
+        SetWeddingDramaBeat("leader-fall");
+        const float fallSeconds = .92f;
+        for (float elapsed = 0f; elapsed < fallSeconds; elapsed += Time.deltaTime)
         {
-            float t = Mathf.Clamp01(elapsed / stumbleSeconds);
-            float travel = 1f - Mathf.Pow(1f - t, 2f);
-            leaderRig.stumbleProgress = t;
-            leaderRig.stumbleWeight = t < 0.2f ? Mathf.Lerp(0.62f, 1f, Mathf.SmoothStep(0, 1, t / 0.2f))
-                : Mathf.Lerp(1f, 0.36f, Mathf.SmoothStep(0, 1, (t-0.2f)/0.8f));
-            PlaceDoorwayActor(leaderRig, leaderStart + pushDirection * height * 0.38f * travel);
-            officerRig.pushWeight = 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(0.04f, 0.48f, t));
+            float t = elapsed / fallSeconds;
+            leaderRig.shoveFallProgress = t;
+            leaderRig.stumbleWeight = .42f * (1f - Mathf.SmoothStep(0f, 1f, t / .35f));
+            PlaceDoorwayActor(leaderRig, Vector3.Lerp(fallStart, landing, 1f - (1f - t) * (1f - t)));
+            officerRig.pushWeight = 1f - Mathf.SmoothStep(0f, 1f, t / .35f);
+            officerRig.shoveLookDown = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.22f, .95f, t));
+            Frame(1f, Mathf.SmoothStep(0f, 1f, t));
             yield return null;
         }
-        PlaceDoorwayActor(leaderRig, leaderStart + pushDirection * height * 0.38f);
+        PlaceDoorwayActor(leaderRig, landing);
         officerRig.pushWeight = 0f;
         officerRig.pushTarget = null;
-        leaderRig.stumbleProgress = 1f;
-        SetWeddingDramaBeat("leader-recover");
-        for (float elapsed = 0f; elapsed < 0.9f; elapsed += Time.deltaTime)
+        leaderRig.stumbleWeight = 0f;
+        leaderRig.shoveFallProgress = 1f;
+        Frame(1f, 1f);
+        SetWeddingDramaBeat("leader-grounded");
+        for (float elapsed = 0f; elapsed < 1.18f; elapsed += Time.deltaTime)
         {
-            leaderRig.stumbleWeight = Mathf.Lerp(0.36f, 0f, Mathf.SmoothStep(0, 1, elapsed / 0.9f));
+            officerRig.shoveLookDown = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.60f, 1.18f, elapsed));
             yield return null;
         }
-        leaderRig.stumbleWeight = 0f;
-        yield return new WaitForSeconds(0.75f);
+        officerRig.shoveLookDown = 0f;
         SetWeddingDramaBeat("confrontation-complete");
     }
 }
