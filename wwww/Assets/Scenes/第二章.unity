@@ -16513,6 +16513,7 @@ GameObject:
   - component: {fileID: 206475609}
   - component: {fileID: 206475610}
   - component: {fileID: 206475611}
+  - component: {fileID: 206475612}
   m_Layer: 0
   m_Name: Chapter2_NewRulesAndSecretCouncil
   m_TagString: Untagged
@@ -17152,6 +17153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chapter: {fileID: 206475605}
   interactionRadius: 3
+  allowSkipExploration: 1
 --- !u!114 &206475611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17167,6 +17169,26 @@ MonoBehaviour:
   chapter: {fileID: 206475605}
   walkingSpeed: 1.65
   waitDistance: 5.5
+--- !u!114 &206475612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206475604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b99127f42728354a9a0b81d1eea55f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chapter: {fileID: 0}
+  fallClip: {fileID: 8300000, guid: 1ac3708f8973c764aab8fc793e30aaa4, type: 3}
+  fallVolume: 0.8
+  impactClip: {fileID: 0}
+  impactVolume: 0.85
+  output: {fileID: 0}
+  startAngle: 0.05
+  finalAngle: 82
 --- !u!1 &206552846
 GameObject:
   m_ObjectHideFlags: 0
