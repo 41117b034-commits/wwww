@@ -61574,7 +61574,7 @@ MonoBehaviour:
   aimTarget: {fileID: 0}
   naturalCarry: 1
   carryStockOffset: {x: 0.14, y: 0.08, z: 0.02}
-  carryDirection: {x: 0, y: 0.15, z: 1}
+  carryDirection: {x: 0.15, y: 0.8, z: 0.6}
   rightGripOffset: {x: 0, y: -0.045, z: 0.24}
   leftGripOffset: {x: 0, y: -0.028, z: 0.5}
   rightGripTarget: {fileID: 1064834308}
@@ -102354,6 +102354,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bladeTip: {fileID: 437074010}
   cutWood: {fileID: 2100000, guid: c6e0c98ccaa1c6e42bc8f0f3ba5a770c, type: 2}
+  addImprovedVisuals: 1
 --- !u!1 &1159669714
 GameObject:
   m_ObjectHideFlags: 0
